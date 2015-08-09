@@ -63,6 +63,7 @@ static int pci_num_vf(struct pci_dev *dev)
 /* Check if INTX works to control irq's.
  * Set's INTX_DISABLE flag and reads it back
  */
+/*
 static bool pci_intx_mask_supported(struct pci_dev *pdev)
 {
 	bool mask_supported = false;
@@ -85,7 +86,7 @@ static bool pci_intx_mask_supported(struct pci_dev *pdev)
 
 	return mask_supported;
 }
-
+*/
 static bool pci_check_and_mask_intx(struct pci_dev *pdev)
 {
 	bool pending;
