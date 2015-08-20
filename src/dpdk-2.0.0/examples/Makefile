@@ -73,5 +73,6 @@ DIRS-$(CONFIG_RTE_LIBRTE_XEN_DOM0) += vhost_xen
 DIRS-y += vmdq
 DIRS-y += vmdq_dcb
 DIRS-y += vm_power_manager
+DIRS-y += naga
 
 include $(RTE_SDK)/mk/rte.extsubdir.mk

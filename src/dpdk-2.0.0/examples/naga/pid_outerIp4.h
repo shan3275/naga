@@ -4,21 +4,6 @@
 #include <sys/types.h>
 
 
-/* The IPv6 header. */
-struct ip6_hdr {
-#if BYTE_ORDER == LITTLE_ENDIAN
-  u8_t tclass1:4, v:4;
-  u8_t flow1:4, tclass2:4;  
-#else
-  u8_t v:4, tclass1:4;
-  u8_t tclass2:8, flow1:4;
-#endif
-  u16_t flow2;
-  u16_t len;                	/* payload length */
-  u8_t nexthdr;             	/* next header */
-  u8_t hoplim;              	/* hop limit (TTL) */
-  struct ip_addr src, dest;     /* source and destination IP addresses */
-};
 
 
 struct ip4_hdr {
@@ -43,7 +28,7 @@ struct ip4_hdr {
   /* source and destination IP addresses */
   uint32_t src;
   uint32_t dest; 
-}__attribute__ ((aligned (4)));;
+}__attribute__ ((aligned (4)));
 
 
 #define IPH_V(hdr)  (ntohs((hdr)->_v_hl_tos) >> 12)
@@ -85,9 +70,9 @@ struct ip4_hdr {
 
 
 
+#define IP_HD_LEN  20
 
-
-berr pid_outerip(struct pbuf *p,  hytag_t * hytag);
+berr pid_outerip4(struct pbuf *p,  hytag_t * hytag);
 
 
 

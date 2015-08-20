@@ -576,7 +576,7 @@ main(int argc, char **argv)
 
 	if (nb_ports > RTE_MAX_ETHPORTS)
 		nb_ports = RTE_MAX_ETHPORTS;
-
+#if 0
 	/* reset l2fwd_dst_ports */
 	for (portid = 0; portid < RTE_MAX_ETHPORTS; portid++)
 		l2fwd_dst_ports[portid] = 0;
@@ -605,8 +605,8 @@ main(int argc, char **argv)
 		printf("Notice: odd number of ports in portmask.\n");
 		l2fwd_dst_ports[last_port] = last_port;
 	}
-
-	rx_lcore_id = 0;
+#endif
+    rx_lcore_id = 0;
 	qconf = NULL;
 
 	/* Initialize the port/queue configuration of each logical core */

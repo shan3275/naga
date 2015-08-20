@@ -3,14 +3,14 @@
 
 struct gre_hdr
 {
-#if BYTE_ORDER == LITTLE_ENDIAN
+#if defined(__LITTLE_ENDIAN_BITFIELD)
 	uint8_t protype:1;
 	uint8_t reserv:1;
 	uint8_t next_header:1;
 	uint8_t sequence_num:1;
 	uint8_t npdu:1;	
 	uint8_t vesion:3;
-#else
+#elif defined(__BIG_ENDIAN_BITFIELD)
 	uint8_t vesion:3;
 	uint8_t protype:1;
 	uint8_t reserv:1;
@@ -32,7 +32,7 @@ struct gre_hdr
 #define GRE_SEQ_NUM_FG(grehdr)  (grehdr->sequence_num)
 #define GRE_NPDU_FG(grehdr)     		(grehdr->npdu)
 
-berr pid_gre(struct pbuf *p, hytag_t *hytag);
+berr pid_gtpu(struct pbuf *p, hytag_t *hytag);
 
 #define GRE_HEAD_LEN  8
 

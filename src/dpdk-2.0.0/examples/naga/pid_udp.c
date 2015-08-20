@@ -32,7 +32,7 @@ berr pid_udp(struct pbuf *p, hytag_t *hytag, int inner_outer)
 		if (likely(inner_outer == HEADER_OUTER))
 		{
 			UPDATE_PBUF_OFFSET(p, UDP_HLEN);
-			pid_gre(p, hytag);
+			return pid_gtpu(p, hytag);
 		}
 		else
 		{
@@ -43,7 +43,7 @@ berr pid_udp(struct pbuf *p, hytag_t *hytag, int inner_outer)
 	{
 		//drop and incr 
 	}
-	
+	return E_SUCCESS;
 									
 }
 
