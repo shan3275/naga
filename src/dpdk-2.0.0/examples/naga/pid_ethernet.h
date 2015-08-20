@@ -18,6 +18,12 @@ struct eth_hdr {
 } ;
 
 
+struct eth_vlan_hdr 
+{
+ 	uint16_t v_type;
+    uint16_t v_val;	
+};
+
 
 berr pid_ethernet(struct pbuf *p, hytag_t *hytag);
 

@@ -1,7 +1,7 @@
 #ifndef __GRE_H_
 #define __GRE_H_
 
-struct gre_head_t
+struct gre_hdr
 {
 #if BYTE_ORDER == LITTLE_ENDIAN
 	uint8_t protype:1;
@@ -25,8 +25,16 @@ struct gre_head_t
 
 
 
+#define GRE_VERSION(grehdr) (grehdr->vesion)
+#define GRE_PRO(grehdr) 	(grehdr->protype)
+#define GRE_VERSION(grehdr) (grehdr->vesion)
+#define GRE_NEXT_HDR_FG(grehdr) (grehdr->next_header)
+#define GRE_SEQ_NUM_FG(grehdr)  (grehdr->sequence_num)
+#define GRE_NPDU_FG(grehdr)     		(grehdr->npdu)
+
 berr pid_gre(struct pbuf *p, hytag_t *hytag);
 
+#define GRE_HEAD_LEN  8
 
 
 #endif
