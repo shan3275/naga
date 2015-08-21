@@ -352,7 +352,7 @@ l2fwd_main_loop(void)
                 {
                     l2fwd_simple_forward(m, portid);
                 }
-
+                rte_pktmbuf_free(m);
 			}
 		}
 	}
@@ -567,12 +567,12 @@ main(int argc, char **argv)
 		rte_exit(EXIT_FAILURE, "Invalid EAL arguments\n");
 	argc -= ret;
 	argv += ret;
-
+#if 1
 	/* parse application arguments (after the EAL ones) */
 	ret = l2fwd_parse_args(argc, argv);
 	if (ret < 0)
 		rte_exit(EXIT_FAILURE, "Invalid L2FWD arguments\n");
-
+#endif
 	/* create the mbuf pool */
 	l2fwd_pktmbuf_pool =
 		rte_mempool_create("mbuf_pool", NB_MBUF,
@@ -590,7 +590,7 @@ main(int argc, char **argv)
 
 	if (nb_ports > RTE_MAX_ETHPORTS)
 		nb_ports = RTE_MAX_ETHPORTS;
-
+#if 1
 	/* reset l2fwd_dst_ports */
 	for (portid = 0; portid < RTE_MAX_ETHPORTS; portid++)
 		l2fwd_dst_ports[portid] = 0;
@@ -619,7 +619,7 @@ main(int argc, char **argv)
 		printf("Notice: odd number of ports in portmask.\n");
 		l2fwd_dst_ports[last_port] = last_port;
 	}
-
+#endif
 	rx_lcore_id = 0;
 	qconf = NULL;
 
@@ -649,6 +649,7 @@ main(int argc, char **argv)
 
 	nb_ports_available = nb_ports;
 
+
 	/* Initialise each port */
 	for (portid = 0; portid < nb_ports; portid++) {
 		/* skip ports that are not enabled */
@@ -657,6 +658,7 @@ main(int argc, char **argv)
 			nb_ports_available--;
 			continue;
 		}
+        		printf("done1: \n");
 		/* init port */
 		printf("Initializing port %u... ", (unsigned) portid);
 		fflush(stdout);
