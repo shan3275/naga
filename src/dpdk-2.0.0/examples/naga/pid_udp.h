@@ -15,7 +15,8 @@ struct udp_hdr {
 #define  GREV2  2
 #define  GRE_GTP 1
 
-#define UDP_PORT_GTP_U	 2152
+#define UDP_PORT_GTP_U	    2152
+#define UDP_PORT_GTPV2_C    2123
 
 berr pid_udp(struct pbuf *p, hytag_t *hytag, int inner_outer);
 

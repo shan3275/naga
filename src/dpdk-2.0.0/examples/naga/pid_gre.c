@@ -10,21 +10,23 @@ berr pid_gtpu(struct pbuf *p, hytag_t *hytag)
     
 	if(check_pbuf_len(p, GRE_HEAD_LEN))
 	{
-		;//drop packet and incr counter, then return;
+		pid_incr_count(GTP_U_HD);//drop packet and incr counter, then return;
 		return E_EXCEED;
 	}
 
 	PBUF_OFFSET2PTR(struct gre_hdr *, grehdr, p);	
 
+    
 	if(GRE_VERSION(grehdr) != GREV1 
-		|| GRE_PRO(grehdr) != GRE_GTP
-	)
+		|| GRE_PRO(grehdr) != GRE_GTP)
 	{
-		//drop and incr;
+		pid_incr_count(GTP_U_HD);
 		return E_FAIL;
 	}
 	hytag->teid = ntohl(grehdr->teid);
-	
+
+    pid_incr_count(GTP_U);
+    
 	if(GRE_NEXT_HDR_FG(grehdr)
 		||GRE_SEQ_NUM_FG(grehdr)
 		||GRE_NPDU_FG(grehdr))
@@ -32,12 +34,46 @@ berr pid_gtpu(struct pbuf *p, hytag_t *hytag)
 		len	+= 4;//expend 
 		if (unlikely(GRE_NEXT_HDR_FG(grehdr)))
 		{
-			UPDATE_PBUF_OFFSET(p, len);
-			return pid_innerip(p, hytag);						
+            //FIXME:skip next header    					
 		}
+      
 	}
-	
-	
-	//skip gre_heade
-	return E_SUCCESS;
+    /*check Message Type , When The port =2152 without Payload, eg, echo Msg*/
+    switch(grehdr->message_type)
+    {
+        case GTP_MSG_PDU:
+            UPDATE_PBUF_OFFSET(p, len);
+	        return pid_innerip(p, hytag);
+            break;
+        case GTP_MSG_ECHO_REQ:
+        case GTP_MSG_ECHO_RSP:    
+        default:
+            pid_incr_count(GTP_U_NOPAYLOAD);
+            break;
+    }    
+    return E_SUCCESS;
 }
+
+
+berr pid_gtpv2c(struct pbuf *p, hytag_t *hytag __attribute__ ((unused)))
+{
+	struct gtpv2_c_hdr *gtpc_hdr __attribute__ ((unused));
+	int len = GRE_HEAD_LEN;
+
+    
+	if(check_pbuf_len(p, GRE_HEAD_LEN))
+	{
+		;//drop packet and incr counter, then return;
+		return E_EXCEED;
+	}
+
+	PBUF_OFFSET2PTR(struct gtpv2_c_hdr *, gtpc_hdr, p);	
+
+
+    UPDATE_PBUF_OFFSET(p, len);
+    pid_incr_count(GTPV2_C);
+    
+    return E_SUCCESS;
+}
+
+

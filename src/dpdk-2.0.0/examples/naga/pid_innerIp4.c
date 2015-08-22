@@ -1,28 +1,41 @@
 #include "naga.h"
+#include <unistd.h>
 
 berr pid_innerip(struct pbuf *p,  hytag_t * hytag)
 {
-	if (unlikely(p->len < p->ptr_offset + IP_HD_LEN))
-	{
-		//drop 
-		//incr;
-	}	
+
+
 	struct ip4_hdr *iphdr;
 	uint16_t  iphdr_hlen;// iphdr_len;
 
 	if(check_pbuf_len(p, IP_HD_LEN))
 	{
-		;//drop packet and incr counter, then return;
+        
+		pid_incr_count(INNERL3_HD);//drop packet and incr counter, then return;
+		//PRINTF_PKT(p);
+        //sleep(100);
 		return E_EXCEED;
 	}
 
     
 	PBUF_OFFSET2PTR(struct ip4_hdr *, iphdr, p);
-	if (IPH_V(iphdr) != 4) 
-	{
-		//incr err
-		return E_COMPARE;
-	}
+
+    switch(IPH_V(iphdr))
+    {
+        case 4:
+            break;
+        case 6:
+            pid_incr_count(INNERL3_IPV6);
+            //goto ipv6
+            return E_COMPARE;
+            break;
+        default:
+            pid_incr_count(INNERL3_NOIP);
+            return E_COMPARE;
+            break;
+    }
+    
+
 	
   	/* obtain IP header length in number of 32-bit words */
   	iphdr_hlen = IPH_HL(iphdr);
@@ -31,8 +44,9 @@ berr pid_innerip(struct pbuf *p,  hytag_t * hytag)
 	/* obtain ip length in bytes */
   	//iphdr_len = ntohs(IPH_LEN(iphdr));
 
-	hytag->inner_dstip4 = ntohs(iphdr->dest);
-	hytag->inner_srcip4 = ntohs(iphdr->src);
+	pid_incr_count(INNERL3_IPV4);
+	hytag->inner_dstip4 = ntohl(iphdr->dest);
+	hytag->inner_srcip4 = ntohl(iphdr->src);
 
 	UPDATE_PBUF_OFFSET(p, iphdr_hlen);	
 	

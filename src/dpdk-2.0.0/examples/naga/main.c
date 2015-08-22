@@ -134,6 +134,10 @@ struct l2fwd_port_statistics {
 	uint64_t tx;
 	uint64_t rx;
 	uint64_t dropped;
+    //uint64_t ipv4;
+    //uint64_t ipv6;
+    //uint64_t noip;
+    //uint64_t outer_l4_tcp;
 } __rte_cache_aligned;
 struct l2fwd_port_statistics port_statistics[RTE_MAX_ETHPORTS];
 
@@ -317,6 +321,7 @@ l2fwd_main_loop(void)
 					/* do this only on master core */
 					if (lcore_id == rte_get_master_lcore()) {
 						print_stats();
+                        printf_pid_stat();
 						/* reset the timer */
 						timer_tsc = 0;
 					}

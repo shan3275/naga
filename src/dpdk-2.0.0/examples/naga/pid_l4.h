@@ -9,7 +9,7 @@
 #define IP_PROTO_UDP     17
 #define IP_PROTO_UDPLITE 136
 #define IP_PROTO_TCP     6
-
+#define IP_PROTO_STCP    132
 
 berr pid_L4(struct pbuf *p, hytag_t *hytag,  uint8_t protocol, int outer_inner);
 

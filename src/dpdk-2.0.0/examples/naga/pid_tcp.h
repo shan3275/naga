@@ -42,7 +42,7 @@ struct tcp_hdr {
 };
 
 
-#define TCP_HDR_LEN(hdr) (hdr->doff)
+#define TCP_HDR_LEN(hdr) ((hdr->doff)*4)
 
 #define TCP_HLEN 20
 

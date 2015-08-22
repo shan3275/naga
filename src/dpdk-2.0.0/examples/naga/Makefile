@@ -42,7 +42,7 @@ include $(RTE_SDK)/mk/rte.vars.mk
 APP = naga
 
 # all source are stored in SRCS-y
-SRCS-y := main.c   naga.c  pid_ethernet.c  pid_gre.c \
+SRCS-y := main.c   naga.c  pid_ethernet.c  pid_gre.c  naga_stat.c\
 	pid_http.c  pid_innerIp4.c  pid_l4.c  pid_outerIp4.c  pid_tcp.c  pid_udp.c 
 	
 		
