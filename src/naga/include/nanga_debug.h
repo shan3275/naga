@@ -1,4 +1,4 @@
-#ifdef __NAGA_DEBUG_H__
+#ifndef __NAGA_DEBUG_H__
 #define __NAGA_DEBUG_H__
 
 #include "boots_custom.h"

@@ -11,15 +11,15 @@ typedef unsigned short uint16_t;
 typedef unsigned int   uint32_t;
 typedef unsigned long long uint64_t;
 typedef unsigned char mac_t[6];
-typedef u32_t ipv4_t;
-typedef u16_t ipv6_t[8];
+typedef uint32_t ipv4_t;
+typedef uint16_t ipv6_t[8];
 
 #include "boots_custom.h"
 
-typedef enum { 
+typedef enum {
     MOD_DBG,
     MOD_CUSTOM,
-    MOD_MAX
+    MOD_MAX,
 } bmod;
 
 typedef struct {
