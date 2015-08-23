@@ -17,7 +17,7 @@
  * 02111-1307, USA.  
  */
 
-#include <zebra.h>
+#include "zebra.h"
 
 #include "version.h"
 #include "getopt.h"
@@ -30,11 +30,7 @@
 #include "privs.h"
 #include "sigevent.h"
 
-#include "rib.h"
 #include "zserv.h"
-#include "debug.h"
-#include "router-id.h"
-#include "interface.h"
 
 /* Zebra instance */
 struct zebra_t zebrad =
@@ -106,49 +102,6 @@ usage (char *progname, int status)
 
 static unsigned int test_ifindex = 0;
 
-/* testrib commands */
-DEFUN (test_interface_state,
-       test_interface_state_cmd,
-       "state (up|down)",
-       "configure interface\n"
-       "up\n"
-       "down\n")
-{
-  struct interface *ifp;
-  if (argc < 1)
-    return CMD_WARNING;
-  
-  ifp = vty->index;
-  if (ifp->ifindex == IFINDEX_INTERNAL)
-    {
-      ifp->ifindex = ++test_ifindex;
-      ifp->mtu = 1500;
-      ifp->flags = IFF_BROADCAST|IFF_MULTICAST;
-    }
-  
-  switch (argv[0][0])
-    {
-      case 'u':
-        SET_FLAG (ifp->flags, IFF_UP);
-        if_add_update (ifp);
-        printf ("up\n");
-        break;
-      case 'd':
-        UNSET_FLAG (ifp->flags, IFF_UP);
-        if_delete_update (ifp);
-        printf ("down\n");
-        break;
-      default:
-        return CMD_WARNING;
-    }
-  return CMD_SUCCESS;
-}
-
-static void
-test_cmd_init (void)
-{
-  install_element (INTERFACE_NODE, &test_interface_state_cmd);
-}
 
 /* SIGHUP handler. */
 static void 
@@ -201,11 +154,11 @@ int
 main (int argc, char **argv)
 {
   char *p;
-  char *vty_addr = NULL;
-  int vty_port = 0;
+  char *vty_addr = "127.0.0.1";
+  int vty_port = ZEBRA_VTY_PORT;
   int batch_mode = 0;
   int daemon_mode = 0;
-  char *config_file = NULL;
+  char *config_file = "zebra.conf";
   char *progname;
   struct thread thread;
 
@@ -219,54 +172,52 @@ main (int argc, char **argv)
 			   LOG_CONS|LOG_NDELAY|LOG_PID, LOG_DAEMON);
 
   while (1) 
-    {
+  {
       int opt;
-  
-      opt = getopt_long (argc, argv, "bdf:hA:P:r:v", longopts, 0);
+
+      opt = getopt_long (argc, argv, "bdf:hA:P:v", longopts, 0);
 
       if (opt == EOF)
-	break;
+          break;
 
       switch (opt) 
-	{
-	case 0:
-	  break;
-	case 'b':
-	  batch_mode = 1;
-	case 'd':
-	  daemon_mode = 1;
-	  break;
-	case 'f':
-	  config_file = optarg;
-	  break;
-	case 'A':
-	  vty_addr = optarg;
-	  break;
-	case 'P':
-	  /* Deal with atoi() returning 0 on failure, and zebra not
-	     listening on zebra port... */
-	  if (strcmp(optarg, "0") == 0) 
-	    {
-	      vty_port = 0;
-	      break;
-	    } 
-	  vty_port = atoi (optarg);
-	  break;
-	case 'r':
-	  rib_process_hold_time = atoi(optarg);
-	  break;
-	case 'v':
-	  print_version (progname);
-	  exit (0);
-	  break;
-	case 'h':
-	  usage (progname, 0);
-	  break;
-	default:
-	  usage (progname, 1);
-	  break;
-	}
-    }
+      {
+          case 0:
+              break;
+          case 'b':
+              batch_mode = 1;
+          case 'd':
+              daemon_mode = 1;
+              break;
+          case 'f':
+              config_file = optarg;
+              break;
+          case 'A':
+              vty_addr = optarg;
+              break;
+          case 'P':
+              /* Deal with atoi() returning 0 on failure, and zebra not
+                 listening on zebra port... */
+              if (strcmp(optarg, "0") == 0) 
+              {
+                  vty_port = 0;
+                  break;
+              } 
+              vty_port = atoi (optarg);
+              break;
+              break;
+          case 'v':
+              print_version (progname);
+              exit (0);
+              break;
+          case 'h':
+              usage (progname, 0);
+              break;
+          default:
+              usage (progname, 1);
+              break;
+      }
+  }
   
   /* port and conf file mandatory */
   if (!vty_port || !config_file)
@@ -284,25 +235,14 @@ main (int argc, char **argv)
   cmd_init (1);
   vty_init (zebrad.master);
   memory_init ();
-  if_init();
-  zebra_debug_init ();
-  zebra_if_init ();
-  test_cmd_init ();
 
   /* Zebra related initialize. */
-  rib_init ();
   access_list_init ();
 
-  /* Make kernel routing socket. */
-  kernel_init ();
-  route_read ();
-  zebra_vty_init();
 
   /* Configuration file read*/
   vty_read_config (config_file, config_default);
 
-  /* Clean up rib. */
-  rib_weed_tables ();
 
   /* Exit when zebra is working in batch mode. */
   if (batch_mode)

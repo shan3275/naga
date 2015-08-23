@@ -38,7 +38,7 @@ RTE_TARGET ?= x86_64-native-linuxapp-gcc
 
 include $(RTE_SDK)/mk/rte.vars.mk
 
-DIRS-$(CONFIG_RTE_EXEC_ENV_LINUXAPP) += libzebra
-DIRS-$(CONFIG_RTE_EXEC_ENV_LINUXAPP) += testzebra
+DIRS-y += libzebra
+DIRS-y += testzebra
 
 include $(RTE_SDK)/mk/rte.extsubdir.mk

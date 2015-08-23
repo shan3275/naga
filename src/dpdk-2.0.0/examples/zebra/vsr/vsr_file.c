@@ -10,10 +10,32 @@
 #       @algorithm    :
 =============================================================================*/
 
+void vsr_write_file(char *name, char *buff, uint32_t size)
+{
+    int fdsrcnumbytes;
+    int flags = O_CREAT | O_TRUNC | O_WRONLY;
+    char buf[10];
+
+    /* open the source file, /dev/null, and /tmp/foo.bar */
+    if ((fdsrc = open(name, O_RDONLY, 0644)) < 0) {
+        perror("%s", name);
+        return;
+    }
+
+    if (write(fdsrc, buff, size) < 0) {
+        perror("write %s", name);
+        return;
+    }
+
+    /* close files and exit */
+    close(fdsrc);
+    return;
+}
+
 vsr_log_tab(void)
 {
     int i;
-    char buff[512*513];
+    char buff[512*1024];
     char ip_str[20];
     for ( i = 0; i < VSR_RULE_NUM_MAX; i++)
     {

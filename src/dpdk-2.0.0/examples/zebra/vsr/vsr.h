@@ -24,11 +24,12 @@
 #define VSR_RULE_URL_UNEFFECTIVE 0
 #define VSR_RULE_URL_LEN_UNEFFECTIVE 0
 #define VSR_RULE_URL_HASH_UNEFFECTIVE 0
+typedef rte_spinlock_t  vsr_lock_t;
 typedef vsr_rule_t {
     uint64_t ip_num;        /* vsr module ip number from 0-16,for global use*/
     uint64_t url_num;       /* url entry number,value from 0 to 512 ,for global use */   
-    vsr_rule_entry rule[VSR_RULE_NUM_MAX];
-}vsr_rule;
+    vsr_rule_entry_t rule[VSR_RULE_NUM_MAX];
+}vsr_rule_t;
 
 /* global summary statistics ,for cnt module */
 typedef vsr_rule_summary_stat_t {
@@ -36,15 +37,17 @@ typedef vsr_rule_summary_stat_t {
     uint64_t ip_match_pkt; /* vsr module matched ip packets statistcs */
     uint64_t ip_unmatch_pkt; /* vsr module unmatched packets statistics */
 }vsr_rule_summary_stat;
+
 typedef vsr_rule_entry_t {
     uint32_t index;
+    vsr_lock_t lock;
     uint32_t effective;   /* 0 for not effective; 1 for effective */
     uint32_t ip;
     uint32_t msisdn;
     uint32_t url_num;    /*url number, value from 0-512 */
-    vsr_url_entry url_entry[VSR_URL_NUM_MAX];
+    vsr_url_entry_t url_entry[VSR_URL_NUM_MAX];
     uint64_t match_pkt; /* matched ip packet number */
-}vsr_rule_entry;
+}vsr_rule_entry_t;
 
 typedef vsr_url_entry_t {
     uint32_t effective;   /* 0 for not effective; 1 for effective */
@@ -52,10 +55,18 @@ typedef vsr_url_entry_t {
     uint32_t hash;      /* hash value for url, used for compare*/
     uint8_t  url[VSR_URL_LEN_MAX];
     uint64_t match_pkt; /* matched url  packet number */
-} vsr_url_entry;
+} vsr_url_entry_t;
+
 
 void vsr_ip_num_dec(void);
 void vsr_ip_num_add(void);
+void vsr_ip_num_set(uint64_t val);
+void vsr_url_num_dec(void);
+void vsr_url_num_add(void);
+void vsr_url_num_set(uint64_t val);
+void vsr_rule_lock_init(uint32_t index);
+void vsr_lock_rule(uint32_t index);
+void vsr_unlock_rule(uint32_t index);
 
 /*
  *   input  : index,rule index
@@ -63,27 +74,29 @@ void vsr_ip_num_add(void);
  *            VSR_RULE_UNEFFECTIVE
  *
  */
-int vsr_check_rule_effective(uint32_t index, uint32_t );
+uint32_t vsr_check_rule_effective(uint32_t index);
+void vsr_set_rule_effective(uint32_t index, uin32_t effective );
 void vsr_set_rule_ip(uint32_t index, uint32_t ip);
 uint32_t vsr_get_rule_ip(uint32_t index);
 void vsr_set_rule_mobile(uint32_t index, uint32_t mobile);
 uint32_t vsr_get_rule_mobile(uint32_t index);
-void vsr_set_rule_effective(uint32_t index, uin32_t effective );
 void vsr_set_rule_url_num(uint32_t index, uint32_t num);
 uint32_t vsr_get_rule_url_num(uint32_t index);
-vsr_rule_entry *vsr_get_rule_entry(uint32_t index);
-
+vsr_rule_entry_t *vsr_get_rule_entry(uint32_t index);
+void vsr_set_rule_pkt(uint32_t index, uint64_t num);
+void vsr_add_rule_pkt(uint32_t index, uint64_t num);
+void vsr_inc_rule_pkt(uint32_t index);
 /* url operation */
-int vsr_check_url_effective(uint32_t index, uint32_t url_index);
+void vsr_set_url_effective(uint32_t index, uint32_t url_index, uint32_t effective);
 void vsr_set_url_len(uint32_t index, uint32_t url_index,int len);
 uint32_t vsr_get_url_len(uint32_t index, uint32_t url_index);
-void vsr_set_url_hash(uint32_t index, uint32_t url_index,int len);
+void vsr_set_url_hash(uint32_t index, uint32_t url_index,int hash);
 uint32_t vsr_get_url_hash(uint32_t index, uint32_t url_index);
 void vsr_set_url_content(uint32_t index, uint32_t url_index, int len, uint8_t * url);
 char *vsr_get_url_content(uint32_t index, uint32_t url_index);
 void vsr_set_url_pkt(uint32_t index, uint32_t url_index, uint64_t num);
 void vsr_add_url_pkt(uint32_t index, uint32_t url_index, uint64_t num);
 void vsr_url_pkt_inc(uint32_t index, uint32_t url_index);
-
+berr vsr_dp_api_request_data_entry(void);
 
 #endif /* end of __VSR_H__ */
