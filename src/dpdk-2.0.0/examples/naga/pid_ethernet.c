@@ -23,7 +23,7 @@ berr pid_ethernet(struct pbuf *p, hytag_t *hytag)
 		return E_EXCEED;
 	}
 	
-	PBUF_OFFSET2PTR(struct eth_hdr *, eth_header, p);
+	PBUF_CUR_FORMAT(struct eth_hdr *, eth_header, p);
 
 	type = eth_header->ethertype;
 	len += SIZEOF_ETH_HDR; 

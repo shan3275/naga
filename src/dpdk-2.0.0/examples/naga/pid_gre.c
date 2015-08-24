@@ -6,7 +6,8 @@ berr pid_gtpu(struct pbuf *p, hytag_t *hytag)
 {
 	struct gre_hdr *grehdr;
 	int len = GRE_HEAD_LEN;
-
+    uint8_t *next_hdr=0;
+    uint8_t *next_hdr_len=0;
     
 	if(check_pbuf_len(p, GRE_HEAD_LEN))
 	{
@@ -14,7 +15,7 @@ berr pid_gtpu(struct pbuf *p, hytag_t *hytag)
 		return E_EXCEED;
 	}
 
-	PBUF_OFFSET2PTR(struct gre_hdr *, grehdr, p);	
+	PBUF_CUR_FORMAT(struct gre_hdr *, grehdr, p);	
 
     
 	if(GRE_VERSION(grehdr) != GREV1 
@@ -34,7 +35,18 @@ berr pid_gtpu(struct pbuf *p, hytag_t *hytag)
 		len	+= 4;//expend 
 		if (unlikely(GRE_NEXT_HDR_FG(grehdr)))
 		{
-            //FIXME:skip next header    					
+            //PBUF_CUR_FORMAT(struct gre_hdr *, grehdr, p);
+            PBUF_OFF_FORMAT(uint8_t *, next_hdr, len);
+            len +=1;
+            while(*next_hdr != 0) 
+            {
+                 PBUF_OFF_FORMAT(uint8_t *, next_hdr_len, len);
+                 len += (*next_hdr_len)*4;
+                 len -=1;
+                 PBUF_OFF_FORMAT(uint8_t *, next_hdr, len);
+            }
+            //FIXME:skip next header    
+            len += 1;
 		}
       
 	}
@@ -67,7 +79,7 @@ berr pid_gtpv2c(struct pbuf *p, hytag_t *hytag __attribute__ ((unused)))
 		return E_EXCEED;
 	}
 
-	PBUF_OFFSET2PTR(struct gtpv2_c_hdr *, gtpc_hdr, p);	
+	PBUF_CUR_FORMAT(struct gtpv2_c_hdr *, gtpc_hdr, p);	
 
 
     UPDATE_PBUF_OFFSET(p, len);

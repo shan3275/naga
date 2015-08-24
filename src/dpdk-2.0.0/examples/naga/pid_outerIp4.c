@@ -15,7 +15,7 @@ berr pid_outerip4(struct pbuf *p,  hytag_t * hytag)
 	}
 
     
-    PBUF_OFFSET2PTR(struct ip4_hdr *, iphdr, p);
+    PBUF_CUR_FORMAT(struct ip4_hdr *, iphdr, p);
 
 
     if (IPH_V(iphdr) != 4) 

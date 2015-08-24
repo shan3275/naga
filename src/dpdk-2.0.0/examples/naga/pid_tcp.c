@@ -17,7 +17,7 @@ berr pid_tcp(struct pbuf *p, hytag_t *hytag, int inner_outer)
 		return E_EXCEED;
 	}
 
-	PBUF_OFFSET2PTR(struct tcp_hdr *, tcp_hdr, p);
+	PBUF_CUR_FORMAT(struct tcp_hdr *, tcp_hdr, p);
 
 	if(inner_outer == HEADER_OUTER)
 	{

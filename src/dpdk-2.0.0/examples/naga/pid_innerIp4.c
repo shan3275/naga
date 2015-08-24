@@ -18,7 +18,7 @@ berr pid_innerip(struct pbuf *p,  hytag_t * hytag)
 	}
 
     
-	PBUF_OFFSET2PTR(struct ip4_hdr *, iphdr, p);
+	PBUF_CUR_FORMAT(struct ip4_hdr *, iphdr, p);
 
     switch(IPH_V(iphdr))
     {

@@ -81,8 +81,12 @@ static inline berr check_pbuf_len(struct pbuf *p, int incr_len)
 
 #define UPDATE_PBUF_OFFSET(_pbuf, _off) (_pbuf->ptr_offset+=_off)
 
-#define PBUF_OFFSET2PTR(_type, _ptr, _p) (_ptr = (_type)(_p->ptr_offset+(char *)_p->ptr))
+#define PBUF_CUR_FORMAT(_type, _ptr, _p) (_ptr = (_type)(_p->ptr_offset+(char *)_p->ptr))
+#define PBUF_OFF_FORMAT(_type, _ptr, _p,_len) (_ptr = (_type)(_len+(char *)_p->ptr))
+
+
 #define PBUF_PTR(_p, _len)  (_len+(char *)_p->ptr)
+
 #define PRINTF_PKT(_p) \
     do{ \
          int _i; \

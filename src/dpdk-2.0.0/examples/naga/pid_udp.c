@@ -14,7 +14,7 @@ berr pid_udp(struct pbuf *p, hytag_t *hytag, int inner_outer)
 		return E_EXCEED;
 	}
 
-	PBUF_OFFSET2PTR(struct udp_hdr *, udphdr, p);
+	PBUF_CUR_FORMAT(struct udp_hdr *, udphdr, p);
 	
 	if(inner_outer == HEADER_OUTER)
 	{
