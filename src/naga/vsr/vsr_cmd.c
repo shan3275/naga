@@ -9,6 +9,15 @@
 #       @date         :2015-08-22 17:29
 #       @algorithm    :
 =============================================================================*/
+#include "vsr_cmd_api.h"
+#include "zebra.h"
+#include "version.h"
+#include "getopt.h"
+#include "command.h"
+#include "filter.h"
+#include "prefix.h"
+#include "privs.h"
+
 #define RULE_STR                    "Access control list\n"
 #define VSR_STR                     "Vister Record list\n"
 #define ADD_STR                     "ADD Operation\n"
@@ -45,7 +54,7 @@ static int vsr_cmd_add(struct vty *vty, const char *index_str, const char *ip_st
         vty_out (vty, "%% Malformed address%s", VTY_NEWLINE);
         return CMD_WARNING;
     }
-    ip = p.prefix4.s_addr;
+    ip =((struct prefix_ipv4 *) &p)->prefix.s_addr;
     debug("ip: %d.%d.%d.%d", (ip >> 24) & 0xff,
                              (ip >> 16) & 0xff,
                              (ip >> 8 ) & 0xff,
@@ -54,7 +63,7 @@ static int vsr_cmd_add(struct vty *vty, const char *index_str, const char *ip_st
     if ( mobile_str )
     {
         mobile = (ULL) strtol(mobile_str, NULL, 10);
-        debug("mobile: %llu", (ULL) mobile)
+        debug("mobile: %llu", (ULL) mobile);
     }
 
     ret = rule_vsr_cmd_add(index, ip, mobile);
@@ -155,9 +164,9 @@ static int vsr_cmd_show(struct vty *vty, const char *index_str, const char *ip_s
     uint32_t ip    = 0;
     uint64_t mobile = 0;
     struct prefix p;
-    uint8_t buff[VSR_URL_NUM_MAX * (VSR_URL_LEN_MAX + 1)];
+    uint8_t buff[VSR_URL_NUM_MAX * (VSR_URL_LEN_MAX * 2)];
 
-    if (indx_str)
+    if (index_str)
     {
         index = atoi(index_str);
         debug("index:%d", index);
@@ -171,7 +180,7 @@ static int vsr_cmd_show(struct vty *vty, const char *index_str, const char *ip_s
             vty_out (vty, "%% Malformed address%s", VTY_NEWLINE);
             return CMD_WARNING;
         }
-        ip = p.prefix4.s_addr;
+        ip =((struct prefix_ipv4 *) &p)->prefix.s_addr;
         debug("ip: %d.%d.%d.%d", (ip >> 24) & 0xff,
                 (ip >> 16) & 0xff,
                 (ip >> 8 ) & 0xff,
@@ -193,7 +202,7 @@ static int vsr_cmd_show(struct vty *vty, const char *index_str, const char *ip_s
     if ( mobile_str )
     {
         mobile = (ULL) strtol(mobile_str, NULL, 10);
-        debug("mobile: %llu", (ULL) mobile)
+        debug("mobile: %llu", (ULL) mobile);
         ret = rule_vsr_cmd_get_index_by_mobile(mobile, &index);
         if (ret)
         {
@@ -204,7 +213,7 @@ static int vsr_cmd_show(struct vty *vty, const char *index_str, const char *ip_s
         debug("index:%d", index);
     }
 
-    ret = rule_vsr_cmd_dump(index, buff);
+    ret = rule_vsr_cmd_dump(index, buff,sizeof(buff));
     if (ret)
     {
         vty_out("vsr dump fail, index(%d) ret(%d)%s", index, ret, VTY_NEWLINE);
@@ -255,12 +264,13 @@ DEFUN(vsr_show_by_mobile,
 static int vsr_cmd_show_all(struct vty *vty)
 {
     int ret = 0;
+    int i;
     uint32_t index = 0;
-    uint8_t buff[VSR_URL_NUM_MAX * (VSR_URL_LEN_MAX + 1)];
+    uint8_t buff[VSR_URL_NUM_MAX * (VSR_URL_LEN_MAX * 2)];
 
     for ( i = 0 ; i < VSR_RULE_NUM_MAX; i++ )
     {
-        ret = rule_vsr_cmd_dump((uint32_t)i , buff);
+        ret = rule_vsr_cmd_dump((uint32_t)i , buff, sizeof(buff));
         if (ret)
         {
             vty_out("vsr dump fail, index(%d) ret(%d)%s", index, ret, VTY_NEWLINE);
@@ -407,7 +417,7 @@ void cmdline_vsr_init(void)
     install_element(CONFIG_NODE, &vsr_del_cmd);
     install_element(CONFIG_NODE, &vsr_del_all_cmd);
 
-    install_element(CONFIG_NODE, &vsr_show_by_indx_cmd);
+    install_element(CONFIG_NODE, &vsr_show_by_index_cmd);
     install_element(CONFIG_NODE, &vsr_show_all_cmd);
     install_element(CONFIG_NODE, &vsr_show_by_ip_cmd);
     install_element(CONFIG_NODE, &vsr_show_by_mobile_cmd);

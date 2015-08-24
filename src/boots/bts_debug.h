@@ -40,7 +40,7 @@ dopt_t dopts_array[DOPT_MAX] = {
 #endif
 }
 
-#define BTS_DEBUG_DUMP(_mod, _opt, _fmt, ##_args) { \
+#define BTS_DEBUG_DUMP(_mod, _opt, _fmt, _args...) { \
     if ((_mod < DOPT_MAX) || (_opt < DOPT_MAX)) { \
         if (dopt_array[_opt].enable && dopt_array[_mod].enable) { \
             printf("[%s.%d] %s.%d:" _fmt, #_mod, #_opt, __func__, __LINE__, ##_args); \
@@ -48,16 +48,16 @@ dopt_t dopts_array[DOPT_MAX] = {
     } \
 }
 
-#define DBG_INFO(_mod, _fmt, ##_args)   \
+#define DBG_INFO(_mod, _fmt, _args...)   \
     BTS_MOD_DEBUG_DUMP(_mod, DOPT_INFO, _fmt, ##_args) 
 
-#define DBG_VERB(_mod, _fmt, ##_args)  \
+#define DBG_VERB(_mod, _fmt, _args...)  \
     BTS_MOD_DEBUG_DUMP(_mod, DOPT_VERB, _fmt, ##_args) 
 
-#define DBG_WARN(_mod, _fmt, ##_args) \
+#define DBG_WARN(_mod, _fmt, _args...) \
     BTS_MOD_DEBUG_DUMP(_mod, DOPT_WARN, _fmt, ##_args) 
 
-#define DBG_ERR(_mod, _fmt, ##_args) \
+#define DBG_ERR(_mod, _fmt, _args...) \
     BTS_MOD_DEBUG_DUMP(_mod, DOPT_ERR, _fmt, ##_args) 
 
 #define BRET(e) { \

@@ -9,8 +9,11 @@
 #       @date         :2015/08/21 22:56
 #       @algorithm    :
 =============================================================================*/
+#include "stdio.h"
+#include "string.h"
+#include "boots.h"
 
-#ifdef  __VSR_H__
+#ifndef  __VSR_H__
 #define __VSR_H__
 #define VSR_RULE_NUM_MAX  16
 #define VSR_URL_NUM_MAX   512
@@ -24,21 +27,33 @@
 #define VSR_RULE_URL_UNEFFECTIVE 0
 #define VSR_RULE_URL_LEN_UNEFFECTIVE 0
 #define VSR_RULE_URL_HASH_UNEFFECTIVE 0
-typedef rte_spinlock_t  vsr_lock_t;
-typedef vsr_rule_t {
-    uint64_t ip_num;        /* vsr module ip number from 0-16,for global use*/
-    uint64_t url_num;       /* url entry number,value from 0 to 512 ,for global use */   
-    vsr_rule_entry_t rule[VSR_RULE_NUM_MAX];
-}vsr_rule_t;
+//typedef rte_spinlock_t  vsr_lock_t;
+typedef uint32_t vsr_lock_t;
 
-/* global summary statistics ,for cnt module */
-typedef vsr_rule_summary_stat_t {
-    uint64_t rcv_pkt;   /* vsr module received packets statistics */
-    uint64_t ip_match_pkt; /* vsr module matched ip packets statistcs */
-    uint64_t ip_unmatch_pkt; /* vsr module unmatched packets statistics */
-}vsr_rule_summary_stat;
+#define IP_UDP_GTP_IP_URL 34
+typedef struct
+{
+    uint32_t outer_srcip;
+    uint32_t outer_dstip;
+    uint32_t inner_srcip;
+    uint32_t inner_dstip;
+    uint32_t teid;
+    uint32_t protocol_type;
+    uint16_t inner_srcport;
+    uint16_t inner_dstport;
+    uint16_t url_len;
+    char url[VSR_URL_LEN_MAX];
+}hytag_t;
 
-typedef vsr_rule_entry_t {
+typedef struct  vsr_url_entry_t {
+    uint32_t effective;   /* 0 for not effective; 1 for effective */
+    uint32_t len;       /* url length, value from 1-512 */
+    uint32_t hash;      /* hash value for url, used for compare*/
+    uint8_t  url[VSR_URL_LEN_MAX];
+    uint64_t match_pkt; /* matched url  packet number */
+} vsr_url_entry_t;
+
+typedef struct vsr_rule_entry_t {
     uint32_t index;
     vsr_lock_t lock;
     uint32_t effective;   /* 0 for not effective; 1 for effective */
@@ -49,16 +64,19 @@ typedef vsr_rule_entry_t {
     uint64_t match_pkt; /* matched ip packet number */
 }vsr_rule_entry_t;
 
-typedef vsr_url_entry_t {
-    uint32_t effective;   /* 0 for not effective; 1 for effective */
-    uint32_t len;       /* url length, value from 1-512 */
-    uint32_t hash;      /* hash value for url, used for compare*/
-    uint8_t  url[VSR_URL_LEN_MAX];
-    uint64_t match_pkt; /* matched url  packet number */
-} vsr_url_entry_t;
+typedef struct vsr_rule_t {
+    uint64_t ip_num;        /* vsr module ip number from 0-16,for global use*/
+    uint64_t url_num;       /* url entry number,value from 0 to 512 ,for global use */   
+    vsr_rule_entry_t rule[VSR_RULE_NUM_MAX];
+}vsr_rule_t;
 
+/* global summary statistics ,for cnt module */
+typedef struct vsr_rule_summary_stat_t {
+    uint64_t rcv_pkt;   /* vsr module received packets statistics */
+    uint64_t ip_match_pkt; /* vsr module matched ip packets statistcs */
+    uint64_t ip_unmatch_pkt; /* vsr module unmatched packets statistics */
+}vsr_rule_summary_stat;
 
-void vsr_ip_num_dec(void);
 void vsr_ip_num_add(void);
 void vsr_ip_num_set(uint64_t val);
 void vsr_url_num_dec(void);
@@ -75,7 +93,7 @@ void vsr_unlock_rule(uint32_t index);
  *
  */
 uint32_t vsr_check_rule_effective(uint32_t index);
-void vsr_set_rule_effective(uint32_t index, uin32_t effective );
+void vsr_set_rule_effective(uint32_t index, uint32_t effective );
 void vsr_set_rule_ip(uint32_t index, uint32_t ip);
 uint32_t vsr_get_rule_ip(uint32_t index);
 void vsr_set_rule_mobile(uint32_t index, uint32_t mobile);

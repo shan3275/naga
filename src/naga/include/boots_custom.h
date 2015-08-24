@@ -6,28 +6,28 @@
     MOD_DPF, \
     MOD_ITF, \
     MOD_PID, \
-    MOD_VSR,
+    MOD_VSR
 
 #define MOD_ARRAY_CUSTOM \
     {MOD_AMD, "AMD", "Admin Main Daemon"}, \
     {MOD_DPF, "DPF", "Data process flow"}, \
     {MOD_ITF, "ITF", "Interface module"}, \
     {MOD_PID, "PID", "Packet identify module"}, \
-    {MOD_VSR, "VSR", "Visted recored module"}, 
+    {MOD_VSR, "VSR", "Visted recored module"}
 
 #define DOPT_CUSTOM \
     DOPT_AMD, \
     DOPT_DPF, \
     DOPT_ITF, \
     DOPT_PID, \
-    DOPT_VSR, 
+    DOPT_VSR
 
 #define DOPT_ARRAY_CUSTOM \
     {DOPT_AMD, OFF, "amd", "Admin manage daemon module"}, \
     {DOPT_DPF, OFF, "dpf", "data processs flow module"}, \
     {DOPT_ITF, OFF, "itf", "interface module"}, \
     {DOPT_PID, OFF, "pid", "packet identify module"}, \
-    {DOPT_VSR, OFF, "vsr", "visited recored module"},
+    {DOPT_VSR, OFF, "vsr", "visited recored module"}
 
 #define CNT_CUSTOM \
     /* VSR Module counters */ \
@@ -45,7 +45,7 @@
     CNT_DEC(VSR_URLPKTS), \
     CNT_DEC(VSR_UNMATCHPKTS), \
     CNT_DEC(VSR_MATCHPKTS), \
-    CNT_DEC(VSR_RULE_MATCHPKTS),
+    CNT_DEC(VSR_RULE_MATCHPKTS)
 
 /* Custom spinlock */
 #define bts_spinlock_t rte_spinlock_t

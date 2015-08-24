@@ -13,12 +13,15 @@
 #ifndef __VSR_CMD_API_H__
 #define __VSR_CMD_API_H__
 
+#include "vsr.h"
+
 berr rule_vsr_cmd_add(uint32_t index, uint32_t ip, uint32_t msisdn);
 berr rule_vsr_cmd_del(uint32_t index);
 berr rule_vsr_cmd_get_index_by_ip(uint32_t ip, uint32_t *index);
-berr_rule_vsr_cmd_get_index_by_mobile(uint32_t mobile, uint32_t *index);
-berr rule_vsr_cmd_dump(uint32_t index, uint8_t *buff);
+berr rule_vsr_cmd_get_index_by_mobile(uint64_t mobile, uint32_t *index);
+berr rule_vsr_cmd_dump(uint32_t index, uint8_t *buff, uint32_t len);
 berr rule_vsr_cmd_flush_url(uint32_t index); /* clear url */
 berr rule_vsr_cmd_clear_statistics(uint32_t index);
+berr rule_vsr_cmd_get_ip(uint32_t index, uint32_t *ip);
 
 #endif __VSR_CMD_API_H__

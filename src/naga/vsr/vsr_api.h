@@ -9,15 +9,17 @@
 #       @date         :2015/08/21 22:53
 #       @algorithm    :
 =============================================================================*/
-#include "nanga_debug.h"
 #ifndef __VSR_API_H__
 #define __VSR_API_H__
+
+#include "bts_cnt.h"
+#include "vsr.h"
 
 uint32_t vsr_api_get_ip_by_index(uint32_t index);
 uint32_t vsr_api_get_mobile_by_index(uint32_t index);
 berr vsr_api_add_rule(uint32_t index, uint32_t ip, uint32_t msisdn);
 berr vsr_api_del_rule_by_index(uint32_t index);
-berr vsr_api_get_rule_entry(uint32_t index, vsr_rule_entry *rule);
+berr vsr_api_get_rule_entry(uint32_t index, vsr_rule_entry_t *rule);
 berr vsr_api_clear_statistics(uint32_t index);
 
 /* dp use */

@@ -9,8 +9,7 @@
 #       @date         :2015-08-22 20:53
 #       @algorithm    :
 =============================================================================*/
-
-
+#include "vsr_api.h"
 berr vsr_dp_match(uint32_t ip, char*url, uint16_t url_len)
 {
     int i;
@@ -18,7 +17,7 @@ berr vsr_dp_match(uint32_t ip, char*url, uint16_t url_len)
     for ( i = 0; i < VSR_RULE_NUM_MAX; i++)
     {
         /* match success */
-        rv = vsr_dp_api_match(i,ip, usr, url_len);
+        rv = vsr_dp_api_match(i,ip, url, url_len);
         if(rv == E_SUCCESS)
         {
             break;

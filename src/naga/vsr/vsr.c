@@ -81,7 +81,7 @@ uint32_t vsr_check_rule_effective(uint32_t index)
     return vsr_rule->rule[index].effective;
 }
 
-void vsr_set_rule_effective(uint32_t index, uin32_t effective )
+void vsr_set_rule_effective(uint32_t index, uint32_t effective )
 {
     vsr_rule->rule[index].effective = effective;
 }

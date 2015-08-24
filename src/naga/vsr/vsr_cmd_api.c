@@ -10,9 +10,10 @@
 #       @algorithm    :
 =============================================================================*/
 
+#include "vsr_cmd_api.h"
 #define DEBUG
 #ifdef  DEBUG   
-#define debug(fmt,args...)  printf ("func(%s), line(%d)"fmt"\n" ,__FUNCTION__, __line__, ##args)
+#define debug(fmt,args...)  printf ("func(%s), line(%d)"fmt"\n" ,__FUNCTION__, __LINE__, ##args)
 #else   
 #define debug(fmt,args...)   
 #endif  /* DEBUG */ 
@@ -79,7 +80,7 @@ berr rule_vsr_cmd_get_index_by_ip(uint32_t ip, uint32_t *index)
 
 
     /* loop to find out the matched ip */
-    for (i = 0; I < VSR_RULE_NUM_MAX; i++)
+    for (i = 0; i < VSR_RULE_NUM_MAX; i++)
     {
         get_ip = vsr_api_get_ip_by_index((uint32_t)i);
         if ( ip == get_ip)
@@ -107,8 +108,12 @@ berr rule_vsr_cmd_get_index_by_ip(uint32_t ip, uint32_t *index)
     return E_SUCCESS;
 }
 
+berr rule_vsr_cmd_get_ip(uint32_t index, uint32_t *ip)
+{
+    return E_SUCCESS;
+}
 
-berr_rule_vsr_cmd_get_index_by_mobile(uint64_t mobile, uint32_t *index)
+berr rule_vsr_cmd_get_index_by_mobile(uint64_t mobile, uint32_t *index)
 {
     int i;
     uint64_t get_mobile = 0;
@@ -122,7 +127,7 @@ berr_rule_vsr_cmd_get_index_by_mobile(uint64_t mobile, uint32_t *index)
     }
 
     /* loop to find out the matched ip */
-    for (i = 0; I < VSR_RULE_NUM_MAX; i++)
+    for (i = 0; i < VSR_RULE_NUM_MAX; i++)
     {
         get_mobile = vsr_api_get_mobile_by_index(i);
         if ( mobile == get_mobile )
@@ -143,7 +148,7 @@ berr_rule_vsr_cmd_get_index_by_mobile(uint64_t mobile, uint32_t *index)
 
 }
 
-berr vsr_dump_buff(vsr_rule_entry * rule_entry, uint8_t * buff, uint32_t size)
+berr vsr_dump_buff(vsr_rule_entry_t * rule_entry, uint8_t * buff, uint32_t size)
 {
     int l = 0;
     int len = size;
@@ -152,12 +157,12 @@ berr vsr_dump_buff(vsr_rule_entry * rule_entry, uint8_t * buff, uint32_t size)
     {
         l += snprintf(buff + l, len - l, "rule index:%d, ip:%d.%.d.%d.%d, mobile:%llu, match_pkts:%llu\n",
                 rule_entry->index,
-                (rule_entry->ip >> 24) 0xff,
-                (rule_entry->ip >> 16) 0xff,
-                (rule_entry->ip >>  8) 0xff,
-                (rule_entry->ip >>  0) 0xff,
+                (rule_entry->ip >> 24) & 0xff,
+                (rule_entry->ip >> 16) & 0xff,
+                (rule_entry->ip >>  8) & 0xff,
+                (rule_entry->ip >>  0) & 0xff,
                 rule_entry->msisdn,
-                (ULL)rule_entry->match_pkts);
+                (ULL)rule_entry->match_pkt);
         l += snprintf(buff + l, len -l, "effective:%d\n", rule_entry->effective);
         l += snprintf(buff + l, len -l, "url_num:%d\n", rule_entry->url_num);
         //for ( i = 0; i < rule_entry->url_num; i++ )
@@ -166,7 +171,7 @@ berr vsr_dump_buff(vsr_rule_entry * rule_entry, uint8_t * buff, uint32_t size)
             //if ( rule_entry->url_entry[i].effective)
             {
                 l += snprintf(buff + l, len -l, "url index:%d, len:%d, url:%s, match_pkts:%llu\n", i,
-                        rule_entry->url_entry[i].len, rule_entry->url_entry[i].url, rule_entry->url_entry[i].match_pkts);
+                        rule_entry->url_entry[i].len, rule_entry->url_entry[i].url, rule_entry->url_entry[i].match_pkt);
                 l += snprintf(buff + l, len -l, "effective:%d, hash:0x%x\n",
                         rule_entry->url_entry[i].effective, rule_entry->url_entry[i].hash);
             }
@@ -179,7 +184,7 @@ berr vsr_dump_buff(vsr_rule_entry * rule_entry, uint8_t * buff, uint32_t size)
 berr rule_vsr_cmd_dump(uint32_t index, uint8_t *buff, uint32_t len)
 {
     int rv;
-    vsr_rule_entry rule_entry;
+    vsr_rule_entry_t rule_entry;
     /* check index parameter */
 
     /* check buff */

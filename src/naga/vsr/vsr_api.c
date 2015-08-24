@@ -62,7 +62,7 @@ berr vsr_api_del_rule_by_index(uint32_t index)
         vsr_set_url_hash(index, i, VSR_RULE_URL_HASH_UNEFFECTIVE);
         vsr_set_url_content(index, i, 0, NULL);
         vsr_set_url_pkt(index, i, 0);
-        vsr_set_url_effective(index, VSR_RULE_URL_UNEFFECTIVE);
+        vsr_set_url_effective(index, i, VSR_RULE_URL_UNEFFECTIVE);
     }
 
     /* clear url_num */
@@ -129,7 +129,7 @@ uint32_t vsr_api_get_mobile_by_index(uint32_t index)
     return mobile;
 }
 
-berr vsr_api_get_rule_entry(uint32_t index, vsr_rule_entry *rule)
+berr vsr_api_get_rule_entry(uint32_t index, vsr_rule_entry_t *rule)
 {
     /*lock */
     VSR_RULE_LOCK(index);
@@ -142,7 +142,7 @@ berr vsr_api_get_rule_entry(uint32_t index, vsr_rule_entry *rule)
     }
 
     /*copy to */
-    memcpy(rule, vsr_get_rule_entry(index), sizeof(vsr_rule_entry));
+    memcpy(rule, vsr_get_rule_entry(index), sizeof(vsr_rule_entry_t));
 
     /*unlock */
     VSR_RULE_UNLOCK(index);
@@ -184,7 +184,7 @@ berr vsr_api_flush_url(uint32_t index)
         vsr_set_url_hash(index, i, VSR_RULE_URL_HASH_UNEFFECTIVE);
         vsr_set_url_content(index, i, 0, NULL);
         vsr_set_url_pkt(index, i, 0);
-        vsr_set_url_effective(index, VSR_RULE_URL_UNEFFECTIVE);
+        vsr_set_url_effective(index, i, VSR_RULE_URL_UNEFFECTIVE);
     }
 
     /* clear url_num */
@@ -329,7 +329,7 @@ berr vsr_dp_api_init(uint32_t index)
     for (i=0; i< VSR_URL_NUM_MAX; i++)
     {
         /* effective init */
-        vsr_set_url_effective(index, VSR_RULE_URL_UNEFFECTIVE);
+        vsr_set_url_effective(index, i, VSR_RULE_URL_UNEFFECTIVE);
         /* len init*/
         vsr_set_url_len(index, i, 0);
         /* hash init */

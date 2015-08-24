@@ -2,7 +2,7 @@ LIB ?= lib$(PROG).a
 
 include $(MKDIR)/make.var
 
-CFLAGS  += -DMAKELIB -g -Wall -I$(SRCDIR)/../boots  -I$(SRCDIR)/include
+CFLAGS  += -DMAKELIB -g -Wall -I$(SRCDIR)/../boots  -I$(SRCDIR)/include -I$(SRCDIR)/libzebra
 
 all: $(LIB)
 %.c: 
