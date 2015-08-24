@@ -36,14 +36,14 @@ berr pid_gtpu(struct pbuf *p, hytag_t *hytag)
 		if (unlikely(GRE_NEXT_HDR_FG(grehdr)))
 		{
             //PBUF_CUR_FORMAT(struct gre_hdr *, grehdr, p);
-            PBUF_OFF_FORMAT(uint8_t *, next_hdr, len);
+            PBUF_OFF_FORMAT(uint8_t *, next_hdr,p, len);
             len +=1;
             while(*next_hdr != 0) 
             {
-                 PBUF_OFF_FORMAT(uint8_t *, next_hdr_len, len);
+                 PBUF_OFF_FORMAT(uint8_t *, next_hdr_len, p, len);
                  len += (*next_hdr_len)*4;
                  len -=1;
-                 PBUF_OFF_FORMAT(uint8_t *, next_hdr, len);
+                 PBUF_OFF_FORMAT(uint8_t *, next_hdr,p,  len);
             }
             //FIXME:skip next header    
             len += 1;
