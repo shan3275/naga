@@ -75,7 +75,7 @@ berr vsr_dp_init(void)
         rv = vsr_dp_api_init(i);
         if(rv)
         {
-            printf("dp init index(%d) fail\n", index);
+            printf("dp init index(%u) fail\n", i);
             return rv;
         }
     }

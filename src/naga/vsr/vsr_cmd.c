@@ -22,13 +22,13 @@
 #define VSR_STR                     "Vister Record list\n"
 #define ADD_STR                     "ADD Operation\n"
 #define DEL_STR                     "Del Operation\n"
-#define SHOW_STR                    "Show entry content\n"
+//#define SHOW_STR                    "Show entry content\n"
 #define VSR_INDEX_STR               "Vister Record list index\n"
 #define VSR_ALL_STR                 "All Vister Record list\n"
-#define IP_STR                      "IP address\n"
+//#define IP_STR                      "IP address\n"
 #define MOBILE_STR                  "Mobile phone number\n"
 #define FLUSH_STR                   "Flush url\n"
-#define CLEAR_STR                   "Clear Operation\n"
+//#define CLEAR_STR                   "Clear Operation\n"
 #define STAT_STR                    "Statistics Operation\n"
 
 #define DEBUG
@@ -69,7 +69,7 @@ static int vsr_cmd_add(struct vty *vty, const char *index_str, const char *ip_st
     ret = rule_vsr_cmd_add(index, ip, mobile);
     if (ret)
     {
-        vty_out("vsr add error, index(%d) ret(%d)%s", index, ret, VTY_NEWLINE);
+        vty_out(vty, "vsr add error, index(%d) ret(%d)%s", index, ret, VTY_NEWLINE);
         return CMD_WARNING;
     }
 
@@ -112,7 +112,7 @@ static int vsr_cmd_del(struct vty *vty, const char *index_str)
     ret = rule_vsr_cmd_del(index);
     if (ret)
     {
-        vty_out("vsr del error,index(%d) ret(%d)%s", index, ret, VTY_NEWLINE);
+        vty_out(vty, "vsr del error,index(%d) ret(%d)%s", index, ret, VTY_NEWLINE);
         return CMD_WARNING;
     }
 
@@ -139,7 +139,7 @@ static int vsr_cmd_del_all(struct vty *vty)
         ret = rule_vsr_cmd_del((uint32_t)i);
         if (ret)
         {
-            vty_out("vsr del error,index(%d) ret(%d)%s", index, ret, VTY_NEWLINE);
+            vty_out(vty, "vsr del error,index(%d) ret(%d) %s", i, ret, VTY_NEWLINE);
         }
     }
 
@@ -216,7 +216,7 @@ static int vsr_cmd_show(struct vty *vty, const char *index_str, const char *ip_s
     ret = rule_vsr_cmd_dump(index, buff,sizeof(buff));
     if (ret)
     {
-        vty_out("vsr dump fail, index(%d) ret(%d)%s", index, ret, VTY_NEWLINE);
+        vty_out(vty, "vsr dump fail, index(%d) ret(%d)%s", index, ret, VTY_NEWLINE);
         return CMD_WARNING;
     }
 
@@ -273,7 +273,7 @@ static int vsr_cmd_show_all(struct vty *vty)
         ret = rule_vsr_cmd_dump((uint32_t)i , buff, sizeof(buff));
         if (ret)
         {
-            vty_out("vsr dump fail, index(%d) ret(%d)%s", index, ret, VTY_NEWLINE);
+            vty_out(vty, "vsr dump fail, index(%d) ret(%d)%s", index, ret, VTY_NEWLINE);
             //return CMD_WARNING;
         }
 
@@ -304,7 +304,7 @@ static int vsr_cmd_flush_url(struct vty *vty, const char *index_str)
     ret = rule_vsr_cmd_flush_url(index);
     if (ret)
     {
-        vty_out("vsr flush url error,index(%d) ret(%d)%s", index, ret, VTY_NEWLINE);
+        vty_out(vty, "vsr flush url error,index(%d) ret(%d)%s", index, ret, VTY_NEWLINE);
         return CMD_WARNING;
     }
 
@@ -330,7 +330,7 @@ static int vsr_cmd_flush_url_all(struct vty *vty)
         ret = rule_vsr_cmd_flush_url((uint32_t)i);
         if (ret)
         {
-            vty_out("vsr flush url error,index(%d) ret(%d)%s", index, ret, VTY_NEWLINE);
+            vty_out(vty, "vsr flush url error,index(%d) ret(%d)%s", i, ret, VTY_NEWLINE);
         }
     }
 
@@ -358,7 +358,7 @@ static int vsr_cmd_clear_statistics(struct vty *vty, const char *index_str)
     ret = rule_vsr_cmd_clear_statistics(index);
     if (ret)
     {
-        vty_out("vsr clear statistics error,index(%d) ret(%d)%s", index, ret, VTY_NEWLINE);
+        vty_out(vty, "vsr clear statistics error,index(%d) ret(%d)%s", index, ret, VTY_NEWLINE);
         return CMD_WARNING;
     }
 
@@ -385,7 +385,7 @@ static int vsr_cmd_clear_statistics_all(struct vty *vty)
         ret = rule_vsr_cmd_clear_statistics((uint32_t)i);
         if (ret)
         {
-            vty_out("vsr clear statistics error,index(%d) ret(%d)%s", index, ret, VTY_NEWLINE);
+            vty_out(vty, "vsr clear statistics error,index(%d) ret(%d)%s", i, ret, VTY_NEWLINE);
         }
     }
 

@@ -100,9 +100,6 @@ usage (char *progname, int status)
   exit (status);
 }
 
-static unsigned int test_ifindex = 0;
-
-
 /* SIGHUP handler. */
 static void 
 sighup (void)

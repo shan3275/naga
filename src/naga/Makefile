@@ -1,3 +1,3 @@
-subdirs = libzebra cmdline main
+subdirs = libzebra cmdline vsr main
 include $(MKDIR)/make.dir
 

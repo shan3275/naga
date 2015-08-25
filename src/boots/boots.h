@@ -16,7 +16,7 @@ typedef unsigned int   uint32_t;
 typedef unsigned char mac_t[6];
 typedef uint32_t ipv4_t;
 typedef uint16_t ipv6_t[8];
-typedef uint64_t ULL;
+typedef unsigned long long  ULL;
 
 #define OFF 0
 #define ON  1

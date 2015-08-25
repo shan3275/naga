@@ -11,7 +11,9 @@
 =============================================================================*/
 
 #include "vsr.h"
+#include "stdlib.h"
 
+#ifdef __DPDK
 #define VSR_STAT_INC(_name) rte_atomic64_inc(&(_name))
 #define VSR_STAT_DEC(_name) rte_atomic64_dec(&(_name))
 #define VSR_STAT_SET(_name, _val) ret_atomic64_set(&(_name), _val)
@@ -19,6 +21,15 @@
 #define VSR_SPINLOCK_LOCK(_lock)   rte_spinlock_lock(&(_lock))
 #define VSR_SPINLOCK_UNLOCK(_lock) rte_spinlock_unlock(&(_lock))
 #define VSR_SPINLOCK_INIT(_lock)   rte_spinlock_init(&(_lock))
+#else
+#define VSR_STAT_INC(_name)
+#define VSR_STAT_DEC(_name)
+#define VSR_STAT_SET(_name, _val)
+
+#define VSR_SPINLOCK_LOCK(_lock)
+#define VSR_SPINLOCK_UNLOCK(_lock)
+#define VSR_SPINLOCK_INIT(_lock)
+#endif
 
 vsr_rule_t *vsr_rule;
 
@@ -69,6 +80,10 @@ void vsr_unlock_rule(uint32_t index)
     VSR_SPINLOCK_UNLOCK(vsr_rule->rule[index].lock);
 }
 
+void vsr_set_rule_index(uint32_t index)
+{
+    vsr_rule->rule[index].index= index;
+}
 
 /*
  *   input  : index,rule index
@@ -97,19 +112,24 @@ uint32_t vsr_get_rule_ip(uint32_t index)
     return vsr_rule->rule[index].ip;
 }
 
-void vsr_set_rule_mobile(uint32_t index, uint32_t mobile)
+void vsr_set_rule_mobile(uint32_t index, uint64_t mobile)
 {
     vsr_rule->rule[index].msisdn = mobile;
 }
 
-uint32_t vsr_get_rule_mobile(uint32_t index)
+uint64_t vsr_get_rule_mobile(uint32_t index)
 {
-    vsr_rule->rule[index].msisdn;
+    return vsr_rule->rule[index].msisdn;
 }
 
 void vsr_set_rule_url_num(uint32_t index, uint32_t num)
 {
     vsr_rule->rule[index].url_num  = num;
+
+}
+void vsr_inc_rule_url_num(uint32_t index)
+{
+    vsr_rule->rule[index].url_num++;
 }
 
 uint32_t vsr_get_rule_url_num(uint32_t index)
@@ -171,12 +191,12 @@ uint32_t vsr_get_url_hash(uint32_t index, uint32_t url_index)
 
 void vsr_set_url_content(uint32_t index, uint32_t url_index, int len, uint8_t * url)
 {
-    strncpy(vsr_rule->rule[index].url_entry[url_index].url, url, len);
+    strncpy((char *)vsr_rule->rule[index].url_entry[url_index].url, (char *)url, len);
 }
 
 char *vsr_get_url_content(uint32_t index, uint32_t url_index)
 {
-    return vsr_rule->rule[index].url_entry[url_index].url;
+    return (char *)vsr_rule->rule[index].url_entry[url_index].url;
 }
 
 void vsr_set_url_pkt(uint32_t index, uint32_t url_index, uint64_t num)
@@ -196,7 +216,7 @@ void vsr_url_pkt_inc(uint32_t index, uint32_t url_index)
 
 berr vsr_request_data_entry(void)
 {
-    vsr_rule = malloc(sizeof(vsr_rule_t));
+    vsr_rule = (vsr_rule_t *)malloc(sizeof(vsr_rule_t));
     if (vsr_rule == NULL)
     {
         printf("request vsr data entry failed!\n");
@@ -206,4 +226,10 @@ berr vsr_request_data_entry(void)
     vsr_ip_num_set(0);
     vsr_url_num_set(0);
     return E_SUCCESS;
+}
+
+uint32_t vsr_hash(uint8_t *url, uint32_t len)
+{
+    uint32_t val = 0;
+    return  val;
 }

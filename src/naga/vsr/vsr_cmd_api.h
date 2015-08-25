@@ -24,4 +24,4 @@ berr rule_vsr_cmd_flush_url(uint32_t index); /* clear url */
 berr rule_vsr_cmd_clear_statistics(uint32_t index);
 berr rule_vsr_cmd_get_ip(uint32_t index, uint32_t *ip);
 
-#endif __VSR_CMD_API_H__
+#endif /*__VSR_CMD_API_H__ */

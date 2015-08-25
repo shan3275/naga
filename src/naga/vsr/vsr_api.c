@@ -9,6 +9,7 @@
 #       @date         :2015-08-22 21:35
 #       @algorithm    :
 =============================================================================*/
+#include "vsr.h"
 #include "vsr_api.h"
 
 #define DEBUG
@@ -45,7 +46,7 @@ berr vsr_api_del_rule_by_index(uint32_t index)
     vsr_set_rule_effective(index, VSR_RULE_UNEFFECTIVE);
 
     /* loop url_num*/
-    url_num = vsr_get_url_num(index);
+    url_num = vsr_get_rule_url_num(index);
     for(i = 0; i <= url_num; i++)
     {
         /*check url effective */
@@ -78,13 +79,13 @@ berr vsr_api_del_rule_by_index(uint32_t index)
 }
 
 
-berr vsr_api_add_rule(uint32_t index, uint32_t ip, uint32_t msisdn)
+berr vsr_api_add_rule(uint32_t index, uint32_t ip, uint64_t msisdn)
 {
     VSR_RULE_LOCK(index);
 
     /* set ip, mobile, and effective */
     vsr_set_rule_ip(index, ip);
-    vsr_set_rule_msisdn(index, msisdn);
+    vsr_set_rule_mobile(index, msisdn);
     vsr_set_rule_effective(index, VSR_RULE_EFFECTIVE);
 
     /* ip_num ++*/
@@ -116,9 +117,9 @@ uint32_t vsr_api_get_ip_by_index(uint32_t index)
  *  * input: index, value form 0-15
  *   * return : mobile
  *    */
-uint32_t vsr_api_get_mobile_by_index(uint32_t index)
+uint64_t vsr_api_get_mobile_by_index(uint32_t index)
 {
-    uint32_t mobile = 0;
+    uint64_t mobile = 0;
     /* lock */
     VSR_RULE_LOCK(index);
 
@@ -165,7 +166,7 @@ berr vsr_api_flush_url(uint32_t index)
     }
 
     /* get rule url num */
-    url_num = vsr_get_url_num(index);
+    url_num = vsr_get_rule_url_num(index);
 
     /* loop clear url */
     for(i = 0; i <= url_num; i++)
@@ -208,7 +209,7 @@ berr vsr_api_clear_statistics(uint32_t index)
     vsr_set_rule_pkt(index, 0);
 
     /* loop clear url match pkt*/
-    url_num = vsr_get_url_num(index);
+    url_num = vsr_get_rule_url_num(index);
     for(i = 0; i <= url_num; i++)
     {
         /*check url effective */
@@ -253,7 +254,7 @@ berr vsr_dp_api_match(uint32_t index, uint32_t ip, char* url, uint16_t len)
 
     /* update rule statistics */
     /* caluate the hash value of url */
-    hash = vsr_hash(url, len);
+    hash = vsr_hash((uint8_t *)url, len);
     vsr_inc_rule_pkt(index);
 
     /* search url */
@@ -295,7 +296,7 @@ berr vsr_dp_api_match(uint32_t index, uint32_t ip, char* url, uint16_t len)
         /* update hash*/
          vsr_set_url_hash(index, i,hash);
         /* update content */
-         vsr_set_url_content(index, i, len, url);
+         vsr_set_url_content(index, i, len, (uint8_t *)url);
         /* update the statitics */
          vsr_url_pkt_inc(index, i);
         /* url_num ++*/

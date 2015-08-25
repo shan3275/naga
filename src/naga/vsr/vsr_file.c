@@ -21,9 +21,7 @@
 void vsr_write_file(char *name, char *buff, uint32_t size)
 {
     int fdsrc;
-    int fdsrcnumbytes;
     int flags = O_CREAT | O_TRUNC | O_WRONLY;
-    char buf[10];
 
     /* open the source file, /dev/null, and /tmp/foo.bar */
     if ((fdsrc = open(name, flags, 0644)) < 0) {
@@ -41,11 +39,11 @@ void vsr_write_file(char *name, char *buff, uint32_t size)
     return;
 }
 
-vsr_log_tab(void)
+void vsr_log_tab(void)
 {
     int i;
     int rv;
-    char buff[512*1024];
+    uint8_t buff[512*1024];
     char ip_str[20];
     uint32_t ip = 0;
     for ( i = 0; i < VSR_RULE_NUM_MAX; i++)
@@ -68,8 +66,10 @@ vsr_log_tab(void)
                 (ip >>16) & 0xff,
                 (ip >> 8) & 0xff,
                 (ip >> 0) & 0xff);
-        vsr_write_file(ip_str, buff, sizeof(buff));
+        vsr_write_file(ip_str, (char *)buff, sizeof(buff));
     }
+
+    return ;
 
 }
 

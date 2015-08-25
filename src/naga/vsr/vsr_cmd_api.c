@@ -11,6 +11,7 @@
 =============================================================================*/
 
 #include "vsr_cmd_api.h"
+#include "vsr_api.h"
 #define DEBUG
 #ifdef  DEBUG   
 #define debug(fmt,args...)  printf ("func(%s), line(%d)"fmt"\n" ,__FUNCTION__, __LINE__, ##args)
@@ -155,24 +156,24 @@ berr vsr_dump_buff(vsr_rule_entry_t * rule_entry, uint8_t * buff, uint32_t size)
     int i;
     //if (rule_entry->effective)
     {
-        l += snprintf(buff + l, len - l, "rule index:%d, ip:%d.%.d.%d.%d, mobile:%llu, match_pkts:%llu\n",
+        l += snprintf((char *)(buff + l), len - l, "rule index:%u, ip:%u.%u.%u.%u, mobile:%llu, match_pkts:%llu\n",
                 rule_entry->index,
                 (rule_entry->ip >> 24) & 0xff,
                 (rule_entry->ip >> 16) & 0xff,
                 (rule_entry->ip >>  8) & 0xff,
                 (rule_entry->ip >>  0) & 0xff,
-                rule_entry->msisdn,
+                (ULL)rule_entry->msisdn,
                 (ULL)rule_entry->match_pkt);
-        l += snprintf(buff + l, len -l, "effective:%d\n", rule_entry->effective);
-        l += snprintf(buff + l, len -l, "url_num:%d\n", rule_entry->url_num);
+        l += snprintf((char *)(buff + l), len -l, "effective:%u\n", rule_entry->effective);
+        l += snprintf((char *)(buff + l), len -l, "url_num:%u\n", rule_entry->url_num);
         //for ( i = 0; i < rule_entry->url_num; i++ )
         for ( i = 0; i < VSR_URL_NUM_MAX; i++ )
         {
             //if ( rule_entry->url_entry[i].effective)
             {
-                l += snprintf(buff + l, len -l, "url index:%d, len:%d, url:%s, match_pkts:%llu\n", i,
-                        rule_entry->url_entry[i].len, rule_entry->url_entry[i].url, rule_entry->url_entry[i].match_pkt);
-                l += snprintf(buff + l, len -l, "effective:%d, hash:0x%x\n",
+                l += snprintf((char *)(buff + l), len -l, "url index:%u, len:%u, url:%s, match_pkts:%llu\n", i,
+                        rule_entry->url_entry[i].len, rule_entry->url_entry[i].url, (ULL)rule_entry->url_entry[i].match_pkt);
+                l += snprintf((char *)(buff + l), len -l, "effective:%u, hash:0x%x\n",
                         rule_entry->url_entry[i].effective, rule_entry->url_entry[i].hash);
             }
         }
