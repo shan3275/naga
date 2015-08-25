@@ -32,10 +32,12 @@
 
 #include "zserv.h"
 
+#include "vsr_cmd.h"
+
 /* Zebra instance */
 struct zebra_t zebrad =
 {
-  .rtm_table_default = 0,
+    .rtm_table_default = 0,
 };
 
 /* process id. */
@@ -50,22 +52,22 @@ struct thread_master *master;
 /* Command line options. */
 struct option longopts[] = 
 {
-  { "batch",       no_argument,       NULL, 'b'},
-  { "daemon",      no_argument,       NULL, 'd'},
-  { "config_file", required_argument, NULL, 'f'},
-  { "help",        no_argument,       NULL, 'h'},
-  { "vty_addr",    required_argument, NULL, 'A'},
-  { "vty_port",    required_argument, NULL, 'P'},
-  { "version",     no_argument,       NULL, 'v'},
-  { "rib_hold",	   required_argument, NULL, 'r'},
-  { 0 }
+    { "batch",       no_argument,       NULL, 'b'},
+    { "daemon",      no_argument,       NULL, 'd'},
+    { "config_file", required_argument, NULL, 'f'},
+    { "help",        no_argument,       NULL, 'h'},
+    { "vty_addr",    required_argument, NULL, 'A'},
+    { "vty_port",    required_argument, NULL, 'P'},
+    { "version",     no_argument,       NULL, 'v'},
+    { "rib_hold",	   required_argument, NULL, 'r'},
+    { 0 }
 };
 
 zebra_capabilities_t _caps_p [] = 
 {
-  ZCAP_NET_ADMIN,
-  ZCAP_SYS_ADMIN,
-  ZCAP_NET_RAW,
+    ZCAP_NET_ADMIN,
+    ZCAP_SYS_ADMIN,
+    ZCAP_NET_RAW,
 };
 
 /* Default configuration file path. */
@@ -75,194 +77,195 @@ char config_default[] = SYSCONFDIR DEFAULT_CONFIG_FILE;
 const char *pid_file = PATH_ZEBRA_PID;
 
 /* Help information display. */
-static void
+    static void
 usage (char *progname, int status)
 {
-  if (status != 0)
-    fprintf (stderr, "Try `%s --help' for more information.\n", progname);
-  else
+    if (status != 0)
+        fprintf (stderr, "Try `%s --help' for more information.\n", progname);
+    else
     {    
-      printf ("Usage : %s [OPTION...]\n\n"\
-	      "Daemon which manages kernel routing table management and "\
-	      "redistribution between different routing protocols.\n\n"\
-	      "-b, --batch        Runs in batch mode\n"\
-	      "-d, --daemon       Runs in daemon mode\n"\
-	      "-f, --config_file  Set configuration file name\n"\
-	      "-A, --vty_addr     Set vty's bind address\n"\
-	      "-P, --vty_port     Set vty's port number\n"\
-	      "-r, --rib_hold	  Set rib-queue hold time\n"\
-              "-v, --version      Print program version\n"\
-	      "-h, --help         Display this help and exit\n"\
-	      "\n"\
-	      "Report bugs to %s\n", progname, ZEBRA_BUG_ADDRESS);
+        printf ("Usage : %s [OPTION...]\n\n"\
+                "Daemon which manages kernel routing table management and "\
+                "redistribution between different routing protocols.\n\n"\
+                "-b, --batch        Runs in batch mode\n"\
+                "-d, --daemon       Runs in daemon mode\n"\
+                "-f, --config_file  Set configuration file name\n"\
+                "-A, --vty_addr     Set vty's bind address\n"\
+                "-P, --vty_port     Set vty's port number\n"\
+                "-r, --rib_hold	  Set rib-queue hold time\n"\
+                "-v, --version      Print program version\n"\
+                "-h, --help         Display this help and exit\n"\
+                "\n"\
+                "Report bugs to %s\n", progname, ZEBRA_BUG_ADDRESS);
     }
 
-  exit (status);
+    exit (status);
 }
 
 /* SIGHUP handler. */
-static void 
+    static void 
 sighup (void)
 {
-  zlog_info ("SIGHUP received");
+    zlog_info ("SIGHUP received");
 
-  /* Reload of config file. */
-  ;
+    /* Reload of config file. */
+    ;
 }
 
 /* SIGINT handler. */
-static void
+    static void
 sigint (void)
 {
-  zlog_notice ("Terminating on signal");
+    zlog_notice ("Terminating on signal");
 
-  exit (0);
+    exit (0);
 }
 
 /* SIGUSR1 handler. */
-static void
+    static void
 sigusr1 (void)
 {
-  zlog_rotate (NULL);
+    zlog_rotate (NULL);
 }
 
 struct quagga_signal_t zebra_signals[] =
 {
-  { 
-    .signal = SIGHUP, 
-    .handler = &sighup,
-  },
-  {
-    .signal = SIGUSR1,
-    .handler = &sigusr1,
-  },
-  {
-    .signal = SIGINT,
-    .handler = &sigint,
-  },
-  {
-    .signal = SIGTERM,
-    .handler = &sigint,
-  },
+    { 
+        .signal = SIGHUP, 
+        .handler = &sighup,
+    },
+    {
+        .signal = SIGUSR1,
+        .handler = &sigusr1,
+    },
+    {
+        .signal = SIGINT,
+        .handler = &sigint,
+    },
+    {
+        .signal = SIGTERM,
+        .handler = &sigint,
+    },
 };
 
 /* cmdline  startup routine. */
 int cmdline (int argc, char **argv)
 {
-  char *p;
-  char *vty_addr = "127.0.0.1";
-  int vty_port = ZEBRA_VTY_PORT;
-  int batch_mode = 0;
-  int daemon_mode = 0;
-  char *config_file = "zebra.conf";
-  char *progname;
-  struct thread thread;
+    char *p;
+    char *vty_addr = "127.0.0.1";
+    int vty_port = ZEBRA_VTY_PORT;
+    int batch_mode = 0;
+    int daemon_mode = 0;
+    char *config_file = "zebra.conf";
+    char *progname;
+    struct thread thread;
 
-  /* Set umask before anything for security */
-  umask (0027);
+    /* Set umask before anything for security */
+    umask (0027);
 
-  /* preserve my name */
-  progname = ((p = strrchr (argv[0], '/')) ? ++p : argv[0]);
+    /* preserve my name */
+    progname = ((p = strrchr (argv[0], '/')) ? ++p : argv[0]);
 
-  zlog_default = openzlog (progname, ZLOG_ZEBRA,
-			   LOG_CONS|LOG_NDELAY|LOG_PID, LOG_DAEMON);
+    zlog_default = openzlog (progname, ZLOG_ZEBRA,
+            LOG_CONS|LOG_NDELAY|LOG_PID, LOG_DAEMON);
 
-  while (1) 
-  {
-      int opt;
-
-      opt = getopt_long (argc, argv, "bdf:hA:P:v", longopts, 0);
-
-      if (opt == EOF)
-          break;
-
-      switch (opt) 
-      {
-          case 0:
-              break;
-          case 'b':
-              batch_mode = 1;
-          case 'd':
-              daemon_mode = 1;
-              break;
-          case 'f':
-              config_file = optarg;
-              break;
-          case 'A':
-              vty_addr = optarg;
-              break;
-          case 'P':
-              /* Deal with atoi() returning 0 on failure, and zebra not
-                 listening on zebra port... */
-              if (strcmp(optarg, "0") == 0) 
-              {
-                  vty_port = 0;
-                  break;
-              } 
-              vty_port = atoi (optarg);
-              break;
-              break;
-          case 'v':
-              print_version (progname);
-              exit (0);
-              break;
-          case 'h':
-              usage (progname, 0);
-              break;
-          default:
-              usage (progname, 1);
-              break;
-      }
-  }
-  
-  /* port and conf file mandatory */
-  if (!vty_port || !config_file)
+    while (1) 
     {
-      fprintf (stderr, "Error: --vty_port and --config_file arguments"
-                       " are both required\n");
-      usage (progname, 1);
-    }
-  
-  /* Make master thread emulator. */
-  zebrad.master = thread_master_create ();
+        int opt;
 
-  /* Vty related initialize. */
-  signal_init (zebrad.master, array_size(zebra_signals), zebra_signals);
-  cmd_init (1);
-  vty_init (zebrad.master);
-  memory_init ();
+        opt = getopt_long (argc, argv, "bdf:hA:P:v", longopts, 0);
 
-  /* Zebra related initialize. */
-  access_list_init ();
+        if (opt == EOF)
+            break;
 
-
-  /* Configuration file read*/
-  vty_read_config (config_file, config_default);
-
-
-  /* Exit when zebra is working in batch mode. */
-  if (batch_mode)
-    exit (0);
-
-  /* Daemonize. */
-  if (daemon_mode && daemon (0, 0) < 0)
-    {
-      perror("daemon start failed");
-      exit (1);
+        switch (opt) 
+        {
+            case 0:
+                break;
+            case 'b':
+                batch_mode = 1;
+            case 'd':
+                daemon_mode = 1;
+                break;
+            case 'f':
+                config_file = optarg;
+                break;
+            case 'A':
+                vty_addr = optarg;
+                break;
+            case 'P':
+                /* Deal with atoi() returning 0 on failure, and zebra not
+                   listening on zebra port... */
+                if (strcmp(optarg, "0") == 0) 
+                {
+                    vty_port = 0;
+                    break;
+                } 
+                vty_port = atoi (optarg);
+                break;
+                break;
+            case 'v':
+                print_version (progname);
+                exit (0);
+                break;
+            case 'h':
+                usage (progname, 0);
+                break;
+            default:
+                usage (progname, 1);
+                break;
+        }
     }
 
-  /* Needed for BSD routing socket. */
-  pid = getpid ();
+    /* port and conf file mandatory */
+    if (!vty_port || !config_file)
+    {
+        fprintf (stderr, "Error: --vty_port and --config_file arguments"
+                " are both required\n");
+        usage (progname, 1);
+    }
 
-  /* Make vty server socket. */
-  vty_serv_sock (vty_addr, vty_port, "/tmp/test_zebra");
+    /* Make master thread emulator. */
+    zebrad.master = thread_master_create ();
 
-  /* Print banner. */
-  zlog_notice ("Zebra %s starting: vty@%d", QUAGGA_VERSION, vty_port);
+    /* Vty related initialize. */
+    signal_init (zebrad.master, array_size(zebra_signals), zebra_signals);
+    cmd_init (1);
+    vty_init (zebrad.master);
+    memory_init ();
+    cmdline_vsr_init();
 
-  while (thread_fetch (zebrad.master, &thread))
-    thread_call (&thread);
+        /* Zebra related initialize. */
+        access_list_init ();
 
-  /* Not reached... */
-  return 0;
+
+    /* Configuration file read*/
+    vty_read_config (config_file, config_default);
+
+
+    /* Exit when zebra is working in batch mode. */
+    if (batch_mode)
+        exit (0);
+
+    /* Daemonize. */
+    if (daemon_mode && daemon (0, 0) < 0)
+    {
+        perror("daemon start failed");
+        exit (1);
+    }
+
+    /* Needed for BSD routing socket. */
+    pid = getpid ();
+
+    /* Make vty server socket. */
+    vty_serv_sock (vty_addr, vty_port, "/tmp/test_zebra");
+
+    /* Print banner. */
+    zlog_notice ("Zebra %s starting: vty@%d", QUAGGA_VERSION, vty_port);
+
+    while (thread_fetch (zebrad.master, &thread))
+        thread_call (&thread);
+
+    /* Not reached... */
+    return 0;
 }

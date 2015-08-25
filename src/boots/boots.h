@@ -48,32 +48,9 @@ typedef enum {
     E_FOUND,    // 找不到
     E_EXIST,    // 已经存在
     E_BUSY,     // 繁忙 
+    E_KNOWN,
     E_MAX,      // 错误码的最大值
 } berr;
-
-char *berr_array[E_MAX] = {
-    "SUCCESS",
-    "FAIL",
-    "NULL",
-    "MATCH",    // ???
-    "MEMORY",   // ???? 
-    "PARAM",    // ????
-    "EXCEED",   // ?? 
-    "OPEN",     // ????
-    "FOUND",    // ???
-    "EXIST",    // ????
-    "BUSY",     // ?? 
-    "UNKOWN",
-};
-
-mod_t mod_array[MOD_MAX] = {
-    {MOD_DBG, "dbg", "debug module"},
-#ifdef MOD_ARRAY_CUSTOM
-    MOD_ARRAY_CUSTOM,
-#endif
-} ;
-
-
 
 typedef struct {
     uint8_t major;

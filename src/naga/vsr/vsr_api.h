@@ -9,7 +9,7 @@
 #       @date         :2015/08/21 22:53
 #       @algorithm    :
 =============================================================================*/
-#include "bts_cnt.h"
+//#include "bts_cnt.h"
 #include "vsr.h"
 
 #ifndef __VSR_API_H__

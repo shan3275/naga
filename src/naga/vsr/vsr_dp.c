@@ -10,6 +10,7 @@
 #       @algorithm    :
 =============================================================================*/
 #include "vsr_api.h"
+#include "bts_cnt.h"
 berr vsr_dp_match(uint32_t ip, char*url, uint16_t url_len)
 {
     int i;

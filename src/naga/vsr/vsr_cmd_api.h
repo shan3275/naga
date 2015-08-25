@@ -10,10 +10,10 @@
 #       @algorithm    :
 =============================================================================*/
 
+#include "vsr.h"
+
 #ifndef __VSR_CMD_API_H__
 #define __VSR_CMD_API_H__
-
-#include "vsr.h"
 
 berr rule_vsr_cmd_add(uint32_t index, uint32_t ip, uint32_t msisdn);
 berr rule_vsr_cmd_del(uint32_t index);

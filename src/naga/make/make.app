@@ -1,7 +1,7 @@
 include $(MKDIR)/make.var
 
 CFLAGS  += -DMAKEAPP -g -Wall -I. -I$(SRCDIR)/../boots -I$(SRCDIR)/include -I$(SRCDIR)/libzebra
-LDFLAGS += -L$(SRCDIR)/md5lib
+LDFLAGS += 
 
 all: $(PROG)
 

@@ -11,6 +11,7 @@
 =============================================================================*/
 #include "vsr.h"
 #include "vsr_api.h"
+#include "bts_cnt.h"
 
 #define DEBUG
 #ifdef  DEBUG   

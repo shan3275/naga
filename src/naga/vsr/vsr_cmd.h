@@ -13,4 +13,5 @@
 #ifndef __VSR_CMD_H__
 #define __VSR_CMD_H__
 
+void cmdline_vsr_init(void);
 #endif

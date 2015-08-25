@@ -10,7 +10,7 @@
 #       @algorithm    :
 =============================================================================*/
 
-#include "vsr_cmd_api.h"
+//#include "vsr_cmd_api.h"
 #include "vsr_api.h"
 #define DEBUG
 #ifdef  DEBUG   
