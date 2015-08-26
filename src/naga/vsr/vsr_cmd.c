@@ -413,6 +413,7 @@ void cmdline_vsr_init(void)
 {
 
     install_element(CONFIG_NODE, &vsr_add_cmd);
+    install_element(CONFIG_NODE, &vsr_add_mobile_cmd);
 
     install_element(CONFIG_NODE, &vsr_del_cmd);
     install_element(CONFIG_NODE, &vsr_del_all_cmd);

@@ -9,10 +9,11 @@
 #       @date         :2015/08/21 22:54
 #       @algorithm    :
 =============================================================================*/
-
+#include "vsr.h"
 #ifndef __VSR_DP_H__
 #define __VSR_DP_H__
 
 berr vsr_dp_process(hytag_t *hytag);
+berr vsr_dp_init(void);
 
 #endif /* end of __VSR_DP_H__ */

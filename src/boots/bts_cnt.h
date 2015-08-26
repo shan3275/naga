@@ -22,15 +22,6 @@ typedef struct {
 
 #define CNT_DEC(_cnt)  {_cnt, #_cnt}
 
-cnt_t cnt_array[CNT_MAX] = {
-      CNT_DEC(ITF_IPKTS),
-      CNT_DEC(ITF_IBYTS),
-      CNT_DEC(ITF_OPKTS),
-      CNT_DEC(ITF_OBYTS),
-#ifdef CNT_DEC_CUSTOM
-      CNT_DEC_CUSTOM,
-#endif
-};
  
 // ??????
 #define CNT_INC(_cnt)
