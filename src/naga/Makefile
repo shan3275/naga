@@ -34,6 +34,7 @@ include $(RTE_SDK)/mk/rte.vars.mk
 DIRS-y += libzebra
 DIRS-y += cmdline
 DIRS-y += vsr
+DIRS-y += pid
 DIRS-y += main
 
-include $(RTE_SDK)/mk/rte.subdir.mk
+include $(RTE_SDK)/mk/rte.extsubdir.mk
