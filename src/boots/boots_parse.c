@@ -13,6 +13,7 @@ char *berr_array[E_MAX] = {
     "FOUND",    // ???
     "EXIST",    // ????
     "BUSY",     // ?? 
+    "COMPARE",
     "UNKOWN",
 };
 

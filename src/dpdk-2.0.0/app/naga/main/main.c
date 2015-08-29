@@ -45,6 +45,7 @@
 #include <errno.h>
 #include <getopt.h>
 
+#include <rte_config.h>
 #include <rte_common.h>
 #include <rte_log.h>
 #include <rte_memory.h>
@@ -68,8 +69,9 @@
 #include <rte_ring.h>
 #include <rte_mempool.h>
 #include <rte_mbuf.h>
-
-#include "naga.h"
+#include "vsr_dp.h"
+#include "cmd.h"
+#include "pid.h"
 
 #define RTE_LOGTYPE_L2FWD RTE_LOGTYPE_USER1
 
@@ -134,10 +136,6 @@ struct l2fwd_port_statistics {
 	uint64_t tx;
 	uint64_t rx;
 	uint64_t dropped;
-    //uint64_t ipv4;
-    //uint64_t ipv6;
-    //uint64_t noip;
-    //uint64_t outer_l4_tcp;
 } __rte_cache_aligned;
 struct l2fwd_port_statistics port_statistics[RTE_MAX_ETHPORTS];
 
@@ -342,13 +340,9 @@ l2fwd_main_loop(void)
 
 			port_statistics[portid].rx += nb_rx;
 
-
-
             for (j = 0; j < nb_rx; j++) {
                 m = pkts_burst[j];
                 rte_prefetch0(rte_pktmbuf_mtod(m, void *));
-                //l2fwd_simple_forward(m, portid);
-                //memset(&packetp, 0x0, sizeof(packetp));
                 if(1)
                 {
                     naga_pid_dpdk(m);
@@ -366,7 +360,17 @@ l2fwd_main_loop(void)
 static int
 l2fwd_launch_one_lcore(__attribute__((unused)) void *dummy)
 {
-	l2fwd_main_loop();
+    printf("core(%d)\n", rte_lcore_id());
+    if (rte_lcore_id() == 1 )
+    {
+        printf("cmd core %d\n", rte_lcore_id());
+        vsr_dp_init();
+        cmdline (0, NULL);
+    }
+    else
+    {
+        l2fwd_main_loop();
+    }
 	return 0;
 }
 
@@ -572,12 +576,12 @@ main(int argc, char **argv)
 		rte_exit(EXIT_FAILURE, "Invalid EAL arguments\n");
 	argc -= ret;
 	argv += ret;
-#if 1
+
 	/* parse application arguments (after the EAL ones) */
 	ret = l2fwd_parse_args(argc, argv);
 	if (ret < 0)
 		rte_exit(EXIT_FAILURE, "Invalid L2FWD arguments\n");
-#endif
+
 	/* create the mbuf pool */
 	l2fwd_pktmbuf_pool =
 		rte_mempool_create("mbuf_pool", NB_MBUF,
@@ -625,7 +629,7 @@ main(int argc, char **argv)
 		l2fwd_dst_ports[last_port] = last_port;
 	}
 #endif
-	rx_lcore_id = 0;
+    rx_lcore_id = 0;
 	qconf = NULL;
 
 	/* Initialize the port/queue configuration of each logical core */
@@ -654,7 +658,6 @@ main(int argc, char **argv)
 
 	nb_ports_available = nb_ports;
 
-
 	/* Initialise each port */
 	for (portid = 0; portid < nb_ports; portid++) {
 		/* skip ports that are not enabled */
@@ -663,7 +666,6 @@ main(int argc, char **argv)
 			nb_ports_available--;
 			continue;
 		}
-        		printf("done1: \n");
 		/* init port */
 		printf("Initializing port %u... ", (unsigned) portid);
 		fflush(stdout);
@@ -723,12 +725,14 @@ main(int argc, char **argv)
 
 	check_all_ports_link_status(nb_ports, l2fwd_enabled_port_mask);
 
+#if 1
 	/* launch per-lcore init on every lcore */
 	rte_eal_mp_remote_launch(l2fwd_launch_one_lcore, NULL, CALL_MASTER);
 	RTE_LCORE_FOREACH_SLAVE(lcore_id) {
 		if (rte_eal_wait_lcore(lcore_id) < 0)
 			return -1;
 	}
+#endif
 
 	return 0;
 }
