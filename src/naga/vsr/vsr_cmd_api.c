@@ -19,7 +19,7 @@
 #define debug(fmt,args...)   
 #endif  /* DEBUG */ 
 
-berr rule_vsr_cmd_add(uint32_t index, uint32_t ip, uint32_t msisdn)
+berr rule_vsr_cmd_add(uint32_t index, uint32_t ip, uint64_t msisdn)
 {
     int rv;
 
@@ -209,6 +209,41 @@ berr rule_vsr_cmd_dump(uint32_t index, uint8_t *buff, uint32_t len)
 }
 
 
+berr vsr_dump_total_buff(uint32_t encourage_num, uint64_t ip_num, uint64_t url_num, uint8_t * buff, uint32_t size)
+{
+    int l = 0;
+    int len = size;
+    int i;
+    l += snprintf((char *)(buff + l), len -l, "rule       num:%llu\r\n", (ULL) ip_num);
+    l += snprintf((char *)(buff + l), len -l, "url        num:%llu\r\n", (ULL)url_num);
+    l += snprintf((char *)(buff + l), len -l, "encourage  num:%u\r\n",  encourage_num);
+
+    return E_SUCCESS;
+}
+berr rule_vsr_cmd_total_dump(uint8_t *buff, uint32_t len)
+{
+    int rv;
+    uint32_t encourage_num; 
+    uint64_t ip_num; 
+    uint64_t url_num;
+    /* check index parameter */
+
+    /* check buff */
+    if(NULL == buff)
+    {
+        debug("para err");
+        return E_PARAM;
+    }
+
+    encourage_num = vsr_api_encourage_get();
+    ip_num        = vsr_api_ip_num_get();
+    url_num       = vsr_api_url_num_get();
+
+    /*dump data to buff */
+    vsr_dump_total_buff(encourage_num, ip_num, url_num, buff, len);
+    return E_SUCCESS;
+}
+
 berr rule_vsr_cmd_flush_url(uint32_t index)
 {
     int rv;
@@ -243,3 +278,18 @@ berr rule_vsr_cmd_clear_statistics(uint32_t index)
 
 }
 
+berr rule_vsr_cmd_encourage(uint32_t num)
+{
+    int rv;
+
+    /* index parameter check */
+
+    /*clear statistics */
+    rv = vsr_api_encourage_set(num);
+    if (rv)
+    {
+        debug("para err");
+        return rv;
+    }
+    return E_SUCCESS;
+}

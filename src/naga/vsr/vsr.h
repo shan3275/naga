@@ -13,6 +13,8 @@
 #include "string.h"
 #include "boots.h"
 #include "pid.h"
+#include "rte_atomic.h"
+#include "rte_spinlock.h"
 
 #ifndef  __VSR_H__
 #define  __VSR_H__
@@ -28,8 +30,9 @@
 #define VSR_RULE_URL_UNEFFECTIVE 0
 #define VSR_RULE_URL_LEN_UNEFFECTIVE 0
 #define VSR_RULE_URL_HASH_UNEFFECTIVE 0
-//typedef rte_spinlock_t  vsr_lock_t;
-typedef uint32_t vsr_lock_t;
+typedef rte_spinlock_t  vsr_lock_t;
+//typedef uint32_t vsr_lock_t;
+typedef rte_atomic64_t vsr_atomic_t;
 
 #define IP_UDP_GTP_IP_URL 34
 
@@ -46,15 +49,18 @@ typedef struct vsr_rule_entry_t {
     vsr_lock_t lock;
     uint32_t effective;   /* 0 for not effective; 1 for effective */
     uint32_t ip;
-    uint32_t msisdn;
+    uint64_t msisdn;
     uint32_t url_num;    /*url number, value from 0-512 */
+    uint32_t rsvd;
     vsr_url_entry_t url_entry[VSR_URL_NUM_MAX];
     uint64_t match_pkt; /* matched ip packet number */
 }vsr_rule_entry_t;
 
 typedef struct vsr_rule_t {
-    uint64_t ip_num;        /* vsr module ip number from 0-16,for global use*/
-    uint64_t url_num;       /* url entry number,value from 0 to 512 ,for global use */   
+    vsr_atomic_t ip_num;        /* vsr module ip number from 0-16,for global use*/
+    vsr_atomic_t url_num;       /* url entry number,value from 0 to 512 ,for global use */   
+    uint32_t encourage_num;
+    uint32_t rsvd;
     vsr_rule_entry_t rule[VSR_RULE_NUM_MAX];
 }vsr_rule_t;
 
@@ -68,9 +74,11 @@ typedef struct vsr_rule_summary_stat_t {
 void vsr_ip_num_dec(void);
 void vsr_ip_num_add(void);
 void vsr_ip_num_set(uint64_t val);
+uint64_t vsr_ip_num_get(void);
 void vsr_url_num_dec(void);
 void vsr_url_num_add(void);
 void vsr_url_num_set(uint64_t val);
+uint64_t vsr_url_num_get(void);
 void vsr_rule_lock_init(uint32_t index);
 void vsr_lock_rule(uint32_t index);
 void vsr_unlock_rule(uint32_t index);
@@ -107,6 +115,8 @@ char *vsr_get_url_content(uint32_t index, uint32_t url_index);
 void vsr_set_url_pkt(uint32_t index, uint32_t url_index, uint64_t num);
 void vsr_add_url_pkt(uint32_t index, uint32_t url_index, uint64_t num);
 void vsr_url_pkt_inc(uint32_t index, uint32_t url_index);
+void vsr_dec_encourage_num(void);
+void vsr_set_encourage_num(uint32_t num);
 berr vsr_dp_api_request_data_entry(void);
 
 uint32_t vsr_hash(uint8_t *url, uint32_t len);

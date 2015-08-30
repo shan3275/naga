@@ -30,6 +30,8 @@
 #define FLUSH_STR                   "Flush url\n"
 //#define CLEAR_STR                   "Clear Operation\n"
 #define STAT_STR                    "Statistics Operation\n"
+#define ENCOURAGE_STR               "Encourage Operation, for test\n"
+#define TOTAL_STR                   "Summary Display\n"
 
 #define DEBUG
 #ifdef  DEBUG
@@ -90,7 +92,7 @@ DEFUN(vsr_add,
 
 DEFUN(vsr_add_mobile,
       vsr_add_mobile_cmd,
-      "rule vsr add <0-15> A.B.C.D <10000000000-1999999999>",
+      "rule vsr add <0-15> A.B.C.D MOBILE",
       RULE_STR
       VSR_STR
       ADD_STR
@@ -251,7 +253,7 @@ DEFUN(vsr_show_by_ip,
 
 DEFUN(vsr_show_by_mobile, 
       vsr_show_by_mobile_cmd,
-      "show rule vsr mobile <10000000000-19999999999>",
+      "show rule vsr mobile MOBILE",
       SHOW_STR
       RULE_STR
       VSR_STR
@@ -293,6 +295,34 @@ DEFUN(vsr_show_all,
     return vsr_cmd_show_all(vty);
 }
 
+static int vsr_cmd_show_total(struct vty *vty)
+{
+    int ret = 0;
+    int i;
+    uint8_t buff[VSR_URL_NUM_MAX * (VSR_URL_LEN_MAX * 2)];
+
+    ret = rule_vsr_cmd_total_dump((char *)buff, sizeof(buff));
+    if (ret)
+    {
+        vty_out(vty, "vsr dump fail, ret(%d)%s", ret, VTY_NEWLINE);
+        //return CMD_WARNING;
+    }
+
+    vty_out(vty, "%s%s", buff, VTY_NEWLINE);
+
+    return CMD_SUCCESS;
+}
+
+DEFUN(vsr_show_total,
+      vsr_show_total_cmd,
+      "show rule vsr total",
+      SHOW_STR
+      RULE_STR
+      VSR_STR
+      TOTAL_STR)
+{
+    return vsr_cmd_show_total(vty);
+}
 static int vsr_cmd_flush_url(struct vty *vty, const char *index_str)
 {
     int ret = 0;
@@ -404,6 +434,34 @@ DEFUN(vsr_clear_statistics_all,
     return vsr_cmd_clear_statistics_all(vty);
 }
 
+static int vsr_cmd_encourage(struct vty *vty, const char *num_str)
+{
+    int ret = 0;
+    uint32_t num = 0;
+
+    num = atoi(num_str);
+    debug("num:%d", num);
+
+    ret = rule_vsr_cmd_encourage(num);
+    if (ret)
+    {
+        vty_out(vty, "vsr encourage error, num(%d) ret(%d)%s", num, ret, VTY_NEWLINE);
+        return CMD_WARNING;
+    }
+
+    return CMD_SUCCESS;
+}
+DEFUN(vsr_encourage, 
+      vsr_encourage_cmd,
+      "rule vsr encourage <0-1000>",
+      RULE_STR
+      VSR_STR
+      ENCOURAGE_STR
+     "Test packet number\n" 
+      )
+{
+    return vsr_cmd_encourage(vty, argv[0]);
+}
 
 /*
  * vsr module cmdline register and init 
@@ -420,6 +478,7 @@ void cmdline_vsr_init(void)
 
     install_element(CONFIG_NODE, &vsr_show_by_index_cmd);
     install_element(CONFIG_NODE, &vsr_show_all_cmd);
+    install_element(CONFIG_NODE, &vsr_show_total_cmd);
     install_element(CONFIG_NODE, &vsr_show_by_ip_cmd);
     install_element(CONFIG_NODE, &vsr_show_by_mobile_cmd);
 
@@ -428,6 +487,8 @@ void cmdline_vsr_init(void)
 
     install_element(CONFIG_NODE, &vsr_clear_statistics_cmd);
     install_element(CONFIG_NODE, &vsr_clear_statistics_all_cmd);
+
+    install_element(CONFIG_NODE, &vsr_encourage_cmd);
 
     return ;
 }

@@ -48,7 +48,7 @@ berr vsr_api_del_rule_by_index(uint32_t index)
 
     /* loop url_num*/
     url_num = vsr_get_rule_url_num(index);
-    for(i = 0; i <= url_num; i++)
+    for(i = 0; i < url_num; i++)
     {
         /*check url effective */
         if(vsr_check_url_effective(index, i) == VSR_RULE_URL_UNEFFECTIVE )
@@ -170,7 +170,7 @@ berr vsr_api_flush_url(uint32_t index)
     url_num = vsr_get_rule_url_num(index);
 
     /* loop clear url */
-    for(i = 0; i <= url_num; i++)
+    for(i = 0; i < url_num; i++)
     {
         /*check url effective */
         if(vsr_check_url_effective(index, i) == VSR_RULE_URL_UNEFFECTIVE )
@@ -211,7 +211,7 @@ berr vsr_api_clear_statistics(uint32_t index)
 
     /* loop clear url match pkt*/
     url_num = vsr_get_rule_url_num(index);
-    for(i = 0; i <= url_num; i++)
+    for(i = 0; i < url_num; i++)
     {
         /*check url effective */
         if(vsr_check_url_effective(index, i) == VSR_RULE_URL_UNEFFECTIVE )
@@ -229,6 +229,30 @@ berr vsr_api_clear_statistics(uint32_t index)
     /*unlock */
     VSR_RULE_UNLOCK(index);
     return E_SUCCESS;
+}
+
+void vsr_api_encourage_dec(void)
+{
+    vsr_dec_encourage_num();
+}
+
+berr vsr_api_encourage_set(uint32_t num)
+{
+    vsr_set_encourage_num(num);
+    return E_SUCCESS;
+}
+
+uint32_t  vsr_api_encourage_get(void)
+{
+    return vsr_get_encourage_num();
+}
+uint64_t  vsr_api_ip_num_get(void)
+{
+    return vsr_ip_num_get();
+}
+uint64_t  vsr_api_url_num_get(void)
+{
+    return vsr_url_num_get();
 }
 
 /* dp use */

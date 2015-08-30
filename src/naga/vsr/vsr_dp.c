@@ -5,8 +5,8 @@
 #
 #       @author       :shan
 #       @name         :Sam Liu
-#       @file         :/mnt/hgfs/code/rose/src/dpdk-2.0.0/examples/zebra/vsr\vsr_dp.c
-#       @date         :2015-08-22 20:53
+#       @file         :/mnt/hgfs/code/rose/src/naga/vsr\vsr_dp.c
+#       @date         :2015-08-30 13:25
 #       @algorithm    :
 =============================================================================*/
 #include "vsr_api.h"
@@ -55,6 +55,69 @@ berr vsr_dp_process(hytag_t *hytag)
     {
         /* add match statistics */
         CNT_INC(VSR_MATCHPKTS);
+    }
+    return E_SUCCESS; 
+}
+
+
+
+/* encourage */
+uint32_t srcip[VSR_RULE_NUM_MAX] =
+{
+    0x01010101,
+    0x02020202,
+    0x03030403,
+    0x04040404,
+    0x06060606,
+    0x07070707,
+    0x08080808,
+    0x09090909,
+    0x0a0a0a0a,
+    0x0b0b0b0b,
+    0x0c0c0c0c,
+    0x0d0d0d0d,
+    0x0e0e0e0e,
+    0x0f0f0f0f,
+    0x10101010,
+};
+
+char *url[VSR_RULE_NUM_MAX] =
+{
+    "www.hao123.com    ",
+    "www.baidu.com     ",
+    "www.qq.com        ",
+    "www.163.com       ",
+    "www.youku.com     ",
+    "www.tudou.com     ",
+    "www.sohu.com      ",
+    "www.sina.com      ",
+    "www.google.com    ",
+    "www.bing.com      ",
+    "www.xintansuo,com ",
+    "www.evernote.com  ",
+    "www.ubuntu.com    ",
+    "www.opensuse.com  ",
+    "www.slackware.com ",
+    "www.slickedit.com ",
+};
+
+berr vsr_dp_encourage_test(hytag_t *hytag)
+{
+
+    if (NULL == hytag)
+    {
+        return E_PARAM;
+    }
+
+    if(vsr_api_encourage_get())
+    {
+
+        hytag->url_len = 18;
+        strncpy(hytag->url, url[vsr_api_encourage_get() % VSR_RULE_NUM_MAX], 18);
+        hytag->protocol_type = IP_UDP_GTP_IP_URL;
+        printf("url_len(%d), url(%s), protocol_type(%d)\n", hytag->url_len, hytag->url, hytag->protocol_type);
+
+        vsr_api_encourage_dec();
     }
     return E_SUCCESS; 
 }

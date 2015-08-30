@@ -44,7 +44,7 @@ APP = naga
 # all source are stored in SRCS-y
 SRCS-y := main.c
 
-#CFLAGS += -O3
+CFLAGS += -O3 $(USER_FLAGS)
 #CFLAGS += $(WERROR_FLAGS)
 CFLAGS  += -I ../cmdline -I ../vsr -I ../libzebra  -I ../boots -I ../include -I ../pid
 #LDFLAGS += -L ../libzebra -L /mnt/hgfs/code/rose/src/dpdk-2.0.0/app/naga/cmdline -L ../vsr

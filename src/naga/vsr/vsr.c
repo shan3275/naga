@@ -13,10 +13,11 @@
 #include "vsr.h"
 #include "stdlib.h"
 
-#ifdef __DPDK
+#define __DPDK
+#ifdef  __DPDK
 #define VSR_STAT_INC(_name) rte_atomic64_inc(&(_name))
 #define VSR_STAT_DEC(_name) rte_atomic64_dec(&(_name))
-#define VSR_STAT_SET(_name, _val) ret_atomic64_set(&(_name), _val)
+#define VSR_STAT_SET(_name, _val) rte_atomic64_set(&(_name), _val)
 
 #define VSR_SPINLOCK_LOCK(_lock)   rte_spinlock_lock(&(_lock))
 #define VSR_SPINLOCK_UNLOCK(_lock) rte_spinlock_unlock(&(_lock))
@@ -48,6 +49,11 @@ void vsr_ip_num_set(uint64_t val)
     VSR_STAT_SET(vsr_rule->ip_num, val);
 }
 
+uint64_t vsr_ip_num_get(void)
+{
+    return (uint64_t)vsr_rule->ip_num.cnt;
+}
+
 void vsr_url_num_dec(void)
 {
     VSR_STAT_DEC(vsr_rule->url_num);
@@ -61,6 +67,11 @@ void vsr_url_num_add(void)
 void vsr_url_num_set(uint64_t val)
 {
     VSR_STAT_SET(vsr_rule->url_num, val);
+}
+
+uint64_t vsr_url_num_get(void)
+{
+    return (uint64_t)vsr_rule->url_num.cnt;
 }
 
 void vsr_rule_lock_init(uint32_t index)
@@ -214,6 +225,24 @@ void vsr_url_pkt_inc(uint32_t index, uint32_t url_index)
     vsr_rule->rule[index].url_entry[url_index].match_pkt ++;
 }
 
+void vsr_dec_encourage_num(void)
+{
+    if (vsr_rule->encourage_num)
+    {
+        vsr_rule->encourage_num -= 1;
+    }
+}
+
+void vsr_set_encourage_num(uint32_t num)
+{
+    vsr_rule->encourage_num = num;
+}
+
+uint32_t vsr_get_encourage_num(void)
+{
+    return vsr_rule->encourage_num;
+}
+
 berr vsr_request_data_entry(void)
 {
     vsr_rule = (vsr_rule_t *)malloc(sizeof(vsr_rule_t));
@@ -225,6 +254,7 @@ berr vsr_request_data_entry(void)
 
     vsr_ip_num_set(0);
     vsr_url_num_set(0);
+    vsr_set_encourage_num(0);
     return E_SUCCESS;
 }
 
