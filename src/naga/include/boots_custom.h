@@ -56,6 +56,8 @@
 /* Custom automic opreation */
 #define bts_atomic32_inc  rte_atomic32_inc
 #define bts_atomic64_inc  rte_atomic64_inc
+#define bts_atomic32_add  rte_atomic32_add
+#define bts_atomic64_add  rte_atomic64_add
 #define bts_atomic32_dec  rte_atomic32_dec
 #define bts_atomic64_dec  rte_atomic64_dec
 #define bts_atomic32_set  rte_atomic32_set

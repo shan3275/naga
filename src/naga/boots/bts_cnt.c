@@ -55,12 +55,12 @@ berr cnt_get(cnte idx, uint32_t number, cnt_t *vals, uint32_t *total)
 
     if ((idx + number) > CNT_MAX)
     {
-        BERT(E_EXCEED);
+        BRET(E_EXCEED);
     }
 
     if ((NULL == vals) || (NULL == total))
     {
-        BERT(E_PARAM);
+        BRET(E_PARAM);
     }
 
     *total = 0;
@@ -72,7 +72,7 @@ berr cnt_get(cnte idx, uint32_t number, cnt_t *vals, uint32_t *total)
         *total += 1;
     }
 
-    BERT(E_SUCCESS);
+    BRET(E_SUCCESS);
 }
 
 berr cnt_clear(cnte idx, uint32_t number, uint32_t *total)
@@ -81,12 +81,12 @@ berr cnt_clear(cnte idx, uint32_t number, uint32_t *total)
 
     if ((idx + number) > CNT_MAX)
     {
-        BERT(E_EXCEED);
+        BRET(E_EXCEED);
     }
 
     if (NULL == total)
     {
-        BERT(E_PARAM);
+        BRET(E_PARAM);
     }
 
     *total = 0;
@@ -94,11 +94,11 @@ berr cnt_clear(cnte idx, uint32_t number, uint32_t *total)
     for (i = 0; i < number; i++)
     {
         idxc = idx + i;
-        bts_automic_set64(cnt_array[idxc].val, 0);
+        CNT_SET(idxc, 0); 
         *total += 1;
     }
 
-    BERT(E_SUCCESS);
+    BRET(E_SUCCESS);
 }
 
 berr cnt_int()
@@ -110,7 +110,7 @@ berr cnt_int()
         CNT_SET(i, 0);
     }
 
-    BERT(E_SUCCESS);
+    BRET(E_SUCCESS);
 }
 
 /* End of file */
