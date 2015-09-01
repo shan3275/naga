@@ -36,16 +36,16 @@
     VSR_URLPKTS, /* take url packet number */ \
     VSR_UNMATCHPKTS, /* not match packets */ \
     VSR_MATCHPKTS, /* match packets */ \
-    VSR_RULE_MATCHPKTS, /* rule ip, url all match */
+    VSR_RULE_MATCHPKTS /* rule ip, url all match */
 
-#define CNT_DEC_CUSTOM \
+#define CNT_DEF_CUSTOM \
     /* VSR Module */ \
-    CNT_DEC(VSR_PKTS), \
-    CNT_DEC(VSR_UNURLPKTS), \
-    CNT_DEC(VSR_URLPKTS), \
-    CNT_DEC(VSR_UNMATCHPKTS), \
-    CNT_DEC(VSR_MATCHPKTS), \
-    CNT_DEC(VSR_RULE_MATCHPKTS)
+    CNT_DEF(VSR_PKTS), \
+    CNT_DEF(VSR_UNURLPKTS), \
+    CNT_DEF(VSR_URLPKTS), \
+    CNT_DEF(VSR_UNMATCHPKTS), \
+    CNT_DEF(VSR_MATCHPKTS), \
+    CNT_DEF(VSR_RULE_MATCHPKTS)
 
 /* Custom spinlock */
 #define bts_spinlock_t rte_spinlock_t
@@ -56,7 +56,12 @@
 /* Custom automic opreation */
 #define bts_atomic32_inc  rte_atomic32_inc
 #define bts_atomic64_inc  rte_atomic64_inc
+#define bts_atomic32_dec  rte_atomic32_dec
+#define bts_atomic64_dec  rte_atomic64_dec
 #define bts_atomic32_set  rte_atomic32_set
 #define bts_atomic64_set  rte_atomic64_set
+#define bts_atomic32_get  rte_atomic32_read
+#define bts_atomic64_get  rte_atomic64_read
+
 
 #endif /* ! __BOOTS_CUSTOM_H__ */

@@ -24,7 +24,7 @@ char* berr_msg(berr e)
         return berr_array[E_MAX];
     }
 
-    return berr_array[e].abbr;
+    return berr_array[e];
 }
 
 mod_t mod_array[MOD_MAX] = {
@@ -35,6 +35,7 @@ mod_t mod_array[MOD_MAX] = {
 } ;
 
 
+#if 0
 char* bode_abbr(bmod m)
 {
     if (m >= MOD_MAX)
@@ -44,6 +45,7 @@ char* bode_abbr(bmod m)
 
     return mod_array[e];
 }
+#endif
 
 
 /* End of file */

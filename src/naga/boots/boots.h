@@ -1,6 +1,8 @@
 #ifndef __BOOTS_H__
 #define __BOOTS_H__
 #include "stdint.h"
+#include "rte_atomic.h"
+#include "rte_spinlock.h"
 
 #if 0
 typedef unsigned char  int8_t;
@@ -17,6 +19,9 @@ typedef unsigned char mac_t[6];
 typedef uint32_t ipv4_t;
 typedef uint16_t ipv6_t[8];
 typedef unsigned long long  ULL;
+typedef rte_spinlock_t    bts_spinlock_t;
+typedef rte_atomic64_t    bts_atomic64_t;
+typedef rte_atomic32_t    bts_atomic32_t;
 
 #define OFF 0
 #define ON  1

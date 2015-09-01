@@ -15,6 +15,6 @@
 
 berr vsr_dp_process(hytag_t *hytag);
 berr vsr_dp_init(void);
-berr vsr_dp_encourage_test(hytag_t *hytag);
+void vsr_dp_test(void);
 
 #endif /* end of __VSR_DP_H__ */

@@ -31,30 +31,30 @@ berr vsr_dp_process(hytag_t *hytag)
 {
     int rv;
     /*add recv statistics */
-    CNT_INC(VSR_PKTS);
+    cnt_inc(VSR_PKTS);
 
     /*check protocol type*/
     if ( hytag->protocol_type != IP_UDP_GTP_IP_URL)
     {
         /* add statistics */
-        CNT_INC(VSR_UNURLPKTS);
+        cnt_inc(VSR_UNURLPKTS);
         return E_SUCCESS;
     }
 
     /* add IP_UDP_GTP_IP_URL packet statistics */
-    CNT_INC(VSR_URLPKTS);
+    cnt_inc(VSR_URLPKTS);
 
     /* IP_UDP_GTP_IP_URL packet process */
     rv = vsr_dp_match(hytag->inner_srcip4, hytag->url, hytag->url_len);
     if(rv)
     {
         /*add not match statistics */
-        CNT_INC(VSR_UNMATCHPKTS);
+        cnt_inc(VSR_UNMATCHPKTS);
     }
     else
     {
         /* add match statistics */
-        CNT_INC(VSR_MATCHPKTS);
+        cnt_inc(VSR_MATCHPKTS);
     }
     return E_SUCCESS; 
 }
@@ -118,8 +118,25 @@ berr vsr_dp_encourage_test(hytag_t *hytag)
         printf("url_len(%d), url(%s), protocol_type(%d)\n", hytag->url_len, hytag->url, hytag->protocol_type);
 
         vsr_api_encourage_dec();
+        return E_SUCCESS; 
     }
-    return E_SUCCESS; 
+
+    return E_NULL;
+}
+
+void vsr_dp_test(void)
+{
+    hytag_t hytag;
+    int rv;
+    while(1)
+    {
+        rv = vsr_dp_encourage_test(&hytag);
+        if (rv)
+        {
+            continue;
+        }
+        vsr_dp_process(&hytag);
+    }
 }
 
 berr vsr_dp_init(void)

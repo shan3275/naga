@@ -303,7 +303,7 @@ berr vsr_dp_api_match(uint32_t index, uint32_t ip, char* url, uint16_t len)
         }
         /* all matched, so break*/
         /* add match ip statistics */
-        CNT_INC(VSR_RULE_MATCHPKTS);
+        cnt_inc(VSR_RULE_MATCHPKTS);
         break;
     }
 

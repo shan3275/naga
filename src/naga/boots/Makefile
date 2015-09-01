@@ -29,29 +29,31 @@
 #   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 #   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-ifeq ($(RTE_SDK),)
-$(error "Please define RTE_SDK environment variable")
-endif
-
-# Default target, can be overriden by command line or environment
-RTE_TARGET ?= x86_64-native-linuxapp-gcc
-
 include $(RTE_SDK)/mk/rte.vars.mk
 
-# binary name
-APP = naga
+#
+# library name
+#
+LIB = libboots.a
 
-# all source are stored in SRCS-y
-SRCS-y := main.c
-
-CFLAGS += -O3 $(USER_FLAGS)
+CFLAGS +=  -I .  -I ../include
 #CFLAGS += $(WERROR_FLAGS)
-CFLAGS  += -I ../cmdline -I ../vsr -I ../libzebra  -I ../boots -I ../include -I ../pid
-#LDFLAGS += -L ../libzebra -L /mnt/hgfs/code/rose/src/dpdk-2.0.0/app/naga/cmdline -L ../vsr
-LDLIBS  +=  ../cmdline/libcmdline.a  ../libzebra/libzebra.a ../vsr/libvsr.a ../pid/libpid.a
-LDLIBS  +=  ../boots/libboots.a
-LDLIBS  +=   -lcrypt -lreadline -lrt
 
+EXPORT_MAP := lib_vsr_version.map
 
+LIBABIVER := 1
 
-include $(RTE_SDK)/mk/rte.app.mk
+SRCS-y += boots_parse.c
+SRCS-y += bts_cnt.c
+
+#
+# Export include files
+#
+#SYMLINK-y-include += rte_ether.h
+#SYMLINK-y-include += rte_ethdev.h
+#SYMLINK-y-include += rte_eth_ctrl.h
+
+# this lib depends upon:
+#DEPDIRS-y += lib/librte_eal lib/librte_mempool lib/librte_ring lib/librte_mbuf
+
+include $(RTE_SDK)/mk/rte.lib.mk

@@ -2,6 +2,7 @@
 #define __BTS_DEBUG_H__
 
 #include "boots.h"
+#include "stdio.h"
 
 typedef enum {
       DOPT_INFO,
@@ -27,23 +28,23 @@ typedef struct {
 } dopt_t;
 
 dopt_t dopts_array[DOPT_MAX] = {
-      {DOPT_INFO, OFF, "info", "normal debug message"},
-      {DOPT_VERB, OFF, "verb", "verbose debug message"},
-      {DOPT_WARN, OFF, "warn", "warning message"},
-      {DOPT_ERR, OFF, "err", "error message"},
-      {DOPT_ETRACE, OFF, "etrace", "error return trace"},
-      {DOPT_TAGMON, OFF, "tagmon", "hytag monitor"},
-      {DOPT_TINYSTEP, OFF, "tinystep", "time spand of a section code"},
-      {DOPT_TRAP, OFF, "trap", "a trap trigger by condition"},
-#ifdef DOPT_ARRAY_CUSTOM 
+      {DOPT_INFO,     OFF, "info",      "normal debug message"},
+      {DOPT_VERB,     OFF, "verb",      "verbose debug message"},
+      {DOPT_WARN,     OFF, "warn",      "warning message"},
+      {DOPT_ERR,      OFF, "err",       "error message"},
+      {DOPT_ETRACE,   OFF, "etrace",    "error return trace"},
+      {DOPT_TAGMON,   OFF, "tagmon",    "hytag monitor"},
+      {DOPT_TINYSTEP, OFF, "tinystep",  "time spand of a section code"},
+      {DOPT_TRAP,     OFF, "trap",      "a trap trigger by condition"},
+#ifdef DOPT_ARRAY_CUSTOM
       DOPT_ARRAY_CUSTOM,
 #endif
-}
+};
 
 #define BTS_DEBUG_DUMP(_mod, _opt, _fmt, _args...) { \
     if ((_mod < DOPT_MAX) || (_opt < DOPT_MAX)) { \
-        if (dopt_array[_opt].enable && dopt_array[_mod].enable) { \
-            printf("[%s.%d] %s.%d:" _fmt, #_mod, #_opt, __func__, __LINE__, ##_args); \
+        if (dopts_array[_opt].enable && dopts_array[_mod].enable) { \
+            printf("[%s.%s] %s.%d:" _fmt, #_mod, #_opt, __FUNCTION__, __LINE__, ##_args); \
         } \
     } \
 }
@@ -62,9 +63,9 @@ dopt_t dopts_array[DOPT_MAX] = {
 
 #define BRET(e) { \
     berr _rv = (e);\
-    if ((_rv != E_SUCCESS) && dopt_array[DOPT_ETRACE].enable) \
+    if ((_rv != E_SUCCESS) && dopts_array[DOPT_ETRACE].enable) \
     { \
-        printf("[ETRACE] %s.%d: return %s!", __func__, __LINE__, berr_msg(_rv)); \
+        printf("[ETRACE] %s.%d: return %d!", __FUNCTION__, __LINE__, berr_msg(_rv)); \
     } \
 }
 
