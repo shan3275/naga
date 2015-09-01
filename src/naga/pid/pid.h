@@ -1,11 +1,18 @@
-#ifndef __NAGA_H_
-#define __NAGA_H_
+#ifndef __PID_H_
+#define __PID_H_
 
 #include <stdio.h>
+#include <string.h>
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <rte_branch_prediction.h>
 #include "boots.h"
+
+typedef enum
+{
+	URL_IN_NULL,
+	URL_IN_GTP,
+} APP_TYPE_E;
 
 
 #define URL_MAX_LEN  512 //URL MAX LEN
@@ -38,7 +45,7 @@ typedef struct
 	uint32_t inner_dstip6[4];		
 #endif	
 
-    uint16_t protocol_type;
+    uint16_t app_type;
     uint16_t url_len;
 	char url[URL_MAX_LEN];
 }hytag_t;

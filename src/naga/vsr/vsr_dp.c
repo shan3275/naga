@@ -34,13 +34,12 @@ berr vsr_dp_process(hytag_t *hytag)
     cnt_inc(VSR_PKTS);
 
     /*check protocol type*/
-    if ( hytag->protocol_type != IP_UDP_GTP_IP_URL)
+    if ( hytag->app_type != URL_IN_GTP)
     {
         /* add statistics */
         cnt_inc(VSR_UNURLPKTS);
         return E_SUCCESS;
     }
-
     /* add IP_UDP_GTP_IP_URL packet statistics */
     cnt_inc(VSR_URLPKTS);
 
@@ -114,8 +113,8 @@ berr vsr_dp_encourage_test(hytag_t *hytag)
 
         hytag->url_len = 18;
         strncpy(hytag->url, url[vsr_api_encourage_get() % VSR_RULE_NUM_MAX], 18);
-        hytag->protocol_type = IP_UDP_GTP_IP_URL;
-        printf("url_len(%d), url(%s), protocol_type(%d)\n", hytag->url_len, hytag->url, hytag->protocol_type);
+        hytag->app_type = URL_IN_GTP;
+        printf("url_len(%d), url(%s), app_type(%d)\n", hytag->url_len, hytag->url, hytag->app_type);
 
         vsr_api_encourage_dec();
         return E_SUCCESS; 
