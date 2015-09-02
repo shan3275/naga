@@ -8,12 +8,12 @@ berr pid_http(struct pbuf *p ,  hytag_t * hytag )
 {
 	int i = 0, j = 0;
 	uint16_t method_len = 0;
-	char *http_p = NULL;
-	char method_http[MAX_METHOD_LEN] = {0};
+	unsigned char *http_p = NULL;
+	unsigned char method_http[MAX_METHOD_LEN] = {0};
 	
-	PBUF_CUR_FORMAT(char *, http_p, p);
+	PBUF_CUR_FORMAT(unsigned char *, http_p, p);
 
-	while((0x20 != *http_p) && (0 != *http_p))
+	while((0x20 != *http_p) && (0 != *http_p))    /*GET*/
 	{
 		if (i + 1 < MAX_METHOD_LEN)
 		{
@@ -26,9 +26,13 @@ berr pid_http(struct pbuf *p ,  hytag_t * hytag )
 		}
 	}
 
-	method_len = i + 1;
-	if ((method_len != strlen(STRING_HTTP_GET)) || 
-		(!strncmp(STRING_HTTP_GET, method_http, method_len)))
+    method_http[i] = 0;
+	method_len = i;
+
+	printf("the method is:  %s\n", method_http);
+
+	if ((method_len != strlen(STRING_HTTP_GET)) ||
+		(!memcmp(STRING_HTTP_GET, method_http, method_len)))
 	{
 		//pid_incr_count(HTTP_OTHER);
 		return E_FAIL;
@@ -54,9 +58,10 @@ berr pid_http(struct pbuf *p ,  hytag_t * hytag )
 		}
 	}
 
-	printf("the url is:  %s", hytag->url);
+    hytag->url[j] = 0;
+	printf("the url is:  %s\n", hytag->url);
 	
-	hytag->url_len = j + 1;
+	hytag->url_len = j;
 	hytag->app_type = URL_IN_GTP;
 	
     return E_SUCCESS;
