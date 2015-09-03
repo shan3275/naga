@@ -1,5 +1,6 @@
 #include "pid.h"
 #include <string.h>
+#include "vsr_dp.h"
 
 berr naga_dpdk_process(struct rte_mbuf *m)
 {
@@ -15,6 +16,8 @@ berr naga_dpdk_process(struct rte_mbuf *m)
     packetp.ptr_offset = 0;
 
     DEBUG_PRINTF("enter naga\n");
+    cnt_inc(ITF_IPKTS);
+    cnt_add(ITF_IBYTS, m->data_len);
 
     errcode =  pid_ethernet(&packetp, &hytag);
 
@@ -24,6 +27,8 @@ berr naga_dpdk_process(struct rte_mbuf *m)
         //PRINTF_PKT(p);
         //sleep(100);
     }
+
+    vsr_dp_process(&hytag);
     
     return errcode;
 }

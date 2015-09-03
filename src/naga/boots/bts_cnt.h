@@ -8,10 +8,6 @@ typedef enum {
       ITF_IBYTS,
       ITF_OPKTS,
       ITF_OBYTS,
-#ifdef CNT_CUSTOM
-      CNT_CUSTOM,
-#endif
-
 	  OUTERL3_HD,	/*Head Err, length not compare or infomation err*/
 	  OUTERL3_IPV4,
 	  OUTERL3_IPV6,
@@ -21,23 +17,23 @@ typedef enum {
 	  OUTERL4_TCP,
 	  OUTERL4_UDP,
 	  OUTERL4_SCTP,
+
 	  OUTERL4_OTHER,
-	  
 	  INNERL3_HD,
 	  INNERL3_IPV4,
 	  INNERL3_IPV6,
+
 	  INNERL3_NOIP,
-	  
 	  INNERL4_HD,
 	  INNERL4_TCP,
 	  INNERL4_UDP,
+
 	  INNERL4_SCTP,    
 	  INNERL4_OTHER,
-	  
 	  GTP_U_HD,
 	  GTP_U,
+
 	  GTP_U_NOPAYLOAD,
-	  
 	  GTPC_HD,
 	  GTPV1_C,
 	  GTPV2_C,
@@ -46,6 +42,11 @@ typedef enum {
 	  APP_OTHER,
 	  ERR_PACKET,
 	  HEADER_UNEXPECT,
+
+#ifdef CNT_CUSTOM
+      CNT_CUSTOM,
+#endif
+
 
       CNT_MAX
 } cnte;
@@ -71,6 +72,6 @@ berr cnt_inc(cnte idx);
 berr cnt_dec(cnte idx);
 berr cnt_get(cnte idx, uint32_t number, cnt_t *vals, uint32_t *total);
 berr cnt_clear(cnte idx, uint32_t number, uint32_t *total);
-berr cnt_int();
+berr cnt_int(void);
 
 #endif

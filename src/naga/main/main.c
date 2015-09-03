@@ -368,12 +368,14 @@ l2fwd_launch_one_lcore(__attribute__((unused)) void *dummy)
         vsr_dp_init();
         cmdline (0, NULL);
     }
+#if 0
     else
     if (rte_lcore_id() == 0 )
     {
         printf("cmd core %d\n", rte_lcore_id());
         vsr_dp_test();
     }
+#endif
     else
     {
         l2fwd_main_loop();

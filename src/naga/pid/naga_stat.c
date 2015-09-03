@@ -3,7 +3,7 @@
 
 
 
-
+# if 0
 struct pid_port_stat_s gpid_stats[PID_STAT_MAX_IDX];
 //extern struct pid_port_stat_s gpid_stats;
 
@@ -102,3 +102,4 @@ inline void pid_incr_count(enum pid_pkt_type pid_type)
  */   
     return;
 }
+#endif

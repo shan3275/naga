@@ -2,7 +2,7 @@
 #define _NAGA_STAT_H
 
 #include "rte_atomic.h"
-
+#include "bts_cnt.h"
 typedef rte_atomic64_t pid_atomic64_cnt_t ;
 
 struct pid_port_stat_s
@@ -27,7 +27,7 @@ struct pid_port_stat_s
 #endif    
 }__rte_cache_aligned;
 
-
+# if 0
 enum pid_pkt_type
 {
     OUTERL3_HD,   /*Head Err, length not compare or infomation err*/
@@ -68,9 +68,9 @@ enum pid_pkt_type
     PID_STAT_MAX_IDX,
 };
 
+#endif
 
-
-void pid_incr_count(enum pid_pkt_type pid_type) ;
+//void pid_incr_count(enum pid_pkt_type pid_type) ;
 void gpid_stats_init(void);
 
 void printf_pid_stat(void);
