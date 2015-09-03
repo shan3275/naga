@@ -1,5 +1,6 @@
 #include "pid.h"
 #include <string.h>
+#include "vsr_dp.h"
 
 berr naga_dpdk_process(struct rte_mbuf *m)
 {
@@ -24,6 +25,8 @@ berr naga_dpdk_process(struct rte_mbuf *m)
         //PRINTF_PKT(p);
         //sleep(100);
     }
+
+    vsr_dp_process(&hytag);
     
     return errcode;
 }
