@@ -128,7 +128,7 @@ berr vsr_dp_encourage_test(hytag_t *hytag)
 void vsr_dp_test(void)
 {
     hytag_t hytag;
-    int volatile rv;
+    int  rv;
     while(1)
     {
         rv = vsr_dp_encourage_test(&hytag);
