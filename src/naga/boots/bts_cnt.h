@@ -71,6 +71,6 @@ berr cnt_inc(cnte idx);
 berr cnt_dec(cnte idx);
 berr cnt_get(cnte idx, uint32_t number, cnt_t *vals, uint32_t *total);
 berr cnt_clear(cnte idx, uint32_t number, uint32_t *total);
-berr cnt_int();
+berr cnt_int(void);
 
 #endif
