@@ -328,6 +328,8 @@ berr vsr_dp_api_match(uint32_t index, uint32_t ip, char* url, uint16_t len)
          vsr_set_url_content(index, i, len, (uint8_t *)url);
          /* set url len */
          vsr_set_url_len(index, i,len);
+         /* set url effective */
+         vsr_set_url_effective(index, i, VSR_RULE_URL_EFFECTIVE);
         /* update the statitics */
          vsr_url_pkt_inc(index, i);
         /* url_num ++*/
