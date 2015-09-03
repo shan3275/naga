@@ -67,6 +67,7 @@ uint32_t srcip[VSR_RULE_NUM_MAX] =
     0x02020202,
     0x03030403,
     0x04040404,
+    0x05050505,
     0x06060606,
     0x07070707,
     0x08080808,
@@ -112,9 +113,10 @@ berr vsr_dp_encourage_test(hytag_t *hytag)
     {
 
         hytag->url_len = 18;
+        hytag->inner_srcip4 = srcip[vsr_api_encourage_get() % VSR_RULE_NUM_MAX];
         strncpy(hytag->url, url[vsr_api_encourage_get() % VSR_RULE_NUM_MAX], 18);
         hytag->app_type = URL_IN_GTP;
-        printf("url_len(%d), url(%s), app_type(%d)\n", hytag->url_len, hytag->url, hytag->app_type);
+        printf("url_len(%d), url(%s), srcip(0x%x) app_type(%d)\n", hytag->url_len, hytag->url,hytag->inner_srcip4, hytag->app_type);
 
         vsr_api_encourage_dec();
         return E_SUCCESS; 
@@ -126,7 +128,7 @@ berr vsr_dp_encourage_test(hytag_t *hytag)
 void vsr_dp_test(void)
 {
     hytag_t hytag;
-    int rv;
+    int volatile rv;
     while(1)
     {
         rv = vsr_dp_encourage_test(&hytag);

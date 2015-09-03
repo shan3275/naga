@@ -47,6 +47,7 @@ LIBABIVER := 1
 SRCS-y += boots_parse.c
 SRCS-y += bts_cnt.c
 SRCS-y += bts_cmd.c
+SRCS-y += bts_hash.c
 
 #
 # Export include files
