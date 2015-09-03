@@ -46,6 +46,7 @@ berr pid_tcp(struct pbuf *p, hytag_t *hytag, int inner_outer)
              return pid_http(p, hytag);        
         default:
              pid_incr_count(APP_OTHER);
+			 break;
     }
     
     return E_SUCCESS;
