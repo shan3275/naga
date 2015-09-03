@@ -3,6 +3,10 @@
 
 #include "pid.h"
 
+#define HTTP_PORT_80 	80
+#define HTTP_PORT_8080 	80
+
+
 berr pid_tcp(struct pbuf *p, hytag_t *hytag, int inner_outer)
 {
     uint16_t tcphr_len = 0;
@@ -38,30 +42,19 @@ berr pid_tcp(struct pbuf *p, hytag_t *hytag, int inner_outer)
     
     UPDATE_PBUF_OFFSET(p, tcphr_len);
 
-    switch(ntohs(tcp_hdr->dest))
-    {
-        case 80:
-        case 8080:
-             pid_incr_count(APP_HTTP);
-             return pid_http(p, hytag);        
-        default:
-			break;
-   }
-	switch(ntohs(tcp_hdr->src))
-	{
-		case 80:
-		case 8080:
-			 pid_incr_count(APP_HTTP);
-			 return pid_http(p, hytag); 	   
-		default:
-			 pid_incr_count(APP_OTHER);
-			 break;
-	}
-	break;
-
-
-
 	
+	uint16_t srcport = ntohs(tcp_hdr->src); 
+	uint16_t dstport = ntohs(tcp_hdr->dest); 
+	
+	if( srcport== 80 || srcport == 8080 || dstport == 80 || dstport == 8080 )
+	{
+	     pid_incr_count(APP_HTTP);
+		 return pid_http(p, hytag);     
+	}
+	else
+	{
+	      pid_incr_count(APP_HTTP);
+	}
     return E_SUCCESS;
 }
 
