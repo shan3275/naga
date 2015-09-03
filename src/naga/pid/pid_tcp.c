@@ -38,7 +38,7 @@ berr pid_tcp(struct pbuf *p, hytag_t *hytag, int inner_outer)
     
     UPDATE_PBUF_OFFSET(p, tcphr_len);
 
-    switch(ntohs(tcp_hdr->src))
+    switch(ntohs(tcp_hdr->dst_port))
     {
         case 80:
         case 8080:
