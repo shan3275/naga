@@ -34,12 +34,12 @@ berr pid_http(struct pbuf *p ,  hytag_t * hytag )
 	if ((method_len != STRING_HTTP_GET_LEN ) ||
 		(memcmp(STRING_HTTP_GET, method_http, STRING_HTTP_GET_LEN)))
 	{
-		pid_incr_count(HTTP_OTHER);
+		pid_incr_count(APP_HTTP_OTHER);
 		return E_FAIL;
 	}
 	else
 	{
-		//pid_incr_count(HTTP_GET);
+		pid_incr_count(APP_HTTP_GET);
 	}
 
 	http_p++;
