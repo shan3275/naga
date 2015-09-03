@@ -11,6 +11,42 @@ typedef enum {
 #ifdef CNT_CUSTOM
       CNT_CUSTOM,
 #endif
+
+	  OUTERL3_HD,	/*Head Err, length not compare or infomation err*/
+	  OUTERL3_IPV4,
+	  OUTERL3_IPV6,
+	  OUTERL3_NOIP,
+	  
+	  OUTERL4_HD,  
+	  OUTERL4_TCP,
+	  OUTERL4_UDP,
+	  OUTERL4_SCTP,
+	  OUTERL4_OTHER,
+	  
+	  INNERL3_HD,
+	  INNERL3_IPV4,
+	  INNERL3_IPV6,
+	  INNERL3_NOIP,
+	  
+	  INNERL4_HD,
+	  INNERL4_TCP,
+	  INNERL4_UDP,
+	  INNERL4_SCTP,    
+	  INNERL4_OTHER,
+	  
+	  GTP_U_HD,
+	  GTP_U,
+	  GTP_U_NOPAYLOAD,
+	  
+	  GTPC_HD,
+	  GTPV1_C,
+	  GTPV2_C,
+	  
+	  APP_HTTP,
+	  APP_OTHER,
+	  ERR_PACKET,
+	  HEADER_UNEXPECT,
+
       CNT_MAX
 } cnte;
  

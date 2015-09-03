@@ -289,7 +289,7 @@ l2fwd_main_loop(void)
 	}
 
 	while (1) {
-
+#if 0
 		cur_tsc = rte_rdtsc();
 
 		/*
@@ -328,7 +328,7 @@ l2fwd_main_loop(void)
 
 			prev_tsc = cur_tsc;
 		}
-
+#endif
 		/*
 		 * Read packet from RX queues
 		 */
@@ -345,7 +345,7 @@ l2fwd_main_loop(void)
                 rte_prefetch0(rte_pktmbuf_mtod(m, void *));
                 if(1)
                 {
-                    naga_pid_dpdk(m);
+                    naga_dpdk_process(m);
                 }
                 else
                 {
@@ -356,6 +356,7 @@ l2fwd_main_loop(void)
 		}
 	}
 }
+
 
 static int
 l2fwd_launch_one_lcore(__attribute__((unused)) void *dummy)

@@ -74,4 +74,9 @@ void pid_incr_count(enum pid_pkt_type pid_type) ;
 void gpid_stats_init(void);
 
 void printf_pid_stat(void);
+
+
+
+#define pid_incr_count cnt_inc
+
 #endif
