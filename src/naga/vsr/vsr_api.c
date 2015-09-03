@@ -268,18 +268,22 @@ berr vsr_dp_api_match(uint32_t index, uint32_t ip, char* url, uint16_t len)
     /* check rule effective */
     if(vsr_check_rule_effective(index)== VSR_RULE_UNEFFECTIVE)
     {
+        /* unlock */
+        VSR_RULE_UNLOCK(index);
         return E_NULL;
     }
 
     /* check ip */
     if ( ip != vsr_get_rule_ip(index))
     {
+        /* unlock */
+        VSR_RULE_UNLOCK(index);
         return E_MATCH;
     }
 
     /* update rule statistics */
     /* caluate the hash value of url */
-    hash = vsr_hash((uint8_t *)url, len);
+    hash = bts_hash((void *)url, len);
     vsr_inc_rule_pkt(index);
 
     /* search url */
@@ -322,6 +326,8 @@ berr vsr_dp_api_match(uint32_t index, uint32_t ip, char* url, uint16_t len)
          vsr_set_url_hash(index, i,hash);
         /* update content */
          vsr_set_url_content(index, i, len, (uint8_t *)url);
+         /* set url len */
+         vsr_set_url_len(index, i,len);
         /* update the statitics */
          vsr_url_pkt_inc(index, i);
         /* url_num ++*/
