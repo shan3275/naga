@@ -38,17 +38,30 @@ berr pid_tcp(struct pbuf *p, hytag_t *hytag, int inner_outer)
     
     UPDATE_PBUF_OFFSET(p, tcphr_len);
 
-    switch(ntohs(tcp_hdr->dst_port))
+    switch(ntohs(tcp_hdr->dest))
     {
         case 80:
         case 8080:
              pid_incr_count(APP_HTTP);
              return pid_http(p, hytag);        
         default:
-             pid_incr_count(APP_OTHER);
+			break;
+   }
+	switch(ntohs(tcp_hdr->src))
+	{
+		case 80:
+		case 8080:
+			 pid_incr_count(APP_HTTP);
+			 return pid_http(p, hytag); 	   
+		default:
+			 pid_incr_count(APP_OTHER);
 			 break;
-    }
-    
+	}
+	break;
+
+
+
+	
     return E_SUCCESS;
 }
 
