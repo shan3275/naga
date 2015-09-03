@@ -26,7 +26,7 @@ berr pid_http(struct pbuf *p ,  hytag_t * hytag )
 		}
 	}
 
-    method_http[i] = 0;
+    method_http[i] = '\0';
 	method_len = i;
 
 	printf("the method is:  %s<%d>\n", method_http, method_len);
