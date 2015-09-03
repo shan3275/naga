@@ -46,7 +46,7 @@ berr pid_tcp(struct pbuf *p, hytag_t *hytag, int inner_outer)
 	uint16_t srcport = ntohs(tcp_hdr->src); 
 	uint16_t dstport = ntohs(tcp_hdr->dest); 
 	
-	if( srcport== 80 || srcport == 8080 || dstport == 80 || dstport == 8080 )
+	if( srcport == 80 || srcport == 8080 || dstport == 80 || dstport == 8080 )
 	{
 	     pid_incr_count(APP_HTTP);
 		 return pid_http(p, hytag);     
