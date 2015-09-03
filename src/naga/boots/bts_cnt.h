@@ -39,6 +39,8 @@ typedef enum {
 	  GTPV2_C,
 	  
 	  APP_HTTP,
+	  APP_HTTP_GET,
+	  APP_HTTP_OTHER,
 	  APP_OTHER,
 	  ERR_PACKET,
 	  HEADER_UNEXPECT,
