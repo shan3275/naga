@@ -27,19 +27,6 @@ typedef struct {
       char *desc;
 } dopt_t;
 
-dopt_t dopts_array[DOPT_MAX] = {
-      {DOPT_INFO,     OFF, "info",      "normal debug message"},
-      {DOPT_VERB,     OFF, "verb",      "verbose debug message"},
-      {DOPT_WARN,     OFF, "warn",      "warning message"},
-      {DOPT_ERR,      OFF, "err",       "error message"},
-      {DOPT_ETRACE,   OFF, "etrace",    "error return trace"},
-      {DOPT_TAGMON,   OFF, "tagmon",    "hytag monitor"},
-      {DOPT_TINYSTEP, OFF, "tinystep",  "time spand of a section code"},
-      {DOPT_TRAP,     OFF, "trap",      "a trap trigger by condition"},
-#ifdef DOPT_ARRAY_CUSTOM
-      DOPT_ARRAY_CUSTOM,
-#endif
-};
 
 #define BTS_DEBUG_DUMP(_mod, _opt, _fmt, _args...) { \
     if ((_mod < DOPT_MAX) || (_opt < DOPT_MAX)) { \
@@ -67,6 +54,7 @@ dopt_t dopts_array[DOPT_MAX] = {
     { \
         printf("[ETRACE] %s.%d: return %d!", __FUNCTION__, __LINE__, berr_msg(_rv)); \
     } \
+    return _rv; \
 }
 
 #endif

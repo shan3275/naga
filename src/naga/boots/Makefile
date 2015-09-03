@@ -36,7 +36,8 @@ include $(RTE_SDK)/mk/rte.vars.mk
 #
 LIB = libboots.a
 
-CFLAGS +=  -I .  -I ../include
+CFLAGS +=  -I .  -I ../include -I ../libzebra
+
 #CFLAGS += $(WERROR_FLAGS)
 
 EXPORT_MAP := lib_vsr_version.map
@@ -45,6 +46,7 @@ LIBABIVER := 1
 
 SRCS-y += boots_parse.c
 SRCS-y += bts_cnt.c
+SRCS-y += bts_cmd.c
 
 #
 # Export include files
