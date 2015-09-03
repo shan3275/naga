@@ -16,6 +16,8 @@ berr naga_dpdk_process(struct rte_mbuf *m)
     packetp.ptr_offset = 0;
 
     DEBUG_PRINTF("enter naga\n");
+    cnt_inc(ITF_IPKTS);
+    cnt_add(ITF_IBYTS, m->data_len);
 
     errcode =  pid_ethernet(&packetp, &hytag);
 
