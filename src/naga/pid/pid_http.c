@@ -2,7 +2,7 @@
 
 #define MAX_METHOD_LEN 64
 #define STRING_HTTP_GET  "GET"
-
+#define STRING_HTTP_GET_LEN  3
 
 berr pid_http(struct pbuf *p ,  hytag_t * hytag )
 {
@@ -29,12 +29,12 @@ berr pid_http(struct pbuf *p ,  hytag_t * hytag )
     method_http[i] = 0;
 	method_len = i;
 
-	printf("the method is:  %s\n", method_http);
+	printf("the method is:  %s<%d>\n", method_http, method_len);
 
-	if ((method_len != strlen(STRING_HTTP_GET)) ||
-		(!memcmp(STRING_HTTP_GET, method_http, method_len)))
+	if ((method_len != STRING_HTTP_GET_LEN ) ||
+		(memcmp(STRING_HTTP_GET, method_http, STRING_HTTP_GET_LEN)))
 	{
-		//pid_incr_count(HTTP_OTHER);
+		pid_incr_count(HTTP_OTHER);
 		return E_FAIL;
 	}
 	else
