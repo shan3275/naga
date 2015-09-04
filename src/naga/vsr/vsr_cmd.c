@@ -292,7 +292,8 @@ static int vsr_cmd_show_all(struct vty *vty)
         ret = rule_vsr_cmd_dump((uint32_t)i , buff, sizeof(buff));
         if (ret)
         {
-            vty_out(vty, "vsr dump fail, index(%d) ret(%d)%s", index, ret, VTY_NEWLINE);
+            continue;
+            //vty_out(vty, "vsr dump fail, index(%d) ret(%d)%s", index, ret, VTY_NEWLINE);
             //return CMD_WARNING;
         }
 
