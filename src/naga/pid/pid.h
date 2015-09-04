@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <rte_branch_prediction.h>
+
 #include "boots.h"
 
 typedef enum
@@ -59,6 +60,7 @@ struct pbuf {
 	uint16_t  ptr_offset;/*when The module Pid handle the protocol any*/
 	//uint8_t flag;
 };	
+
 
 
 static inline berr check_pbuf_len(struct pbuf *p, int incr_len)
@@ -122,6 +124,7 @@ static inline berr check_pbuf_len(struct pbuf *p, int incr_len)
 #include "naga_stat.h"
 
 berr naga_pid_dpdk(struct rte_mbuf *m);
+
 
 #endif
 

@@ -53,7 +53,7 @@ berr pid_tcp(struct pbuf *p, hytag_t *hytag, int inner_outer)
 	}
 	else
 	{
-	      pid_incr_count(APP_OTHER);
+	     pid_incr_count(APP_OTHER);
 	}
     return E_SUCCESS;
 }

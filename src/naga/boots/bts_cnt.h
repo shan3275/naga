@@ -8,12 +8,13 @@ typedef enum {
       ITF_IBYTS,
       ITF_OPKTS,
       ITF_OBYTS,
-	  OUTERL3_HD,	/*Head Err, length not compare or infomation err*/
+      VLAN_PKTS,
+	  OUTERL3_HD, /*Head Err, length not compare or infomation err*/
 	  OUTERL3_IPV4,
 	  OUTERL3_IPV6,
 	  OUTERL3_NOIP,
 	  
-	  OUTERL4_HD,  
+	  OUTERL4_HD,
 	  OUTERL4_TCP,
 	  OUTERL4_UDP,
 	  OUTERL4_SCTP,
@@ -28,7 +29,7 @@ typedef enum {
 	  INNERL4_TCP,
 	  INNERL4_UDP,
 
-	  INNERL4_SCTP,    
+	  INNERL4_SCTP,
 	  INNERL4_OTHER,
 	  GTP_U_HD,
 	  GTP_U,
@@ -39,9 +40,11 @@ typedef enum {
 	  GTPV2_C,
 	  
 	  APP_HTTP,
+	  APP_OTHER,
+	  HTTP_METHOD_EXCEED,
 	  APP_HTTP_GET,
 	  APP_HTTP_OTHER,
-	  APP_OTHER,
+	  HTTP_URL_EXCEED,
 	  ERR_PACKET,
 	  HEADER_UNEXPECT,
 

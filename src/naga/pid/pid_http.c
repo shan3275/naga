@@ -13,7 +13,7 @@ berr pid_http(struct pbuf *p ,  hytag_t * hytag )
 	
 	PBUF_CUR_FORMAT(unsigned char *, http_p, p);
 
-	while((0x20 != *http_p) && (0 != *http_p))    /*GET*/
+	while((0x20 != *http_p) && ('\0' != *http_p))    /*GET*/
 	{
 		if (i + 1 < MAX_METHOD_LEN)
 		{
@@ -21,11 +21,12 @@ berr pid_http(struct pbuf *p ,  hytag_t * hytag )
 		}
 		else
 		{
-			//pid_incr_count(NOT_HTTP);
+			pid_incr_count(HTTP_METHOD_EXCEED);
 			return E_FAIL;
 		}
 	}
 
+	
     method_http[i] = '\0';
 	method_len = i;
 
@@ -45,7 +46,7 @@ berr pid_http(struct pbuf *p ,  hytag_t * hytag )
 	http_p++;
 	http_p++;
 
-	while((0x20 != *http_p) && (0 != *http_p))
+	while((0x20 != *http_p) && ('\0' != *http_p))
 	{
 		if (j + 1 < URL_MAX_LEN)
 		{
@@ -53,12 +54,13 @@ berr pid_http(struct pbuf *p ,  hytag_t * hytag )
 		}
 		else
 		{
-			//pid_incr_count(HTTP_GET_OTHER);
+			hytag->app_type = URL_IN_NULL;
+			pid_incr_count(HTTP_URL_EXCEED);
 			return E_FAIL;
 		}
 	}
 
-    hytag->url[j] = 0;
+    hytag->url[j] = '\0';
 	printf("the url is:  %s\n", hytag->url);
 	
 	hytag->url_len = j;

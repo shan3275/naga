@@ -3,7 +3,7 @@
 
 berr pid_outerip4(struct pbuf *p,  hytag_t * hytag)
 {
-	struct ip4_hdr *iphdr;
+	struct ip4_hdr *iphdr = NULL;
 	uint16_t  iphdr_hlen;//, iphdr_len;
 
 
@@ -25,7 +25,7 @@ berr pid_outerip4(struct pbuf *p,  hytag_t * hytag)
 		pid_incr_count(OUTERL3_HD);
 		return E_COMPARE;
 	}
-	pid_incr_count(OUTERL3_IPV4);
+	//pid_incr_count(OUTERL3_IPV4);
   	/* obtain IP header length in number of 32-bit words */
   	iphdr_hlen = IPH_HL(iphdr);
 	/* calculate IP header length in bytes */
