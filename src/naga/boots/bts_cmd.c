@@ -90,8 +90,8 @@ DEFUN(bts_show_all,
  * */
 void cmdline_bts_init(void)
 {
-    install_element(CONFIG_NODE, &bts_show_all_cmd);
-    install_element(CONFIG_NODE, &bts_clear_all_cmd);
+    install_element(CMD_NODE, &bts_show_all_cmd);
+    install_element(CMD_NODE, &bts_clear_all_cmd);
 
     return ;
 }

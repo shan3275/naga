@@ -22,6 +22,7 @@ typedef unsigned long long  ULL;
 typedef rte_spinlock_t    bts_spinlock_t;
 typedef rte_atomic64_t    bts_atomic64_t;
 typedef rte_atomic32_t    bts_atomic32_t;
+#define CMD_NODE          VIEW_NODE
 
 #define OFF 0
 #define ON  1

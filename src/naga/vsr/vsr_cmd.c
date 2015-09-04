@@ -487,25 +487,25 @@ DEFUN(vsr_encourage,
 void cmdline_vsr_init(void)
 {
 
-    install_element(CONFIG_NODE, &vsr_add_cmd);
-    install_element(CONFIG_NODE, &vsr_add_mobile_cmd);
+    install_element(CMD_NODE, &vsr_add_cmd);
+    install_element(CMD_NODE, &vsr_add_mobile_cmd);
 
-    install_element(CONFIG_NODE, &vsr_del_cmd);
-    install_element(CONFIG_NODE, &vsr_del_all_cmd);
+    install_element(CMD_NODE, &vsr_del_cmd);
+    install_element(CMD_NODE, &vsr_del_all_cmd);
 
-    install_element(CONFIG_NODE, &vsr_show_by_index_cmd);
-    install_element(CONFIG_NODE, &vsr_show_all_cmd);
-    install_element(CONFIG_NODE, &vsr_show_total_cmd);
-    install_element(CONFIG_NODE, &vsr_show_by_ip_cmd);
-    install_element(CONFIG_NODE, &vsr_show_by_mobile_cmd);
+    install_element(CMD_NODE, &vsr_show_by_index_cmd);
+    install_element(CMD_NODE, &vsr_show_all_cmd);
+    install_element(CMD_NODE, &vsr_show_total_cmd);
+    install_element(CMD_NODE, &vsr_show_by_ip_cmd);
+    install_element(CMD_NODE, &vsr_show_by_mobile_cmd);
 
-    install_element(CONFIG_NODE, &vsr_flush_url_cmd);
-    install_element(CONFIG_NODE, &vsr_flush_url_all_cmd);
+    install_element(CMD_NODE, &vsr_flush_url_cmd);
+    install_element(CMD_NODE, &vsr_flush_url_all_cmd);
 
-    install_element(CONFIG_NODE, &vsr_clear_statistics_cmd);
-    install_element(CONFIG_NODE, &vsr_clear_statistics_all_cmd);
+    install_element(CMD_NODE, &vsr_clear_statistics_cmd);
+    install_element(CMD_NODE, &vsr_clear_statistics_all_cmd);
 
-    install_element(CONFIG_NODE, &vsr_encourage_cmd);
+    install_element(CMD_NODE, &vsr_encourage_cmd);
 
     return ;
 }
