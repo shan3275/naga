@@ -341,6 +341,7 @@ berr vsr_dp_api_match(uint32_t index, uint32_t ip, char* url, uint16_t len)
          vsr_url_pkt_inc(index, i);
         /* url_num ++*/
          vsr_inc_rule_url_num(index);
+         cnt_inc(VSR_RULE_NEW_URL);
     }
 
     /* unlock */

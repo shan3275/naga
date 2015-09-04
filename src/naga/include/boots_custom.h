@@ -38,7 +38,8 @@
     VSR_MATCHPKTS, /* match packets */ \
     VSR_RULE_MATCHPKTS, /* rule ip, url all match */ \
     VSR_RULE_LEN_OVERFLOW, /* url len overflow */ \
-    VSR_RULE_URL_OVERFLOW    /* url overflow */
+    VSR_RULE_URL_OVERFLOW,    /* url overflow */ \
+    VSR_RULE_NEW_URL
 
 #define CNT_DEF_CUSTOM \
     /* VSR Module */ \
@@ -49,7 +50,8 @@
     CNT_DEF(VSR_MATCHPKTS), \
     CNT_DEF(VSR_RULE_MATCHPKTS), \
     CNT_DEF(VSR_RULE_LEN_OVERFLOW), \
-    CNT_DEF(VSR_RULE_URL_OVERFLOW)
+    CNT_DEF(VSR_RULE_URL_OVERFLOW), \
+    CNT_DEF(VSR_RULE_NEW_URL)
 
 /* Custom spinlock */
 #define bts_spinlock_t rte_spinlock_t
