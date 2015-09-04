@@ -55,6 +55,7 @@ typedef enum {
     E_EXIST,    // 已经存在
     E_BUSY,     // 繁忙 
     E_COMPARE,
+    E_OVER,     //溢出
     E_KNOWN,
     E_MAX,      // 错误码的最大值
 } berr;

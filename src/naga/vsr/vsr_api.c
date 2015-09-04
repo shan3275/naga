@@ -322,6 +322,13 @@ berr vsr_dp_api_match(uint32_t index, uint32_t ip, char* url, uint16_t len)
     /* not match, insert the url content */
     if ( i == url_num)
     {
+        if (url_num == VSR_URL_NUM_MAX)
+        {
+            cnt_inc(VSR_RULE_URL_OVERFLOW);
+            /* unlock */
+            VSR_RULE_UNLOCK(index);
+            return E_OVER;
+        }
         /* update hash*/
          vsr_set_url_hash(index, i,hash);
         /* update content */

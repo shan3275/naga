@@ -45,7 +45,7 @@ berr vsr_dp_process(hytag_t *hytag)
     if ( hytag->url_len == 0 || hytag->url_len > VSR_URL_LEN_MAX)
     {
         /* add statistics */
-        cnt_inc(VSR_UNURLPKTS);
+        cnt_inc(VSR_RULE_LEN_OVERFLOW);
         return E_SUCCESS;
     }
     /* add IP_UDP_GTP_IP_URL packet statistics */
