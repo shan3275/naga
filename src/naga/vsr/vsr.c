@@ -202,7 +202,14 @@ uint32_t vsr_get_url_hash(uint32_t index, uint32_t url_index)
 
 void vsr_set_url_content(uint32_t index, uint32_t url_index, int len, uint8_t * url)
 {
-    strncpy((char *)vsr_rule->rule[index].url_entry[url_index].url, (char *)url, len);
+    if ( len )
+    {
+        strncpy((char *)vsr_rule->rule[index].url_entry[url_index].url, (char *)url, len);
+    }
+    else
+    {
+        memset((char *)vsr_rule->rule[index].url_entry[url_index].url, 0, VSR_URL_LEN_MAX);
+    }
 }
 
 char *vsr_get_url_content(uint32_t index, uint32_t url_index)
