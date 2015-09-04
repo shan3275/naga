@@ -74,7 +74,7 @@ berr rule_vsr_cmd_get_index_by_ip(uint32_t ip, uint32_t *index)
     /* cmd query, so no need to check  */
 
     /* check  index pointer */
-    if (index)
+    if (NULL == index)
     {
         return E_PARAM;
     }
@@ -122,7 +122,7 @@ berr rule_vsr_cmd_get_index_by_mobile(uint64_t mobile, uint32_t *index)
     /* cmd query, no need to check */
 
     /* check  index pointer */
-    if (index)
+    if (NULL == index)
     {
         return E_PARAM;
     }

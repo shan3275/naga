@@ -39,6 +39,13 @@
 #else
 #define debug(fmt,args...)
 #endif  /* DEBUG */
+
+#define LITTLE_TO_BIG(_ip) \
+       _ip =   ( (_ip & 0xff000000) >> 24) \
+             | ( (_ip & 0x00ff0000) >> 8 ) \
+             | ( (_ip & 0x0000ff00) << 8 ) \
+             | ( (_ip & 0x000000ff) << 24)
+
 static int vsr_cmd_add(struct vty *vty, const char *index_str, const char *ip_str, const char *mobile_str)
 {
     int ret = 0;
@@ -57,6 +64,11 @@ static int vsr_cmd_add(struct vty *vty, const char *index_str, const char *ip_st
         return CMD_WARNING;
     }
     ip =((struct prefix_ipv4 *) &p)->prefix.s_addr;
+    debug("ip: %d.%d.%d.%d", (ip >> 24) & 0xff,
+                             (ip >> 16) & 0xff,
+                             (ip >> 8 ) & 0xff,
+                             (ip >> 0 ) & 0xff);
+    LITTLE_TO_BIG(ip);
     debug("ip: %d.%d.%d.%d", (ip >> 24) & 0xff,
                              (ip >> 16) & 0xff,
                              (ip >> 8 ) & 0xff,
@@ -183,6 +195,11 @@ static int vsr_cmd_show(struct vty *vty, const char *index_str, const char *ip_s
             return CMD_WARNING;
         }
         ip =((struct prefix_ipv4 *) &p)->prefix.s_addr;
+        debug("ip: %d.%d.%d.%d", (ip >> 24) & 0xff,
+                (ip >> 16) & 0xff,
+                (ip >> 8 ) & 0xff,
+                (ip >> 0 ) & 0xff);
+        LITTLE_TO_BIG(ip);
         debug("ip: %d.%d.%d.%d", (ip >> 24) & 0xff,
                 (ip >> 16) & 0xff,
                 (ip >> 8 ) & 0xff,
