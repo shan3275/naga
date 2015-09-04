@@ -237,7 +237,7 @@ int cmdline (int argc, char **argv)
     signal_init (zebrad.master, array_size(zebra_signals), zebra_signals);
     cmd_init (1);
     vty_init (zebrad.master);
-    memory_init ();
+    //memory_init ();
     cmdline_vsr_init();
     cmdline_bts_init();
 

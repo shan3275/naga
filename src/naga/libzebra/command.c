@@ -4035,11 +4035,18 @@ cmd_init (int terminal)
   install_element (VIEW_NODE, &show_version_cmd);
   if (terminal)
     {
+
       install_element (VIEW_NODE, &config_list_cmd);
       install_element (VIEW_NODE, &config_exit_cmd);
       install_element (VIEW_NODE, &config_quit_cmd);
       install_element (VIEW_NODE, &config_help_cmd);
       install_element (VIEW_NODE, &config_enable_cmd);
+      /* add by SamLiu */
+      install_element (VIEW_NODE, &config_write_terminal_cmd);
+      install_element (VIEW_NODE, &config_write_file_cmd);
+      install_element (VIEW_NODE, &config_write_memory_cmd);
+      install_element (VIEW_NODE, &config_write_cmd);
+
       install_element (VIEW_NODE, &config_terminal_length_cmd);
       install_element (VIEW_NODE, &config_terminal_no_length_cmd);
       install_element (VIEW_NODE, &show_logging_cmd);
