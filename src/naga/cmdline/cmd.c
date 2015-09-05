@@ -241,8 +241,8 @@ int cmdline (int argc, char **argv)
     cmdline_vsr_init();
     cmdline_bts_init();
 
-        /* Zebra related initialize. */
-        access_list_init ();
+    /* Zebra related initialize. */
+    //access_list_init ();
 
 
     /* Configuration file read*/
