@@ -2768,6 +2768,7 @@ config_from_file (struct vty *vty, FILE *fp, unsigned int *line_num)
   int ret;
   *line_num = 0;
   vector vline;
+  int node;
 
   while (fgets (vty->buf, VTY_BUFSIZ, fp))
     {
@@ -2787,6 +2788,16 @@ config_from_file (struct vty *vty, FILE *fp, unsigned int *line_num)
 	  vty->node = node_parent(vty->node);
 	  ret = cmd_execute_command_strict (vline, vty, NULL);
 	}
+
+      /* add by SamLiu */
+      if (ret != CMD_SUCCESS && ret != CMD_WARNING
+	  && ret != CMD_ERR_NOTHING_TODO)
+      {
+          node = vty->node;
+          vty->node = VIEW_NODE;
+          ret = cmd_execute_command_strict (vline, vty, NULL);
+          vty->node = node;
+      }
 
       cmd_free_strvec (vline);
 
@@ -4024,12 +4035,12 @@ cmd_init (int terminal)
   host.motdfile = NULL;
 
   /* Install top nodes. */
-  install_node (&view_node, NULL);
+  install_node (&view_node, config_write_host);
   install_node (&enable_node, NULL);
   install_node (&auth_node, NULL);
   install_node (&auth_enable_node, NULL);
   install_node (&restricted_node, NULL);
-  install_node (&config_node, config_write_host);
+  install_node (&config_node, NULL);
 
   /* Each node's basic commands. */
   install_element (VIEW_NODE, &show_version_cmd);
@@ -4046,6 +4057,7 @@ cmd_init (int terminal)
       install_element (VIEW_NODE, &config_write_file_cmd);
       install_element (VIEW_NODE, &config_write_memory_cmd);
       install_element (VIEW_NODE, &config_write_cmd);
+      install_element (VIEW_NODE, &show_running_config_cmd);
 
       install_element (VIEW_NODE, &config_terminal_length_cmd);
       install_element (VIEW_NODE, &config_terminal_no_length_cmd);
