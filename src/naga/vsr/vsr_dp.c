@@ -66,8 +66,6 @@ berr vsr_dp_process(hytag_t *hytag)
     return E_SUCCESS; 
 }
 
-
-
 /* encourage */
 uint32_t srcip[VSR_RULE_NUM_MAX] =
 {

@@ -39,7 +39,7 @@ void vsr_write_file(char *name, char *buff, uint32_t size)
     return;
 }
 
-void vsr_log_tab(void)
+void vsr_tab_file(void)
 {
     int i;
     int rv;

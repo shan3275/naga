@@ -111,6 +111,18 @@ berr rule_vsr_cmd_get_index_by_ip(uint32_t ip, uint32_t *index)
 
 berr rule_vsr_cmd_get_ip(uint32_t index, uint32_t *ip)
 {
+    /* check  index pointer */
+    if ( index >= VSR_RULE_NUM_MAX )
+    {
+        return E_PARAM;
+    }
+
+    if (NULL == ip)
+    {
+        return E_PARAM;
+    }
+
+    *ip = vsr_api_get_ip_by_index(index);
     return E_SUCCESS;
 }
 

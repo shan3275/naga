@@ -5,8 +5,8 @@
 #
 #       @author       :shan
 #       @name         :Sam Liu
-#       @file         :/mnt/hgfs/code/rose/src/dpdk-2.0.0/examples/zebra/vsr\vsr_cmd.c
-#       @date         :2015-08-22 17:29
+#       @file         :/home/shan/work/rose/src/naga/vsr\vsr_cmd.c
+#       @date         :2015/09/05 11:53
 #       @algorithm    :
 =============================================================================*/
 #include "vsr_cmd_api.h"
@@ -17,6 +17,7 @@
 #include "filter.h"
 #include "prefix.h"
 #include "privs.h"
+#include "vsr_file.h"
 
 #define RULE_STR                    "Access control list\n"
 #define VSR_STR                     "Vister Record list\n"
@@ -30,7 +31,7 @@
 #define FLUSH_STR                   "Flush url\n"
 //#define CLEAR_STR                   "Clear Operation\n"
 #define STAT_STR                    "Statistics Operation\n"
-#define ENCOURAGE_STR               "Encourage Operation, for test\n"
+#define ENCOURAGE_STR               "Encourage Operation, for test\n" 
 #define TOTAL_STR                   "Summary Display\n"
 
 #define DEBUG
@@ -481,6 +482,27 @@ DEFUN(vsr_encourage,
     return vsr_cmd_encourage(vty, argv[0]);
 }
 
+
+static int vsr_cmd_file(struct vty *vty)
+{
+    vsr_tab_file();
+    return CMD_SUCCESS;
+}
+
+DEFUN(vsr_file,
+      vsr_file_cmd,
+      "rule vsr entry file",
+      RULE_STR
+      VSR_STR
+      "Table Entry\n"
+      "Write File\n"
+      )
+{
+    return vsr_cmd_file(vty);
+}
+
+
+
 /*
  * vsr module cmdline register and init 
  *
@@ -507,6 +529,7 @@ void cmdline_vsr_init(void)
     install_element(CMD_NODE, &vsr_clear_statistics_all_cmd);
 
     install_element(CMD_NODE, &vsr_encourage_cmd);
+    install_element(CMD_NODE, &vsr_file_cmd);
 
     return ;
 }
