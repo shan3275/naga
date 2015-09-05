@@ -36,7 +36,8 @@ include $(RTE_SDK)/mk/rte.vars.mk
 #
 LIB = libzebra.a
 
-CFLAGS +=  -I . -I ../vsr
+CFLAGS +=  -I . -I ../vsr -I ../include
+
 #CFLAGS += $(WERROR_FLAGS)
 
 EXPORT_MAP := lib_zebra_version.map

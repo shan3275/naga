@@ -31,6 +31,7 @@
 
 include $(RTE_SDK)/mk/rte.vars.mk
 
+DIRS-y += include
 DIRS-y += boots
 DIRS-y += libzebra
 DIRS-y += cmdline

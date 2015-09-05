@@ -33,6 +33,7 @@ Boston, MA 02111-1307, USA.  */
 #include "command.h"
 #include "workqueue.h"
 #include "vsr_cmd.h"
+#include "naga_version.h"
 
 /* Command vector which includes some level of command lists. Normally
    each daemon maintains each own cmdvec. */
@@ -2963,12 +2964,15 @@ DEFUN (show_version,
        SHOW_STR
        "Displays zebra version\n")
 {
+#if 0
   vty_out (vty, "Quagga %s (%s).%s", QUAGGA_VERSION, host.name?host.name:"",
 	   VTY_NEWLINE);
   vty_out (vty, "%s%s%s", QUAGGA_COPYRIGHT, GIT_INFO, VTY_NEWLINE);
-  vty_out (vty, "configured with:%s    %s%s", VTY_NEWLINE,
-           QUAGGA_CONFIG_ARGS, VTY_NEWLINE);
-
+#endif
+  vty_out (vty, "Compile time:%s    %s%s", VTY_NEWLINE,
+           NAGA_COMPILE_TIME, VTY_NEWLINE);
+  vty_out (vty, "Naga:: Current platform version:%s    %s%s", VTY_NEWLINE,
+           NAGA_VERSION, VTY_NEWLINE);
   return CMD_SUCCESS;
 }
 
