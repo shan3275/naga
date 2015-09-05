@@ -30,7 +30,7 @@ berr pid_http(struct pbuf *p ,  hytag_t * hytag )
     method_http[i] = '\0';
 	method_len = i;
 
-	printf("the method is:  %s<%d>\n", method_http, method_len);
+//printf("the method is:  %s<%d>\n", method_http, method_len);
 
 	if ((method_len != STRING_HTTP_GET_LEN ) ||
 		(memcmp(STRING_HTTP_GET, method_http, STRING_HTTP_GET_LEN)))
@@ -61,7 +61,7 @@ berr pid_http(struct pbuf *p ,  hytag_t * hytag )
 	}
 
     hytag->url[j] = '\0';
-	printf("the url is:  %s\n", hytag->url);
+//printf("the url is:  %s\n", hytag->url);
 	
 	hytag->url_len = j;
 	hytag->app_type = URL_IN_GTP;

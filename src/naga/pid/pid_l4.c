@@ -9,12 +9,10 @@ berr pid_L4(struct pbuf *p, hytag_t *hytag,  uint8_t protocol, int outer_inner)
 	{
         case IP_PROTO_UDPLITE:
 		case IP_PROTO_UDP:
-			pid_incr_count(OUTERL4_UDP);
 			return pid_udp(p,  hytag, outer_inner);
 			break;
 
          case IP_PROTO_TCP:
-		 	pid_incr_count(OUTERL4_TCP);
             return pid_tcp(p,  hytag, outer_inner);
             break;
          case IP_PROTO_STCP:
