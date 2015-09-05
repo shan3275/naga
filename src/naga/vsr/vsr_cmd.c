@@ -415,7 +415,7 @@ static int vsr_cmd_clear_statistics(struct vty *vty, const char *index_str)
 }
 DEFUN(vsr_clear_statistics, 
       vsr_clear_statistics_cmd,
-      "clear statistics rule vsr <0-15>",
+      "clear stat rule vsr <0-15>",
       CLEAR_STR
       STAT_STR
       RULE_STR
@@ -442,7 +442,7 @@ static int vsr_cmd_clear_statistics_all(struct vty *vty)
 }
 DEFUN(vsr_clear_statistics_all,
       vsr_clear_statistics_all_cmd,
-      "clear statistics rule vsr all",
+      "clear stat rule vsr all",
       CLEAR_STR
       STAT_STR
       RULE_STR
@@ -501,6 +501,54 @@ DEFUN(vsr_file,
     return vsr_cmd_file(vty);
 }
 
+void vsr_cmd_config_write(struct vty *vty)
+{
+    int ret = 0;
+    int i;
+    uint32_t ip;
+    uint64_t mobile;
+    for ( i = 0; i < VSR_RULE_NUM_MAX; i++ )
+    {
+        ret = rule_vsr_cmd_get_ip((uint32_t) i, &ip);
+        if (ret)
+        {
+            continue;
+        }
+
+        if ( VSR_RULE_IP_UNEFFECTIVE == ip )
+        {
+            continue;
+        }
+
+        ret =  rule_vsr_cmd_get_mobile((uint32_t) i, &mobile);
+        if (ret)
+        {
+            vty_out(vty, "rule vsr add %d %d.%d.%d.%d%s", i, (ip >> 24) & 0xff,
+                                                             (ip >> 16) & 0xff,
+                                                             (ip >> 8 ) & 0xff,
+                                                             (ip >> 0 ) & 0xff, VTY_NEWLINE);
+            continue;
+        }
+
+        if ( VSR_RULE_MOBILE_UNEFFECTIVE != mobile )
+        {
+            vty_out(vty, "rule vsr add %d %d.%d.%d.%d %llu%s", i, (ip >> 24) & 0xff,
+                                                                  (ip >> 16) & 0xff,
+                                                                  (ip >> 8 ) & 0xff,
+                                                                  (ip >> 0 ) & 0xff, (ULL)mobile, VTY_NEWLINE);
+            continue;
+        }
+        else
+        {
+            vty_out(vty, "rule vsr add %d %d.%d.%d.%d%s", i, (ip >> 24) & 0xff,
+                                                             (ip >> 16) & 0xff,
+                                                             (ip >> 8 ) & 0xff,
+                                                             (ip >> 0 ) & 0xff, VTY_NEWLINE);
+            continue;
+        }
+
+    }
+}
 
 
 /*

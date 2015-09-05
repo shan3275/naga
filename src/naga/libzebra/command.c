@@ -32,6 +32,7 @@ Boston, MA 02111-1307, USA.  */
 #include "vty.h"
 #include "command.h"
 #include "workqueue.h"
+#include "vsr_cmd.h"
 
 /* Command vector which includes some level of command lists. Normally
    each daemon maintains each own cmdvec. */
@@ -722,6 +723,8 @@ config_write_host (struct vty *vty)
     vty_out (vty, "banner motd file %s%s", host.motdfile, VTY_NEWLINE);
   else if (! host.motd)
     vty_out (vty, "no banner motd%s", VTY_NEWLINE);
+
+  vsr_cmd_config_write(vty);
 
   return 1;
 }
@@ -3122,6 +3125,11 @@ finished:
 }
 
 ALIAS (config_write_file, 
+       config_save_cmd,
+       "save",  
+       "Save running configuration to file\n")
+
+ALIAS (config_write_file, 
        config_write_cmd,
        "write",  
        "Write running configuration to memory, network, or terminal\n")
@@ -4058,6 +4066,7 @@ cmd_init (int terminal)
       install_element (VIEW_NODE, &config_write_memory_cmd);
       install_element (VIEW_NODE, &config_write_cmd);
       install_element (VIEW_NODE, &show_running_config_cmd);
+      install_element (VIEW_NODE, &config_save_cmd);
 
       install_element (VIEW_NODE, &config_terminal_length_cmd);
       install_element (VIEW_NODE, &config_terminal_no_length_cmd);

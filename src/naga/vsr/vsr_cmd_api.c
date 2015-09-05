@@ -126,6 +126,23 @@ berr rule_vsr_cmd_get_ip(uint32_t index, uint32_t *ip)
     return E_SUCCESS;
 }
 
+berr rule_vsr_cmd_get_mobile(uint32_t index, uint64_t *mobile)
+{
+    /* check  index pointer */
+    if ( index >= VSR_RULE_NUM_MAX )
+    {
+        return E_PARAM;
+    }
+
+    if (NULL == mobile)
+    {
+        return E_PARAM;
+    }
+
+    *mobile = vsr_api_get_mobile_by_index(index);
+    return E_SUCCESS;
+}
+
 berr rule_vsr_cmd_get_index_by_mobile(uint64_t mobile, uint32_t *index)
 {
     int i;

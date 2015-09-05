@@ -9,9 +9,8 @@
 #       @date         :2015/08/21 22:54
 #       @algorithm    :
 =============================================================================*/
-
 #ifndef __VSR_CMD_H__
 #define __VSR_CMD_H__
-
 void cmdline_vsr_init(void);
+void vsr_cmd_config_write(struct vty *vty);
 #endif

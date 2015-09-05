@@ -24,6 +24,7 @@ berr rule_vsr_cmd_total_dump(uint8_t *buff, uint32_t len);
 berr rule_vsr_cmd_flush_url(uint32_t index); /* clear url */
 berr rule_vsr_cmd_clear_statistics(uint32_t index);
 berr rule_vsr_cmd_get_ip(uint32_t index, uint32_t *ip);
+berr rule_vsr_cmd_get_mobile(uint32_t index, uint64_t *mobile);
 
 berr rule_vsr_cmd_encourage(uint32_t num);
 #endif /*__VSR_CMD_API_H__ */
