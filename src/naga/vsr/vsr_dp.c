@@ -11,6 +11,7 @@
 =============================================================================*/
 #include "vsr_api.h"
 #include "bts_cnt.h"
+#include "log.h"
 berr vsr_dp_match(uint32_t ip, char*url, uint16_t url_len)
 {
     int i;
@@ -57,12 +58,20 @@ berr vsr_dp_process(hytag_t *hytag)
     {
         /*add not match statistics */
         cnt_inc(VSR_UNMATCHPKTS);
+        hytag->match &= 0xfffe;
     }
     else
     {
         /* add match statistics */
         cnt_inc(VSR_MATCHPKTS);
+        hytag->match |= 1;
     }
+    zlog (NULL, LOG_INFO, "ip(%d.%d.%d.%d), match(%d), len(%d), url(%s)",
+                           (hytag->inner_srcip4 >> 24) &0xff,
+                           (hytag->inner_srcip4 >> 16) &0xff,
+                           (hytag->inner_srcip4 >>  8) &0xff,
+                           (hytag->inner_srcip4 >>  0) &0xff,
+                           hytag->match, hytag->url_len, hytag->url);
     return E_SUCCESS; 
 }
 

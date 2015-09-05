@@ -4077,6 +4077,30 @@ cmd_init (int terminal)
       install_element (VIEW_NODE, &show_logging_cmd);
       install_element (VIEW_NODE, &echo_cmd);
 
+      install_element (VIEW_NODE, &config_log_stdout_cmd);
+      install_element (VIEW_NODE, &config_log_stdout_level_cmd);
+      install_element (VIEW_NODE, &no_config_log_stdout_cmd);
+      install_element (VIEW_NODE, &config_log_monitor_cmd);
+      install_element (VIEW_NODE, &config_log_monitor_level_cmd);
+      install_element (VIEW_NODE, &no_config_log_monitor_cmd);
+      install_element (VIEW_NODE, &config_log_file_cmd);
+      install_element (VIEW_NODE, &config_log_file_level_cmd);
+      install_element (VIEW_NODE, &no_config_log_file_cmd);
+      install_element (VIEW_NODE, &no_config_log_file_level_cmd);
+      install_element (VIEW_NODE, &config_log_syslog_cmd);
+      install_element (VIEW_NODE, &config_log_syslog_level_cmd);
+      install_element (VIEW_NODE, &config_log_syslog_facility_cmd);
+      install_element (VIEW_NODE, &no_config_log_syslog_cmd);
+      install_element (VIEW_NODE, &no_config_log_syslog_facility_cmd);
+      install_element (VIEW_NODE, &config_log_facility_cmd);
+      install_element (VIEW_NODE, &no_config_log_facility_cmd);
+      install_element (VIEW_NODE, &config_log_trap_cmd);
+      install_element (VIEW_NODE, &no_config_log_trap_cmd);
+      install_element (VIEW_NODE, &config_log_record_priority_cmd);
+      install_element (VIEW_NODE, &no_config_log_record_priority_cmd);
+      install_element (VIEW_NODE, &config_log_timestamp_precision_cmd);
+      install_element (VIEW_NODE, &no_config_log_timestamp_precision_cmd);
+
       install_element (RESTRICTED_NODE, &config_list_cmd);
       install_element (RESTRICTED_NODE, &config_exit_cmd);
       install_element (RESTRICTED_NODE, &config_quit_cmd);

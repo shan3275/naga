@@ -49,6 +49,8 @@ typedef struct
     uint16_t app_type;
     uint16_t url_len;
 	char url[URL_MAX_LEN];
+
+    uint16_t match;   /* 0 for not match, 1 for vsr match, 2 for other match  */
 }hytag_t;
 
 
