@@ -15,14 +15,14 @@ berr pid_http(struct pbuf *p ,  hytag_t * hytag )
 
 	while((0x20 != *http_p) && ('\0' != *http_p))    /*GET*/
 	{
-		if (i + 1 < MAX_METHOD_LEN)
-		{
-			method_http[i++] = *(http_p++);
-		}
-		else
+		if (i + 1 > MAX_METHOD_LEN)
 		{
 			pid_incr_count(HTTP_METHOD_EXCEED);
 			return E_FAIL;
+		}
+		else
+		{
+			method_http[i++] = *(http_p++);
 		}
 	}
 
@@ -48,15 +48,15 @@ berr pid_http(struct pbuf *p ,  hytag_t * hytag )
 
 	while((0x20 != *http_p) && ('\0' != *http_p))
 	{
-		if (j + 1 < URL_MAX_LEN)
-		{
-			hytag->url[j++] = *(http_p++);
-		}
-		else
+		if (j + 1 > URL_MAX_LEN)
 		{
 			hytag->app_type = URL_IN_NULL;
 			pid_incr_count(HTTP_URL_EXCEED);
 			return E_FAIL;
+		}
+		else
+		{
+			hytag->url[j++] = *(http_p++);
 		}
 	}
 
