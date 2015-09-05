@@ -1,7 +1,7 @@
 VERSION  = 1
 REVISE   = 0
 BUILD    = $(shell git log | grep -cE 'Author:.*<.*@.*>')
-#BUILDSHA = $(shell git rev-parse --short HEAD)
+BUILDSHA = $(shell git rev-parse --short HEAD)
 PLATFORM_VERSION = "$(VERSION)$(if $(REVISE),.$(REVISE)$(if $(BUILD),.$(BUILD)$(if $(BUILDSHA),.$(BUILDSHA))))"
 TIME     = $(shell date)
 

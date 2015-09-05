@@ -34,7 +34,7 @@
 #define ENCOURAGE_STR               "Encourage Operation, for test\n" 
 #define TOTAL_STR                   "Summary Display\n"
 
-#define DEBUG
+//#define DEBUG
 #ifdef  DEBUG
 #define debug(fmt,args...)  vty_out(vty, "func=%s line=%d:" fmt "%s", __FUNCTION__, __LINE__, ##args, VTY_NEWLINE)
 #else
