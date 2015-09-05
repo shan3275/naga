@@ -15,4 +15,4 @@ all:
 	@echo "#endif /* end of__NAGA_VERSION_H__ */" >> ./naga_version.h
 
 clean:
-	@rm naga_version.h
+	@rm -rf naga_version.h
