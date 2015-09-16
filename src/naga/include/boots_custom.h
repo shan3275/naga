@@ -6,28 +6,24 @@
     MOD_DPF, \
     MOD_ITF, \
     MOD_PID, \
-    MOD_VSR
+    MOD_VSR, \
+    MOD_ADP
 
 #define MOD_ARRAY_CUSTOM \
-    {MOD_AMD, "AMD", "Admin Main Daemon"}, \
-    {MOD_DPF, "DPF", "Data process flow"}, \
-    {MOD_ITF, "ITF", "Interface module"}, \
-    {MOD_PID, "PID", "Packet identify module"}, \
-    {MOD_VSR, "VSR", "Visted recored module"}
+    {MOD_AMD, BAS, OFF, OFF, "AMD", "Admin Main Daemon"}, \
+    {MOD_DPF, BAS, OFF, OFF, "DPF", "Data process flow"}, \
+    {MOD_ITF, BAS, OFF, OFF, "ITF", "Interface module"}, \
+    {MOD_PID, ON,  OFF, OFF, "PID", "Packet identify module"}, \
+    {MOD_VSR, ON,  OFF, OFF, "VSR", "Visted recored module"}, \
+    {MOD_ADP, ON,  OFF, OFF, "ADP", "Advertising push"}
 
 #define DOPT_CUSTOM \
-    DOPT_AMD, \
-    DOPT_DPF, \
-    DOPT_ITF, \
-    DOPT_PID, \
-    DOPT_VSR
+    DOPT_TAGMON, \
+    DOPT_FAILPKT
 
 #define DOPT_ARRAY_CUSTOM \
-    {DOPT_AMD, OFF, "amd", "Admin manage daemon module"}, \
-    {DOPT_DPF, OFF, "dpf", "data processs flow module"}, \
-    {DOPT_ITF, OFF, "itf", "interface module"}, \
-    {DOPT_PID, OFF, "pid", "packet identify module"}, \
-    {DOPT_VSR, OFF, "vsr", "visited recored module"}
+    {DOPT_TAGMON, OFF, "tagmon", "Hytag monitor"}, \
+    {DOPT_FAILPKT, OFF, "failpkt", "Process fail packet record"}
 
 #define CNT_CUSTOM \
     /* VSR Module counters */ \
@@ -36,10 +32,15 @@
     VSR_URLPKTS, /* take url packet number */ \
     VSR_UNMATCHPKTS, /* not match packets */ \
     VSR_MATCHPKTS, /* match packets */ \
-    VSR_RULE_NEW_URL, \
     VSR_RULE_MATCHPKTS, /* rule ip, url all match */ \
+    ACR_PKTS, /* ACR module input packets*/ \
+    ACR_TABLE_FOUND, /* Found in account table */ \
+    ACR_TABLE_NOTFOUND, /* Not found in account table*/ \
+    ACR_RULE_MATCH, /* Match in account rule */ \
+    ACR_RULE_UNMATCH, /* Unmatch found in account rule*/ \
+    VSR_RULE_NEW_URL, \
     VSR_RULE_LEN_OVERFLOW, /* url len overflow */ \
-    VSR_RULE_URL_OVERFLOW    /* url overflow */ 
+    VSR_RULE_URL_OVERFLOW    /* url overflow */
 
 #define CNT_DEF_CUSTOM \
     /* VSR Module */ \
@@ -48,6 +49,14 @@
     CNT_DEF(VSR_URLPKTS), \
     CNT_DEF(VSR_UNMATCHPKTS), \
     CNT_DEF(VSR_MATCHPKTS), \
+    CNT_DEF(VSR_RULE_MATCHPKTS), \
+    \
+    /* ACR Module */ \
+    CNT_DEF(ACR_PKTS), \
+    CNT_DEF(ACR_TABLE_FOUND), \
+    CNT_DEF(ACR_TABLE_NOTFOUND), \
+    CNT_DEF(ACR_RULE_MATCH), \
+    CNT_DEF(ACR_RULE_UNMATCH),\
     CNT_DEF(VSR_RULE_NEW_URL), \
     CNT_DEF(VSR_RULE_MATCHPKTS), \
     CNT_DEF(VSR_RULE_LEN_OVERFLOW), \

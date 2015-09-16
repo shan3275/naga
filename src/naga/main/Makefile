@@ -42,14 +42,14 @@ include $(RTE_SDK)/mk/rte.vars.mk
 APP = naga
 
 # all source are stored in SRCS-y
-SRCS-y := main.c  naga.c
+SRCS-y := main.c  main_data.c
 
 CFLAGS += -O3 $(USER_FLAGS)
 #CFLAGS += $(WERROR_FLAGS)
-CFLAGS  += -I ../cmdline -I ../vsr -I ../libzebra  -I ../boots -I ../include -I ../pid
+CFLAGS  += -I ../cmdline -I ../vsr -I ../libzebra  -I ../boots -I ../include -I ../pid -I ../debug -I ../itf
 #LDFLAGS += -L ../libzebra -L /mnt/hgfs/code/rose/src/dpdk-2.0.0/app/naga/cmdline -L ../vsr
 LDLIBS  +=  ../cmdline/libcmdline.a  ../libzebra/libzebra.a ../vsr/libvsr.a ../pid/libpid.a
-LDLIBS  +=  ../boots/libboots.a
+LDLIBS  +=  ../boots/libboots.a ../itf/libitf.a
 LDLIBS  +=   -lcrypt -lreadline -lrt
 
 
