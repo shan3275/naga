@@ -60,7 +60,7 @@ cnt_t cnt_array[CNT_MAX] =
 	CNT_DEF(ERR_PACKET),
 	CNT_DEF(HEADER_UNEXPECT),
 #ifdef CNT_DEF_CUSTOM
-    CNT_DEF_CUSTOM,
+    CNT_DEF_CUSTOM
 #endif
 };
 

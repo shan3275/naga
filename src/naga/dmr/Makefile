@@ -42,7 +42,7 @@ include $(RTE_SDK)/mk/rte.vars.mk
 LIB  = libdmr.a
 
 # all source are stored in SRCS-y
-SRCS-y := naga_host_rule.c hor_dp.c
+SRCS-y := naga_host_rule.c
 
 
 CFLAGS += -O3

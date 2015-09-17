@@ -41,13 +41,13 @@ account_entry_cmp_func(void *d1, void *d2)
 berr 
 naga_host_rule_init(uint32_t number)
 {
-    return bts_hashtable_init(&naga_host_rule, number, naga_host_rule.hash, naga_host_rule.buckets->cmp, NULL);
+    return bts_hashtable_init(&naga_host_rule, number, host_rule_hash_func, NULL, NULL);
 }
 
 naga_host_rule_t*
 naga_host_rule_lookup(char* host)
 {
-    return (void *)bts_hashtable_lookup(&naga_host_rule, (void *) host);
+    return (naga_host_rule_t *)bts_hashtable_lookup(&naga_host_rule, (void *) host);
 }
 
 berr
