@@ -324,3 +324,31 @@ berr rule_vsr_cmd_encourage(uint32_t num)
     }
     return E_SUCCESS;
 }
+
+#if 0
+berr rule_vsr_cmd_add_host(uint32_t index, char *host)
+{
+	int rv;
+	
+	rv = vsr_api_del_rule_host_by_index(index);
+	if(rv)
+	{
+		/* error del */
+		debug("vsr_api_del_rule_by_index, index(%d), rv(%d)", index, rv);
+		return rv;
+	}
+
+	/* add new rule */
+	rv = vsr_api_add_rule_host(index, host);
+	if(rv)
+	{
+		/* error del */
+		debug("vsr_api_add_rule, index(%d), rv(%d)", index, rv);
+		return rv;
+	}
+
+	return E_SUCCESS;
+	
+}
+
+#endif
