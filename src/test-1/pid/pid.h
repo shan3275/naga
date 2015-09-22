@@ -17,8 +17,23 @@ typedef enum
 
 
 #define URL_MAX_LEN  512 //URL MAX LEN
+#define HOST_MAX-LEN 512 //http host len
 typedef struct 
 {
+
+    /* L2 offset */
+    uint16_t l2_offset;
+
+    /* L3 offset */
+    uint16_t l3_offset;
+
+    /* L4 offset */
+    uint16_t l4_offset;
+
+    /* L5 offset */
+    uint16_t l5_offset;
+    uint16_t l5_len;
+
     /*OT L3*/
 	uint32_t outer_srcip4;
 	uint32_t outer_dstip4;
@@ -47,8 +62,12 @@ typedef struct
 #endif	
 
     uint16_t app_type;
+
     uint16_t url_len;
 	char url[URL_MAX_LEN];
+
+    uint16_t host_len;
+    char host[HOST_MAX_LEN];
 
     uint16_t match;   /* 0 for not match, 1 for vsr match, 2 for other match  */
 }hytag_t;
