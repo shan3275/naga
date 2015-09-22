@@ -27,6 +27,8 @@ char* berr_msg(berr e)
     return berr_array[e];
 }
 
+#if 0
+
 mod_t mod_array[MOD_MAX] = {
     {MOD_DBG, "dbg", "debug module"},
 #ifdef MOD_ARRAY_CUSTOM
@@ -34,6 +36,7 @@ mod_t mod_array[MOD_MAX] = {
 #endif
 } ;
 
+#endif
 
 #if 0
 char* bode_abbr(bmod m)

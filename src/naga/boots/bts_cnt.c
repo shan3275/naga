@@ -1,5 +1,4 @@
 #include "bts_cnt.h"
-#include "bts_debug.h"
 
 dopt_t dopts_array[DOPT_MAX] = {
       {DOPT_INFO,     ON, "info",      "normal debug message"},
@@ -27,7 +26,7 @@ cnt_t cnt_array[CNT_MAX] =
 	CNT_DEF(OUTERL3_IPV6),
 	CNT_DEF(OUTERL3_NOIP),
 
-	CNT_DEF(OUTERL4_HD),  
+	CNT_DEF(OUTERL4_HD),
 	CNT_DEF(OUTERL4_TCP),
 	CNT_DEF(OUTERL4_UDP),
 	CNT_DEF(OUTERL4_SCTP),
@@ -42,8 +41,8 @@ cnt_t cnt_array[CNT_MAX] =
 	CNT_DEF(INNERL4_TCP),
 	CNT_DEF(INNERL4_UDP),
 
-	CNT_DEF(INNERL4_SCTP),	 
-	CNT_DEF(INNERL4_OTHER),	 
+	CNT_DEF(INNERL4_SCTP),
+	CNT_DEF(INNERL4_OTHER),
 	CNT_DEF(GTP_U_HD),
 	CNT_DEF(GTP_U),
 
@@ -61,7 +60,7 @@ cnt_t cnt_array[CNT_MAX] =
 	CNT_DEF(ERR_PACKET),
 	CNT_DEF(HEADER_UNEXPECT),
 #ifdef CNT_DEF_CUSTOM
-    CNT_DEF_CUSTOM,
+    CNT_DEF_CUSTOM
 #endif
 };
 

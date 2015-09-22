@@ -45,41 +45,18 @@
 #include <errno.h>
 #include <getopt.h>
 
-#include <rte_config.h>
-#include <rte_common.h>
-#include <rte_log.h>
-#include <rte_memory.h>
-#include <rte_memcpy.h>
-#include <rte_memzone.h>
-#include <rte_eal.h>
-#include <rte_per_lcore.h>
-#include <rte_launch.h>
-#include <rte_atomic.h>
-#include <rte_cycles.h>
-#include <rte_prefetch.h>
-#include <rte_lcore.h>
-#include <rte_per_lcore.h>
-#include <rte_branch_prediction.h>
-#include <rte_interrupts.h>
-#include <rte_pci.h>
-#include <rte_random.h>
-#include <rte_debug.h>
-#include <rte_ether.h>
-#include <rte_ethdev.h>
-#include <rte_ring.h>
-#include <rte_mempool.h>
-#include <rte_mbuf.h>
+#include "main_data.h"
 #include "vsr_dp.h"
 #include "cmd.h"
 #include "pid.h"
+#include "itf.h"
+//#include "naga_host_rule.h"
 
 #define RTE_LOGTYPE_L2FWD RTE_LOGTYPE_USER1
 
 #define MBUF_SIZE (2048 + sizeof(struct rte_mbuf) + RTE_PKTMBUF_HEADROOM)
 #define NB_MBUF   8192
 
-#define MAX_PKT_BURST 32
-#define BURST_TX_DRAIN_US 100 /* TX drain every ~100us */
 
 /*
  * Configurable number of RX/TX ring descriptors
@@ -100,19 +77,7 @@ static uint32_t l2fwd_dst_ports[RTE_MAX_ETHPORTS];
 
 static unsigned int l2fwd_rx_queue_per_lcore = 1;
 
-struct mbuf_table {
-	unsigned len;
-	struct rte_mbuf *m_table[MAX_PKT_BURST];
-};
 
-#define MAX_RX_QUEUE_PER_LCORE 16
-#define MAX_TX_QUEUE_PER_PORT 16
-struct lcore_queue_conf {
-	unsigned n_rx_port;
-	unsigned rx_port_list[MAX_RX_QUEUE_PER_LCORE];
-	struct mbuf_table tx_mbufs[RTE_MAX_ETHPORTS];
-
-} __rte_cache_aligned;
 struct lcore_queue_conf lcore_queue_conf[RTE_MAX_LCORE];
 
 static const struct rte_eth_conf port_conf = {
@@ -131,12 +96,6 @@ static const struct rte_eth_conf port_conf = {
 
 struct rte_mempool * l2fwd_pktmbuf_pool = NULL;
 
-/* Per-port statistics struct */
-struct l2fwd_port_statistics {
-	uint64_t tx;
-	uint64_t rx;
-	uint64_t dropped;
-} __rte_cache_aligned;
 struct l2fwd_port_statistics port_statistics[RTE_MAX_ETHPORTS];
 
 /* A tsc-based timer responsible for triggering statistics printout */
@@ -257,6 +216,7 @@ l2fwd_simple_forward(struct rte_mbuf *m, unsigned portid)
 }
 
 /* main processing loop */
+#if 0
 static void
 l2fwd_main_loop(void)
 {
@@ -357,6 +317,10 @@ l2fwd_main_loop(void)
 	}
 }
 
+#endif
+
+
+#define MAX_HOST_RULE_NUM 10000
 
 static int
 l2fwd_launch_one_lcore(__attribute__((unused)) void *dummy)
@@ -364,8 +328,17 @@ l2fwd_launch_one_lcore(__attribute__((unused)) void *dummy)
     printf("core(%d)\n", rte_lcore_id());
     if (rte_lcore_id() == 1 )
     {
+    	berr rv;
         printf("cmd core %d\n", rte_lcore_id());
         vsr_dp_init();
+		#if 0
+		rv = naga_host_rule_init(MAX_HOST_RULE_NUM);
+		if (E_SUCCESS != rv)
+		{
+			printf("Host rule init FAIL!\n");
+			return 1;
+		}
+		#endif
         cmdline (0, NULL);
     }
 #if 0
@@ -378,7 +351,8 @@ l2fwd_launch_one_lcore(__attribute__((unused)) void *dummy)
 #endif
     else
     {
-        l2fwd_main_loop();
+        naga_data_main_loop();
+		//l2fwd_main_loop();
     }
 	return 0;
 }

@@ -18,6 +18,7 @@
 
 #ifndef  __VSR_H__
 #define  __VSR_H__
+
 #define VSR_RULE_NUM_MAX  16
 #define VSR_URL_NUM_MAX   512
 #define VSR_URL_LEN_MAX    512
@@ -30,6 +31,31 @@
 #define VSR_RULE_URL_UNEFFECTIVE 0
 #define VSR_RULE_URL_LEN_UNEFFECTIVE 0
 #define VSR_RULE_URL_HASH_UNEFFECTIVE 0
+#define VSR_RULE_HOST_UNEFFECTIVE 0
+
+
+#define __DPDK
+#ifdef  __DPDK
+#define VSR_STAT_INC(_name) rte_atomic64_inc(&(_name))
+#define VSR_STAT_DEC(_name) rte_atomic64_dec(&(_name))
+#define VSR_STAT_SET(_name, _val) rte_atomic64_set(&(_name), _val)
+
+#define VSR_SPINLOCK_LOCK(_lock)   rte_spinlock_lock(&(_lock))
+#define VSR_SPINLOCK_UNLOCK(_lock) rte_spinlock_unlock(&(_lock))
+#define VSR_SPINLOCK_INIT(_lock)   rte_spinlock_init(&(_lock))
+#else
+#define VSR_STAT_INC(_name)
+#define VSR_STAT_DEC(_name)
+#define VSR_STAT_SET(_name, _val)
+
+#define VSR_SPINLOCK_LOCK(_lock)
+#define VSR_SPINLOCK_UNLOCK(_lock)
+#define VSR_SPINLOCK_INIT(_lock)
+#endif
+
+
+
+
 typedef rte_spinlock_t  vsr_lock_t;
 //typedef uint32_t vsr_lock_t;
 typedef rte_atomic64_t vsr_atomic_t;
@@ -78,6 +104,10 @@ uint64_t vsr_ip_num_get(void);
 void vsr_url_num_dec(void);
 void vsr_url_num_add(void);
 void vsr_url_num_set(uint64_t val);
+uint64_t vsr_url_num_get(void);
+void vsr_host_num_dec(void);
+void vsr_host_num_add(void);
+void vsr_host_num_set(uint64_t val);
 uint64_t vsr_url_num_get(void);
 void vsr_rule_lock_init(uint32_t index);
 void vsr_lock_rule(uint32_t index);

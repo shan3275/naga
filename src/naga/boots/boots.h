@@ -26,6 +26,7 @@ typedef rte_atomic32_t    bts_atomic32_t;
 
 #define OFF 0
 #define ON  1
+#define BAS 2
 
 #include "boots_custom.h"
 
@@ -57,6 +58,7 @@ typedef enum {
     E_COMPARE,
     E_OVER,     //溢出
     E_KNOWN,
+    E_INIT,
     E_MAX,      // 错误码的最大值
 } berr;
 
@@ -65,5 +67,9 @@ typedef struct {
     uint8_t minor;
     uint16_t revison;
 } version_t;
+
+typedef uint32_t bts_ipaddr_t;
+
+char* berr_msg(berr e);
 
 #endif

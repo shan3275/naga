@@ -13,24 +13,7 @@
 #include "vsr.h"
 #include "stdlib.h"
 
-#define __DPDK
-#ifdef  __DPDK
-#define VSR_STAT_INC(_name) rte_atomic64_inc(&(_name))
-#define VSR_STAT_DEC(_name) rte_atomic64_dec(&(_name))
-#define VSR_STAT_SET(_name, _val) rte_atomic64_set(&(_name), _val)
 
-#define VSR_SPINLOCK_LOCK(_lock)   rte_spinlock_lock(&(_lock))
-#define VSR_SPINLOCK_UNLOCK(_lock) rte_spinlock_unlock(&(_lock))
-#define VSR_SPINLOCK_INIT(_lock)   rte_spinlock_init(&(_lock))
-#else
-#define VSR_STAT_INC(_name)
-#define VSR_STAT_DEC(_name)
-#define VSR_STAT_SET(_name, _val)
-
-#define VSR_SPINLOCK_LOCK(_lock)
-#define VSR_SPINLOCK_UNLOCK(_lock)
-#define VSR_SPINLOCK_INIT(_lock)
-#endif
 
 vsr_rule_t *vsr_rule;
 
@@ -73,6 +56,32 @@ uint64_t vsr_url_num_get(void)
 {
     return (uint64_t)vsr_rule->url_num.cnt;
 }
+
+
+
+void vsr_host_num_dec(void)
+{
+    //VSR_STAT_DEC(vsr_rule->url_num);
+}
+
+void vsr_host_num_add(void)
+{
+    //VSR_STAT_INC(vsr_rule->url_num);
+}
+
+void vsr_host_num_set(uint64_t val)
+{
+    //VSR_STAT_SET(vsr_rule->url_num, val);
+}
+
+uint64_t vsr_host_num_get(void)
+{
+	return 1;
+    //return (uint64_t)vsr_rule->url_num.cnt;
+}
+
+
+
 
 void vsr_rule_lock_init(uint32_t index)
 {
@@ -261,6 +270,7 @@ berr vsr_request_data_entry(void)
 
     vsr_ip_num_set(0);
     vsr_url_num_set(0);
+	vsr_host_num_set(0);
     vsr_set_encourage_num(0);
     return E_SUCCESS;
 }

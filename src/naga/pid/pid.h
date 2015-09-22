@@ -6,62 +6,15 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <rte_branch_prediction.h>
+#include "naga_types.h"
 
 #include "boots.h"
 
-typedef enum
-{
-	URL_IN_NULL,
-	URL_IN_GTP,
-} APP_TYPE_E;
 
 
-#define URL_MAX_LEN  512 //URL MAX LEN
-typedef struct 
-{
-    /*OT L3*/
-	uint32_t outer_srcip4;
-	uint32_t outer_dstip4;
-    /*OT L4 Protoco;*/
-    uint8_t outer_protocol;
-    /*OT L4*/
-	uint16_t outer_srcport;
-	uint16_t outer_dstport;
-
-    uint32_t teid;
-    /*IN L3*/
-	uint32_t inner_srcip4;
-	uint32_t inner_dstip4;
-    /*IN L4 Protoco;*/
-    uint8_t inner_protocol;    
-    /*IN L4*/
-	uint16_t inner_srcport;
-	uint16_t inner_dstport;
 
 
-#ifdef  _ENABLE_IPV6 
-	uint32_t outer_srcip6[4];
-	uint32_t outer_dstip6[4];
-	uint32_t inner_srcip6[4];
-	uint32_t inner_dstip6[4];		
-#endif	
 
-    uint16_t app_type;
-    uint16_t url_len;
-	char url[URL_MAX_LEN];
-
-    uint16_t match;   /* 0 for not match, 1 for vsr match, 2 for other match  */
-}hytag_t;
-
-
-struct pbuf {
-	//struct pbuf *next; /*always NULL*/
-	void 	* ptr;	
-	uint16_t  len;  /*this buffer len*/
-	//uint16_t  total_len; 
-	uint16_t  ptr_offset;/*when The module Pid handle the protocol any*/
-	//uint8_t flag;
-};	
 
 
 
@@ -125,7 +78,8 @@ static inline berr check_pbuf_len(struct pbuf *p, int incr_len)
 #include "rte_mbuf.h"
 #include "naga_stat.h"
 
-berr naga_pid_dpdk(struct rte_mbuf *m);
+//berr naga_pid_dpdk(struct rte_mbuf *m);
+berr naga_pid(hytag_t *hytag);
 
 
 #endif

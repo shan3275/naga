@@ -97,6 +97,55 @@ berr vsr_api_add_rule(uint32_t index, uint32_t ip, uint64_t msisdn)
 }
 
 
+#if 0
+
+berr vsr_api_del_rule_by_index(uint32_t index)
+{
+    uint32_t url_num = 0;
+    int i;
+    VSR_RULE_LOCK(index);
+    /* check effective */
+    if(vsr_check_rule_effective(index)== VSR_RULE_UNEFFECTIVE)
+    {
+        VSR_RULE_UNLOCK(index);
+        return E_SUCCESS;
+    }
+
+    /*clear ip, mobile, effective */
+    vsr_set_rule_host(index, VSR_RULE_HOST_UNEFFECTIVE);
+    vsr_set_rule_effective(index, VSR_RULE_UNEFFECTIVE);
+
+
+    /* ip num --*/
+    vsr_host_num_dec();
+    VSR_RULE_UNLOCK(index);
+    return E_SUCCESS;
+}
+
+
+
+
+berr vsr_api_add_rule_host(uint32_t index, uint32_t ip, char *host)
+{
+    VSR_RULE_LOCK(index);
+
+    /* set ip, mobile, and effective */
+    vsr_set_rule_ip(index, ip);
+    vsr_set_rule_mobile(index, msisdn);
+    vsr_set_rule_effective(index, VSR_RULE_EFFECTIVE);
+
+    /* ip_num ++*/
+    vsr_ip_num_add();
+    VSR_RULE_UNLOCK(index);
+
+    return E_SUCCESS;
+}
+
+#endif
+
+
+
+
 /*
  *  * input: index, value form 0-15
  *   * return : ip
@@ -254,6 +303,13 @@ uint64_t  vsr_api_url_num_get(void)
 {
     return vsr_url_num_get();
 }
+
+
+uint64_t  vsr_api_host_num_get(void)
+{
+    return vsr_host_num_get();
+}
+
 
 /* dp use */
 berr vsr_dp_api_match(uint32_t index, uint32_t ip, char* url, uint16_t len)

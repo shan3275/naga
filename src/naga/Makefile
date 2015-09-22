@@ -37,6 +37,8 @@ DIRS-y += libzebra
 DIRS-y += cmdline
 DIRS-y += vsr
 DIRS-y += pid
+DIRS-y += itf
+DIRS-y += dmr
 DIRS-y += main
 
 include $(RTE_SDK)/mk/rte.extsubdir.mk

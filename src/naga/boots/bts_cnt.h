@@ -2,6 +2,7 @@
 #define __BTS_CNT_H__
 
 #include "boots.h"
+#include "bts_debug.h"
 
 typedef enum {
       ITF_IPKTS,
@@ -62,16 +63,17 @@ typedef struct {
       bts_atomic64_t val;
 } cnt_t;
 
+//extern cnt_t cnt_array[CNT_MAX];
+//extern dopt_t dopts_array[DOPT_MAX];
 
 #define CNT_DEF(_cnt) {_cnt, #_cnt}
-// ??????
+
 #define CNT_INC(_cnt)       bts_atomic64_inc(&(cnt_array[_cnt].val))
 #define CNT_DEC(_cnt)       bts_atomic64_dec(&(cnt_array[_cnt].val))
 #define CNT_ADD(_cnt, _val) bts_atomic64_add(&(cnt_array[_cnt].val), _val)
 #define CNT_SET(_cnt, _val) bts_atomic64_set(&(cnt_array[_cnt].val), _val)
 #define CNT_GET(_cnt)       bts_atomic64_get(&(cnt_array[_cnt].val))
 
-// ????????????????
 berr cnt_add(cnte idx, uint64_t value);
 berr cnt_inc(cnte idx);
 berr cnt_dec(cnte idx);
