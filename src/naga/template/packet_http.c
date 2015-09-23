@@ -34,6 +34,7 @@
 //*****************************************************************************
 #include "boots.h"
 #include "packet_http.h"
+#include "rte_memcpy.h"
 
 #define HTTP_ONE_SPACE " "
 #define HTTP_FOUR_SPACE HTTP_ONE_SPACE HTTP_ONE_SPACE HTTP_ONE_SPACE HTTP_ONE_SPACE

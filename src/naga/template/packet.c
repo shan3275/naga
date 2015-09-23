@@ -80,10 +80,10 @@ ads_tcp_head_modify(struct tcp_hdr *tcphdr, hytag_t *hytag, uint8_t direction)
     {
         sport = tcphdr->src_port;
         dport = tcphdr->dst_port;
-        debug("tcp_hdr switch before: sport(%d), dport(%d)", ntohs(sport), notohs(dport));
+        debug("tcp_hdr switch before: sport(%d), dport(%d)", ntohs(sport), ntohs(dport));
         tcphdr->src_port = dport;
         tcphdr->dst_port = sport;
-        debug("tcp_hdr switch  after: sport(%d), dport(%d)", ntohs(tcphdr->src_port), notohs(tcphdr->dst_port));
+        debug("tcp_hdr switch  after: sport(%d), dport(%d)", ntohs(tcphdr->src_port), ntohs(tcphdr->dst_port));
     }
 
     /*calc the seq and ack, and then switch */
@@ -93,16 +93,16 @@ ads_tcp_head_modify(struct tcp_hdr *tcphdr, hytag_t *hytag, uint8_t direction)
 
     if ( DIRECTION_DIFFERENT == direction)
     {
-        tcphdr->sent_seq = ntonl(ack);
+        tcphdr->sent_seq = htonl(ack);
         tcphdr->recv_ack = htonl(seq + hytag->l5_len);
     }
     else
     if ( DIRECTION_SAME == direction)
     {
         tcphdr->sent_seq = htonl(seq + hytag->l5_len);
-        tcphdr->recv_ack = nhtonl(ack);
+        tcphdr->recv_ack = htonl(ack);
     }
-    debug("tcp_hdr switch  after: seq(%d), ack(%d)", ntohs(tcphdr->sent_seq), notohs(tcphdr->recv_ack));
+    debug("tcp_hdr switch  after: seq(%d), ack(%d)", ntohl(tcphdr->sent_seq), ntohl(tcphdr->recv_ack));
 
     /* switch the option timestamp */
     if ( DIRECTION_DIFFERENT == direction)
@@ -236,7 +236,8 @@ ads_response_head_generator(struct rte_mbuf *m, hytag_t *hytag)
     /* l5 fill */
     debug("old l5_len(%d)", hytag->l5_len);
     http_head = ((char *)ptr) + hytag->l5_offset;
-    rv = ads_http_ok_head_fill(http_head, hytag);
+    
+    //rv = ads_http_ok_head_fill(http_head, hytag);
     if (rv)
     {
         printf("%s,%d, rv(%d)\n", __func__, __LINE__, rv);

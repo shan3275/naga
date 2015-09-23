@@ -32,12 +32,22 @@ typedef rte_atomic32_t    bts_atomic32_t;
 
 typedef enum {
     MOD_DBG,
-    MOD_CUSTOM,
+ //   MOD_CUSTOM,
+    MOD_AMD, 
+    MOD_DPF, 
+    MOD_ITF, 
+    MOD_PID, 
+    MOD_VSR, 
+    MOD_ADP,
+
     MOD_MAX,
 } bmod;
 
 typedef struct {
     bmod mod;
+    int  swt;
+    int  resv;
+    int  resv1;
     char *abbr;
     char *desc;
 } mod_t;
@@ -71,5 +81,8 @@ typedef struct {
 typedef uint32_t bts_ipaddr_t;
 
 char* berr_msg(berr e);
+
+
+int get_mod_switch(bmod mod);
 
 #endif

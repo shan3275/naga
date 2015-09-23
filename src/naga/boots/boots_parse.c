@@ -27,14 +27,19 @@ char* berr_msg(berr e)
     return berr_array[e];
 }
 
-#if 0
+#if 1
 
 mod_t mod_array[MOD_MAX] = {
-    {MOD_DBG, "dbg", "debug module"},
+    {MOD_DBG, BAS, OFF, OFF, "dbg", "debug module"},
 #ifdef MOD_ARRAY_CUSTOM
     MOD_ARRAY_CUSTOM,
 #endif
 } ;
+
+int get_mod_switch(bmod mod)
+{
+   return (mod < MOD_MAX) ?  mod_array[mod].swt : OFF;
+}
 
 #endif
 

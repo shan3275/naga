@@ -29,8 +29,10 @@
 #include <string.h>
 #include "vsr_dp.h"
 #include "itf.h"
+#include "nag_adp.h"
 
-#define MOD_IS_TURN_ON(mod)  (mod == 1)
+
+#define MOD_IS_TURN_ON(mod)  (get_mod_switch(mod) == ON)
 
 
 #define DPF_NODE(_mod, _tag, _func) { \
@@ -62,10 +64,10 @@ berr naga_data_process_flow(struct rte_mbuf *m)
     hytag.pbuf.ptr_offset = 0;
 
     HYTAG_DUMP(&hytag);
-
+ 
     DPF_NODE(MOD_PID, &hytag, naga_pid);
 
-    DPF_NODE(MOD_VSR, &hytag, naga_vsr);
+    //DPF_NODE(MOD_VSR, &hytag, naga_vsr);
 
     DPF_NODE(MOD_ADP, &hytag, naga_adp);
 

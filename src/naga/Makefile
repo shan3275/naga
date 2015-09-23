@@ -39,8 +39,8 @@ DIRS-y += vsr
 DIRS-y += pid
 DIRS-y += itf
 DIRS-y += dmr
-DIRS-y += main
 DIRS-y += template
 DIRS-y += adp
+DIRS-y += main
 
 include $(RTE_SDK)/mk/rte.extsubdir.mk
