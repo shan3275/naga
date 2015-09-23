@@ -237,7 +237,7 @@ ads_response_head_generator(struct rte_mbuf *m, hytag_t *hytag)
     debug("old l5_len(%d)", hytag->l5_len);
     http_head = ((char *)ptr) + hytag->l5_offset;
     
-    //rv = ads_http_ok_head_fill(http_head, hytag);
+    rv = ads_http_ok_head_fill(http_head, hytag);
     if (rv)
     {
         printf("%s,%d, rv(%d)\n", __func__, __LINE__, rv);

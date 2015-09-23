@@ -14,5 +14,5 @@
 #define __PACKET_HTTP_INCLUDE_H__
 #include "pid.h"
 berr ads_http_content_fill(char *buf, hytag_t *hytag);
-berr ads_http_ok_haad_fill(char *buf, hytag_t *hytag);
+berr ads_http_ok_head_fill(char *buf, hytag_t *hytag);
 #endif /* end of __PACKET_HTTP_INCLUDE_H__ */

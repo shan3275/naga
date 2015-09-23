@@ -253,7 +253,7 @@ http_content_len_get(hytag_t *hytag)
     return len;
 }
 
-berr ads_http_ok_haad_fill(char *buf, hytag_t *hytag)
+berr ads_http_ok_head_fill(char *buf, hytag_t *hytag)
 {
     uint16_t len = 0;
     uint16_t content_len = 0;
