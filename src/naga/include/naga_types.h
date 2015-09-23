@@ -1,21 +1,22 @@
 #ifndef __NAGA_TYPES_H__
 #define __NAGA_TYPES_H__
 
+#include "boots.h"
 
 typedef uint32_t ipaddr_t;
 
 #define NAGA_ACCOUNT_STR_SZ 32
 
 
-#define ACT_DROP        1
-#define ACT_FORWARD     2
-#define ACT_LOG         4   
-#define ACT_COUNT       8
+#define ACT_DROP            1
+#define ACT_HTTP_RESPONSE   2
+#define ACT_LOG             4   
+#define ACT_COUNT           8
 
 typedef struct {
     uint32_t actions;
     uint32_t outport;
-    uint64_t cnt;
+    bts_atomic64_t cnt;
 } naga_acl_t;
 
 #define ACL_DORP(_acl) \
@@ -23,18 +24,18 @@ typedef struct {
 
 #define ACL_FWD(_acl, _port) \
 { \
-    (_acl).actions |= ACT_FORWARD; \
-    (_acl).outport  = _port; \
+    _acl.actions |= ACT_FORWARD; \
+    _acl.outport  = _port; \
 }
 
 #define ACL_LOG(_acl) \
-    (_acl).actions |= ACT_LOG
+    _acl.actions |= ACT_LOG
 
 #define ACL_CNT(_acl) \
-    (_acl).actions |= ACT_COUNT
+    _acl.actions |= ACT_COUNT
 
 #define ACL_HIT(_acl) \
-    bts_atomic64_inc((_acl).cnt)
+    bts_atomic64_inc(&(_acl.cnt))
 
 
 
@@ -55,9 +56,9 @@ struct pbuf {
 
 
 #define URL_MAX_LEN  512 //URL MAX LEN
-#define MAX_HOST_LEN 512
+#define MAX_HOST_LEN 32
 
-typedef struct 
+typedef struct
 {
     /*OT L3*/
 	uint32_t outer_srcip4;
@@ -90,7 +91,7 @@ typedef struct
     uint16_t url_len;
     uint16_t host_len;
 	char url[URL_MAX_LEN];
-	char host[MAX_HOST_LEN];
+	uint8_t host[MAX_HOST_LEN];
     char account[NAGA_ACCOUNT_STR_SZ];
     naga_acl_t acl;
 
@@ -103,7 +104,7 @@ typedef struct
 { \
     (_tagacl).actions |= (_ruleacl).actions; \
     (_tagacl).outport |= (_ruleacl).outport; \
-    (_tagacl).cnt     += 1; \
+    ACL_HIT(_tagacl);\
 }
 
 
