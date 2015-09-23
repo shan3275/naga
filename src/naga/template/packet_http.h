@@ -5,18 +5,14 @@
 #
 #       @author       :shan
 #       @name         :Sam Liu
-#       @file         :/home/shan/work/rose/src/test-1/template\packet.h
-#       @date         :2015/09/23 08:50
+#       @file         :/home/shan/work/rose/src/test-1/template\packet_http.h
+#       @date         :2015/09/23 08:48
 #       @algorithm    :
 =============================================================================*/
 
-#ifndef __PACKET_INCLUDE_H__
-#define __PACKET_INCLUDE_H__
+#ifndef __PACKET_HTTP_INCLUDE_H__
+#define __PACKET_HTTP_INCLUDE_H__
 #include "pid.h"
-
-
-berr
-ads_response_head_generator(struct rte_mbuf *m, hytag_t *hytag);
-berr
-ads_response_content_generator(struct rte_mbuf *m, hytag_t *hytag);
-#endif
+berr ads_http_content_fill(char *buf, hytag_t *hytag);
+berr ads_http_ok_haad_fill(char *buf, hytag_t *hytag);
+#endif /* end of __PACKET_HTTP_INCLUDE_H__ */

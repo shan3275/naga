@@ -3,7 +3,7 @@
 
 
 
-struct tcp_hdr {
+struct tcp_hdr_s {
     uint16_t src;       //16位源端口号
     uint16_t dest;         //16位目的端口号
 

@@ -1,5 +1,5 @@
-#ifndef __ACR_TEMPLATE_H__
-#define __ACR_TEMPLATE_H__
+#ifndef __ADP_TEMPLATE_H__
+#define __ADP_TEMPLATE_H__
 
 typedef struct {
     uint8_t idx;

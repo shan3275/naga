@@ -10,7 +10,7 @@
 berr pid_tcp(struct pbuf *p, hytag_t *hytag, int inner_outer)
 {
     uint16_t tcphr_len = 0;
-	struct tcp_hdr *tcp_hdr;
+	struct tcp_hdr_s *tcp_hdr;
 
     if(check_pbuf_len(p, TCP_HLEN))
 	{
@@ -21,7 +21,7 @@ berr pid_tcp(struct pbuf *p, hytag_t *hytag, int inner_outer)
 		return E_EXCEED;
 	}
 
-	PBUF_CUR_FORMAT(struct tcp_hdr *, tcp_hdr, p);
+	PBUF_CUR_FORMAT(struct tcp_hdr_s *, tcp_hdr, p);
 
 	if(inner_outer == HEADER_OUTER)
 	{

@@ -36,7 +36,7 @@ berr pid_outerip4(struct pbuf *p,  hytag_t * hytag)
 	hytag->outer_dstip4 = ntohl(iphdr->dest);
 	hytag->outer_srcip4 = ntohl(iphdr->src);
     hytag->outer_protocol = IPH_PROTO(iphdr);
-    hytag->total_len =  ntohs(IPH_LEN(hdr));
+    hytag->total_len =  ntohs(IPH_LEN(iphdr));
 
 	UPDATE_PBUF_OFFSET(p, iphdr_hlen);	
     hytag->l4_offset = p->ptr_offset;

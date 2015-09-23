@@ -10,7 +10,7 @@
 berr pid_tcp(struct pbuf *p, hytag_t *hytag, int inner_outer)
 {
     uint16_t tcphr_len = 0;
-	struct tcp_hdr *tcp_hdr;
+	struct tcp_hdr_s *tcp_hdr;
 
     if(check_pbuf_len(p, TCP_HLEN))
 	{
@@ -21,7 +21,7 @@ berr pid_tcp(struct pbuf *p, hytag_t *hytag, int inner_outer)
 		return E_EXCEED;
 	}
 
-	PBUF_CUR_FORMAT(struct tcp_hdr *, tcp_hdr, p);
+	PBUF_CUR_FORMAT(struct tcp_hdr_s *, tcp_hdr, p);
 
 	if(inner_outer == HEADER_OUTER)
 	{
@@ -41,6 +41,8 @@ berr pid_tcp(struct pbuf *p, hytag_t *hytag, int inner_outer)
     tcphr_len = TCP_HDR_LEN(tcp_hdr);
     
     UPDATE_PBUF_OFFSET(p, tcphr_len);
+    hytag->l5_offset = p->ptr_offset;
+    hytag->l5_len    = hytag->total_len - ( hytag->l5_offset - hytag->l3_offset);
 
 	
 	uint16_t srcport = ntohs(tcp_hdr->src); 

@@ -60,6 +60,22 @@ struct pbuf {
 
 typedef struct
 {
+
+    /* L2 offset */
+    uint16_t l2_offset;
+
+    /* L3 offset */
+    uint16_t l3_offset;
+    uint16_t total_len; /* ip packet total length */
+
+    /* L4 offset */
+    uint16_t l4_offset;
+
+    /* L5 offset */
+    uint16_t l5_offset;
+    uint16_t l5_len;
+
+    
     /*OT L3*/
 	uint32_t outer_srcip4;
 	uint32_t outer_dstip4;

@@ -6,11 +6,9 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <rte_branch_prediction.h>
-#include "naga_types.h"
 
 #include "boots.h"
-
-
+#include "naga_types.h"
 
 
 

@@ -17,7 +17,8 @@ typedef enum
 
 
 #define URL_MAX_LEN  512 //URL MAX LEN
-#define HOST_MAX-LEN 512 //http host len
+#define HOST_MAX_LEN 512 //http host len
+
 typedef struct 
 {
 
