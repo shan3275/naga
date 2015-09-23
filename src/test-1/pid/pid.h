@@ -26,6 +26,7 @@ typedef struct
 
     /* L3 offset */
     uint16_t l3_offset;
+    uint16_t total_len; /* ip packet total length */
 
     /* L4 offset */
     uint16_t l4_offset;

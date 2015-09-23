@@ -41,6 +41,8 @@ berr pid_tcp(struct pbuf *p, hytag_t *hytag, int inner_outer)
     tcphr_len = TCP_HDR_LEN(tcp_hdr);
     
     UPDATE_PBUF_OFFSET(p, tcphr_len);
+    hytag->l5_offset = p->ptr_offset;
+    hytag->l5_len    = hytag->total_len - ( hytag->l5_offset - hytag->l3_offset);
 
 	
 	uint16_t srcport = ntohs(tcp_hdr->src); 
