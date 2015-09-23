@@ -31,16 +31,27 @@
 
 include $(RTE_SDK)/mk/rte.vars.mk
 
-DIRS-y += include
-DIRS-y += boots
-DIRS-y += libzebra
-DIRS-y += cmdline
-DIRS-y += vsr
-DIRS-y += pid
-DIRS-y += itf
-DIRS-y += dmr
-DIRS-y += main
-DIRS-y += template
-DIRS-y += adp
+#
+# library name
+#
+LIB = libadp.a
 
-include $(RTE_SDK)/mk/rte.extsubdir.mk
+CFLAGS +=  -I .  -I ../include -I ../libzebra
+
+#CFLAGS += $(WERROR_FLAGS)
+
+EXPORT_MAP := lib_adp.map
+
+LIBABIVER := 1
+
+SRCS-y += nag_adp.c
+
+CFLAGS += -O3
+CFLAGS += $(WERROR_FLAGS)
+CFLAGS += -I ../boots -I ../include  -I ../itf  -I ../template  
+
+# this lib depends upon:
+#DEPDIRS-y += lib/librte_eal lib/librte_mempool lib/librte_ring lib/librte_mbuf
+
+include $(RTE_SDK)/mk/rte.lib.mk
+

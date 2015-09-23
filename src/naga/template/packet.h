@@ -12,7 +12,7 @@
 
 #ifndef __PACKET_INCLUDE_H__
 #define __PACKET_INCLUDE_H__
-#include "pid.h"
+#include "naga_types.h"
 
 
 berr

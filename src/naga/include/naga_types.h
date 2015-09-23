@@ -112,7 +112,7 @@ typedef struct
     naga_acl_t acl;
 
     struct pbuf pbuf;
-
+    struct rte_mbuf *m;
     uint16_t match;   /* 0 for not match, 1 for vsr match, 2 for other match  */
 }hytag_t;
 

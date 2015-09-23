@@ -185,18 +185,19 @@ ads_eth_head_modify(struct ether_hdr *eth_hdr, hytag_t *hytag, uint8_t direction
         return E_PARAM;
     }
 
-    if ( DIRECTION_DIFFERENT != direction || DIRECTION_SAME != direction)
-    {
-        return E_PARAM;
-    }
 
-    if (DIRECTION_DIFFERENT == direction )
+    switch(direction)
     {
-        ether_addr_copy(&(eth_hdr->d_addr),&dst_mac);
-        ether_addr_copy(&(eth_hdr->s_addr),&src_mac);
+        case DIRECTION_DIFFERENT:
+            ether_addr_copy(&(eth_hdr->d_addr),&dst_mac);
+            ether_addr_copy(&(eth_hdr->s_addr),&src_mac);
 
-        ether_addr_copy(&src_mac, &(eth_hdr->d_addr));
-        ether_addr_copy(&dst_mac, &(eth_hdr->s_addr));
+            ether_addr_copy(&src_mac, &(eth_hdr->d_addr));
+            ether_addr_copy(&dst_mac, &(eth_hdr->s_addr));
+            break;    
+        case DIRECTION_SAME:
+        default:
+            return E_PARAM; 
     }
     
     return E_SUCCESS;
