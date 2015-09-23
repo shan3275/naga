@@ -33,7 +33,9 @@
 #include "zserv.h"
 
 #include "vsr_cmd.h"
+#include "dmr_cmd.h"
 #include "bts_cmd.h"
+#include "acr_cmd.h"
 
 /* Zebra instance */
 struct zebra_t zebrad =
@@ -240,6 +242,8 @@ int cmdline (int argc, char **argv)
     //memory_init ();
     cmdline_vsr_init();
     cmdline_bts_init();
+	cmdline_dmr_init();
+	cmdline_acr_init();
 
     /* Zebra related initialize. */
     //access_list_init ();

@@ -1,6 +1,8 @@
 
 #include <string.h>
 #include "bts_hashtable.h"
+#include "bts_debug.h"
+#include "bts_linklist.h"
 
 
 

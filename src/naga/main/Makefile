@@ -46,10 +46,10 @@ SRCS-y := main.c  main_data.c
 
 CFLAGS += -O3 $(USER_FLAGS)
 #CFLAGS += $(WERROR_FLAGS)
-CFLAGS  += -I ../cmdline -I ../vsr -I ../libzebra  -I ../boots -I ../include -I ../pid -I ../debug -I ../itf -I ../dmr
+CFLAGS  += -I ../cmdline  -I ../libzebra  -I ../boots -I ../include -I ../vsr -I ../pid -I ../debug -I ../itf -I ../dmr -I ../dmr
 #LDFLAGS += -L ../libzebra -L /mnt/hgfs/code/rose/src/dpdk-2.0.0/app/naga/cmdline -L ../vsr
-LDLIBS  +=  ../cmdline/libcmdline.a  ../libzebra/libzebra.a ../vsr/libvsr.a ../pid/libpid.a
-LDLIBS  +=  ../boots/libboots.a ../itf/libitf.a ../dmr/libdmr.a
+LDLIBS  +=  ../cmdline/libcmdline.a  ../libzebra/libzebra.a
+LDLIBS  +=   ../vsr/libvsr.a  ../pid/libpid.a ../itf/libitf.a   ../dmr/libdmr.a ../acr/libacr.a ../boots/libboots.a
 LDLIBS  +=   -lcrypt -lreadline -lrt
 
 

@@ -29,30 +29,32 @@
 #   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 #   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-ifeq ($(RTE_SDK),)
-$(error "Please define RTE_SDK environment variable")
-endif
-
-# Default target, can be overriden by command line or environment
-RTE_TARGET ?= x86_64-native-linuxapp-gcc
-
 include $(RTE_SDK)/mk/rte.vars.mk
 
-# binary name
-LIB  = libdmr.a
+#
+# library name
+#
+LIB = libdmr.a
 
-# all source are stored in SRCS-y
-SRCS-y := naga_host_rule.c
+CFLAGS +=   -I ../boots -I ../include -I ../libzebra -I ../pid
+#CFLAGS += $(WERROR_FLAGS)
+
+EXPORT_MAP := lib_vsr_version.map
+
+LIBABIVER := 1
+
+SRCS-y := naga_host_rule.c dmr_dp.c dmr_cmd.c dmr_cmd_api.c dmr_api.c
 
 
-CFLAGS += -O3
-CFLAGS += $(WERROR_FLAGS)
-CFLAGS += -I ../boots -I ../include -I ../pid
+#
+# Export include files
+#
+#SYMLINK-y-include += rte_ether.h
+#SYMLINK-y-include += rte_ethdev.h
+#SYMLINK-y-include += rte_eth_ctrl.h
 
-# workaround for a gcc bug with noreturn attribute
-# http://gcc.gnu.org/bugzilla/show_bug.cgi?id=12603
-ifeq ($(CONFIG_RTE_TOOLCHAIN_GCC),y)
-CFLAGS_main.o += -Wno-return-type
-endif
+# this lib depends upon:
+#DEPDIRS-y += lib/librte_eal lib/librte_mempool lib/librte_ring lib/librte_mbuf
+
 
 include $(RTE_SDK)/mk/rte.lib.mk

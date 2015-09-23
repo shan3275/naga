@@ -21,15 +21,16 @@
  */
 
 #include <zebra.h>
-
-#include "linkbts_list.h"
+#include "linklist.h"
+#include "bts_linklist.h"
 #include "memory.h"
 
 /* Allocate new bts_list. */
 struct bts_list *
 bts_list_new (void)
 {
-  return xcalloc(sizeof (struct bts_list));
+
+  return malloc(sizeof (struct bts_list));
 }
 
 /* Free bts_list. */
@@ -43,36 +44,36 @@ bts_list_free (struct bts_list *l)
 static struct bts_listnode *
 bts_listnode_new (void)
 {
-  return xcalloc(sizeof (struct bts_listnode));
+	return malloc(sizeof (struct bts_listnode));
 }
 
 /* Free bts_listnode. */
 static void
 bts_listnode_free (struct bts_listnode *node)
 {
-  xfree(node);
+	free(node);
 }
 
 /* Add new data to the bts_list. */
 void
 bts_listnode_add (struct bts_list *bts_list, void *val)
 {
-  struct bts_listnode *node;
-  
-  assert (val != NULL);
-  
-  node = bts_listnode_new ();
+	struct bts_listnode *node;
 
-  node->prev = bts_list->tail;
-  node->data = val;
+	assert (val != NULL);
 
-  if (bts_list->head == NULL)
-    bts_list->head = node;
-  else
-    bts_list->tail->next = node;
-  bts_list->tail = node;
+	node = bts_listnode_new ();
 
-  bts_list->count++;
+	node->prev = bts_list->tail;
+	node->data = val;
+
+	if (bts_list->head == NULL)
+	bts_list->head = node;
+	else
+	bts_list->tail->next = node;
+	bts_list->tail = node;
+
+	bts_list->count++;
 }
 
 /*
@@ -204,7 +205,7 @@ bts_listnode_delete_by_key (struct bts_list *bts_list, void *key)
     struct bts_listnode *node;
 
     assert(bts_list);
-    assert(bts_list->cmp)
+    assert(bts_list->cmp);
     for (node = bts_list->head; node; node = node->next)
     {
         if (bts_list->cmp(key, node->data))

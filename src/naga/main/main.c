@@ -47,10 +47,11 @@
 
 #include "main_data.h"
 #include "vsr_dp.h"
+#include "dmr_dp.h"
 #include "cmd.h"
 #include "pid.h"
 #include "itf.h"
-//#include "naga_host_rule.h"
+#include "naga_host_rule.h"
 
 #define RTE_LOGTYPE_L2FWD RTE_LOGTYPE_USER1
 
@@ -320,7 +321,7 @@ l2fwd_main_loop(void)
 #endif
 
 
-#define MAX_HOST_RULE_NUM 10000
+
 
 static int
 l2fwd_launch_one_lcore(__attribute__((unused)) void *dummy)
@@ -331,13 +332,9 @@ l2fwd_launch_one_lcore(__attribute__((unused)) void *dummy)
     	berr rv;
         printf("cmd core %d\n", rte_lcore_id());
         vsr_dp_init();
-		#if 0
-		rv = naga_host_rule_init(MAX_HOST_RULE_NUM);
-		if (E_SUCCESS != rv)
-		{
-			printf("Host rule init FAIL!\n");
-			return 1;
-		}
+		dmr_dp_init();
+		#if 1
+		
 		#endif
         cmdline (0, NULL);
     }

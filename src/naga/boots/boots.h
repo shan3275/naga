@@ -71,5 +71,4 @@ typedef struct {
 typedef uint32_t bts_ipaddr_t;
 
 char* berr_msg(berr e);
-
 #endif
