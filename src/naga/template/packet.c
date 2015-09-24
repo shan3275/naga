@@ -70,7 +70,7 @@ ads_tcp_head_modify(struct tcp_hdr *tcphdr, hytag_t *hytag, uint8_t direction)
         return E_PARAM;
     }
 
-    if ( DIRECTION_DIFFERENT != direction || DIRECTION_SAME != direction)
+    if ( DIRECTION_DIFFERENT != direction &&  DIRECTION_SAME != direction)
     {
         return E_PARAM;
     }
@@ -141,7 +141,7 @@ ads_ip_head_modify(struct ipv4_hdr* ip_hdr, hytag_t *hytag, uint8_t direction)
         return E_PARAM;
     }
 
-    if ( DIRECTION_DIFFERENT != direction || DIRECTION_SAME != direction)
+    if ( DIRECTION_DIFFERENT != direction && DIRECTION_SAME != direction)
     {
         return E_PARAM;
     }
@@ -231,6 +231,7 @@ ads_response_head_generator(struct rte_mbuf *m, hytag_t *hytag)
     if (rv)
     {
         printf("%s,%d, rv(%d)\n", __func__, __LINE__, rv);
+        return rv;
     }
 
     /* l5 fill */
@@ -253,6 +254,7 @@ ads_response_head_generator(struct rte_mbuf *m, hytag_t *hytag)
     if (rv)
     {
         printf("%s,%d, rv(%d)\n", __func__, __LINE__, rv);
+        return rv;
     }
 
     /* tcp checksum update*/
@@ -307,6 +309,7 @@ ads_response_content_generator(struct rte_mbuf *m, hytag_t *hytag)
     if (rv)
     {
         printf("%s,%d, rv(%d)\n", __func__, __LINE__, rv);
+        return rv;
     }
 
     /* l5 fill */
@@ -316,6 +319,7 @@ ads_response_content_generator(struct rte_mbuf *m, hytag_t *hytag)
     if (rv)
     {
         printf("%s,%d, rv(%d)\n", __func__, __LINE__, rv);
+        return rv;
     }
 
     debug("new l5_len(%d)", hytag->l5_len);
@@ -328,6 +332,7 @@ ads_response_content_generator(struct rte_mbuf *m, hytag_t *hytag)
     if (rv)
     {
         printf("%s,%d, rv(%d)\n", __func__, __LINE__, rv);
+        return rv;
     }
 
     /* tcp checksum update*/
@@ -348,6 +353,7 @@ ads_response_content_generator(struct rte_mbuf *m, hytag_t *hytag)
     if (rv)
     {
         printf("%s,%d, rv(%d)\n", __func__, __LINE__, rv);
+        return rv;
     }
 
     return E_SUCCESS;

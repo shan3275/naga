@@ -67,11 +67,13 @@ ads_tcp_head_modify(struct tcp_hdr *tcphdr, hytag_t *hytag, uint8_t direction)
 
     if ( NULL == tcphdr || NULL == hytag )
     {
+        printf("zzzzzzzzzzzz\n");
         return E_PARAM;
     }
 
-    if ( DIRECTION_DIFFERENT != direction || DIRECTION_SAME != direction)
+    if ( DIRECTION_DIFFERENT != direction &&  DIRECTION_SAME != direction)
     {
+         printf("2zzzzzzzzzzzz\n");
         return E_PARAM;
     }
 

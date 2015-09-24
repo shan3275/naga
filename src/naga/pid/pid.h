@@ -57,7 +57,7 @@ do{\
     PBUF_CUR_FORMAT(uint8_t *, ot, _p);\
     for(i = 0; i < _len; i++) \
     {\
-        if (8 == i)\
+        if (0 == i%7)\
             printf("\n");\
         printf("%.2x ", ot[i]);\
     }\

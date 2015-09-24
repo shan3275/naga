@@ -5,6 +5,8 @@
 #define STRING_HTTP_GET_LEN  3
 #define STRING_HTTP_VERSION_MAX  32
 
+#define STRING_HTTP_HOST "Host"
+#define STRING_HTTP_HOST_LEN 4
 
 static inline berr pid_http_request_method(uint8_t *p ,  uint8_t *method, uint16_t *len)
 {
@@ -124,7 +126,6 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
 
 	if(E_SUCCESS != pid_http_request_method(http_p, method_http, &method_len))
 	{
-        printf("ss failed\n");
         /*Tcp syn without method*/
 		return E_SUCCESS;
 	}
@@ -164,15 +165,17 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
 		return E_SUCCESS;
 	}
 
-	len = vsr_len + 2;
+	len = vsr_len + 1;
 	UPDATE_PBUF_OFFSET(p, len);
 	PBUF_CUR_FORMAT(char *, context_p, p);
 
+    PBUF_DUMP(p, 20);
 	while(NULL != (line = strsep(&context_p, "\n")))
 	{
-		if (NULL != (begin =strsep(&line, ":")))
+        //printf("line = %s\n", line);
+		if (NULL != (begin = strsep(&line, ":")))
 		{			
-			if (!strcmp("host", begin))	
+			if (!strncmp(STRING_HTTP_HOST, begin, STRING_HTTP_HOST_LEN))	
 			{
 				memcpy(hytag->host, &line[1], (strlen(line)-2));
 				hytag->host_len = strlen(line)-2;
@@ -181,7 +184,7 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
 	}
 	
 	
-	printf("the host is:  %s\n", hytag->host);
+	printf("the host is:  %s len = %d\n", hytag->host, hytag->host_len);
     return E_SUCCESS;
    
 }
