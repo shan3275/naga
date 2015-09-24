@@ -95,9 +95,15 @@ static inline berr pid_http_request_host(uint8_t *p ,  uint8_t *host, uint16_t *
 	return E_SUCCESS;
 }
 
+berr pid_http_down(struct pbuf *p ,  hytag_t * hytag )
+{
+    if( NULL == p || NULL == hytag)
+        return E_PARAM;
+    return E_SUCCESS;
+}
 
 
-berr pid_http(struct pbuf *p ,  hytag_t * hytag )
+berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
 {
 	uint16_t method_len = 0;
 	uint8_t *http_p = NULL;
@@ -105,16 +111,20 @@ berr pid_http(struct pbuf *p ,  hytag_t * hytag )
 	
 	PBUF_CUR_FORMAT(uint8_t *, http_p, p);
 
-	if(pid_http_request_method(http_p, method_http, &method_len))
+    hytag->app_type = APP_TYPE_HTTP_OTHER; 
+
+	if(E_SUCCESS != pid_http_request_method(http_p, method_http, &method_len))
 	{
-		return E_FAIL;
+        printf("ss failed\n");
+        /*Tcp syn without method*/
+		return E_SUCCESS;
 	}
 
 	if ((method_len != STRING_HTTP_GET_LEN ) ||
 		(memcmp(STRING_HTTP_GET, method_http, STRING_HTTP_GET_LEN)))
 	{
 		pid_incr_count(APP_HTTP_OTHER);
-		return E_FAIL;
+		return E_SUCCESS;
 	}
 	else
 	{
@@ -126,13 +136,14 @@ berr pid_http(struct pbuf *p ,  hytag_t * hytag )
 
 	if (pid_http_request_url(http_p, (uint8_t *)hytag->url, &hytag->url_len))
 	{
-		hytag->app_type = URL_IN_NULL;
+		//hytag->app_type = URL_IN_NULL;
+		;
 	}
 	else
 	{
-		hytag->app_type = URL_IN_GTP;
+		hytag->app_type = APP_TYPE_HTTP_GET_OR_POST;
 	}
-//printf("the url is:  %s\n", hytag->url);
+    //printf("the url is:  %s\n", hytag->url);
 	http_p++;
 	http_p++;
 
@@ -144,14 +155,16 @@ berr pid_http(struct pbuf *p ,  hytag_t * hytag )
 	http_p++;
 	http_p++;
 	http_p++;
-
-	if(pid_http_request_url(http_p, (uint8_t *)hytag->host, &hytag->host_len))
+    
+	if(pid_http_request_host(http_p, (uint8_t *)hytag->host, &hytag->host_len))
 	{
+        
 		return E_FAIL;
 	}
 	
 	printf("the host is:  %s\n", hytag->host);
     return E_SUCCESS;
+   
 }
 #if 0
 berr pid_http_get(struct pbuf *p,  hytag_t * hytag)

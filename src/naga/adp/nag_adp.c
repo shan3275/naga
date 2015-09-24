@@ -15,7 +15,14 @@ berr naga_adp(hytag_t *hytag)
     {
         return E_PARAM;
     }
-    
+
+    if( APP_TYPE_HTTP_GET_OR_POST != hytag->app_type)
+    {
+        return E_SUCCESS;
+    }
+
+
+    printf("enter ads response\n");
     rv = ads_response_head_generator(hytag->m, hytag);
     if(rv != E_SUCCESS)
         return rv;

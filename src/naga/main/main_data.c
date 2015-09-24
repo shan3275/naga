@@ -41,7 +41,7 @@
         berr _ec = _func(_tag); \
         if (_ec == E_SUCCESS) \
         { \
-            DBG_INFO(MOD_DPF, "%s ...... PASS.\n", #_func); \
+            /*DBG_INFO(MOD_DPF, "%s ...... PASS.\n", #_func);*/ \
         } else { \
             DBG_ERR(MOD_DPF, "%s  ...... FAIL!(%s)\n", #_func, berr_msg(_ec)); \
         } \
@@ -62,7 +62,8 @@ berr naga_data_process_flow(struct rte_mbuf *m)
     hytag.pbuf.ptr = rte_pktmbuf_mtod(m, void *);
     hytag.pbuf.len = m->data_len;
     hytag.pbuf.ptr_offset = 0;
-
+    hytag.m = m;
+    
     HYTAG_DUMP(&hytag);
  
     DPF_NODE(MOD_PID, &hytag, naga_pid);

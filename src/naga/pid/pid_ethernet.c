@@ -33,7 +33,9 @@ berr pid_ethernet(struct pbuf *p, hytag_t *hytag)
     DEBUG_PRINTF("SrcMac=%02x:%02x:%02x:%02x:%02x:%02x\n", 
                       eth_header->src.addr[0], eth_header->src.addr[1], eth_header->src.addr[2],
                      eth_header->src.addr[3], eth_header->src.addr[4], eth_header->src.addr[5]);
-    DEBUG_PRINTF("Ethertype=%04x\n", ntohs(type));   
+    DEBUG_PRINTF("Ethertype=%04x\n", ntohs(type)); 
+
+    
 	/*skip vlan*/
 	if(type == htons(ETHERTYPE_VLAN))
 	{

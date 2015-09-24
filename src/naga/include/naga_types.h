@@ -39,11 +39,12 @@ typedef struct {
 
 
 
+
 typedef enum
 {
-	URL_IN_NULL,
-	URL_IN_GTP,
-} APP_TYPE_E;
+    APP_TYPE_HTTP_GET_OR_POST = 1,
+    APP_TYPE_HTTP_OTHER,    
+}APP_TYPE_E;
 
 struct pbuf {
 	//struct pbuf *next; /*always NULL*/

@@ -1,7 +1,7 @@
 #include "bts_cnt.h"
 
 dopt_t dopts_array[DOPT_MAX] = {
-      {DOPT_INFO,     ON, "info",      "normal debug message"},
+      {DOPT_INFO,     OFF, "info",      "normal debug message"},
       {DOPT_VERB,     ON, "verb",      "verbose debug message"},
       {DOPT_WARN,     ON, "warn",      "warning message"},
       {DOPT_ERR,      ON, "err",       "error message"},
