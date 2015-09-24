@@ -155,7 +155,7 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
 	}
     //printf("the url is:  %s\n", hytag->url);
 
-	len = hytag->url_len + 1 ;
+	len = hytag->url_len + 1;
 	UPDATE_PBUF_OFFSET(p, len);
 	PBUF_CUR_FORMAT(uint8_t *, http_p, p);
 
