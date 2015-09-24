@@ -285,6 +285,118 @@ static berr host_str2bit(const char *str, uint8_t *data, uint32_t *len)
 
 
 
+
+
+
+
+
+
+static int dmr_cmd_show_host(struct vty *vty, const char *host)
+{
+
+	int ret = 0;
+	uint8_t data[MAX_HOST_LEN];
+	uint32_t len;
+	naga_host_attr_t host_attr;
+	naga_host_rule_t *entry;
+	
+	memset(&host_attr, 0, sizeof(naga_host_attr_t));
+	
+	if (NULL == host)
+	{
+        return CMD_ERR_NO_MATCH;
+	}
+	
+	if (host_str2bit(host, data, &len))
+	{
+		return CMD_ERR_NO_MATCH;
+	}
+
+	host_attr.host_len = len;
+	memcpy(host_attr.host, data, len);
+	
+
+    entry = rule_dmr_cmd_show_host(&host_attr);
+    if (NULL == entry)
+    {
+        vty_out(vty, "dmr del host, %s ret(%d)%s", host, ret, VTY_NEWLINE);
+        return CMD_WARNING;
+    }
+
+    return CMD_SUCCESS;
+}
+
+
+
+
+DEFUN(dmr_show_host,
+      dmr_show_host_cmd,
+      "rule dmr host show HOST",
+      RULE_STR
+      DMR_STR
+      HOST_STR
+      SHOW_STR
+      DMR_HOST_STR)
+{
+    return dmr_cmd_show_host(vty, argv[0]);
+}
+
+
+
+
+static int dmr_cmd_del_host(struct vty *vty, const char *host)
+{
+    int ret = 0;
+	uint8_t data[MAX_HOST_LEN];
+	uint32_t len;
+	naga_host_rule_t entry;
+	
+	memset(&entry, 0, sizeof(naga_host_rule_t));
+	
+	if (NULL == host)
+	{
+        return CMD_ERR_NO_MATCH;
+	}
+	
+	if (host_str2bit(host, data, &len))
+	{
+		return CMD_ERR_NO_MATCH;
+	}
+
+	entry.host.host_len = len;
+	memcpy(entry.host.host, data, len);
+	
+
+    ret = rule_dmr_cmd_del_host(&entry);
+    if (ret)
+    {
+        vty_out(vty, "dmr del host, %s ret(%d)%s", host, ret, VTY_NEWLINE);
+        return CMD_WARNING;
+    }
+
+    return CMD_SUCCESS;
+}
+
+
+
+
+
+DEFUN(dmr_del_host, 
+      dmr_del_host_cmd,
+      "rule dmr host del HOST",
+      RULE_STR
+      DMR_STR
+      HOST_STR
+      DEL_STR
+      DMR_HOST_STR)
+{
+    return dmr_cmd_del_host(vty, argv[0]);
+}
+
+
+
+
+
 static int dmr_cmd_add_host(struct vty *vty, const char *host, const char *action_str)
 {
     int ret = 0;
@@ -340,108 +452,6 @@ DEFUN(dmr_add_host,
     return dmr_cmd_add_host(vty, argv[0], argv[1]);
 }
 
-
-
-static int dmr_cmd_del_host(struct vty *vty, const char *host)
-{
-    int ret = 0;
-	uint8_t data[MAX_HOST_LEN];
-	uint32_t len;
-	naga_host_rule_t entry;
-	
-	memset(&entry, 0, sizeof(naga_host_rule_t));
-	
-	if (NULL == host)
-	{
-        return CMD_ERR_NO_MATCH;
-	}
-	
-	if (host_str2bit(host, data, &len))
-	{
-		return CMD_ERR_NO_MATCH;
-	}
-
-	entry.host.host_len = len;
-	memcpy(entry.host.host, data, len);
-	
-
-    ret = rule_dmr_cmd_del_host(&entry);
-    if (ret)
-    {
-        vty_out(vty, "dmr del host, %s ret(%d)%s", host, ret, VTY_NEWLINE);
-        return CMD_WARNING;
-    }
-
-    return CMD_SUCCESS;
-}
-
-
-
-
-
-DEFUN(dmr_del_host, 
-      dmr_del_host_cmd,
-      "rule dmr host del HOST",
-      RULE_STR
-      DMR_STR
-      HOST_STR
-      DEL_STR
-      DMR_HOST_STR)
-{
-    return dmr_cmd_del_host(vty, argv[0]);
-}
-
-
-
-static int dmr_cmd_show_host(struct vty *vty, const char *host)
-{
-
-	int ret = 0;
-	uint8_t data[MAX_HOST_LEN];
-	uint32_t len;
-	naga_host_attr_t host_attr;
-	naga_host_rule_t *entry;
-	
-	memset(&host_attr, 0, sizeof(naga_host_attr_t));
-	
-	if (NULL == host)
-	{
-        return CMD_ERR_NO_MATCH;
-	}
-	
-	if (host_str2bit(host, data, &len))
-	{
-		return CMD_ERR_NO_MATCH;
-	}
-
-	host_attr.host_len = len;
-	memcpy(host_attr.host, data, len);
-	
-
-    entry = rule_dmr_cmd_show_host(&host_attr);
-    if (NULL == entry)
-    {
-        vty_out(vty, "dmr del host, %s ret(%d)%s", host, ret, VTY_NEWLINE);
-        return CMD_WARNING;
-    }
-
-    return CMD_SUCCESS;
-}
-
-
-
-
-DEFUN(dmr_show_host,
-      dmr_show_host_cmd,
-      "rule dmr host show HOST",
-      RULE_STR
-      DMR_STR
-      HOST_STR
-      SHOW_STR
-      DMR_HOST_STR)
-{
-    return dmr_cmd_show_host(vty, argv[0]);
-}
 
 
 static int dmr_cmd_load_host(struct vty *vty, const char *file_name)

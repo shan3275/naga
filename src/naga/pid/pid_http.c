@@ -53,10 +53,10 @@ static inline berr pid_http_request_url(uint8_t *p ,  uint8_t *url, uint16_t *le
 }
 
 
-static inline berr pid_http_request_version_skip(uint8_t *p)
+static inline berr pid_http_request_version_skip(uint8_t *p, uint16_t *len)
 {
 	int i = 0;
-	while(('\r' != *p) && ('\0' != *p))    /*GET*/
+	while(('\r' != *p) && ('\0' != *p)) 
 	{
 		if (i + 1 > STRING_HTTP_VERSION_MAX)
 		{
@@ -67,12 +67,17 @@ static inline berr pid_http_request_version_skip(uint8_t *p)
 		{
 			p++;
 		}
+
+		i ++;
 	}
+
+	*len = i + 1;
 
 	return E_SUCCESS;
 }
 
 
+#if 0
 static inline berr pid_http_request_host(uint8_t *p ,  uint8_t *host, uint16_t *len)
 {
 	int i = 0;
@@ -95,6 +100,8 @@ static inline berr pid_http_request_host(uint8_t *p ,  uint8_t *host, uint16_t *
 	return E_SUCCESS;
 }
 
+#endif
+
 berr pid_http_down(struct pbuf *p ,  hytag_t * hytag )
 {
     if( NULL == p || NULL == hytag)
@@ -105,9 +112,11 @@ berr pid_http_down(struct pbuf *p ,  hytag_t * hytag )
 
 berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
 {
-	uint16_t method_len = 0;
+	uint16_t method_len = 0, vsr_len = 0;
+	uint16_t len = 0;
 	uint8_t *http_p = NULL;
 	uint8_t method_http[MAX_METHOD_LEN] = {0};
+	char *line = NULL, *begin = NULL, *context_p = NULL;
 	
 	PBUF_CUR_FORMAT(uint8_t *, http_p, p);
 
@@ -131,8 +140,9 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
 		pid_incr_count(APP_HTTP_GET);
 	}
 
-	http_p++;
-	http_p++;
+	len = method_len + 1;
+	UPDATE_PBUF_OFFSET(p, len);
+	PBUF_CUR_FORMAT(uint8_t *, http_p, p);
 
 	if (pid_http_request_url(http_p, (uint8_t *)hytag->url, &hytag->url_len))
 	{
@@ -144,23 +154,32 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
 		hytag->app_type = APP_TYPE_HTTP_GET_OR_POST;
 	}
     //printf("the url is:  %s\n", hytag->url);
-	http_p++;
-	http_p++;
 
-	if(pid_http_request_version_skip(http_p))
+	len = hytag->url_len + 1 ;
+	UPDATE_PBUF_OFFSET(p, len);
+	PBUF_CUR_FORMAT(uint8_t *, http_p, p);
+
+	if(pid_http_request_version_skip(http_p, &vsr_len))
 	{
-		return E_FAIL;
+		return E_SUCCESS;
 	}
 
-	http_p++;
-	http_p++;
-	http_p++;
-    
-	if(pid_http_request_host(http_p, (uint8_t *)hytag->host, &hytag->host_len))
+	len = vsr_len + 2;
+	UPDATE_PBUF_OFFSET(p, len);
+	PBUF_CUR_FORMAT(char *, context_p, p);
+
+	while(NULL != (line = strsep(&context_p, "\n")))
 	{
-        
-		return E_FAIL;
+		if (NULL != (begin =strsep(&line, ":")))
+		{			
+			if (!strcmp("host", begin))	
+			{
+				memcpy(hytag->host, &line[1], (strlen(line)-2));
+				hytag->host_len = strlen(line)-2;
+			}
+		}
 	}
+	
 	
 	printf("the host is:  %s\n", hytag->host);
     return E_SUCCESS;
