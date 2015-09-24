@@ -50,6 +50,21 @@ static inline berr check_pbuf_len(struct pbuf *p, int incr_len)
      }while(0)
 
 
+#define PBUF_DUMP(_p, _len) \
+do{\
+    int i = 0;\
+    uint8_t *ot = NULL;\
+    PBUF_CUR_FORMAT(uint8_t *, ot, _p);\
+    for(i = 0; i < _len; i++) \
+    {\
+        if (8 == i)\
+            printf("\n");\
+        printf("%.2x ", ot[i]);\
+    }\
+    printf("\n");\
+}while(0)
+
+
 //#define BYTE_ORDER  LITTLE_ENDIAN
 #define __LITTLE_ENDIAN_BITFIELD
 
