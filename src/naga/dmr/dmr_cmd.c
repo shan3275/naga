@@ -357,12 +357,13 @@ static int dmr_cmd_del_host(struct vty *vty, const char *host)
 	{
         return CMD_ERR_NO_MATCH;
 	}
-	
+#if 0
 	if (host_str2bit(host, data, &len))
 	{
 		return CMD_ERR_NO_MATCH;
 	}
-
+#endif
+	len = strlen(host);
 	entry.host.host_len = len;
 	memcpy(entry.host.host, data, len);
 	
@@ -414,14 +415,18 @@ static int dmr_cmd_add_host(struct vty *vty, const char *host, const char *actio
 	
     //index  = atoi(index_str);
 	action_str2int(action_str, &action);
+#if 0
 	if (host_str2bit(host, data, &len))
 	{
 		return CMD_ERR_NO_MATCH;
 	}
-
+#endif
+	len = strlen(host);
 	entry.acl.actions = action;
 	entry.host.host_len = len;
 	memcpy(entry.host.host, data, len);
+
+	printf("host = %s, host_len = %d\n", host, host_len);
 
     ret = rule_dmr_cmd_add_host(&entry);
     if (ret)
