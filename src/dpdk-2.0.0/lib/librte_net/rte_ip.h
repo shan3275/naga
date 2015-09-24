@@ -309,7 +309,9 @@ rte_ipv4_udptcp_cksum(const struct ipv4_hdr *ipv4_hdr, const void *l4_hdr)
 	l4_len = rte_be_to_cpu_16(ipv4_hdr->total_length) -
 		sizeof(struct ipv4_hdr);
 
+   
 	cksum = rte_raw_cksum(l4_hdr, l4_len);
+
 	cksum += rte_ipv4_phdr_cksum(ipv4_hdr, 0);
 
 	cksum = ((cksum & 0xffff0000) >> 16) + (cksum & 0xffff);

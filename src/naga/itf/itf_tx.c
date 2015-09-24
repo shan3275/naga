@@ -22,10 +22,30 @@ itf_send_burst(struct lcore_queue_conf *qconf, unsigned n, uint8_t port)
 	if (unlikely(ret < n)) {
 		port_statistics[port].dropped += (n - ret);
 		do {
-			rte_pktmbuf_free(m_table[ret]);
+			 rte_pktmbuf_free(m_table[ret]);
 		} while (++ret < n);
 	}
 }
+
+static void
+itf_send_burst_not_free(struct lcore_queue_conf *qconf, unsigned n, uint8_t port)
+{
+	struct rte_mbuf **m_table;
+	unsigned ret;
+	unsigned queueid =0;
+
+	m_table = (struct rte_mbuf **)qconf->tx_mbufs[port].m_table;
+
+	ret = rte_eth_tx_burst(port, (uint16_t) queueid, m_table, (uint16_t) n);
+	port_statistics[port].tx += ret;
+	if (unlikely(ret < n)) {
+		port_statistics[port].dropped += (n - ret);
+		do {
+			 //rte_pktmbuf_free(m_table[ret]);
+		} while (++ret < n);
+	}
+}
+
 
 /* Enqueue packets for TX and prepare them to be sent */
 int
@@ -50,6 +70,8 @@ itf_send_packet(struct rte_mbuf *m, uint8_t port)
 	qconf->tx_mbufs[port].len = len;
 	return 0;
 }
+
+
 
 void itf_tx_burst(void)
 {
