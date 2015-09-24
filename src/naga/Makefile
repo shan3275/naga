@@ -39,6 +39,11 @@ DIRS-y += vsr
 DIRS-y += pid
 DIRS-y += itf
 DIRS-y += dmr
+<<<<<<< HEAD
+=======
+DIRS-y += acr
+DIRS-y += main
+>>>>>>> c25627e887facfb42845f2d62f0415102341468f
 DIRS-y += template
 DIRS-y += adp
 DIRS-y += main

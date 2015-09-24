@@ -49,6 +49,8 @@ SRCS-y += bts_cnt.c
 SRCS-y += bts_cmd.c
 SRCS-y += bts_hash.c
 SRCS-y += bts_hashtable.c
+SRCS-y += bts_linklist.c
+SRCS-y += bts_util.c
 
 #
 # Export include files

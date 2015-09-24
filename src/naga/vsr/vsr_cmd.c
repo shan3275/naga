@@ -9,6 +9,8 @@
 #       @date         :2015/09/05 11:53
 #       @algorithm    :
 =============================================================================*/
+#include <string.h>
+
 #include "vsr_cmd_api.h"
 #include "zebra.h"
 #include "version.h"
@@ -34,9 +36,6 @@
 #define ENCOURAGE_STR               "Encourage Operation, for test\n" 
 #define TOTAL_STR                   "Summary Display\n"
 
-#define HOST_STR                    "Opearation of http host\n"
-#define HOST_DATA_STR               "Http host\n"
-#define ACTION_STR                  "forward or drop\n"
 
 //#define DEBUG
 #ifdef  DEBUG
@@ -556,52 +555,9 @@ void vsr_cmd_config_write(struct vty *vty)
 
 
 
-#if 0
-static int vsr_cmd_add_host(struct vty *vty, const char *index_str, char *host, char *action_str)
-{
-    int ret = 0;
-    uint32_t index = 0, action = 0;
-	
-
-	if ((NULL == index_str) || (NULL == host) || (NULL == action_str))
-	{
-        return CMD_ERR_NO_MATCH;
-	}
-    index  = atoi(index_str);
-	//action = action_str_to_int();
-    debug("index:%d", index);
-
-   	
-
-    ret = rule_vsr_cmd_add_host(index, host);
-    if (ret)
-    {
-        vty_out(vty, "vsr add error, index(%d) ret(%d)%s", index, ret, VTY_NEWLINE);
-        return CMD_WARNING;
-    }
-
-    return CMD_SUCCESS;
-}
 
 
 
-
-
-/*host operation*/
-
-DEFUN(vsr_add_host, 
-      vsr_add_host_cmd,
-      "rule vsr host add <0-9999> HOST {forward|drop}",
-      RULE_STR
-      VSR_STR
-      HOST_STR
-      ADD_STR
-      VSR_INDEX_STR
-      ACTION_STR)
-{
-    return vsr_cmd_add_host(vty, argv[0], argv[1], argv[2]);
-}
-#endif
 
 
 
@@ -635,8 +591,6 @@ void cmdline_vsr_init(void)
 
     install_element(CMD_NODE, &vsr_encourage_cmd);
     install_element(CMD_NODE, &vsr_file_cmd);
-
-	//install_element(CMD_NODE, &vsr_add_host_cmd);
 
     return ;
 }

@@ -58,31 +58,6 @@ uint64_t vsr_url_num_get(void)
 }
 
 
-
-void vsr_host_num_dec(void)
-{
-    //VSR_STAT_DEC(vsr_rule->url_num);
-}
-
-void vsr_host_num_add(void)
-{
-    //VSR_STAT_INC(vsr_rule->url_num);
-}
-
-void vsr_host_num_set(uint64_t val)
-{
-    //VSR_STAT_SET(vsr_rule->url_num, val);
-}
-
-uint64_t vsr_host_num_get(void)
-{
-	return 1;
-    //return (uint64_t)vsr_rule->url_num.cnt;
-}
-
-
-
-
 void vsr_rule_lock_init(uint32_t index)
 {
     VSR_SPINLOCK_INIT(vsr_rule->rule[index].lock);
@@ -270,7 +245,6 @@ berr vsr_request_data_entry(void)
 
     vsr_ip_num_set(0);
     vsr_url_num_set(0);
-	vsr_host_num_set(0);
     vsr_set_encourage_num(0);
     return E_SUCCESS;
 }

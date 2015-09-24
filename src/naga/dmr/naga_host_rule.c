@@ -1,9 +1,9 @@
-#include "naga_host_rule.h"
-
 #include "bts_hash.h"
 #include "bts_hashtable.h"
 #include "bts_linklist.h"
+#include "bts_util.h"
 
+#include "naga_host_rule.h"
 
 bts_hashtable_t naga_host_rule;
 
@@ -18,11 +18,10 @@ uint32_t host_rule_hash_func(void *data)
 
     entry = (naga_host_rule_t *) data; 
 
-    return bts_hash(entry->host, entry->host_len);
+    return bts_hash(entry->host.host, entry->host.host_len);
 }
-#if 0
-int 
-account_entry_cmp_func(void *d1, void *d2)
+#if 1
+int host_entry_cmp_func(void *d1, void *d2)
 {
     naga_host_rule_t *e1, *e2;
 
@@ -34,20 +33,20 @@ account_entry_cmp_func(void *d1, void *d2)
     e1 = (naga_host_rule_t *) d1;
     e2 = (naga_host_rule_t *) d2;
 
-    return bts_str_cmp(e1->account, d2->account);
+    return bts_str_cmp((void *)(e1->host.host), (void *)(e2->host.host));
 }
 #endif
 
-berr 
+berr
 naga_host_rule_init(uint32_t number)
 {
-    return bts_hashtable_init(&naga_host_rule, number, host_rule_hash_func, NULL, NULL);
+    return bts_hashtable_init(&naga_host_rule, number, host_rule_hash_func, host_entry_cmp_func, NULL);
 }
 
 naga_host_rule_t*
-naga_host_rule_lookup(char* host)
+naga_host_rule_lookup(void *key)
 {
-    return (naga_host_rule_t *)bts_hashtable_lookup(&naga_host_rule, (void *) host);
+    return (naga_host_rule_t *)bts_hashtable_lookup(&naga_host_rule, (void *) key);
 }
 
 berr

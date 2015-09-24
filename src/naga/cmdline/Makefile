@@ -36,7 +36,7 @@ include $(RTE_SDK)/mk/rte.vars.mk
 #
 LIB = libcmdline.a
 
-CFLAGS +=  -I . -I ../boots -I ../include -I ../libzebra -I ../vsr
+CFLAGS +=  -I . -I ../boots -I ../include -I ../libzebra -I ../vsr -I ../dmr -I ../acr
 #CFLAGS += $(WERROR_FLAGS)
 
 EXPORT_MAP := lib_cmdline_version.map

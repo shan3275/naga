@@ -81,8 +81,11 @@ typedef struct {
 typedef uint32_t bts_ipaddr_t;
 
 char* berr_msg(berr e);
+<<<<<<< HEAD
 
 
 int get_mod_switch(bmod mod);
 
+=======
+>>>>>>> c25627e887facfb42845f2d62f0415102341468f
 #endif
