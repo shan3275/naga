@@ -17,19 +17,19 @@
 
 
 
-berr  acr_api_rule_account_add(acr_account_entry_t *entry)
+berr  acr_api_rule_account_add(acr_account_rule_t *entry)
 {
     return acr_account_rule_add(entry);
 }
 
 
-berr  acr_api_rule_account_del(acr_account_entry_t *entry)
+berr  acr_api_rule_account_del(acr_account_rule_t *entry)
 {	
     return acr_account_rule_del(entry);
 }
 
 
-acr_account_entry_t *acr_api_rule_account_show(char *account)
+acr_account_rule_t *acr_api_rule_account_show(char *account)
 {
 	
     return acr_account_rule_lookup(account);

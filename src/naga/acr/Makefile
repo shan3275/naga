@@ -43,7 +43,7 @@ EXPORT_MAP := lib_vsr_version.map
 
 LIBABIVER := 1
 
-SRCS-y := acr_account_rule.c acr_cmd.c acr_cmd_api.c acr_api.c
+SRCS-y := acr_account_rule.c acr_cmd.c acr_cmd_api.c acr_api.c acr_account_table.c acr_dp.c
 
 
 #

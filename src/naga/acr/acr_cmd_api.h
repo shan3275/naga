@@ -22,11 +22,11 @@
 
 
 
-berr rule_acr_cmd_add_account(acr_account_entry_t *entry);
+berr rule_acr_cmd_add_account(acr_account_rule_t *entry);
 
-berr rule_acr_cmd_del_account(acr_account_entry_t *entry);
+berr rule_acr_cmd_del_account(acr_account_rule_t *entry);
 
-acr_account_entry_t *rule_acr_cmd_show_account(char *account);
+acr_account_rule_t *rule_acr_cmd_show_account(char *account);
 
 
 #endif /*__ACR_CMD_API_H__ */

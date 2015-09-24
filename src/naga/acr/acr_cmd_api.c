@@ -15,18 +15,18 @@
 #include "acr_account_rule.h"
 #include "boots.h"
 
-berr rule_acr_cmd_add_account(acr_account_entry_t *entry)
+berr rule_acr_cmd_add_account(acr_account_rule_t *entry)
 {
 	return acr_api_rule_account_add(entry);
 }
 
-berr rule_acr_cmd_del_account(acr_account_entry_t *entry)
+berr rule_acr_cmd_del_account(acr_account_rule_t *entry)
 {
 	return acr_api_rule_account_del(entry);
 }
 
 
-acr_account_entry_t *rule_acr_cmd_show_account(char *account)
+acr_account_rule_t *rule_acr_cmd_show_account(char *account)
 {
 	return acr_api_rule_account_show(account);
 }

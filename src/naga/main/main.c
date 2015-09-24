@@ -48,6 +48,7 @@
 #include "main_data.h"
 #include "vsr_dp.h"
 #include "dmr_dp.h"
+#include "acr_dp.h"
 #include "cmd.h"
 #include "pid.h"
 #include "itf.h"
@@ -333,6 +334,7 @@ l2fwd_launch_one_lcore(__attribute__((unused)) void *dummy)
         printf("cmd core %d\n", rte_lcore_id());
         vsr_dp_init();
 		dmr_dp_init();
+		acr_dp_init();
 		#if 1
 		
 		#endif

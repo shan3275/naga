@@ -1,3 +1,4 @@
+#include "stdio.h"
 #include "boots.h"
 #include "naga_types.h"
 
@@ -58,6 +59,19 @@ int action_str2int(const char *str, uint32_t *action)
 
 	return E_SUCCESS;
 }
+
+
+void bts_ip_string(uint32_t ip, char *str)
+{
+    sprintf(str, "%d.%d.%d.%d",
+            ((ip >> 24) & 0xff),
+            ((ip >> 16) & 0xff),
+            ((ip >> 8) & 0xff),
+            (ip & 0xff));
+
+}
+
+
 
 
 

@@ -51,9 +51,9 @@ static int acr_cmd_add_account(struct vty *vty, const char *account, const char 
     int ret = 0;
     uint32_t  action = 0;
 
-	acr_account_entry_t entry;
+	acr_account_rule_t entry;
 	
-	memset(&entry, 0, sizeof(acr_account_entry_t));
+	memset(&entry, 0, sizeof(acr_account_rule_t));
 		
 	if ((NULL == account) || (NULL == action_str))
 	{
@@ -99,9 +99,9 @@ DEFUN(acr_add_account,
 static int acr_cmd_del_account(struct vty *vty, const char *account)
 {
     int ret = 0;
-	acr_account_entry_t entry;
+	acr_account_rule_t entry;
 	
-	memset(&entry, 0, sizeof(acr_account_entry_t));
+	memset(&entry, 0, sizeof(acr_account_rule_t));
 	
 	if (NULL == account)
 	{
@@ -142,7 +142,7 @@ DEFUN(acr_del_account,
 static int acr_cmd_show_account(struct vty *vty, const char *account)
 {
 	char data[NAGA_ACCOUNT_STR_SZ] = {0};
-	acr_account_entry_t *entry;
+	acr_account_rule_t *entry;
 	
 	if (NULL == account)
 	{

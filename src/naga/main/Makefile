@@ -46,22 +46,16 @@ SRCS-y := main.c  main_data.c
 
 CFLAGS += -O3 $(USER_FLAGS)
 #CFLAGS += $(WERROR_FLAGS)
-<<<<<<< HEAD
-CFLAGS  += -I ../cmdline -I ../vsr -I ../libzebra  
-CFLAGS  += -I ../boots -I ../include -I ../pid -I ../debug -I ../itf -I ../dmr
-CFLAGS  += -I ../adp
 
 
 
 #LDFLAGS += -L ../libzebra -L /mnt/hgfs/code/rose/src/dpdk-2.0.0/app/naga/cmdline -L ../vsr
-LDLIBS  +=  ../cmdline/libcmdline.a  ../libzebra/libzebra.a ../vsr/libvsr.a ../pid/libpid.a
-LDLIBS  +=  ../boots/libboots.a ../itf/libitf.a ../dmr/libdmr.a  ../adp/libadp.a ../template/libtemp.a 
-=======
-CFLAGS  += -I ../cmdline  -I ../libzebra  -I ../boots -I ../include -I ../vsr -I ../pid -I ../debug -I ../itf -I ../dmr -I ../dmr
+CFLAGS  += -I ../cmdline  -I ../libzebra  -I ../boots -I ../include -I ../vsr -I ../pid -I ../debug
+CFLAGS  += -I ../itf -I ../dmr -I ../acr -I ../adp
 #LDFLAGS += -L ../libzebra -L /mnt/hgfs/code/rose/src/dpdk-2.0.0/app/naga/cmdline -L ../vsr
 LDLIBS  +=  ../cmdline/libcmdline.a  ../libzebra/libzebra.a
 LDLIBS  +=   ../vsr/libvsr.a  ../pid/libpid.a ../itf/libitf.a   ../dmr/libdmr.a ../acr/libacr.a ../boots/libboots.a
->>>>>>> c25627e887facfb42845f2d62f0415102341468f
+LDLIBS  +=   ../adp/libadp.a ../template/libtemp.a
 LDLIBS  +=   -lcrypt -lreadline -lrt
 
 

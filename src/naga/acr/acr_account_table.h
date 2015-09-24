@@ -1,6 +1,17 @@
 #ifndef __ACR_ACCOUNT_TABLE_H__
 #define __ACR_ACCOUNT_TABLE_H__
 
+
+#include <stdio.h>
+#include <string.h>
+#include <unistd.h>
+#include <arpa/inet.h>
+
+#include "naga_types.h"
+#include "boots.h"
+
+
+
 typedef struct {
     bts_ipaddr_t ip;
     char account[NAGA_ACCOUNT_STR_SZ];
