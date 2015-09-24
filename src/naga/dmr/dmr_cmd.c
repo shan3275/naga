@@ -426,7 +426,7 @@ static int dmr_cmd_add_host(struct vty *vty, const char *host, const char *actio
 	entry.host.host_len = len;
 	memcpy(entry.host.host, data, len);
 
-	printf("host = %s, host_len = %d\n", host, host_len);
+	printf("host = %s, host_len = %d\n", host, len);
 
     ret = rule_dmr_cmd_add_host(&entry);
     if (ret)
