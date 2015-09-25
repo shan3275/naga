@@ -38,6 +38,8 @@ typedef enum {
     MOD_ITF, 
     MOD_PID, 
     MOD_VSR, 
+    MOD_DMR,
+    MOD_ACR,
     MOD_ADP,
 
     MOD_MAX,

@@ -47,7 +47,7 @@ void acr_dp_init(void)
 
 /* End of file */
 berr
-acr_dp_match(hytag_t *tag)
+naga_acr(hytag_t *tag)
 {
     acr_account_rule_t* rule = NULL;
     if (NULL == tag)

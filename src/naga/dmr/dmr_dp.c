@@ -16,7 +16,7 @@ static void dmr_host_fill(hytag_t *tag, naga_host_attr_t *host_attr)
 	host_attr->host_len = tag->host_len;
 }
 
-berr dmr_dp_match(hytag_t *tag)
+berr naga_dmr(hytag_t *tag)
 {
     naga_host_rule_t* rule = NULL;
 	naga_host_attr_t host_attr;
@@ -44,6 +44,8 @@ berr dmr_dp_match(hytag_t *tag)
 
     BRET(E_SUCCESS);
 }
+
+
 
 
 void dmr_dp_init(void)
