@@ -72,6 +72,26 @@ itf_send_packet(struct rte_mbuf *m, uint8_t port)
 }
 
 
+int itf_send_packet_imm(struct rte_mbuf *m, uint8_t port)
+{
+	unsigned lcore_id, len;
+	struct lcore_queue_conf *qconf;
+
+	lcore_id = rte_lcore_id();
+
+	qconf = &lcore_queue_conf[lcore_id];
+	len = qconf->tx_mbufs[port].len;
+	qconf->tx_mbufs[port].m_table[len] = m;
+	len++;
+
+    itf_send_burst(qconf, len, port);
+    len = 0;
+	qconf->tx_mbufs[port].len = len;
+	return 0;
+}
+
+
+
 
 void itf_tx_burst(void)
 {

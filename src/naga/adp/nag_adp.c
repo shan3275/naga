@@ -24,11 +24,13 @@ berr naga_adp(hytag_t *hytag)
     {
         return E_SUCCESS;
     }
-    if(strcmp("www.hao123.com", (char *)hytag->host))
+    if(!strcmp("www.121zou.com", (char *)hytag->host))
     {
          return E_SUCCESS;
     }
-#if 1
+
+ #if 0   
+
 
     txm = rte_pktmbuf_clone(hytag->m, l2fwd_pktmbuf_pool);
 
@@ -52,10 +54,10 @@ berr naga_adp(hytag_t *hytag)
         return rv;
     printf("send1 buf\n");
     printf("len = %d, %d, %d\n", txm->data_len, txm->buf_len, txm->pkt_len);    
-    itf_send_packet(txm, txm->port);
+    itf_send_packet_imm(txm, txm->port);
 
-/*
-    txm = rte_pktmbuf_clone(txm, l2fwd_pktmbuf_pool);
+
+    txm = rte_pktmbuf_clone(hytag->m, l2fwd_pktmbuf_pool);
 
     if( NULL == txm)
     {
@@ -74,8 +76,8 @@ berr naga_adp(hytag_t *hytag)
        return rv;
 
     printf("send2 buf\n");
-    itf_send_packet(txm, txm->port);
- */   
+    itf_send_packet_imm(txm, txm->port);
+    
 #else
 
 
@@ -87,14 +89,16 @@ berr naga_adp(hytag_t *hytag)
     if(rv != E_SUCCESS)
         return rv;
     printf("send1 buf\n");
-    itf_send_packet(txm, txm->port);
+    itf_send_packet_imm(txm, txm->port);
 
+    sleep(1);
+/*
     rv = ads_response_content_generator(txm, hytag);
     if(rv != E_SUCCESS)
        return rv;
 
     printf("send2 buf\n");
-    itf_send_packet(txm, txm->port);
+    itf_send_packet_imm(txm, txm->port);*/
 #endif
     
     return E_SUCCESS;

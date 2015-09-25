@@ -73,5 +73,7 @@ void itf_rx_burst(rx_process_func process_func);
 
 int itf_send_packet(struct rte_mbuf *m, uint8_t port);
 
+int itf_send_packet_imm(struct rte_mbuf *m, uint8_t port);
+
 void itf_tx_burst(void);
 #endif /* !__ITF_H__ */

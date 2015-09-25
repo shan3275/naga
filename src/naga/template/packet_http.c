@@ -44,17 +44,17 @@
 #define HTTP_HOST_HEAD              "Host: "
 #define HTTP_ACCEPT                 "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
 #define HTTP_ACCEPT_LANGUAGE        "Accept-Language: zh-cn"
-#define HTTP_CONNECTION             "Connection: keep-alive"
+#define HTTP_CONNECTION             "Connection: close"
 #define HTTP_ACCEPT_ENCODING        "Accept-Encoding: gzip, deflate"
 #define HTTP_USER_AGENT             "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_3) AppleWebKit/600.6.3 (KHTML, like Gecko) Version/8.0.6 Safari/600.6.3"
 
 
 #define HTTP_RESPONSE_OK            "200 OK"
-#define HTTP_KEEP_ALIVE             "Keep-Alive: timeout=60, max=199"
+#define HTTP_KEEP_ALIVE             "Keep-Alive: timeout=60,max=199"
 #define HTTP_CONTENT_TYPE           "Content-Type: text/html"
 #define HTTP_SERVER                 "Server: Embedthis-http"
 #define HTTP_DATA_HEAD              "Date: "
-#define HTTP_ETAG                   "ETag: 60c03-521-55f6e127"
+#define HTTP_ETAG                   "ETag:60c03-521-55f6e127"
 #define HTTP_CONTENT_LENGTH_HEAD    "Content-Length: "
 #define HTTP_LAST_MODIFIED_HEAD     "Last-Modified: "
 #define HTTP_ACCEPT_RANGES          "Accept-Ranges: bytes"
@@ -174,48 +174,48 @@ char *http_head_response7=
 char * http_body1 =
     "<!DOCTYPE HTML>\n"
     "<html>\n"
-    "    <head>\n"
-    "        <meta charset=\"utf-8\">"
-    "        <title></title>\n"
-    "        <script>\n"
-    "            d=document;\n"
-    "            function u(){\n"
-    "            var f = \"";
+    "<head>\n"
+    "<meta charset=\"utf-8\">"
+    "<title></title>\n"
+    "<script>\n"
+    "d=document;\n"
+    "function u(){\n"
+    "var f = \"";
 
 char *http_body2 = "www.taobao.com";
 
 char *http_body3 =
     "\";\n"
-    "            d.getElementById(\"m\").src=f+(f.indexOf(\"&\")<0\?\'\?\':\'&\')+\'_t=t\';\n"
-    "            }\n"
+    "d.getElementById(\"m\").src=f+(f.indexOf(\"&\")<0\?\'\?\':\'&\')+\'_t=t\';\n"
+    "}\n"
     "\n"
-    "            setTimeout(function(){d.getElementById(\"x\").style.display=\'block\';}, 2000);\n"
+    "setTimeout(function(){d.getElementById(\"x\").style.display=\'block\';}, 2000);\n"
     "\n"
-    "            function c(){\n"
-    "            x.style.display=\"none\"\n"
-    "            }\n"
+    "function c(){\n"
+    "x.style.display=\"none\"\n"
+    "}\n"
     "\n"
-    "        </script>\n"
-    "        <style>\n"
-    "            body {margin:0;color:#000;overflow:hidden;padding:0;height:100%;font-family:Arial}\n"
-    "            a{cursor:pointer;display:block;position:absolute;border:1px;border-radius:1em;background-color:#555;color:#eee;z-index:3;right:5px;top:5px;line-height:20px;text-align:center;width:20px;font-size:10px}\n"
-    "            #x{position:absolute;z-index:2;right:18px;bottom:0px;width:300px;height:250px}\n"
-    "            #i{display:block; position:absolute; z-index:1; width:100%; height:100%}\n"
-    "        </style>\n"
-    "    </head>\n"
-    "    <body onLoad=u()>\n"
-    "        <div id=i>\n"
-    "            <iframe id=m frameborder=0 width=100% height=100%></iframe>\n" 
-    "        </div>\n"
-    "        <div id=x>\n"
-    "            <iframe src=\"";
+    "</script>\n"
+    "<style>\n"
+    "body {margin:0;color:#000;overflow:hidden;padding:0;height:100%;font-family:Arial}\n"
+    "a{cursor:pointer;display:block;position:absolute;border:1px;border-radius:1em;background-color:#555;color:#eee;z-index:3;right:5px;top:5px;line-height:20px;text-align:center;width:20px;font-size:10px}\n"
+    "#x{position:absolute;z-index:2;right:18px;bottom:0px;width:300px;height:250px}\n"
+    "#i{display:block; position:absolute; z-index:1; width:100%; height:100%}\n"
+    "</style>\n"
+    "</head>\n"
+    "<body onLoad=u()>\n"
+    "<div id=i>\n"
+    "<iframe id=m frameborder=0 width=100% height=100%></iframe>\n" 
+    "</div>\n"
+    "<div id=x>\n"
+    "<iframe src=\"";
 
 char *http_body4 = "http://www.121zou.com/speed.html";
 char *http_body5 =
     "\" width=300 height=250 scrolling=no frameborder=0></iframe>\n"
-    "        </div>\n"
+    "</div>\n"
     "\n"
-    "    </body>\n"
+    "</body>\n"
     "</html>\n"
     "\n";
 
@@ -245,8 +245,9 @@ http_content_len_get(hytag_t *hytag)
     uint16_t len = 0;
     len += strlen(http_body1);    
     len += hytag->url_len;
-    len += hytag->host_len;
-    len += strlen(http_body2);
+    //len += hytag->host_len;
+
+    //len += strlen(http_body2);
     len += strlen(http_body3);
     len += strlen(http_body4);
     len += strlen(http_body5);
@@ -289,6 +290,29 @@ berr ads_http_ok_head_fill(char *buf, hytag_t *hytag)
 
     rte_memcpy(buf + len, http_head_response7, (size_t) strlen(http_head_response7));
     len += strlen(http_head_response7);
+
+
+    rte_memcpy(buf + len, http_body1, (size_t) strlen(http_body1));
+    len += strlen(http_body1);
+
+    //rte_memcpy(buf + len, http_body2, (size_t) strlen(http_body2));
+    //len += strlen(http_body2);
+    
+    //rte_memcpy(buf + len, hytag->host, (size_t) hytag->host_len);
+    //len += hytag->host_len;
+
+    rte_memcpy(buf + len, hytag->url, (size_t) hytag->url_len);
+    len += hytag->url_len;
+
+    rte_memcpy(buf + len, http_body3, (size_t) strlen(http_body3));
+    len += strlen(http_body3);
+
+    rte_memcpy(buf + len, http_body4, (size_t) strlen(http_body4));
+    len += strlen(http_body4);
+
+    rte_memcpy(buf + len, http_body5, (size_t) strlen(http_body5));
+    len += strlen(http_body5);
+
 
     hytag->l5_len = len;
     return E_SUCCESS;

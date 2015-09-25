@@ -169,7 +169,7 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
 	UPDATE_PBUF_OFFSET(p, len);
 	PBUF_CUR_FORMAT(char *, context_p, p);
 
-    PBUF_DUMP(p, 20);
+    //PBUF_DUMP(p, 20);
 	while(NULL != (line = strsep(&context_p, "\n")))
 	{
         //printf("line = %s\n", line);
@@ -184,7 +184,7 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
 	}
 	
 	
-	printf("the host is:  %s len = %d\n", hytag->host, hytag->host_len);
+	printf("the host is:  <%s> len = %d\n", hytag->host, hytag->host_len);
     return E_SUCCESS;
    
 }

@@ -89,12 +89,12 @@ ads_tcp_head_modify(struct tcp_hdr *tcphdr, hytag_t *hytag, uint8_t direction)
     /*calc the seq and ack, and then switch */
     seq = ntohl(tcphdr->sent_seq);
     ack = ntohl(tcphdr->recv_ack);
-    debug("tcp_hdr switch  before: seq(%u), ack(%u)", seq, ack);
+    debug("tcp_hdr switch  before: seq(%x-%u), ack(%x-%u)", seq, seq, ack, ack);
 
     if ( DIRECTION_DIFFERENT == direction)
     {
-        tcphdr->sent_seq = htonl(ack);
-        tcphdr->recv_ack = htonl(seq + hytag->l5_len);
+        tcphdr->sent_seq = htonl(seq + hytag->l5_len);
+        tcphdr->recv_ack =  htonl(ack);
     }
     else
     if ( DIRECTION_SAME == direction)
@@ -102,7 +102,9 @@ ads_tcp_head_modify(struct tcp_hdr *tcphdr, hytag_t *hytag, uint8_t direction)
         tcphdr->sent_seq = htonl(seq + hytag->l5_len);
         tcphdr->recv_ack = htonl(ack);
     }
-    debug("tcp_hdr switch  after: seq(%u), ack(%u)", ntohl(tcphdr->sent_seq), ntohl(tcphdr->recv_ack));
+    debug("tcp_hdr switch  after: seq(%x-%u), ack(%x-%u)", 
+            ntohl(tcphdr->sent_seq), ntohl(tcphdr->sent_seq)
+                , ntohl(tcphdr->recv_ack), ntohl(tcphdr->recv_ack));
 
     /* switch the option timestamp */
     if ( DIRECTION_DIFFERENT == direction)
@@ -156,8 +158,8 @@ ads_ip_head_modify(struct ipv4_hdr* ip_hdr, hytag_t *hytag, uint8_t direction)
     {
         sip = ip_hdr->src_addr;
         dip = ip_hdr->dst_addr;
-        //ip_hdr->src_addr = dip;
-        ip_hdr->src_addr = 0x11223344;
+        ip_hdr->src_addr = dip;
+        //ip_hdr->src_addr = 0x0c64a8c0;
         ip_hdr->dst_addr = sip;
         
     }
@@ -200,8 +202,14 @@ ads_eth_head_modify(struct ether_hdr *eth_hdr, hytag_t *hytag, uint8_t direction
 
         ether_addr_copy(&src_mac, &(eth_hdr->d_addr));
         ether_addr_copy(&dst_mac, &(eth_hdr->s_addr));
+        
     }
-    
+    eth_hdr->s_addr.addr_bytes[0] = 0x00;
+    eth_hdr->s_addr.addr_bytes[1] = 0x01;
+    eth_hdr->s_addr.addr_bytes[2] = 0x02;
+    eth_hdr->s_addr.addr_bytes[3] = 0x03;
+    eth_hdr->s_addr.addr_bytes[4] = 0x04;
+    eth_hdr->s_addr.addr_bytes[5] = 0x05;   
     return E_SUCCESS;
 }
 
