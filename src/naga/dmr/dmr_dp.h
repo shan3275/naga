@@ -6,7 +6,7 @@
 #include "naga_types.h"
 #include "boots.h"
 
-berr dmr_dp_match(hytag_t *tag);
+berr naga_dmr(hytag_t *tag);
 void dmr_dp_init(void);
 
 #endif

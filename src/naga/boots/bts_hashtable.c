@@ -15,11 +15,10 @@ bts_hashtable_init(bts_hashtable_t *tab, uint32_t bucket_number, bts_hash_func h
         BRET(E_PARAM);
     }
 
+	memset(tab, 0, sizeof(bts_hashtable_t));
     tab->hash = hash;
-   
 
-    memset(tab, 0, sizeof(bts_hashtable_t));
-
+	tab->total_bucket = bucket_number;
     //tab->buckets = malloc(tab->buckets, 0 , sizeof(bts_hashtable_t) * bucket_number);
     tab->buckets = malloc(sizeof(bts_list_t) * bucket_number);
 
@@ -27,6 +26,7 @@ bts_hashtable_init(bts_hashtable_t *tab, uint32_t bucket_number, bts_hash_func h
     {
         BRET(E_MEMORY);
     }
+
 
     memset(tab->buckets, 0, sizeof(bts_list_t) * bucket_number);
 

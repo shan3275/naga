@@ -402,7 +402,7 @@ static int dmr_cmd_add_host(struct vty *vty, const char *host, const char *actio
 {
     int ret = 0;
     uint32_t  action = 0, len = 0;
-	uint8_t data[MAX_HOST_LEN];
+	//uint8_t data[MAX_HOST_LEN];
 
 	naga_host_rule_t entry;
 	
@@ -424,7 +424,7 @@ static int dmr_cmd_add_host(struct vty *vty, const char *host, const char *actio
 	len = strlen(host);
 	entry.acl.actions = action;
 	entry.host.host_len = len;
-	memcpy(entry.host.host, data, len);
+	memcpy(entry.host.host, host, len);
 
 	printf("host = %s, host_len = %d\n", host, len);
 

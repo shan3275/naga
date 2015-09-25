@@ -6,7 +6,7 @@
 #include "naga_types.h"
 #include "boots.h"
 
-berr acr_dp_match(hytag_t *tag);
+berr naga_acr(hytag_t *tag);
 void acr_dp_init(void);
 
 #endif

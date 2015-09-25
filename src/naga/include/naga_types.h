@@ -57,7 +57,7 @@ struct pbuf {
 
 
 #define URL_MAX_LEN  512 //URL MAX LEN
-#define MAX_HOST_LEN 32
+#define MAX_HOST_LEN 128
 
 typedef struct
 {
