@@ -307,11 +307,13 @@ berr ads_http_content_fill(char *buf, hytag_t *hytag)
     rte_memcpy(buf + len, http_body1, (size_t) strlen(http_body1));
     len += strlen(http_body1);
 
-    rte_memcpy(buf + len, hytag->host, (size_t) hytag->host_len);
-    len += hytag->host_len;
+    rte_memcpy(buf + len, http_body2, (size_t) strlen(http_body2));
+    len += strlen(http_body2);
+    //rte_memcpy(buf + len, hytag->host, (size_t) hytag->host_len);
+    //len += hytag->host_len;
 
-    rte_memcpy(buf + len, hytag->url, (size_t) hytag->url_len);
-    len += hytag->url_len;
+    //rte_memcpy(buf + len, hytag->url, (size_t) hytag->url_len);
+    //len += hytag->url_len;
 
     rte_memcpy(buf + len, http_body3, (size_t) strlen(http_body3));
     len += strlen(http_body3);
