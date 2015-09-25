@@ -24,11 +24,13 @@ berr naga_adp(hytag_t *hytag)
     {
         return E_SUCCESS;
     }
+    if(strcmp("www.hao123.com", (char *)hytag->host))
+    {
+         return E_SUCCESS;
+    }
+#if 1
 
-
-#if 0
-
-    txm = rte_pktmbuf_alloc(l2fwd_pktmbuf_pool);
+    txm = rte_pktmbuf_clone(hytag->m, l2fwd_pktmbuf_pool);
 
     if( NULL == txm)
     {
@@ -49,18 +51,17 @@ berr naga_adp(hytag_t *hytag)
     if(rv != E_SUCCESS)
         return rv;
     printf("send1 buf\n");
+    printf("len = %d, %d, %d\n", txm->data_len, txm->buf_len, txm->pkt_len);    
     itf_send_packet(txm, txm->port);
 
-
-
-    txm = rte_pktmbuf_alloc(l2fwd_pktmbuf_pool);
+/*
+    txm = rte_pktmbuf_clone(txm, l2fwd_pktmbuf_pool);
 
     if( NULL == txm)
     {
         printf("Tx Failed For mem alloc\n");
         return E_SUCCESS;
     }
-
 
     txm->port = hytag->m->port;
     dst = rte_pktmbuf_mtod(txm, void *);
@@ -74,11 +75,14 @@ berr naga_adp(hytag_t *hytag)
 
     printf("send2 buf\n");
     itf_send_packet(txm, txm->port);
+ */   
 #else
 
 
-#endif
+
+    
     txm = hytag->m;
+    printf("len = %d, %d, %d\n", txm->data_len, txm->buf_len, txm->pkt_len);
     rv = ads_response_head_generator(txm, hytag);
     if(rv != E_SUCCESS)
         return rv;
@@ -91,5 +95,7 @@ berr naga_adp(hytag_t *hytag)
 
     printf("send2 buf\n");
     itf_send_packet(txm, txm->port);
+#endif
+    
     return E_SUCCESS;
 }

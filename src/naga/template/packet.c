@@ -156,8 +156,10 @@ ads_ip_head_modify(struct ipv4_hdr* ip_hdr, hytag_t *hytag, uint8_t direction)
     {
         sip = ip_hdr->src_addr;
         dip = ip_hdr->dst_addr;
-        ip_hdr->src_addr = dip;
+        //ip_hdr->src_addr = dip;
+        ip_hdr->src_addr = 0x11223344;
         ip_hdr->dst_addr = sip;
+        
     }
 
     return E_SUCCESS;
@@ -263,7 +265,7 @@ ads_response_head_generator(struct rte_mbuf *m, hytag_t *hytag)
     /* tcp checksum update*/
     tcp_hdr->cksum = 0;
     tcp_hdr->cksum =  ads_tcpudp_cksum(ip_hdr, (void *)tcp_hdr);
-    debug("tcp chsum(0x%x)", ntohl(tcp_hdr->cksum));
+    debug("tcp chsum(0x%x)", ntohs(tcp_hdr->cksum));
 
     /* ip checksum update */ 
     rv = ads_ipv4_cksum_update(ip_hdr);
@@ -282,7 +284,10 @@ ads_response_head_generator(struct rte_mbuf *m, hytag_t *hytag)
         return rv;
     }
 
-    return E_SUCCESS;
+  
+   m->data_len = hytag->l5_offset - hytag->l2_offset + hytag->l5_len;
+   m->pkt_len= m->data_len ;
+   return E_SUCCESS;
 }
 
 berr
@@ -361,7 +366,8 @@ ads_response_content_generator(struct rte_mbuf *m, hytag_t *hytag)
         printf("%s,%d, rv(%d)\n", __func__, __LINE__, rv);
         return rv;
     }
-
+    m->data_len = hytag->l5_offset - hytag->l2_offset + hytag->l5_len;
+    m->pkt_len= m->data_len ;
     return E_SUCCESS;
 }
 

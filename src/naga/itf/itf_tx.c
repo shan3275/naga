@@ -26,7 +26,7 @@ itf_send_burst(struct lcore_queue_conf *qconf, unsigned n, uint8_t port)
 		} while (++ret < n);
 	}
 }
-
+#if 0
 static void
 itf_send_burst_not_free(struct lcore_queue_conf *qconf, unsigned n, uint8_t port)
 {
@@ -45,7 +45,7 @@ itf_send_burst_not_free(struct lcore_queue_conf *qconf, unsigned n, uint8_t port
 		} while (++ret < n);
 	}
 }
-
+#endif
 
 /* Enqueue packets for TX and prepare them to be sent */
 int

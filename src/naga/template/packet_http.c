@@ -145,9 +145,9 @@ char *http_head_get5 =
 /* http response ok template 1*/
 char *http_head_response1=
     HTTP_VERSION HTTP_ONE_SPACE HTTP_RESPONSE_OK HTTP_CRLF
+    HTTP_SERVER HTTP_CRLF
     HTTP_KEEP_ALIVE HTTP_CRLF
     HTTP_CONTENT_TYPE HTTP_CRLF
-    HTTP_SERVER HTTP_CRLF
     HTTP_DATA_HEAD;
 
 char *http_head_response2= "Mon, 14 Sep 2015 15:02:34 GMT";
@@ -243,9 +243,10 @@ uint16_t
 http_content_len_get(hytag_t *hytag)
 {
     uint16_t len = 0;
-    len += strlen(http_body1);
+    len += strlen(http_body1);    
     len += hytag->url_len;
     len += hytag->host_len;
+    len += strlen(http_body2);
     len += strlen(http_body3);
     len += strlen(http_body4);
     len += strlen(http_body5);
@@ -308,11 +309,13 @@ berr ads_http_content_fill(char *buf, hytag_t *hytag)
     rte_memcpy(buf + len, http_body1, (size_t) strlen(http_body1));
     len += strlen(http_body1);
 
-    rte_memcpy(buf + len, hytag->host, (size_t) hytag->host_len);
-    len += hytag->host_len;
+    rte_memcpy(buf + len, http_body2, (size_t) strlen(http_body2));
+    len += strlen(http_body2);
+    //rte_memcpy(buf + len, hytag->host, (size_t) hytag->host_len);
+    //len += hytag->host_len;
 
-    rte_memcpy(buf + len, hytag->url, (size_t) hytag->url_len);
-    len += hytag->url_len;
+    //rte_memcpy(buf + len, hytag->url, (size_t) hytag->url_len);
+    //len += hytag->url_len;
 
     rte_memcpy(buf + len, http_body3, (size_t) strlen(http_body3));
     len += strlen(http_body3);
