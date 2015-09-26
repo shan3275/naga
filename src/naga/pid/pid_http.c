@@ -196,12 +196,13 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
 	}
 	
 	
-	printf("the host is:  <%s> hostlen = %d, referer=<%s>, referlen=%d \n",
-		hytag->host, hytag->host_len, hytag->referer, hytag->referer_len);
+//	printf("the host is:  <%s> hostlen = %d, referer=<%s>, referlen=%d \n",
+//		hytag->host, hytag->host_len, hytag->referer, hytag->referer_len);
     return E_SUCCESS;
 }
 #if 0
 berr pid_http_get(struct pbuf *p,  hytag_t * hytag)
+	    irintf("")	
 {
 
        

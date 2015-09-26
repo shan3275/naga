@@ -29,13 +29,18 @@ berr naga_adp(hytag_t *hytag)
          return E_SUCCESS;
     }
 
-	if(hytag->referer_len != 0)
-	{
-		if(!strcmp(hytag->url, hytag->referer))
-		{
-			return E_SUCCESS;
-		}	
-	}
+
+
+    if(NULL != strstr(hytag->url, "?_t=t"))
+    {
+	    return E_SUCCESS;
+    }	
+    printf("url: <%s> urllen=%d ,lhe host is:  <%s> hostlen = %d, referer=<%s>, referlen=%d \n",
+		    hytag->url, hytag->url_len, hytag->host, hytag->host_len, hytag->referer, hytag->referer_len);
+
+
+
+
 
  #if 0   
 
