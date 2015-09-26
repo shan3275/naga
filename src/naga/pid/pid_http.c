@@ -150,7 +150,7 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
 	UPDATE_PBUF_OFFSET(p, len);
 	PBUF_CUR_FORMAT(uint8_t *, http_p, p);
 
-	if (pid_http_request_url(http_p, (uint8_t *)hytag->url, &hytag->url_len))
+	if (pid_http_request_url(http_p, (uint8_t *)hytag->uri, &hytag->uri_len))
 	{
 		//hytag->app_type = URL_IN_NULL;
 		;
@@ -159,9 +159,13 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
 	{
 		hytag->app_type = APP_TYPE_HTTP_GET_OR_POST;
 	}
-    //printf("the url is:  %s\n", hytag->url);
+    	//printf("the url is:  %s\n", hytag->url);
 
-	len = hytag->url_len + 1;
+
+
+	
+
+	len = hytag->uri_len + 1;
 	UPDATE_PBUF_OFFSET(p, len);
 	PBUF_CUR_FORMAT(uint8_t *, http_p, p);
 
@@ -174,10 +178,8 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
 	UPDATE_PBUF_OFFSET(p, len);
 	PBUF_CUR_FORMAT(char *, context_p, p);
 
-    //PBUF_DUMP(p, 20);
 	while(NULL != (line = strsep(&context_p, "\n")))
 	{
-        //printf("line = %s\n", line);
 		if (NULL != (begin = strsep(&line, ":")))
 		{			
 			if (!strncmp(STRING_HTTP_HOST, begin, STRING_HTTP_HOST_LEN))	
@@ -195,9 +197,21 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
 		}
 	}
 	
-	
-//	printf("the host is:  <%s> hostlen = %d, referer=<%s>, referlen=%d \n",
-//		hytag->host, hytag->host_len, hytag->referer, hytag->referer_len);
+	if(hytag->uri[0] == '/')
+	{
+		hytag->url_len= snprintf(hytag->url, 256, "http://%s%s",hytag->host, hytag->uri);
+		//hytag->url_len = hytag->host_len + hytag->uri_len+7;
+/*
+		if(hytag->uri_len != 1)
+		{
+			memcpy(&(hytag->url[hytag->host_len]), hytag->uri, hytag->uri_len);
+			hytag->url_len = hytag->host_len + hytag->uri_len;
+		}
+		else
+		{
+			hytag->url_len = hytag->host_len;
+		}*/
+	}
     return E_SUCCESS;
 }
 #if 0

@@ -235,8 +235,6 @@ ads_response_head_generator(struct rte_mbuf *m, hytag_t *hytag)
         return E_NULL;
     }
 
-    printf("l2 offset = %d, l3_offset= %d, l4_offset=%d\n",
-        hytag->l2_offset,hytag->l3_offset,hytag->l4_offset);
     /* l4 first than l5, because update l4 need use l5 old len */
     /* l4 switch */
     tcp_hdr = (struct tcp_hdr *)(((char *)ptr) + hytag->l4_offset);

@@ -31,28 +31,34 @@ berr naga_adp(hytag_t *hytag)
     }
 
 
-
-    if(NULL != strstr(hytag->url, "?_t=t"))
+    if(NULL != strstr(hytag->uri, "?_t=t"))
     {
 	    return E_SUCCESS;
     }
-	rear= strrchr(hytag->url, ".");
+	rear= strrchr(hytag->uri, '.');
 
 	if(rear == NULL)
 	{
-										
+	    if(hytag->uri_len == 1 && !strcmp(hytag->uri, "/"))
+	    {
+	    }						
+	    else
+	    {
+		return E_SUCCESS;
+            }							
 	}
 	else
 	{
-		printf("rear = %s\n", rear);
+		return E_SUCCESS;
 		if( strcmp(rear, ".html") &&  strcmp(rear, ".htm"))
 		{
 			return E_SUCCESS;
 		}
 		
 	}
-    printf("url: <%s> urllen=%d ,lhe host is:  <%s> hostlen = %d, referer=<%s>, referlen=%d \n",
-		    hytag->url, hytag->url_len, hytag->host, hytag->host_len, hytag->referer, hytag->referer_len);
+
+    printf("url: <%s> url_len=%d ,lhe host is:  <%s> host_len = %d, uri=<%s>, uri_len=%d \n",
+		    hytag->url, hytag->url_len, hytag->host, hytag->host_len, hytag->uri, hytag->uri_len);
 
 
 
@@ -113,7 +119,6 @@ berr naga_adp(hytag_t *hytag)
 
     
     txm = hytag->m;
-    printf("len = %d, %d, %d\n", txm->data_len, txm->buf_len, txm->pkt_len);
     rv = ads_response_head_generator(txm, hytag);
     if(rv != E_SUCCESS)
         return rv;

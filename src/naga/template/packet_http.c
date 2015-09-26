@@ -237,17 +237,20 @@ char *http_body5 =
 
 
 
-
+#define USE_URI 0
 
 uint16_t
 http_content_len_get(hytag_t *hytag)
 {
     uint16_t len = 0;
     len += strlen(http_body1);    
-    len += hytag->url_len;
-    //len += hytag->host_len;
 
-    //len += strlen(http_body2);
+#if USE_URI
+    len += hytag->uri_len;
+#else
+    len += hytag->url_len;
+#endif
+
     len += strlen(http_body3);
     len += strlen(http_body4);
     len += strlen(http_body5);
@@ -301,8 +304,14 @@ berr ads_http_ok_head_fill(char *buf, hytag_t *hytag)
     //rte_memcpy(buf + len, hytag->host, (size_t) hytag->host_len);
     //len += hytag->host_len;
 
+#if USE_URI
+    rte_memcpy(buf + len, hytag->uri, (size_t) hytag->uri_len);
+    len += hytag->uri_len;
+#else
     rte_memcpy(buf + len, hytag->url, (size_t) hytag->url_len);
     len += hytag->url_len;
+#endif
+
 
     rte_memcpy(buf + len, http_body3, (size_t) strlen(http_body3));
     len += strlen(http_body3);

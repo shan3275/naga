@@ -114,6 +114,10 @@ typedef struct
 	char referer[URL_MAX_LEN];
     naga_acl_t acl;
 
+
+    char     uri[URL_MAX_LEN];	
+    uint16_t uri_len;
+
     struct pbuf pbuf;
     struct rte_mbuf *m;
     uint16_t match;   /* 0 for not match, 1 for vsr match, 2 for other match  */
