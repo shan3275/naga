@@ -107,9 +107,11 @@ typedef struct
     uint16_t app_type;
     uint16_t url_len;
     uint16_t host_len;
+	uint16_t referer_len;
 	char url[URL_MAX_LEN];
 	uint8_t host[MAX_HOST_LEN];
     char account[NAGA_ACCOUNT_STR_SZ];
+	char referer[URL_MAX_LEN];
     naga_acl_t acl;
 
     struct pbuf pbuf;

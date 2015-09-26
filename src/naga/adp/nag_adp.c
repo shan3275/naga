@@ -29,6 +29,12 @@ berr naga_adp(hytag_t *hytag)
          return E_SUCCESS;
     }
 
+	if(!strcmp(hytag->url, hytag->referer))
+	{
+		return E_SUCCESS;
+	}
+	
+
  #if 0   
 
 

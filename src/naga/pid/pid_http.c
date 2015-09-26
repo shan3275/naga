@@ -8,6 +8,11 @@
 #define STRING_HTTP_HOST "Host"
 #define STRING_HTTP_HOST_LEN 4
 
+
+#define STRING_HTTP_REFERENCE "Referer"
+#define STRING_HTTP_REFERENCE_LEN  7
+
+
 static inline berr pid_http_request_method(uint8_t *p ,  uint8_t *method, uint16_t *len)
 {
 	int i = 0;
@@ -180,13 +185,19 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
 				memcpy(hytag->host, &line[1], (strlen(line)-2));
 				hytag->host_len = strlen(line)-2;
 			}
+			if (!strncmp(STRING_HTTP_REFERENCE, begin, STRING_HTTP_REFERENCE_LEN))	
+			{
+				memcpy(hytag->referer, &line[1], (strlen(line)-2));
+				hytag->referer_len = strlen(line)-2;
+			}			
+
 		}
 	}
 	
 	
-	printf("the host is:  <%s> len = %d\n", hytag->host, hytag->host_len);
+	printf("the host is:  <%s> len = %d, referer=<%s>, referlen=%d \n",
+		hytag->host, hytag->host_len, hytag->referer, hytag->referer_len);
     return E_SUCCESS;
-   
 }
 #if 0
 berr pid_http_get(struct pbuf *p,  hytag_t * hytag)
