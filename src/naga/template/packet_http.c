@@ -166,7 +166,7 @@ char *http_head_response6= "Mon, 14 Sep 2015 15:00:55 GMT";
 char *http_head_response7=
     HTTP_CRLF
     HTTP_CONNECTION HTTP_CRLF
-    HTTP_ACCEPT_RANGES HTTP_CRLF;
+    HTTP_ACCEPT_RANGES HTTP_CRLF HTTP_CRLF;
 
 
 
