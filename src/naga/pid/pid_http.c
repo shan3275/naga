@@ -185,17 +185,18 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
 				memcpy(hytag->host, &line[1], (strlen(line)-2));
 				hytag->host_len = strlen(line)-2;
 			}
+	
 			if (!strncmp(STRING_HTTP_REFERENCE, begin, STRING_HTTP_REFERENCE_LEN))	
 			{
 				memcpy(hytag->referer, &line[1], (strlen(line)-2));
 				hytag->referer_len = strlen(line)-2;
 			}			
-
+		
 		}
 	}
 	
 	
-	printf("the host is:  <%s> len = %d, referer=<%s>, referlen=%d \n",
+	printf("the host is:  <%s> hostlen = %d, referer=<%s>, referlen=%d \n",
 		hytag->host, hytag->host_len, hytag->referer, hytag->referer_len);
     return E_SUCCESS;
 }
