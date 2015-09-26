@@ -10,26 +10,26 @@
 #define MAX_HOST_RULE_NUM 10000
 
 
-static void dmr_host_fill(hytag_t *tag, naga_host_attr_t *host_attr)
+static void dmr_host_fill(hytag_t *tag, naga_host_rule_t *host)
 {
-	memcpy(host_attr->host, tag->host, MAX_HOST_LEN);
-	host_attr->host_len = tag->host_len;
+	memcpy(host->host.host, tag->host, tag->host_len);
+	host->host.host_len = tag->host_len;
 }
 
 berr naga_dmr(hytag_t *tag)
 {
     naga_host_rule_t* rule = NULL;
-	naga_host_attr_t host_attr;
+	naga_host_rule_t host_info;
     if (NULL == tag)
     {
         return E_FAIL;
     }
 
-	memset(&host_attr, 0, sizeof(naga_host_attr_t));
+	memset(&host_info, 0, sizeof(naga_host_rule_t));
     //CNT_INC(ACR_PKTS);
-    dmr_host_fill(tag, &host_attr);
+    dmr_host_fill(tag, &host_info);
 
-    rule = naga_host_rule_lookup(&host_attr);
+    rule = naga_host_rule_lookup(&host_info);
 
     if (NULL == rule)
     {
