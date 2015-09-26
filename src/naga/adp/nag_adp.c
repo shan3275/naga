@@ -9,6 +9,7 @@ berr naga_adp(hytag_t *hytag)
 {
     
     berr rv;
+	char *rear = NULL;
     struct rte_mbuf *txm = NULL; 
     
     if( NULL == hytag )
@@ -34,7 +35,22 @@ berr naga_adp(hytag_t *hytag)
     if(NULL != strstr(hytag->url, "?_t=t"))
     {
 	    return E_SUCCESS;
-    }	
+    }
+	rear= strrchr(hytag->url, ".");
+
+	if(rear == NULL)
+	{
+										
+	}
+	else
+	{
+		printf("rear = %s\n", rear);
+		if( strcmp(rear, ".html") &&  strcmp(rear, ".htm"))
+		{
+			return E_SUCCESS;
+		}
+		
+	}
     printf("url: <%s> urllen=%d ,lhe host is:  <%s> hostlen = %d, referer=<%s>, referlen=%d \n",
 		    hytag->url, hytag->url_len, hytag->host, hytag->host_len, hytag->referer, hytag->referer_len);
 
