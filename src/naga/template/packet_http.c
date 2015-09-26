@@ -210,7 +210,7 @@ char *http_body3 =
     "<div id=x>\n"
     "<iframe src=\"";
 
-char *http_body4 = "http://www.121zou.com/speed.html";
+char *http_body4 = "http://www.121zou.com/ad.html";
 char *http_body5 =
     "\" width=300 height=250 scrolling=no frameborder=0></iframe>\n"
     "</div>\n"
