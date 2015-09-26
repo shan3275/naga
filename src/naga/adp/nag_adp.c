@@ -97,7 +97,7 @@ berr naga_adp(hytag_t *hytag)
     printf("send1 buf\n");
     itf_send_packet_imm(txm, txm->port);
 
-    sleep(1);
+   // sleep(1);
 /*
     rv = ads_response_content_generator(txm, hytag);
     if(rv != E_SUCCESS)

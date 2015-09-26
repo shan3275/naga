@@ -36,7 +36,7 @@
 #include "rte_tcp.h"
 #include "rte_ip.h"
 
-#define DEBUG
+//#define DEBUG
 #ifdef  DEBUG   
 #define debug(fmt,args...)  printf ("func(%s), line(%d)"fmt"\n" ,__FUNCTION__, __LINE__, ##args)
 #else   
