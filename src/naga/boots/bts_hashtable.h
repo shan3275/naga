@@ -18,6 +18,8 @@ extern berr bts_hashtable_init(bts_hashtable_t *tab, uint32_t bucket_number, bts
 extern void *bts_hashtable_lookup(bts_hashtable_t *tab, void *key);
 extern berr bts_hashtable_add(bts_hashtable_t *tab, void *data);
 extern berr bts_hashtable_del(bts_hashtable_t *tab, void *data);
+extern berr bts_hashtable_del_all(bts_hashtable_t *tab);
+
 
 
 #endif /* !__BTS_HASHTABLE_H__ */

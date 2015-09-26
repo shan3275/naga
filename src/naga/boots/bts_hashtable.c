@@ -165,4 +165,18 @@ bts_hashtable_del_by_key(bts_hashtable_t *tab, void *data)
     BRET(E_SUCCESS);
 }
 
+
+berr
+bts_hashtable_del_all(bts_hashtable_t *tab)
+{
+	if (NULL == tab)
+	{
+		BRET(E_PARAM); 
+	}
+
+	bts_list_delete_all_node(tab->buckets);
+
+	BRET(E_SUCCESS);
+}
+
 /* End of file */

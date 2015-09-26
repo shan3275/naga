@@ -40,6 +40,7 @@
 #define ACTION_STR                  "forward or drop\n"
 #define LOAD_STR                    "load host file\n"
 #define HOST_FILE_STR               "Host file to be loaded\n"
+#define ALL_STR                     "All rules\n"
 
 
 
@@ -295,33 +296,38 @@ static int dmr_cmd_show_host(struct vty *vty, const char *host)
 {
 
 	int ret = 0;
-	uint8_t data[MAX_HOST_LEN];
+	//uint8_t data[MAX_HOST_LEN];
 	uint32_t len;
-	naga_host_attr_t host_attr;
+	naga_host_rule_t host_info;
 	naga_host_rule_t *entry;
 	
-	memset(&host_attr, 0, sizeof(naga_host_attr_t));
+	memset(&host_info, 0, sizeof(naga_host_rule_t));
 	
 	if (NULL == host)
 	{
         return CMD_ERR_NO_MATCH;
 	}
-	
+	#if 0
 	if (host_str2bit(host, data, &len))
 	{
 		return CMD_ERR_NO_MATCH;
 	}
+#endif
+	len = strlen(host);
+	host_info.host.host_len = len;
+	memcpy(host_info.host.host, host, len);
 
-	host_attr.host_len = len;
-	memcpy(host_attr.host, data, len);
-	
+	vty_out(vty, "%-32s %-16s %-16s %s","host","action", "cnt",VTY_NEWLINE);
 
-    entry = rule_dmr_cmd_show_host(&host_attr);
+    entry = rule_dmr_cmd_show_host(&host_info);
     if (NULL == entry)
     {
         vty_out(vty, "dmr del host, %s ret(%d)%s", host, ret, VTY_NEWLINE);
         return CMD_WARNING;
     }
+
+	vty_out(vty, "%-32s %-16d %-16lld %s", entry->host.host, entry->acl.actions, 
+		entry->acl.cnt, VTY_NEWLINE);
 
     return CMD_SUCCESS;
 }
@@ -396,13 +402,40 @@ DEFUN(dmr_del_host,
 
 
 
+static int dmr_cmd_del_all(struct vty *vty)
+{
+	int ret = 0;
+	ret = rule_dmr_cmd_del_all();
+	if (ret)
+    {
+        vty_out(vty, "dmr delete all host failed! ret(%d)%s", ret, VTY_NEWLINE);
+        return CMD_WARNING;
+    }
+
+    return CMD_SUCCESS;
+	
+}
+
+DEFUN(dmr_del_all_host, 
+      dmr_del_all_host_cmd,
+      "rule dmr host del all",
+      RULE_STR
+      DMR_STR
+      HOST_STR
+      DEL_STR
+      ALL_STR)
+{
+
+    return dmr_cmd_del_all(vty);
+}
+
 
 
 static int dmr_cmd_add_host(struct vty *vty, const char *host, const char *action_str)
 {
     int ret = 0;
     uint32_t  action = 0, len = 0;
-	//uint8_t data[MAX_HOST_LEN];
+	//suint8_t data[MAX_HOST_LEN];
 
 	naga_host_rule_t entry;
 	
@@ -516,6 +549,7 @@ DEFUN(dmr_load_host_cfg,
 void cmdline_dmr_init(void)
 {
 	install_element(CMD_NODE, &dmr_add_host_cmd);
+	install_element(CMD_NODE, &dmr_del_all_host_cmd);
 	install_element(CMD_NODE, &dmr_del_host_cmd);
 	install_element(CMD_NODE, &dmr_show_host_cmd);
 	install_element(CMD_NODE, &dmr_load_host_cfg_cmd);

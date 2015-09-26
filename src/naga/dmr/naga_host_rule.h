@@ -25,9 +25,11 @@ typedef struct {
 uint32_t host_rule_hash_func(void *data);
 int host_entry_cmp_func(void *d1, void *d2);
 berr naga_host_rule_init(uint32_t number);
-naga_host_rule_t *naga_host_rule_lookup(void *key);
+naga_host_rule_t *naga_host_rule_lookup(void *host);
 berr naga_host_rule_add(naga_host_rule_t *entry);
 berr naga_host_rule_del(naga_host_rule_t *entry);
+berr naga_host_rule_clear(void);
+
 
 
 

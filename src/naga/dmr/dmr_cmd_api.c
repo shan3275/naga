@@ -27,9 +27,18 @@ berr rule_dmr_cmd_del_host(naga_host_rule_t *entry)
 }
 
 
-naga_host_rule_t *rule_dmr_cmd_show_host(naga_host_attr_t *host)
+naga_host_rule_t *rule_dmr_cmd_show_host(naga_host_rule_t *host)
 {
 	return dmr_api_rule_host_show(host);
 }
+
+
+
+berr rule_dmr_cmd_del_all(void)
+{
+    return dmr_api_rule_host_del_all();
+}
+
+
 
 

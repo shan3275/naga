@@ -46,7 +46,7 @@ naga_host_rule_init(uint32_t number)
 naga_host_rule_t*
 naga_host_rule_lookup(void *key)
 {
-    return (naga_host_rule_t *)bts_hashtable_lookup(&naga_host_rule, (void *) key);
+    return (naga_host_rule_t *)bts_hashtable_lookup(&naga_host_rule, key);
 }
 
 berr
@@ -61,11 +61,11 @@ naga_host_rule_del(naga_host_rule_t *entry)
     return bts_hashtable_del(&naga_host_rule, (void *) entry);
 }
 
-#if 0
+
 berr
-naga_host_rule_clear(bts_hashrule_t *tab)
+naga_host_rule_clear(void)
 {
-    return bts_hashrule_clear(tab);
+    return bts_hashtable_del_all(&naga_host_rule);
 }
-#endif
+
 /* End of file */

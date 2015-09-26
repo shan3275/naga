@@ -9,7 +9,7 @@ berr rule_dmr_cmd_add_host(naga_host_rule_t *entry);
 berr rule_dmr_cmd_del_host(naga_host_rule_t *entry);
 
 
-naga_host_rule_t *rule_dmr_cmd_show_host(naga_host_attr_t *host);
+naga_host_rule_t *rule_dmr_cmd_show_host(naga_host_rule_t *host);
 
 
 
