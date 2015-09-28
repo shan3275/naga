@@ -128,6 +128,12 @@ typedef struct
     struct pbuf pbuf;
     struct rte_mbuf *m;
     uint16_t match;   /* 0 for not match, 1 for vsr match, 2 for other match  */
+
+    /* ad template select */
+    uint16_t template;    /* ad template id , ad_template_enum */
+    uint16_t content_len; /* ad template content total length */
+    uint16_t content_offset; /* ad template content offset, used for multiple transmit */
+    uint16_t fill_len;       /* single time fill length */ 
 }hytag_t;
 
 #define HYTAG_ACL_MERGE(_tagacl, _ruleacl) \

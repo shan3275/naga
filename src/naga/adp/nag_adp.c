@@ -7,6 +7,12 @@
 uint64_t  adp_cnt = 0;
 uint64_t  adp_per_num = 1;
 
+#define DEBUG
+#ifdef  DEBUG   
+#define debug(fmt,args...)  printf ("func(%s), line(%d)"fmt"\n" ,__FUNCTION__, __LINE__, ##args)
+#else   
+#define debug(fmt,args...)   
+#endif  /* DEBUG */ 
 
 berr adp_set_interval(int interval)
 {
@@ -18,11 +24,11 @@ berr adp_set_interval(int interval)
 extern struct rte_mempool * l2fwd_pktmbuf_pool;
 berr naga_adp(hytag_t *hytag)
 {
-    
+
     berr rv;
 	char *rear = NULL;
     struct rte_mbuf *txm = NULL; 
-    
+
     if( NULL == hytag )
     {
         return E_PARAM;
@@ -76,6 +82,7 @@ berr naga_adp(hytag_t *hytag)
 
 
     txm = hytag->m;
+    hytag->template = 1;
     rv = ads_response_head_generator(txm, hytag);
     if(rv != E_SUCCESS)
         return rv;
@@ -101,31 +108,53 @@ berr naga_adp(hytag_t *hytag)
 
 #if USE_D_PACKET
    txm =rte_pktmbuf_clone(txm, txm->pool);
+#define CONTENT_FILL_LEN_MAX 1400
+   hytag->content_offset = 0;
+   debug("hytag->content_len(%d), hytag->content_offset(%d), hytag->fill_len(%d)", 
+           hytag->content_len, hytag->content_offset, hytag->fill_len);
+   while ( hytag->content_offset < hytag->content_len)
+   {
+       if ( hytag->content_len - hytag->content_offset >= CONTENT_FILL_LEN_MAX)
+       {
+           hytag->fill_len = CONTENT_FILL_LEN_MAX;
+       }
+       else
+       {
+           hytag->fill_len = hytag->content_len - hytag->content_offset;
+       }
+
+       debug("hytag->content_len(%d), hytag->content_offset(%d), hytag->fill_len(%d)", 
+               hytag->content_len, hytag->content_offset, hytag->fill_len);
+       rv = ads_response_content_generator(txm, hytag);
+       if(rv != E_SUCCESS)
+           return rv;
+
+       hytag->content_offset += hytag->fill_len;
+       debug("hytag->content_len(%d), hytag->content_offset(%d), hytag->fill_len(%d)", 
+               hytag->content_len, hytag->content_offset, hytag->fill_len);
+
+
+       itf_send_packet_imm(txm, txm->port);
+       if(hytag->eth_tx == ENABLE)
+       {
+           uint8_t * ptr = rte_pktmbuf_mtod(txm, uint8_t *);
+
+           rv = ift_raw_send_packet(hytag->fp, ptr, txm->pkt_len);
+
+           if(rv != E_SUCCESS)
+           {
+               printf("Send packet Failed\n");
+               return rv;
+           }
+       }
+       else
+       {
+           itf_send_packet_imm(txm, txm->port);
+       }
+   }
 
    //sleep(1);
 
-    rv = ads_response_content_generator(txm, hytag);
-    if(rv != E_SUCCESS)
-       return rv;
-
-
-    itf_send_packet_imm(txm, txm->port);
-    if(hytag->eth_tx == ENABLE)
-    {
-        uint8_t * ptr = rte_pktmbuf_mtod(txm, uint8_t *);
-        
-        rv = ift_raw_send_packet(hytag->fp, ptr, txm->pkt_len);
-
-        if(rv != E_SUCCESS)
-        {
-            printf("Send packet Failed\n");
-            return rv;
-        }
-    }
-    else
-    {
-        itf_send_packet_imm(txm, txm->port);
-    }
 
 #endif
     printf("url: <%s> url_len=%d\n", hytag->url, hytag->url_len);

@@ -15,4 +15,5 @@
 #include "pid.h"
 berr ads_http_content_fill(char *buf, hytag_t *hytag);
 berr ads_http_ok_head_fill(char *buf, hytag_t *hytag);
+berr ads_template_init(void);
 #endif /* end of __PACKET_HTTP_INCLUDE_H__ */

