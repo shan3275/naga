@@ -14,7 +14,7 @@
 
 
 void
-acr_account_fill(hytag_t *tag)
+acr_account_fill(hytag_t *tag, acr_account_rule_t *data)
 {
     acr_account_entry_t *entry = NULL;
 
@@ -30,6 +30,10 @@ acr_account_fill(hytag_t *tag)
         //CNT_INC(ACR_TABLE_FOUND);
         strcpy(tag->account, entry->account);
     }
+
+	strcpy(data->account, tag->account);
+	data->account_len = strlen(tag->account);
+	
 }
 
 
@@ -50,12 +54,14 @@ berr
 naga_acr(hytag_t *tag)
 {
     acr_account_rule_t* rule = NULL;
+	acr_account_rule_t data;
     if (NULL == tag)
     {
 		return E_FAIL;
 	}
     //CNT_INC(ACR_PKTS);
-    acr_account_fill(tag);
+    memset(&data, 0, sizeof(acr_account_rule_t));
+    acr_account_fill(tag, &data);
 
     rule = acr_account_rule_lookup(tag->account);
 

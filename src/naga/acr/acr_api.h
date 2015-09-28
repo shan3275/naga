@@ -27,15 +27,9 @@ berr  acr_api_rule_account_add(acr_account_rule_t *entry);
 berr  acr_api_rule_account_del(acr_account_rule_t *entry);
 
 
-acr_account_rule_t *acr_api_rule_account_show(char *account);
+acr_account_rule_t *acr_api_rule_account_show(acr_account_rule_t *account);
 
-
-/* dp use */
-berr acr_dp_api_match(uint8_t *account, uint16_t len);
-
-berr acr_dp_api_init();
-
-berr acr_dp_api_request_data_entry(void);
-
+berr acr_api_rule_account_del_all(void);
 
 #endif
+

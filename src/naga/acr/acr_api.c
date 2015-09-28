@@ -29,13 +29,18 @@ berr  acr_api_rule_account_del(acr_account_rule_t *entry)
 }
 
 
-acr_account_rule_t *acr_api_rule_account_show(char *account)
+acr_account_rule_t *acr_api_rule_account_show(acr_account_rule_t *data)
 {
 	
-    return acr_account_rule_lookup(account);
+    return acr_account_rule_lookup((void *)data);
 }
 
 
+berr acr_api_rule_account_del_all(void)
+{
+	return acr_account_rule_clear();
+
+}
 
 
 

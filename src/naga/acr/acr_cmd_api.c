@@ -26,9 +26,16 @@ berr rule_acr_cmd_del_account(acr_account_rule_t *entry)
 }
 
 
-acr_account_rule_t *rule_acr_cmd_show_account(char *account)
+acr_account_rule_t *rule_acr_cmd_show_account(acr_account_rule_t *data)
 {
-	return acr_api_rule_account_show(account);
+	return acr_api_rule_account_show(data);
+}
+
+
+
+berr rule_acr_cmd_del_all(void)
+{
+    return acr_api_rule_account_del_all();
 }
 
 

@@ -12,12 +12,13 @@
 
 typedef struct {
     uint32_t idx;
-    char account[NAGA_ACCOUNT_STR_SZ];
+	uint32_t account_len;
+    uint8_t account[NAGA_ACCOUNT_STR_SZ];
     naga_acl_t acl;
 } acr_account_rule_t;
 
 berr acr_account_rule_init(uint32_t number);
-acr_account_rule_t* acr_account_rule_lookup(char *account);
+acr_account_rule_t* acr_account_rule_lookup(void *account);
 berr acr_account_rule_add(acr_account_rule_t *entry);
 
 berr acr_account_rule_del(acr_account_rule_t *entry);

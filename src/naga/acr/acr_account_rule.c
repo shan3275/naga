@@ -42,9 +42,9 @@ acr_account_rule_init(uint32_t number)
 }
 
 acr_account_rule_t*
-acr_account_rule_lookup(char *account)
+acr_account_rule_lookup(void *account)
 {
-    return (acr_account_rule_t *) bts_hashtable_lookup(&acr_account_rule, (void *) account);
+    return (acr_account_rule_t *) bts_hashtable_lookup(&acr_account_rule,  account);
 }
 
 berr
@@ -60,10 +60,10 @@ acr_account_rule_del(acr_account_rule_t *entry)
 }
 
 berr
-acr_account_rule_clear(bts_hashtable_t *tab)
+acr_account_rule_clear(void)
 {
     //return bts_hashtable_clear(tab);
-    return E_SUCCESS;
+    return bts_hashtable_del_all(&acr_account_rule);
 }
 
 /* End of file */
