@@ -18,7 +18,7 @@ uint32_t host_rule_hash_func(void *data)
 
     entry = (naga_host_rule_t *) data; 
 
-    return bts_hash(entry->host.host, entry->host.host_len);
+    return bts_hash(entry->host, entry->host_len);
 }
 #if 1
 int host_entry_cmp_func(void *d1, void *d2)
@@ -33,7 +33,7 @@ int host_entry_cmp_func(void *d1, void *d2)
     e1 = (naga_host_rule_t *) d1;
     e2 = (naga_host_rule_t *) d2;
 
-    return bts_str_cmp((void *)(e1->host.host), (void *)(e2->host.host));
+    return bts_str_cmp((void *)(e1->host), (void *)(e2->host));
 }
 #endif
 

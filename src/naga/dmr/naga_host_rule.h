@@ -12,13 +12,13 @@
 
 
 typedef struct {
-	uint32_t host_len;
-    uint8_t host[MAX_HOST_LEN];
+
 } naga_host_attr_t;
 
 typedef struct {
     uint32_t index;
-    naga_host_attr_t host;
+	uint32_t host_len;
+    uint8_t host[MAX_HOST_LEN];
     naga_acl_t acl;
 } naga_host_rule_t;
 
