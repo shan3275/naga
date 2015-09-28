@@ -285,6 +285,18 @@ static berr host_str2bit(const char *str, uint8_t *data, uint32_t *len)
 }
 
 
+static naga_host_rule_t *dmr_host_entry_new(void)
+{
+	naga_host_rule_t *entry = NULL;
+
+	entry = malloc(sizeof(naga_host_rule_t));
+	if (NULL != entry)
+	{
+		memset(entry, 0, sizeof(naga_host_rule_t));
+	}
+
+	return entry;
+}
 
 
 
@@ -296,12 +308,10 @@ static int dmr_cmd_show_host(struct vty *vty, const char *host)
 {
 
 	int ret = 0;
-	//uint8_t data[MAX_HOST_LEN];
-	uint32_t len;
-	naga_host_rule_t host_info;
+	uint32_t len = 0;
 	naga_host_rule_t *entry;
-	
-	memset(&host_info, 0, sizeof(naga_host_rule_t));
+	naga_host_rule_t data;
+	//memset(&host_info, 0, sizeof(naga_host_rule_t));
 	
 	if (NULL == host)
 	{
@@ -314,19 +324,19 @@ static int dmr_cmd_show_host(struct vty *vty, const char *host)
 	}
 #endif
 	len = strlen(host);
-	host_info.host.host_len = len;
-	memcpy(host_info.host.host, host, len);
+	data.host_len = len;
+	memcpy(data.host, host, len);
 
 	vty_out(vty, "%-32s %-16s %-16s %s","host","action", "cnt",VTY_NEWLINE);
 
-    entry = rule_dmr_cmd_show_host(&host_info);
+    entry = rule_dmr_cmd_show_host(&data);
     if (NULL == entry)
     {
         vty_out(vty, "dmr del host, %s ret(%d)%s", host, ret, VTY_NEWLINE);
         return CMD_WARNING;
     }
 
-	vty_out(vty, "%-32s %-16d %-16ld %s", entry->host.host, entry->acl.actions, 
+	vty_out(vty, "%-32s %-16d %-16ld %s", entry->host, entry->acl.actions, 
 		(uint64_t)entry->acl.cnt.cnt, VTY_NEWLINE);
 
     return CMD_SUCCESS;
@@ -353,7 +363,6 @@ DEFUN(dmr_show_host,
 static int dmr_cmd_del_host(struct vty *vty, const char *host)
 {
     int ret = 0;
-	uint8_t data[MAX_HOST_LEN];
 	uint32_t len;
 	naga_host_rule_t entry;
 	
@@ -370,9 +379,14 @@ static int dmr_cmd_del_host(struct vty *vty, const char *host)
 	}
 #endif
 	len = strlen(host);
-	entry.host.host_len = len;
-	memcpy(entry.host.host, data, len);
-	
+	entry.host_len = len;
+	memcpy(entry.host, host, len);
+
+	if (NULL == rule_dmr_cmd_show_host(&entry))
+	{
+	    vty_out(vty, "This host %s rule does not exist%s", host, VTY_NEWLINE);
+		return CMD_ERR_NOTHING_TODO;
+	}
 
     ret = rule_dmr_cmd_del_host(&entry);
     if (ret)
@@ -431,19 +445,25 @@ DEFUN(dmr_del_all_host,
 
 
 
+
+
 static int dmr_cmd_add_host(struct vty *vty, const char *host, const char *action_str)
 {
     int ret = 0;
     uint32_t  action = 0, len = 0;
 	//suint8_t data[MAX_HOST_LEN];
 
-	naga_host_rule_t entry;
-	
-	memset(&entry, 0, sizeof(naga_host_rule_t));
+	naga_host_rule_t *entry;
 		
 	if ((NULL == host) || (NULL == action_str))
 	{
         return CMD_ERR_NO_MATCH;
+	}
+
+	entry = dmr_host_entry_new();
+	if (NULL == entry)
+	{
+		return CMD_ERR_NO_MATCH;
 	}
 	
     //index  = atoi(index_str);
@@ -454,14 +474,17 @@ static int dmr_cmd_add_host(struct vty *vty, const char *host, const char *actio
 		return CMD_ERR_NO_MATCH;
 	}
 #endif
+
+	dmr_cmd_del_host(vty, host);
+	
 	len = strlen(host);
-	entry.acl.actions = action;
-	entry.host.host_len = len;
-	memcpy(entry.host.host, host, len);
+	entry->acl.actions = action;
+	entry->host_len = len;
+	memcpy(entry->host, host, len);
 
 	printf("host = %s, host_len = %d\n", host, len);
 
-    ret = rule_dmr_cmd_add_host(&entry);
+    ret = rule_dmr_cmd_add_host(entry);
     if (ret)
     {
         vty_out(vty, "dmr add host host(%s) ret(%d)%s", host, ret, VTY_NEWLINE);
@@ -542,6 +565,60 @@ DEFUN(dmr_load_host_cfg,
 
 
 
+static int dmr_cmd_clear_host_stat(struct vty *vty, const char *host)
+{
+	int ret = 0;
+	uint32_t len;
+	naga_host_rule_t *entry;
+	naga_host_rule_t data;
+	
+	memset(&data, 0, sizeof(naga_host_rule_t));
+	
+	if (NULL == host)
+	{
+		return CMD_ERR_NO_MATCH;
+	}
+#if 0
+	if (host_str2bit(host, data, &len))
+	{
+		return CMD_ERR_NO_MATCH;
+	}
+#endif
+	len = strlen(host);
+	data.host_len = len;
+	memcpy(data.host, host, len);
+
+	entry == rule_dmr_cmd_show_host(&data);
+	if (NULL == entry)
+	{
+		vty_out(vty, "This host %s rule does not exist%s", host, VTY_NEWLINE);
+		return CMD_ERR_NOTHING_TODO;
+	}
+
+	ACL_CNT_CLEAR(entry->acl);
+
+    return CMD_SUCCESS;
+
+}
+
+
+
+
+DEFUN(dmr_clear_host_rule_stat,
+      dmr_clear_host_rule_stat_cmd,
+      "rule dmr clear host stat HOST",
+      RULE_STR
+      DMR_STR
+      LOAD_STR
+      HOST_STR
+      SHOW_STR
+      HOST_FILE_STR)
+{
+    return dmr_cmd_clear_host_stat(vty, argv[0]);
+}
+
+
+
 /*
  * dmr module cmdline register and init
  *
@@ -553,6 +630,7 @@ void cmdline_dmr_init(void)
 	install_element(CMD_NODE, &dmr_del_host_cmd);
 	install_element(CMD_NODE, &dmr_show_host_cmd);
 	install_element(CMD_NODE, &dmr_load_host_cfg_cmd);
+	install_element(CMD_NODE, &dmr_clear_host_rule_stat_cmd);
 
     return ;
 }

@@ -12,8 +12,8 @@
 
 static void dmr_host_fill(hytag_t *tag, naga_host_rule_t *host)
 {
-	memcpy(host->host.host, tag->host, tag->host_len);
-	host->host.host_len = tag->host_len;
+	memcpy(host->host, tag->host, tag->host_len);
+	host->host_len = tag->host_len;
 }
 
 berr naga_dmr(hytag_t *tag)

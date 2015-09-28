@@ -37,6 +37,8 @@ typedef struct {
 #define ACL_HIT(_acl) \
     bts_atomic64_inc(&(_acl.cnt))
 
+#define ACL_CNT_CLEAR(_acl) \
+	bts_atomic64_set(&(_acl.cnt), 0)
 
 
 
