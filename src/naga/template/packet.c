@@ -100,7 +100,8 @@ ads_tcp_head_modify(struct tcp_hdr *tcphdr, hytag_t *hytag, uint8_t direction)
     if ( DIRECTION_SAME == direction)
     {
         tcphdr->sent_seq = htonl(seq + hytag->l5_len);
-        tcphdr->recv_ack = htonl(ack);
+        tcphdr->recv_ack =  htonl(ack);
+       
     }
     debug("tcp_hdr switch  after: seq(%x-%u), ack(%x-%u)", 
             ntohl(tcphdr->sent_seq), ntohl(tcphdr->sent_seq)

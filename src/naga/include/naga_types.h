@@ -137,6 +137,6 @@ typedef struct
     ACL_HIT(_tagacl);\
 }
 
-
+#define USE_D_PACKET 1
 
 #endif /* !__NAGA_TYPES_H__ */

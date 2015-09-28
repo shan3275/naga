@@ -335,8 +335,8 @@ l2fwd_launch_one_lcore(__attribute__((unused)) void *dummy)
         vsr_dp_init();
 		dmr_dp_init();
 		acr_dp_init();
-
-
+        
+        
         itf_raw_socket_init(interface_str);
 		#if 1
 	
@@ -436,7 +436,7 @@ l2fwd_parse_args(int argc, char **argv)
 
 	argvopt = argv;
 
-	while ((opt = getopt_long(argc, argvopt, "p:q:T:I",
+	while ((opt = getopt_long(argc, argvopt, "p:q:T:I:",
 				  lgopts, &option_index)) != EOF) {
 
 		switch (opt) {
@@ -460,7 +460,11 @@ l2fwd_parse_args(int argc, char **argv)
 			}
 			break;
         case 'I':
-            interface_str =  strdup(optarg);
+            if(optarg != NULL)
+            {
+                interface_str =  strdup(optarg);
+                printf("Use interface %s to Send Adp\n", interface_str);
+            }   
             break;
 		/* timer period */
 		case 'T':

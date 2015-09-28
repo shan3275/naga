@@ -44,7 +44,7 @@ EXPORT_MAP := lib_adp.map
 
 LIBABIVER := 1
 
-SRCS-y += nag_adp.c
+SRCS-y += nag_adp.c  adp_cmd.c
 
 CFLAGS += -O3
 CFLAGS += $(WERROR_FLAGS)

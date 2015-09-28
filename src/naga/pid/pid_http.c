@@ -178,39 +178,34 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
 	UPDATE_PBUF_OFFSET(p, len);
 	PBUF_CUR_FORMAT(char *, context_p, p);
 
+    
 	while(NULL != (line = strsep(&context_p, "\n")))
 	{
 		if (NULL != (begin = strsep(&line, ":")))
-		{			
+		{	
+            if( NULL== line )
+            {
+                continue;
+            }
 			if (!strncmp(STRING_HTTP_HOST, begin, STRING_HTTP_HOST_LEN))	
 			{
+               
 				memcpy(hytag->host, &line[1], (strlen(line)-2));
 				hytag->host_len = strlen(line)-2;
 			}
-	
-			if (!strncmp(STRING_HTTP_REFERENCE, begin, STRING_HTTP_REFERENCE_LEN))	
+			/*if (!strncmp(STRING_HTTP_REFERENCE, begin, STRING_HTTP_REFERENCE_LEN))	
 			{
 				memcpy(hytag->referer, &line[1], (strlen(line)-2));
 				hytag->referer_len = strlen(line)-2;
-			}			
+			}*/			
 		
 		}
 	}
-	
+
+    /*check The First char*/
 	if(hytag->uri[0] == '/')
 	{
 		hytag->url_len= snprintf(hytag->url, 256, "http://%s%s",hytag->host, hytag->uri);
-		//hytag->url_len = hytag->host_len + hytag->uri_len+7;
-/*
-		if(hytag->uri_len != 1)
-		{
-			memcpy(&(hytag->url[hytag->host_len]), hytag->uri, hytag->uri_len);
-			hytag->url_len = hytag->host_len + hytag->uri_len;
-		}
-		else
-		{
-			hytag->url_len = hytag->host_len;
-		}*/
 	}
     return E_SUCCESS;
 }

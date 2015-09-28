@@ -293,16 +293,10 @@ berr ads_http_ok_head_fill(char *buf, hytag_t *hytag)
 
     rte_memcpy(buf + len, http_head_response7, (size_t) strlen(http_head_response7));
     len += strlen(http_head_response7);
-
+#if !USE_D_PACKET
 
     rte_memcpy(buf + len, http_body1, (size_t) strlen(http_body1));
     len += strlen(http_body1);
-
-    //rte_memcpy(buf + len, http_body2, (size_t) strlen(http_body2));
-    //len += strlen(http_body2);
-    
-    //rte_memcpy(buf + len, hytag->host, (size_t) hytag->host_len);
-    //len += hytag->host_len;
 
 #if USE_URI
     rte_memcpy(buf + len, hytag->uri, (size_t) hytag->uri_len);
@@ -322,7 +316,7 @@ berr ads_http_ok_head_fill(char *buf, hytag_t *hytag)
     rte_memcpy(buf + len, http_body5, (size_t) strlen(http_body5));
     len += strlen(http_body5);
 
-
+#endif
     hytag->l5_len = len;
     return E_SUCCESS;
 }
@@ -342,13 +336,20 @@ berr ads_http_content_fill(char *buf, hytag_t *hytag)
     rte_memcpy(buf + len, http_body1, (size_t) strlen(http_body1));
     len += strlen(http_body1);
 
-    rte_memcpy(buf + len, http_body2, (size_t) strlen(http_body2));
-    len += strlen(http_body2);
+    //rte_memcpy(buf + len, http_body2, (size_t) strlen(http_body2));
+    //len += strlen(http_body2);
+    
     //rte_memcpy(buf + len, hytag->host, (size_t) hytag->host_len);
     //len += hytag->host_len;
 
-    //rte_memcpy(buf + len, hytag->url, (size_t) hytag->url_len);
-    //len += hytag->url_len;
+#if USE_URI
+    rte_memcpy(buf + len, hytag->uri, (size_t) hytag->uri_len);
+    len += hytag->uri_len;
+#else
+    rte_memcpy(buf + len, hytag->url, (size_t) hytag->url_len);
+    len += hytag->url_len;
+#endif
+
 
     rte_memcpy(buf + len, http_body3, (size_t) strlen(http_body3));
     len += strlen(http_body3);
