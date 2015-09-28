@@ -32,6 +32,8 @@
 #include <rte_mempool.h>
 #include <rte_mbuf.h>
 #include "boots.h"
+#include "naga_types.h"
+
 
 #define MAX_PKT_BURST 32
 #define MAX_RX_QUEUE_PER_LCORE 16
@@ -76,4 +78,14 @@ int itf_send_packet(struct rte_mbuf *m, uint8_t port);
 int itf_send_packet_imm(struct rte_mbuf *m, uint8_t port);
 
 void itf_tx_burst(void);
+
+
+berr ift_raw_send_packet(void *fp, uint8_t * buff, int len);
+
+berr itf_raw_socket_init(char *ifname);
+
+
+void itf_set_hytag_pcap(hytag_t * tag);
+    
+
 #endif /* !__ITF_H__ */

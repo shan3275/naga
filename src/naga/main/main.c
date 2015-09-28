@@ -78,7 +78,7 @@ static uint32_t l2fwd_enabled_port_mask = 0;
 static uint32_t l2fwd_dst_ports[RTE_MAX_ETHPORTS];
 
 static unsigned int l2fwd_rx_queue_per_lcore = 1;
-
+char *interface_str = NULL; /*for eth name*/
 
 struct lcore_queue_conf lcore_queue_conf[RTE_MAX_LCORE];
 
@@ -335,8 +335,11 @@ l2fwd_launch_one_lcore(__attribute__((unused)) void *dummy)
         vsr_dp_init();
 		dmr_dp_init();
 		acr_dp_init();
+
+
+        itf_raw_socket_init(interface_str);
 		#if 1
-		
+	
 		#endif
         cmdline (0, NULL);
     }
@@ -360,9 +363,10 @@ l2fwd_launch_one_lcore(__attribute__((unused)) void *dummy)
 static void
 l2fwd_usage(const char *prgname)
 {
-	printf("%s [EAL options] -- -p PORTMASK [-q NQ]\n"
+	printf("%s [EAL options] -- -p PORTMASK [-q NQ] [-I ETH]\n"
 	       "  -p PORTMASK: hexadecimal bitmask of ports to configure\n"
 	       "  -q NQ: number of queue (=ports) per lcore (default is 1)\n"
+	       "  -I ETH choose The ethernet if to send packet by adp\n"
 		   "  -T PERIOD: statistics will be refreshed each PERIOD seconds (0 to disable, 10 default, 86400 maximum)\n",
 	       prgname);
 }
@@ -432,7 +436,7 @@ l2fwd_parse_args(int argc, char **argv)
 
 	argvopt = argv;
 
-	while ((opt = getopt_long(argc, argvopt, "p:q:T:",
+	while ((opt = getopt_long(argc, argvopt, "p:q:T:I",
 				  lgopts, &option_index)) != EOF) {
 
 		switch (opt) {
@@ -455,7 +459,9 @@ l2fwd_parse_args(int argc, char **argv)
 				return -1;
 			}
 			break;
-
+        case 'I':
+            interface_str =  strdup(optarg);
+            break;
 		/* timer period */
 		case 'T':
 			timer_period = l2fwd_parse_timer_period(optarg) * 1000 * TIMER_MILLISECOND;

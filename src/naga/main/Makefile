@@ -56,7 +56,7 @@ CFLAGS  += -I ../itf -I ../dmr -I ../acr -I ../adp
 LDLIBS  +=  ../cmdline/libcmdline.a  ../libzebra/libzebra.a
 LDLIBS  +=   ../vsr/libvsr.a  ../pid/libpid.a ../itf/libitf.a   ../dmr/libdmr.a ../acr/libacr.a ../boots/libboots.a
 LDLIBS  +=   ../adp/libadp.a ../template/libtemp.a
-LDLIBS  +=   -lcrypt -lreadline -lrt
+LDLIBS  +=   -lcrypt -lreadline -lrt -lpcap
 
 
 

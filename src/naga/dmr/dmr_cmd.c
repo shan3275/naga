@@ -326,8 +326,8 @@ static int dmr_cmd_show_host(struct vty *vty, const char *host)
         return CMD_WARNING;
     }
 
-	vty_out(vty, "%-32s %-16d %-16lld %s", entry->host.host, entry->acl.actions, 
-		entry->acl.cnt, VTY_NEWLINE);
+	vty_out(vty, "%-32s %-16d %-16ld %s", entry->host.host, entry->acl.actions, 
+		(uint64_t)entry->acl.cnt.cnt, VTY_NEWLINE);
 
     return CMD_SUCCESS;
 }

@@ -2,7 +2,7 @@
 #define __NAGA_TYPES_H__
 
 #include "boots.h"
-
+#include <pcap.h>
 typedef uint32_t ipaddr_t;
 
 #define NAGA_ACCOUNT_STR_SZ 32
@@ -59,9 +59,16 @@ struct pbuf {
 #define URL_MAX_LEN  512 //URL MAX LEN
 #define MAX_HOST_LEN 128
 
+#define ENABLE 1
+#define DISABLE 0
+
 typedef struct
 {
 
+    char *eth;
+    int   eth_tx;  
+    pcap_t  *fp;
+    
     /* L2 offset */
     uint16_t l2_offset;
 

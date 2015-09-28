@@ -53,17 +53,21 @@
 /*
  * data plane main process flow, not include rx & tx
 */
+
 berr naga_data_process_flow(struct rte_mbuf *m)
 {
     hytag_t hytag;
 
     memset(&hytag, 0x0, sizeof(hytag));
-    
+
+  
     hytag.pbuf.ptr = rte_pktmbuf_mtod(m, void *);
     hytag.pbuf.len = m->data_len;
     hytag.pbuf.ptr_offset = 0;
     hytag.m = m;
     
+    itf_set_hytag_pcap(&hytag);
+
     HYTAG_DUMP(&hytag);
  
     DPF_NODE(MOD_PID, &hytag, naga_pid);

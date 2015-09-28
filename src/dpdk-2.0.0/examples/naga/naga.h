@@ -10,6 +10,8 @@
 #define URL_MAX_LEN  512 //URL MAX LEN
 typedef struct 
 {
+    char *eth;
+    int   eth_tx;      
     /*OT L3*/
 	uint32_t outer_srcip4;
 	uint32_t outer_dstip4;
@@ -36,7 +38,7 @@ typedef struct
 	uint32_t inner_srcip6[4];
 	uint32_t inner_dstip6[4];		
 #endif	
-
+    
 	char url[URL_MAX_LEN];
 }hytag_t;
 

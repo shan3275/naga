@@ -42,7 +42,7 @@ include $(RTE_SDK)/mk/rte.vars.mk
 LIB  = libitf.a
 
 # all source are stored in SRCS-y
-SRCS-y := itf_rx.c  itf_tx.c
+SRCS-y := itf_rx.c  itf_tx.c itf_pcap.c
 
 
 CFLAGS += -O3

@@ -57,75 +57,37 @@ berr naga_adp(hytag_t *hytag)
 		
 	}
 
-    printf("url: <%s> url_len=%d ,lhe host is:  <%s> host_len = %d, uri=<%s>, uri_len=%d \n",
-		    hytag->url, hytag->url_len, hytag->host, hytag->host_len, hytag->uri, hytag->uri_len);
 
 
 
 
 
- #if 0   
 
-
-    txm = rte_pktmbuf_clone(hytag->m, l2fwd_pktmbuf_pool);
-
-    if( NULL == txm)
-    {
-        printf("Tx Failed For mem alloc\n");
-        return E_SUCCESS;
-    }
-
-
-
-    txm->port = hytag->m->port;
-    uint8_t *dst = rte_pktmbuf_mtod(txm, void *);
-    uint8_t *src = rte_pktmbuf_mtod(hytag->m, void *);
-    
-    memcpy((void *)dst, (void *)src, hytag->m->data_len);
-    
-    
-    rv = ads_response_head_generator(txm, hytag);
-    if(rv != E_SUCCESS)
-        return rv;
-    printf("send1 buf\n");
-    printf("len = %d, %d, %d\n", txm->data_len, txm->buf_len, txm->pkt_len);    
-    itf_send_packet_imm(txm, txm->port);
-
-
-    txm = rte_pktmbuf_clone(hytag->m, l2fwd_pktmbuf_pool);
-
-    if( NULL == txm)
-    {
-        printf("Tx Failed For mem alloc\n");
-        return E_SUCCESS;
-    }
-
-    txm->port = hytag->m->port;
-    dst = rte_pktmbuf_mtod(txm, void *);
-    src = rte_pktmbuf_mtod(hytag->m, void *);
-    
-    memcpy((void *)dst, (void *)src, hytag->m->data_len); 
-    
-    rv = ads_response_content_generator(txm, hytag);
-    if(rv != E_SUCCESS)
-       return rv;
-
-    printf("send2 buf\n");
-    itf_send_packet_imm(txm, txm->port);
-    
-#else
-
-
-
-    
     txm = hytag->m;
     rv = ads_response_head_generator(txm, hytag);
     if(rv != E_SUCCESS)
         return rv;
-    printf("send1 buf\n");
-    itf_send_packet_imm(txm, txm->port);
+    //printf("send1 buf\n");
 
-   // sleep(1);
+    
+    if(hytag->eth_tx== ENABLE)
+    {
+        uint8_t * ptr = rte_pktmbuf_mtod(txm, uint8_t *);
+        rv = ift_raw_send_packet(hytag->fp, ptr, txm->pkt_len);
+        if(rv != E_FAIL)
+            return rv;
+    }
+    else
+    {
+        itf_send_packet_imm(txm, txm->port);
+    }
+    
+    printf("url: <%s> url_len=%d", hytag->url, hytag->url_len);
+
+
+
+
+// sleep(1);
 /*
     rv = ads_response_content_generator(txm, hytag);
     if(rv != E_SUCCESS)
@@ -133,7 +95,7 @@ berr naga_adp(hytag_t *hytag)
 
     printf("send2 buf\n");
     itf_send_packet_imm(txm, txm->port);*/
-#endif
+
     
     return E_SUCCESS;
 }
