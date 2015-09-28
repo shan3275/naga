@@ -53,6 +53,7 @@
 #include "pid.h"
 #include "itf.h"
 #include "naga_host_rule.h"
+#include "nag_adp.h"
 
 #define RTE_LOGTYPE_L2FWD RTE_LOGTYPE_USER1
 
@@ -335,7 +336,7 @@ l2fwd_launch_one_lcore(__attribute__((unused)) void *dummy)
         vsr_dp_init();
 		dmr_dp_init();
 		acr_dp_init();
-        
+        adp_dp_init();
         
         itf_raw_socket_init(interface_str);
 		#if 1
