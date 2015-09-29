@@ -33,6 +33,8 @@ typedef struct {
 
 extern dopt_t dopts_array[DOPT_MAX];
 
+int dopts_get_switch(dopte dop);
+
 
 #define BTS_DEBUG_DUMP(_mod, _opt, _fmt, _args...) { \
     if ((_mod < MOD_MAX) || (_opt < DOPT_MAX)) { \

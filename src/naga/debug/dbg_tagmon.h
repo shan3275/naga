@@ -9,7 +9,7 @@
 void hytag_print(hytag_t *tag);
 void hytag_log(hytag_t *tag);
 
-#define DOPT_IS_SELECTED(_val)    (_val == 1)
+#define DOPT_IS_SELECTED(dop)    (dopts_get_switch(dop) == ENABLE)
 
 #define HYTAG_DUMP(_tag) \
 { \

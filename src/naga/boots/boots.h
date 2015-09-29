@@ -33,16 +33,8 @@ typedef rte_atomic32_t    bts_atomic32_t;
 typedef enum {
     MOD_DBG,
     MOD_CUSTOM,
-#if 0
-    MOD_AMD, 
-    MOD_DPF, 
-    MOD_ITF, 
-    MOD_PID, 
-    MOD_VSR, 
-    MOD_DMR,
-    MOD_ACR,
-    MOD_ADP,
-#endif
+    
+    //DOPT_CUSTOM,
     MOD_MAX,
 } bmod;
 

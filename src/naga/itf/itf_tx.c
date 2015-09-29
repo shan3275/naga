@@ -77,7 +77,7 @@ int itf_send_packet_imm(struct rte_mbuf *m, uint8_t port)
     signed queueid = 0;
     
     ret = rte_eth_tx_burst(port, (uint16_t) queueid, &m, 1);
-
+    
     return ret;
 }
 

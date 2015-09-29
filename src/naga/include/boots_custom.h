@@ -29,8 +29,8 @@
     DOPT_FAILPKT
 
 #define DOPT_ARRAY_CUSTOM \
-    {DOPT_TAGMON, OFF, "tagmon", "Hytag monitor"}, \
-    {DOPT_FAILPKT, OFF, "failpkt", "Process fail packet record"}
+    {DOPT_TAGMON, ON,  "tagmon", "Hytag monitor"}, \
+    {DOPT_FAILPKT,OFF, "failpkt", "Process fail packet record"}
 
 #define CNT_CUSTOM \
     /* VSR Module counters */ \
