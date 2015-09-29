@@ -178,6 +178,7 @@ bts_hashtable_del_all(bts_hashtable_t *tab)
 		BRET(E_PARAM); 
 	}
 
+    
 	bts_list_delete_all_node(tab->buckets);
 
 	BRET(E_SUCCESS);
