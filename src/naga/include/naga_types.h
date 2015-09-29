@@ -161,7 +161,7 @@ typedef struct
 { \
     (_tagacl).actions |= (_ruleacl).actions; \
     (_tagacl).outport |= (_ruleacl).outport; \
-    ACL_HIT(_tagacl);\
+    ACL_HIT(_ruleacl);\
 }
 
 #define USE_D_PACKET 1

@@ -148,12 +148,6 @@ static int acr_cmd_del_account(struct vty *vty, const char *account)
 	entry.account_len = len;
 	memcpy(entry.account, account, len);
 
-	if (NULL == rule_acr_cmd_show_account(&entry))
-	{
-	    //vty_out(vty, "This account %s rule does not exist%s", account, VTY_NEWLINE);
-		return CMD_ERR_NOTHING_TODO;
-	}
-
     ret = rule_acr_cmd_del_account(&entry);
     if (ret)
     {
@@ -241,7 +235,6 @@ static int acr_cmd_add_account(struct vty *vty, const char *account, const char 
 	}
 #endif
 
-	acr_cmd_del_account(vty, account);
 	
 	len = strlen(account);
 	entry->acl.actions = action;

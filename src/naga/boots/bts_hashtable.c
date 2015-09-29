@@ -173,14 +173,16 @@ bts_hashtable_del_by_key(bts_hashtable_t *tab, void *data)
 berr
 bts_hashtable_del_all(bts_hashtable_t *tab)
 {
+	int i = 0;
 	if (NULL == tab)
 	{
 		BRET(E_PARAM); 
 	}
 
-    
-	bts_list_delete_all_node(tab->buckets);
-
+    for(i = 0; i < tab->total_bucket; i ++)
+    {
+		bts_list_delete_all_node(&tab->buckets[i]);
+    }
 	BRET(E_SUCCESS);
 }
 

@@ -382,11 +382,13 @@ bts_listnode_add (struct bts_list *bts_list, void *val)
     else
     {
         node = bts_listnode_new();
-        /*if*/
+        if (NULL == node)
+        {
+			return;
+		}
         node->data = val;
         list_add_tail(&(node->node), &(bts_list->bucket_head));
         bts_list->count++;
-        printf("node = %p, %p\n", node, node->data);
         
     }
     return;

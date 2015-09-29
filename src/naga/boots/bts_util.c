@@ -37,8 +37,6 @@ bts_str_cmp(void *val1, void *val2)
     }
 
     return strcmp(val1, val2);
-
-    return 0;
 }
 
 
