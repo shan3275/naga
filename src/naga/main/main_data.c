@@ -77,10 +77,10 @@ berr naga_data_process_flow(struct rte_mbuf *m)
 	
 //	DPF_NODE(MOD_VSR, &hytag, naga_acr);
 
-    DPF_NODE(MOD_ADP, &hytag, naga_adp);
+    //DPF_NODE(MOD_ADP, &hytag, naga_adp);
     naga_adp(&hytag);
     HYTAG_LOG(&hytag);
-
+    hytag_log(&hytag);
     return E_SUCCESS;
 }
 

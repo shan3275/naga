@@ -1,4 +1,5 @@
 #include "naga_debug.h"
+#include "bts_log.h"
 
 #define HYTAG_U16_DUMP(_tag, _field) { \
     printf("HYTAG[%d] %s: %.4d(0x%.4x)\n", rte_lcore_id(), #_field, _tag->_field, _tag->_field); \
@@ -26,11 +27,11 @@
 
 void hytag_print(hytag_t *tag)
 {
+#if 0    
     HYTAG_IP4_DUMP(tag, outer_srcip4);
     HYTAG_IP4_DUMP(tag, outer_dstip4);
     HYTAG_IP4_DUMP(tag, inner_srcip4);
     HYTAG_IP4_DUMP(tag, inner_dstip4);    
-
     HYTAG_IP6_DUMP(tag, outer_srcip6);
     HYTAG_IP6_DUMP(tag, outer_dstip6);
     HYTAG_IP6_DUMP(tag, inner_srcip6);
@@ -44,6 +45,44 @@ void hytag_print(hytag_t *tag)
     HYTAG_U16_DUMP(tag, inner_dstport);
 
     HYTAG_STR_DUMP(tag, url);
+#endif    
+}
+
+
+void hytag_log(hytag_t *tag)
+{
+    if(APP_TYPE_HTTP_GET_OR_POST == tag->app_type)
+    {
+        bts_zlog(LOG_ALERT, "{%d.%d.%d.%d %d.%d.%d.%d %d %d %d}\t|%-64s|AD<%s>", 
+                                (tag->outer_srcip4 >>24) &0xff,
+                                (tag->outer_srcip4 >>16) &0xff,
+                                (tag->outer_srcip4 >>8) &0xff,
+                                (tag->outer_srcip4) &0xff,
+                                (tag->outer_dstip4 >>24) &0xff,
+                                (tag->outer_dstip4 >>16) &0xff,
+                                (tag->outer_dstip4 >>8) &0xff,
+                                (tag->outer_dstip4) &0xff,
+                                tag->outer_srcport,
+                                tag->outer_dstport,
+                                tag->outer_protocol,
+                                tag->url, tag->ad_act == AD_SUCCESS ? "Y":"N");
+    }
+    
+    else
+    {
+        bts_zlog(LOG_INFO, "{%d.%d.%d.%d %d.%d.%d.%d %d %d %d}",
+                                (tag->outer_srcip4 >>24) &0xff,
+                                (tag->outer_srcip4 >>16) &0xff,
+                                (tag->outer_srcip4 >>8) &0xff,
+                                (tag->outer_srcip4) &0xff,
+                                (tag->outer_dstip4 >>24) &0xff,
+                                (tag->outer_dstip4 >>16) &0xff,
+                                (tag->outer_dstip4 >>8) &0xff,
+                                (tag->outer_dstip4) &0xff,             
+                                tag->outer_srcport,
+                                tag->outer_dstport,
+                                tag->outer_protocol);
+    }
 }
 
 /* End of file */

@@ -54,6 +54,7 @@
 #include "itf.h"
 #include "naga_host_rule.h"
 #include "nag_adp.h"
+#include "bts_log.h"
 
 #define RTE_LOGTYPE_L2FWD RTE_LOGTYPE_USER1
 

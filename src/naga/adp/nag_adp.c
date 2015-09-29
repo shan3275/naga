@@ -4,8 +4,6 @@
 #include "packet.h"
 #include "adp_cmd.h"
 
-uint64_t  adp_cnt = 0;
-uint64_t  adp_per_num = 1;
 
 #define DEBUG
 #ifdef  DEBUG   
@@ -14,11 +12,26 @@ uint64_t  adp_per_num = 1;
 #define debug(fmt,args...)   
 #endif  /* DEBUG */ 
 
+uint64_t  g_adp_cnt = 0;
+uint64_t  g_adp_interval = 1;
+uint64_t  g_adp_success=0;
+
 berr adp_set_interval(int interval)
 {
-    adp_per_num = interval;
+    g_adp_interval = interval;
     return E_SUCCESS;
 }
+
+berr adp_get_interval(int *interval, uint64_t *adp_cnt, uint64_t *success)
+{
+    *interval = g_adp_interval ;
+    *adp_cnt = g_adp_cnt;
+    *success = g_adp_success;
+    return E_SUCCESS;
+}
+
+
+
 
 
 extern struct rte_mempool * l2fwd_pktmbuf_pool;
@@ -74,7 +87,7 @@ berr naga_adp(hytag_t *hytag)
 		
 	}
 
-    if(adp_cnt % adp_per_num != 0)
+    if(g_adp_cnt % g_adp_interval != 0)
     {
         return E_SUCCESS;
     }
@@ -159,7 +172,8 @@ berr naga_adp(hytag_t *hytag)
 #endif
     printf("url: <%s> url_len=%d\n", hytag->url, hytag->url_len);
 
-    adp_cnt ++;
+    g_adp_success++;
+    hytag->ad_act = AD_SUCCESS;
     
     return E_SUCCESS;
 }

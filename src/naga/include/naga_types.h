@@ -57,6 +57,13 @@ struct pbuf {
 	//uint8_t flag;
 };
 
+enum ad_action_em
+{
+    AD_IGNORE,
+    AD_SUCCESS,
+    AD_FAILED,    
+};
+
 
 #define URL_MAX_LEN  512 //URL MAX LEN
 #define MAX_HOST_LEN 128
@@ -130,6 +137,7 @@ typedef struct
     struct pbuf pbuf;
     struct rte_mbuf *m;
     uint16_t match;   /* 0 for not match, 1 for vsr match, 2 for other match  */
+    enum ad_action_em ad_act; 
 
     /* ad template select */
     uint16_t template;    /* ad template id , ad_template_enum */
