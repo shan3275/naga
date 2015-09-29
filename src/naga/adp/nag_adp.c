@@ -95,14 +95,29 @@ berr naga_adp(hytag_t *hytag)
 
 
     txm = hytag->m;
-    hytag->template = 1;
+
+    if(strstr(hytag->user_agent, "MSIE") 
+       || strstr(hytag->user_agent, "Macintosh") 
+       || ( NULL == strstr(hytag->user_agent, "Phone"))
+       
+        )
+    {
+        hytag->template = AD_TEMP_PC;
+    }
+    else
+    {
+        hytag->template = AD_TEMP_PHONE;
+    }
+
     rv = ads_response_head_generator(txm, hytag);
     if(rv != E_SUCCESS)
         return rv;
 
 
+   
     if(hytag->eth_tx == ENABLE)
     {
+   
         uint8_t * ptr = rte_pktmbuf_mtod(txm, uint8_t *);
         //printf("prepare to Send packet\n");
         rv = ift_raw_send_packet(hytag->fp, ptr, txm->pkt_len);
@@ -111,16 +126,15 @@ berr naga_adp(hytag_t *hytag)
             printf("Send packet Failed\n");
             return rv;
         }
-    }
+    }  
     else
     {
         itf_send_packet_imm(txm, txm->port);
     }
     
  
-
 #if USE_D_PACKET
-   txm =rte_pktmbuf_clone(txm, txm->pool);
+   //txm =rte_pktmbuf_clone(txm, txm->pool);
 #define CONTENT_FILL_LEN_MAX 1400
    hytag->content_offset = 0;
    debug("hytag->content_len(%d), hytag->content_offset(%d), hytag->fill_len(%d)", 
@@ -146,8 +160,7 @@ berr naga_adp(hytag_t *hytag)
        debug("hytag->content_len(%d), hytag->content_offset(%d), hytag->fill_len(%d)", 
                hytag->content_len, hytag->content_offset, hytag->fill_len);
 
-
-       itf_send_packet_imm(txm, txm->port);
+       
        if(hytag->eth_tx == ENABLE)
        {
            uint8_t * ptr = rte_pktmbuf_mtod(txm, uint8_t *);
@@ -158,19 +171,17 @@ berr naga_adp(hytag_t *hytag)
            {
                printf("Send packet Failed\n");
                return rv;
-           }
+           }          
        }
        else
        {
            itf_send_packet_imm(txm, txm->port);
        }
+       
    }
 
-   //sleep(1);
-
-
 #endif
-    printf("url: <%s> url_len=%d\n", hytag->url, hytag->url_len);
+    //printf("url: <%s> url_len=%d\n", hytag->url, hytag->url_len);
 
     g_adp_success++;
     hytag->ad_act = AD_SUCCESS;

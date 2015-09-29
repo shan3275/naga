@@ -73,12 +73,11 @@ berr naga_data_process_flow(struct rte_mbuf *m)
     DPF_NODE(MOD_PID, &hytag, naga_pid);
 
     //DPF_NODE(MOD_VSR, &hytag, naga_vsr);
-//    DPF_NODE(MOD_VSR, &hytag, naga_dmr);
-	
-//	DPF_NODE(MOD_VSR, &hytag, naga_acr);
-
-    //DPF_NODE(MOD_ADP, &hytag, naga_adp);
-    naga_adp(&hytag);
+    //    DPF_NODE(MOD_VSR, &hytag, naga_dmr);
+    //	DPF_NODE(MOD_VSR, &hytag, naga_acr);
+    DPF_NODE(MOD_ADP, &hytag, naga_adp);
+    
+    //naga_adp(&hytag);
     HYTAG_LOG(&hytag);
     hytag_log(&hytag);
     return E_SUCCESS;
@@ -99,18 +98,20 @@ void naga_data_main_loop()
 
 	while (1)
 	{
+        #if 0
 		cur_tsc = rte_rdtsc();
 
 		/*
 		 * TX burst queue drain
 		 */
+		 
 		diff_tsc = cur_tsc - prev_tsc;
 		if (unlikely(diff_tsc > drain_tsc)) {
 			itf_tx_burst();
 
 			prev_tsc = cur_tsc;
 		}
-
+        #endif
 		/*
 		 * Read packet from RX queues
 		 */

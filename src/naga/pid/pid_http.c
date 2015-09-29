@@ -11,7 +11,8 @@
 
 #define STRING_HTTP_REFERENCE "Referer"
 #define STRING_HTTP_REFERENCE_LEN  7
-
+#define STRING_HTTP_AGENT     "User-Agent"
+#define STRING_HTTP_AGENT_LEN 10
 
 static inline berr pid_http_request_method(uint8_t *p ,  uint8_t *method, uint16_t *len)
 {
@@ -187,17 +188,20 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
             {
                 continue;
             }
-			if (!strncmp(STRING_HTTP_HOST, begin, STRING_HTTP_HOST_LEN))	
+			if (hytag->host_len ==0 
+                && !strncmp(STRING_HTTP_HOST, begin, STRING_HTTP_HOST_LEN)) 
 			{
                
 				memcpy(hytag->host, &line[1], (strlen(line)-2));
 				hytag->host_len = strlen(line)-2;
 			}
-			/*if (!strncmp(STRING_HTTP_REFERENCE, begin, STRING_HTTP_REFERENCE_LEN))	
+			if (hytag->user_agent_len== 0 
+                    && !strncmp(STRING_HTTP_AGENT, begin, STRING_HTTP_AGENT_LEN))   
 			{
-				memcpy(hytag->referer, &line[1], (strlen(line)-2));
-				hytag->referer_len = strlen(line)-2;
-			}*/			
+           
+				memcpy(hytag->user_agent, &line[1], (strlen(line)-2));
+				hytag->user_agent_len = strlen(line)-2;
+			}			
 		
 		}
 	}

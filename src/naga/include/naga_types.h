@@ -65,8 +65,15 @@ enum ad_action_em
 };
 
 
+enum ad_template_em
+{
+    AD_TEMP_PC,
+    AD_TEMP_PHONE,    
+};
+
 #define URL_MAX_LEN  512 //URL MAX LEN
 #define MAX_HOST_LEN 128
+#define MAX_USER_AGENT_LEN  256
 
 #define ENABLE 1
 #define DISABLE 0
@@ -121,6 +128,7 @@ typedef struct
 #endif	
 
     uint16_t app_type;
+
     uint16_t url_len;
     uint16_t host_len;
 	uint16_t referer_len;
@@ -128,6 +136,9 @@ typedef struct
 	uint8_t host[MAX_HOST_LEN];
     char account[NAGA_ACCOUNT_STR_SZ];
 	char referer[URL_MAX_LEN];
+    uint16_t user_agent_len;
+    char  user_agent[MAX_USER_AGENT_LEN];
+    
     naga_acl_t acl;
 
 
