@@ -36,8 +36,10 @@ bts_hashtable_init(bts_hashtable_t *tab, uint32_t bucket_number, bts_hash_func h
         {
             tab->buckets[i].cmp = cmp;
             tab->buckets[i].del = del;
+            INIT_LIST_HEAD(&(tab->buckets[i].bucket_head));
         }
     }
+
 
     BRET(E_SUCCESS);
 }
@@ -67,6 +69,7 @@ bts_hashtable_lookup(bts_hashtable_t *tab, void *key)
 
     node = bts_listnode_lookup_by_key(bucket, key);
 
+    
     if (node)
     {
         return node->data;
@@ -99,6 +102,7 @@ bts_hashtable_add(bts_hashtable_t *tab, void *data)
     bucket = &tab->buckets[idx];
 
     bts_listnode_add(bucket, data);
+    
 
     BRET(E_SUCCESS);
 }

@@ -1,17 +1,20 @@
 #ifndef __BTS_LINKLIST_H__
 #define __BTS_LINKLIST_H__
-
+#include "bts_list.h"
 /* bts_listnodes must always contain data to be valid. Adding an empty node
  * to a bts_list is invalid
  */
-typedef struct bts_listnode 
+
+
+typedef struct  bts_listnode
 {
   struct bts_listnode *next;
-  struct bts_listnode *prev;
-  
+  struct bts_listnode *prev;    
   /* private member, use getdata() to retrieve, do not access directly */
   void *data;
+  struct list_head  node;
 } bts_listnode_t;
+
 
 
 typedef int (*bts_list_cmp_func)(void *val1, void *val2); 
@@ -21,10 +24,10 @@ typedef struct bts_list
 {
   struct bts_listnode *head;
   struct bts_listnode *tail;
-
+  struct list_head   bucket_head;
   /* invariant: count is the number of bts_listnodes in the bts_list */
   unsigned int count;
-
+    
   /*
    * Returns -1 if val1 < val2, 0 if equal?, 1 if val1 > val2.
    * Used as definition of sorted for bts_listnode_add_sort

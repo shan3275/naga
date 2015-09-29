@@ -332,7 +332,7 @@ static int dmr_cmd_show_host(struct vty *vty, const char *host)
     entry = rule_dmr_cmd_show_host(&data);
     if (NULL == entry)
     {
-        vty_out(vty, "dmr del host, %s ret(%d)%s", host, ret, VTY_NEWLINE);
+        vty_out(vty, "dmr host<%s> empty%s", host, VTY_NEWLINE);
         return CMD_WARNING;
     }
 

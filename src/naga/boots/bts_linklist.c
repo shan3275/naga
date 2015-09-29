@@ -25,6 +25,12 @@
 #include "bts_linklist.h"
 #include "memory.h"
 
+#define USE_BTS_LIST 1
+
+#if USE_BTS_LIST
+#include "bts_list.h"
+#endif
+
 /* Allocate new bts_list. */
 struct bts_list *
 bts_list_new (void)
@@ -54,27 +60,6 @@ bts_listnode_free (struct bts_listnode *node)
 	free(node);
 }
 
-/* Add new data to the bts_list. */
-void
-bts_listnode_add (struct bts_list *bts_list, void *val)
-{
-	struct bts_listnode *node;
-
-	assert (val != NULL);
-
-	node = bts_listnode_new ();
-
-	node->prev = bts_list->tail;
-	node->data = val;
-
-	if (bts_list->head == NULL)
-	bts_list->head = node;
-	else
-	bts_list->tail->next = node;
-	bts_list->tail = node;
-
-	bts_list->count++;
-}
 
 /*
  * Add a node to the bts_list.  If the bts_list was sorted according to the
@@ -198,34 +183,6 @@ bts_listnode_delete (struct bts_list *bts_list, void *val)
 }
 
 
-/* Delete specific date pointer from the bts_list. */
-void
-bts_listnode_delete_by_key (struct bts_list *bts_list, void *key)
-{
-    struct bts_listnode *node;
-
-    assert(bts_list);
-    assert(bts_list->cmp);
-    for (node = bts_list->head; node; node = node->next)
-    {
-        if (bts_list->cmp(key, node->data))
-        {
-            if (node->prev)
-                node->prev->next = node->next;
-            else
-                bts_list->head = node->next;
-
-            if (node->next)
-                node->next->prev = node->prev;
-            else
-                bts_list->tail = node->prev;
-
-            bts_list->count--;
-            bts_listnode_free (node);
-            return;
-        }
-    }
-}
 
 /* Return first node's data if it is there.  */
 void *
@@ -239,25 +196,6 @@ bts_listnode_head (struct bts_list *bts_list)
   if (node)
     return node->data;
   return NULL;
-}
-
-/* Delete all bts_listnode from the bts_list. */
-void
-bts_list_delete_all_node (struct bts_list *bts_list)
-{
-  struct bts_listnode *node;
-  struct bts_listnode *next;
-
-  assert(bts_list);
-  for (node = bts_list->head; node; node = next)
-    {
-      next = node->next;
-      if (bts_list->del)
-	(*bts_list->del) (node->data);
-      bts_listnode_free (node);
-    }
-  bts_list->head = bts_list->tail = NULL;
-  bts_list->count = 0;
 }
 
 /* Delete all bts_listnode then free bts_list itself. */
@@ -299,21 +237,8 @@ bts_list_delete_node (struct bts_list *bts_list, struct bts_listnode *node)
 }
 
 
-/* Lookup the node which has given data. */
-bts_listnode_t *
-bts_listnode_lookup_by_key (bts_list_t *bts_list, void *key)
-{
-  bts_listnode_t *node = NULL;
-  void *dkey = NULL;
 
-  assert(bts_list);
-  assert(bts_list->cmp);
-  for (node = bts_listhead(bts_list); node; node = bts_listnextnode (node)){
-      if (!bts_list->cmp(key, node->data))
-          return node;
-  }
-  return NULL;
-}
+
 
 
 /* ospf_spf.c */
@@ -371,3 +296,210 @@ bts_list_add_list (struct bts_list *l, struct bts_list *m)
   for (n = bts_listhead (m); n; n = bts_listnextnode (n))
     bts_listnode_add (l, n->data);
 }
+
+#if USE_BTS_LIST
+bts_listnode_t *
+bts_listnode_lookup_by_key (bts_list_t *bts_list, void *key)
+{
+  int rv = 0;
+  bts_listnode_t *node = NULL;
+
+  struct list_head *pos = NULL, *next =NULL;
+
+  assert(bts_list);
+  assert(bts_list->cmp);
+
+  list_for_each_safe(pos, next,  &(bts_list->bucket_head))
+  {
+     
+     node  = list_entry(pos, bts_listnode_t, node);
+
+     if(node->data == NULL)
+     {
+        continue;
+     }
+     
+     rv = bts_list->cmp(node->data, key);
+    
+     if(0 == rv)
+     {
+        return node;
+     }   
+  } 
+  return NULL;
+}
+
+/* Delete specific date pointer from the bts_list. */
+void bts_listnode_delete_by_key (struct bts_list *bts_list, void *key)
+{
+    struct bts_listnode *node = NULL;
+    struct list_head *pos = NULL, *next = NULL;
+    assert(bts_list);
+    assert(bts_list->cmp);
+    
+    list_for_each_safe(pos, next, &(bts_list->bucket_head))
+    {
+         node  = list_entry(pos, bts_listnode_t, node);
+         if(!bts_list->cmp(node->data, key))
+         {
+             __list_del(pos->prev, pos->next);
+             free(node->data);
+             free(node);
+             node = NULL;
+             bts_list->count--;
+             return ;
+         }
+        
+    } 
+    return;
+}
+
+void
+bts_listnode_add (struct bts_list *bts_list, void *val)
+{
+    struct bts_listnode *node = NULL;
+    struct list_head *pos = NULL, *next = NULL;
+    assert(bts_list);
+    assert(bts_list->cmp);
+    int find = 0;
+    
+    list_for_each_safe(pos, next, &(bts_list->bucket_head))
+    {
+         node  = list_entry(pos, bts_listnode_t, node);
+         if(!bts_list->cmp(node->data, val))
+         {
+            find = 1;
+            break;
+         }
+        
+    } 
+    if(find)
+    {
+        free(node->data);
+        node->data = val;
+        
+    }
+    else
+    {
+        node = bts_listnode_new();
+        /*if*/
+        node->data = val;
+        list_add_tail(&(node->node), &(bts_list->bucket_head));
+        bts_list->count++;
+        printf("node = %p, %p\n", node, node->data);
+        
+    }
+    return;
+}
+
+
+void
+bts_list_delete_all_node (struct bts_list *bts_list)
+{
+    struct bts_listnode *node = NULL;
+    struct list_head *pos = NULL, *next = NULL;
+    assert(bts_list);
+
+    
+    list_for_each_safe(pos, next, &(bts_list->bucket_head))
+    {
+        node  = list_entry(pos, bts_listnode_t, node);
+        free(node->data);
+        free(node);
+        list_del(pos);
+    } 
+    return;
+}
+
+#else
+
+/* Delete all bts_listnode from the bts_list. */
+void
+bts_list_delete_all_node (struct bts_list *bts_list)
+{
+  struct bts_listnode *node;
+  struct bts_listnode *next;
+
+  assert(bts_list);
+  for (node = bts_list->head; node; node = next)
+    {
+      next = node->next;
+      if (bts_list->del)
+	(*bts_list->del) (node->data);
+      bts_listnode_free (node);
+    }
+  bts_list->head = bts_list->tail = NULL;
+  bts_list->count = 0;
+}
+
+/* Add new data to the bts_list. */
+void
+bts_listnode_add (struct bts_list *bts_list, void *val)
+{
+	struct bts_listnode *node;
+
+	assert (val != NULL);
+
+	node = bts_listnode_new ();
+
+	node->prev = bts_list->tail;
+	node->data = val;
+
+	if (bts_list->head == NULL)
+	bts_list->head = node;
+	else
+	bts_list->tail->next = node;
+	bts_list->tail = node;
+
+	bts_list->count++;
+}
+
+
+/* Delete specific date pointer from the bts_list. */
+void
+bts_listnode_delete_by_key (struct bts_list *bts_list, void *key)
+{
+    struct bts_listnode *node;
+
+    assert(bts_list);
+    assert(bts_list->cmp);
+    for (node = bts_list->head; node; node = node->next)
+    {
+        if (bts_list->cmp(key, node->data))
+        {
+            if (node->prev)
+                node->prev->next = node->next;
+            else
+                bts_list->head = node->next;
+
+            if (node->next)
+                node->next->prev = node->prev;
+            else
+                bts_list->tail = node->prev;
+
+            bts_list->count--;
+            bts_listnode_free (node);
+            return;
+        }
+    }
+}
+
+/* Lookup the node which has given data. */
+bts_listnode_t *
+bts_listnode_lookup_by_key (bts_list_t *bts_list, void *key)
+{
+  bts_listnode_t *node = NULL;
+  void *dkey = NULL;
+
+  assert(bts_list);
+  assert(bts_list->cmp);
+  
+  for (node = bts_listhead(bts_list); node; node = bts_listnextnode (node)){
+      if (!bts_list->cmp(key, node->data))
+          return node;
+  }
+  return NULL;
+}
+
+
+#endif

@@ -657,6 +657,7 @@ main(int argc, char **argv)
 
 	nb_ports_available = nb_ports;
 
+    
 	/* Initialise each port */
 	for (portid = 0; portid < nb_ports; portid++) {
 		/* skip ports that are not enabled */
