@@ -244,7 +244,7 @@ int cmdline (int argc, char **argv)
     cmdline_bts_init();
 	cmdline_dmr_init();
 	cmdline_acr_init();
-
+    cmdline_adp_init();
     /* Zebra related initialize. */
     //access_list_init ();
 

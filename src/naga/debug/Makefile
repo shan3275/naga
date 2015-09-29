@@ -34,32 +34,19 @@ include $(RTE_SDK)/mk/rte.vars.mk
 #
 # library name
 #
-LIB = libboots.a
+LIB = libdebug.a
 
-CFLAGS +=  -I .  -I ../include -I ../libzebra
-
+CFLAGS +=   -I ../boots -I ../include -I ../libzebra -I ../pid
 #CFLAGS += $(WERROR_FLAGS)
 
 EXPORT_MAP := lib_vsr_version.map
 
 LIBABIVER := 1
 
-SRCS-y += boots_parse.c
-SRCS-y += bts_cnt.c
-SRCS-y += bts_cmd.c
-SRCS-y += bts_hash.c
-SRCS-y += bts_hashtable.c
-SRCS-y += bts_linklist.c
-SRCS-y += bts_util.c
-SRCS-y += bts_log.c
-#
-# Export include files
-#
-#SYMLINK-y-include += rte_ether.h
-#SYMLINK-y-include += rte_ethdev.h
-#SYMLINK-y-include += rte_eth_ctrl.h
+SRCS-y := dbg_tagmon.c
 
-# this lib depends upon:
-#DEPDIRS-y += lib/librte_eal lib/librte_mempool lib/librte_ring lib/librte_mbuf
+
+
 
 include $(RTE_SDK)/mk/rte.lib.mk
+

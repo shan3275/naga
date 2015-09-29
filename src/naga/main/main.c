@@ -54,6 +54,7 @@
 #include "itf.h"
 #include "naga_host_rule.h"
 #include "nag_adp.h"
+#include "bts_log.h"
 
 #define RTE_LOGTYPE_L2FWD RTE_LOGTYPE_USER1
 
@@ -337,6 +338,11 @@ l2fwd_launch_one_lcore(__attribute__((unused)) void *dummy)
 		dmr_dp_init();
 		acr_dp_init();
         adp_dp_init();
+        rv = ads_template_init();
+        if (rv )
+        {
+            printf("%s %d ads_template_init fail, rv(%d)\n", __func__, __LINE__, rv);
+        }
         
         itf_raw_socket_init(interface_str);
 		#if 1
