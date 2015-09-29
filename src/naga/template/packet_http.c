@@ -36,7 +36,7 @@
 #include "packet_http.h"
 #include "rte_memcpy.h"
 
-#define DEBUG
+//#define DEBUG
 #ifdef  DEBUG   
 #define debug(fmt,args...)  printf ("func(%s), line(%d)"fmt"\n" ,__FUNCTION__, __LINE__, ##args)
 #else   
@@ -634,11 +634,11 @@ berr ads_template_init(void)
 
     for( i = 0; i < AD_TEMPLATE_MAX; i++ )
     {
-        printf("Template(%d):\n", i);
-        printf("name(%d):%s\n", strlen(http_body[i].name), http_body[i].name);
-        printf("head(%d):\n%s\n", strlen(http_body[i].head),http_body[i].head);
-        printf("url(%d):\n%s\n", strlen(http_body[i].url), http_body[i].url);
-        printf("tail(%d):\n%s\n", strlen(http_body[i].tail),http_body[i].tail);
+        debug("Template(%d):\n", i);
+        debug("name(%d):%s\n", strlen(http_body[i].name), http_body[i].name);
+        debug("head(%d):\n%s\n", strlen(http_body[i].head),http_body[i].head);
+        debug("url(%d):\n%s\n", strlen(http_body[i].url), http_body[i].url);
+        debug("tail(%d):\n%s\n", strlen(http_body[i].tail),http_body[i].tail);
     }
     printf("ads template init success!\n");
 
