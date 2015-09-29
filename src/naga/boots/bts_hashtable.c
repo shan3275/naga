@@ -127,7 +127,7 @@ bts_hashtable_del(bts_hashtable_t *tab, void *data)
 
     bucket = &tab->buckets[idx];
 
-    bts_listnode_delete(bucket, data);
+    bts_listnode_delete_by_key(bucket, data);
 
     BRET(E_SUCCESS);
 }

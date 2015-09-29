@@ -63,7 +63,7 @@ naga_acr(hytag_t *tag)
     memset(&data, 0, sizeof(acr_account_rule_t));
     acr_account_fill(tag, &data);
 
-    rule = acr_account_rule_lookup(tag->account);
+    rule = acr_account_rule_lookup((void *)(&data));
 
     if (NULL == rule)
     {

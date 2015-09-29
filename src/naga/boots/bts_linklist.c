@@ -52,10 +52,6 @@ static void
 bts_listnode_free (struct bts_listnode *node)
 {
 	free(node);
-	if (node->data)
-	{
-		free(node->data);
-	}
 }
 
 /* Add new data to the bts_list. */

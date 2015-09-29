@@ -150,7 +150,7 @@ static int acr_cmd_del_account(struct vty *vty, const char *account)
 
 	if (NULL == rule_acr_cmd_show_account(&entry))
 	{
-	    vty_out(vty, "This account %s rule does not exist%s", account, VTY_NEWLINE);
+	    //vty_out(vty, "This account %s rule does not exist%s", account, VTY_NEWLINE);
 		return CMD_ERR_NOTHING_TODO;
 	}
 

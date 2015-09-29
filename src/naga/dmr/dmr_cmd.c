@@ -384,7 +384,7 @@ static int dmr_cmd_del_host(struct vty *vty, const char *host)
 
 	if (NULL == rule_dmr_cmd_show_host(&entry))
 	{
-	    vty_out(vty, "This host %s rule does not exist%s", host, VTY_NEWLINE);
+	    //vty_out(vty, "This host %s rule does not exist%s", host, VTY_NEWLINE);
 		return CMD_ERR_NOTHING_TODO;
 	}
 

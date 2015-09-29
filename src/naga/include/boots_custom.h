@@ -10,6 +10,8 @@
     MOD_ITF, \
     MOD_PID, \
     MOD_VSR, \
+    MOD_DMR, \
+    MOD_ACR, \
     MOD_ADP
 
 #define MOD_ARRAY_CUSTOM \
@@ -18,6 +20,8 @@
     {MOD_ITF, BAS, OFF, OFF, "ITF", "Interface module"}, \
     {MOD_PID, ON,  OFF, OFF, "PID", "Packet identify module"}, \
     {MOD_VSR, ON,  OFF, OFF, "VSR", "Visted recored module"}, \
+    {MOD_DMR, ON,  OFF, OFF, "DMR", "Domain rule module"}, \
+    {MOD_ACR, ON,  OFF, OFF, "ACR", "Account rule module"}, \
     {MOD_ADP, ON,  OFF, OFF, "ADP", "Advertising push"}
 
 #define DOPT_CUSTOM \
