@@ -35,6 +35,7 @@
 #include "boots.h"
 #include "packet_http.h"
 #include "rte_memcpy.h"
+#include "naga_types.h"
 
 //#define DEBUG
 #ifdef  DEBUG   
@@ -43,12 +44,6 @@
 #define debug(fmt,args...)   
 #endif  /* DEBUG */ 
 
-typedef enum
-{
-    AD_TEMPLATE_PC,
-    AD_TEMPLATE_MOBILE,
-    AD_TEMPLATE_MAX,
-}ad_template_enum;
 
 typedef struct
 {

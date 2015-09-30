@@ -64,12 +64,12 @@ enum ad_action_em
     AD_FAILED,    
 };
 
-
-enum ad_template_em
+typedef enum
 {
-    AD_TEMP_PC,
-    AD_TEMP_PHONE,    
-};
+    AD_TEMPLATE_PC,
+    AD_TEMPLATE_MOBILE,
+    AD_TEMPLATE_MAX,
+}ad_template_em;
 
 #define URL_MAX_LEN  512 //URL MAX LEN
 #define MAX_HOST_LEN 128
@@ -151,7 +151,7 @@ typedef struct
     enum ad_action_em ad_act; 
 
     /* ad template select */
-    uint16_t template;    /* ad template id , ad_template_enum */
+    ad_template_em template;    /* ad template id , ad_template_enum */
     uint16_t content_len; /* ad template content total length */
     uint16_t content_offset; /* ad template content offset, used for multiple transmit */
     uint16_t fill_len;       /* single time fill length */ 

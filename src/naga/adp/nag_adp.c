@@ -5,7 +5,7 @@
 #include "adp_cmd.h"
 
 
-#define DEBUG
+//#define DEBUG
 #ifdef  DEBUG   
 #define debug(fmt,args...)  printf ("func(%s), line(%d)"fmt"\n" ,__FUNCTION__, __LINE__, ##args)
 #else   
@@ -102,11 +102,11 @@ berr naga_adp(hytag_t *hytag)
        
         )
     {
-        hytag->template = AD_TEMP_PC;
+        hytag->template = AD_TEMPLATE_PC;
     }
     else
     {
-        hytag->template = AD_TEMP_PHONE;
+        hytag->template = AD_TEMPLATE_MOBILE;
     }
 
     rv = ads_response_head_generator(txm, hytag);
