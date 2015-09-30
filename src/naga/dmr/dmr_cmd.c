@@ -323,6 +323,8 @@ static int dmr_cmd_show_host(struct vty *vty, const char *host)
 		return CMD_ERR_NO_MATCH;
 	}
 #endif
+	memset(&data, 0, sizeof(naga_host_rule_t));
+
 	len = strlen(host);
 	data.host_len = len;
 	memcpy(data.host, host, len);
@@ -473,7 +475,7 @@ static int dmr_cmd_add_host(struct vty *vty, const char *host, const char *actio
 	}
 #endif
 
-	dmr_cmd_del_host(vty, host);
+	//dmr_cmd_del_host(vty, host);
 	
 	len = strlen(host);
 	entry->acl.actions = action;

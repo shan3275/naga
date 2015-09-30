@@ -89,6 +89,8 @@ static int acr_cmd_show_account(struct vty *vty, const char *account)
 		return CMD_ERR_NO_MATCH;
 	}
 #endif
+	memset(&data, 0, sizeof(acr_account_rule_t));
+
 	len = strlen(account);
 	data.account_len = len;
 	memcpy(data.account, account, len);
@@ -98,7 +100,7 @@ static int acr_cmd_show_account(struct vty *vty, const char *account)
     entry = rule_acr_cmd_show_account(&data);
     if (NULL == entry)
     {
-        vty_out(vty, "acr del account, %s ret(%d)%s", account, ret, VTY_NEWLINE);
+        vty_out(vty, "account %s empty%s", account, VTY_NEWLINE);
         return CMD_WARNING;
     }
 
