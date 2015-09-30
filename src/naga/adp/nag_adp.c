@@ -60,6 +60,10 @@ berr naga_adp(hytag_t *hytag)
          return E_SUCCESS;
     }
 
+	if(0 == (hytag->acl.actions & ACT_HTTP_RESPONSE))
+	{
+	     return E_SUCCESS;
+	}
 
     if(NULL != strstr(hytag->uri, "?_t=t"))
     {
@@ -74,8 +78,8 @@ berr naga_adp(hytag_t *hytag)
 	    }						
 	    else
 	    {
-		return E_SUCCESS;
-            }							
+			return E_SUCCESS;
+        }							
 	}
 	else
 	{
