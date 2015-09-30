@@ -518,8 +518,9 @@ static int dmr_cmd_load_host(struct vty *vty, const char *file_name)
 	FILE *fp = NULL;
 	char host_line[MAX_HOST_LEN] = {0};
 	int rv = 0;
+	char *p = NULL;
 
-	fp = fopen(file_name, "+r");
+	fp = fopen(file_name, "r");
 	if (NULL == fp)
 	{
 		dmr_debug("Open the file %s failed!\n", file_name);
@@ -532,6 +533,11 @@ static int dmr_cmd_load_host(struct vty *vty, const char *file_name)
 		{
 			continue;
 		}
+
+		if (NULL != (p = strchr(host_line, '\n')))
+		{
+            *p = '\0';
+		}	
 
 		rv = dmr_cmd_add_host(vty, host_line, "push");
 		if (CMD_SUCCESS != rv)

@@ -279,8 +279,9 @@ static int acr_cmd_load_account(struct vty *vty, const char *file_name)
 	FILE *fp = NULL;
 	char account_line[NAGA_ACCOUNT_STR_SZ] = {0};
 	int rv = 0;
+	char *p = NULL;
 
-	fp = fopen(file_name, "+r");
+	fp = fopen(file_name, "r");
 	if (NULL == fp)
 	{
 		acr_debug("Open the file %s failed!\n", file_name);
@@ -292,6 +293,11 @@ static int acr_cmd_load_account(struct vty *vty, const char *file_name)
 		if ('#' == account_line[0])
 		{
 			continue;
+		}
+
+		if (NULL != (p = strchr(account_line, '\n')))
+		{
+            *p = '\0';
 		}
 
 		rv = acr_cmd_add_account(vty, account_line, "push");
