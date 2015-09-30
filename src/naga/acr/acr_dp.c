@@ -22,12 +22,12 @@ acr_account_fill(hytag_t *tag, acr_account_rule_t *data)
 
     if (NULL == entry)
     {
-        //CNT_INC(ACR_TABLE_NOTFOUND);
+        CNT_INC(ACR_TABLE_NOTFOUND);
         bts_ip_string(tag->inner_srcip4, tag->account);
     }
     else
     {
-        //CNT_INC(ACR_TABLE_FOUND);
+        CNT_INC(ACR_TABLE_FOUND);
         strcpy(tag->account, entry->account);
     }
 
@@ -59,7 +59,7 @@ naga_acr(hytag_t *tag)
     {
 		return E_FAIL;
 	}
-    //CNT_INC(ACR_PKTS);
+    CNT_INC(ACR_PKTS);
     memset(&data, 0, sizeof(acr_account_rule_t));
     acr_account_fill(tag, &data);
 
@@ -67,12 +67,11 @@ naga_acr(hytag_t *tag)
 
     if (NULL == rule)
     {
-        //CNT_INC(ACR_RULE_UNMATCH);
-        ;
+        CNT_INC(ACR_RULE_UNMATCH);
     }
     else
     {
-        //CNT_INC(ACR_RULE_MATCH);
+        CNT_INC(ACR_RULE_MATCH);
         ACL_HIT(rule->acl);
         HYTAG_ACL_MERGE(tag->acl, rule->acl);
     }

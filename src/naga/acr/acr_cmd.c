@@ -356,7 +356,7 @@ static int acr_cmd_clear_account_stat(struct vty *vty, const char *account)
 	data.account_len = len;
 	memcpy(data.account, account, len);
 
-	entry == rule_acr_cmd_show_account(&data);
+	entry = rule_acr_cmd_show_account(&data);
 	if (NULL == entry)
 	{
 		vty_out(vty, "This account %s rule does not exist%s", account, VTY_NEWLINE);

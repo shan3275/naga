@@ -25,19 +25,19 @@ berr naga_dmr(hytag_t *tag)
         return E_FAIL;
     }
 
+	CNT_INC(DMR_PKTS);
 	memset(&host_info, 0, sizeof(naga_host_rule_t));
-    //CNT_INC(ACR_PKTS);
     dmr_host_fill(tag, &host_info);
 
-    rule = naga_host_rule_lookup(&host_info);
+    rule = naga_host_rule_lookup((void *)(&host_info));
 
     if (NULL == rule)
     {
-        //CNT_INC(ACR_RULE_UNMATCH);
+        CNT_INC(DMR_RULE_UNMATCH);
     }
     else
     {
-        //CNT_INC(ACR_RULE_MATCH);
+        CNT_INC(DMR_RULE_MATCH);
         ACL_HIT(rule->acl);
         HYTAG_ACL_MERGE(tag->acl, rule->acl);
     }

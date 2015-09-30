@@ -592,7 +592,7 @@ static int dmr_cmd_clear_host_stat(struct vty *vty, const char *host)
 	data.host_len = len;
 	memcpy(data.host, host, len);
 
-	entry == rule_dmr_cmd_show_host(&data);
+	entry = rule_dmr_cmd_show_host(&data);
 	if (NULL == entry)
 	{
 		vty_out(vty, "This host %s rule does not exist%s", host, VTY_NEWLINE);

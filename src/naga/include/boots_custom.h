@@ -3,7 +3,6 @@
 
 
 
-
 #define MOD_CUSTOM \
     MOD_AMD, \
     MOD_DPF, \
@@ -40,6 +39,9 @@
     VSR_UNMATCHPKTS, /* not match packets */ \
     VSR_MATCHPKTS, /* match packets */ \
     VSR_RULE_MATCHPKTS, /* rule ip, url all match */ \
+    DMR_PKTS, /* DMR module input packets*/\
+    DMR_RULE_MATCH,  /* Match in host rule */\
+    DMR_RULE_UNMATCH,/* Unmatch found in host rule*/\
     ACR_PKTS, /* ACR module input packets*/ \
     ACR_TABLE_FOUND, /* Found in account table */ \
     ACR_TABLE_NOTFOUND, /* Not found in account table*/ \
@@ -57,6 +59,11 @@
     CNT_DEF(VSR_UNMATCHPKTS), \
     CNT_DEF(VSR_MATCHPKTS), \
     CNT_DEF(VSR_RULE_MATCHPKTS), \
+    \
+    /* DMR Module */ \
+    CNT_DEF(DMR_PKTS), \
+    CNT_DEF(DMR_RULE_MATCH), \
+    CNT_DEF(DMR_RULE_UNMATCH),\
     \
     /* ACR Module */ \
     CNT_DEF(ACR_PKTS), \

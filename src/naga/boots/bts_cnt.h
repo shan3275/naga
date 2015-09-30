@@ -65,6 +65,9 @@ typedef struct {
 
 //extern cnt_t cnt_array[CNT_MAX];
 //extern dopt_t dopts_array[DOPT_MAX];
+extern cnt_t cnt_array[CNT_MAX];
+
+
 
 #define CNT_DEF(_cnt) {_cnt, #_cnt}
 
