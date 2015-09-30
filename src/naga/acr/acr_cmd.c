@@ -38,7 +38,7 @@
 #define LOAD_STR                    "load host file\n"
 #define ACCOUNT_FILE_STR               "Host file to be loaded\n"
 #define ALL_STR                     "All rules\n"
-
+#define ACR_STAT_STR                    "acr rule stat\n" 
 
 
 
@@ -96,6 +96,7 @@ static int acr_cmd_show_account(struct vty *vty, const char *account)
 	memcpy(data.account, account, len);
 
 	vty_out(vty, "%-32s %-16s %-16s %s","account","action", "cnt",VTY_NEWLINE);
+	vty_out(vty, "---------------------------------%s", VTY_NEWLINE);
 
     entry = rule_acr_cmd_show_account(&data);
     if (NULL == entry)
@@ -376,10 +377,10 @@ DEFUN(acr_clear_account_rule_stat,
       "rule acr clear account stat ACCOUNT",
       RULE_STR
       ACR_STR
-      LOAD_STR
+      CLEAR_STR
       ACCOUNT_STR
-      SHOW_STR
-      ACCOUNT_FILE_STR)
+      ACR_STAT_STR
+      ACR_ACCOUNT_STR)
 {
     return acr_cmd_clear_account_stat(vty, argv[0]);
 }

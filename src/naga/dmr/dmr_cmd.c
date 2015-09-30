@@ -41,6 +41,7 @@
 #define LOAD_STR                    "load host file\n"
 #define HOST_FILE_STR               "Host file to be loaded\n"
 #define ALL_STR                     "All rules\n"
+#define DMR_STAT_STR                "dmr rule stat\n" 
 
 
 
@@ -330,6 +331,7 @@ static int dmr_cmd_show_host(struct vty *vty, const char *host)
 	memcpy(data.host, host, len);
 
 	vty_out(vty, "%-32s %-16s %-16s %s","host","action", "cnt",VTY_NEWLINE);
+	vty_out(vty, "---------------------------------%s", VTY_NEWLINE);
 
     entry = rule_dmr_cmd_show_host(&data);
     if (NULL == entry)
@@ -384,11 +386,7 @@ static int dmr_cmd_del_host(struct vty *vty, const char *host)
 	entry.host_len = len;
 	memcpy(entry.host, host, len);
 
-	if (NULL == rule_dmr_cmd_show_host(&entry))
-	{
-	    //vty_out(vty, "This host %s rule does not exist%s", host, VTY_NEWLINE);
-		return CMD_ERR_NOTHING_TODO;
-	}
+	ret = rule_dmr_cmd_del_host(&entry);
     if (ret)
     {
         vty_out(vty, "dmr del host, %s ret(%d)%s", host, ret, VTY_NEWLINE);
@@ -615,10 +613,10 @@ DEFUN(dmr_clear_host_rule_stat,
       "rule dmr clear host stat HOST",
       RULE_STR
       DMR_STR
-      LOAD_STR
+      CLEAR_STR
       HOST_STR
-      SHOW_STR
-      HOST_FILE_STR)
+      DMR_STAT_STR
+      DMR_HOST_STR)
 {
     return dmr_cmd_clear_host_stat(vty, argv[0]);
 }
