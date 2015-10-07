@@ -240,7 +240,7 @@ berr vsr_request_data_entry(void)
     if (vsr_rule == NULL)
     {
         printf("request vsr data entry failed!\n");
-        return E_MEMORY;
+        BRET(E_MEMORY);
     }
 
     vsr_ip_num_set(0);

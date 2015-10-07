@@ -12,7 +12,7 @@ berr pid_gtpu(struct pbuf *p, hytag_t *hytag)
 	if(check_pbuf_len(p, GRE_HEAD_LEN))
 	{
 		pid_incr_count(GTP_U_HD);//drop packet and incr counter, then return;
-		return E_EXCEED;
+		BRET(E_EXCEED);
 	}
 
 	PBUF_CUR_FORMAT(struct gre_hdr *, grehdr, p);	
@@ -22,7 +22,7 @@ berr pid_gtpu(struct pbuf *p, hytag_t *hytag)
 		|| GRE_PRO(grehdr) != GRE_GTP)
 	{
 		pid_incr_count(GTP_U_HD);
-		return E_FAIL;
+		BRET(E_FAIL);
 	}
 	hytag->teid = ntohl(grehdr->teid);
 
@@ -76,7 +76,7 @@ berr pid_gtpv2c(struct pbuf *p, hytag_t *hytag __attribute__ ((unused)))
 	if(check_pbuf_len(p, GRE_HEAD_LEN))
 	{
 		;//drop packet and incr counter, then return;
-		return E_EXCEED;
+		BRET(E_EXCEED);
 	}
 
 	PBUF_CUR_FORMAT(struct gtpv2_c_hdr *, gtpc_hdr, p);	

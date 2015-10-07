@@ -6,7 +6,7 @@ dopt_t dopts_array[DOPT_MAX] = {
       {DOPT_WARN,     ON,  "warn",      "warning message"},
       {DOPT_ERR,      ON,  "err",       "error message"},
       {DOPT_ETRACE,   ON,  "etrace",    "error return trace"},
-      {DOPT_TAGMON,   ON,  "tagmon",    "hytag monitor"},
+      {DOPT_TAGMON,   OFF,  "tagmon",    "hytag monitor"},
       {DOPT_TINYSTEP, ON,  "tinystep",  "time spand of a section code"},
       {DOPT_TRAP,     ON,  "trap",      "a trap trigger by condition"},
 #ifdef DOPT_ARRAY_CUSTOM

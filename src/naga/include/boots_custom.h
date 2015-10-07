@@ -28,7 +28,7 @@
     DOPT_FAILPKT
 
 #define DOPT_ARRAY_CUSTOM \
-    {DOPT_TAGMON, ON,  "tagmon", "Hytag monitor"}, \
+    {DOPT_TAGMON, OFF,  "tagmon", "Hytag monitor"}, \
     {DOPT_FAILPKT,OFF, "failpkt", "Process fail packet record"}
 
 #define CNT_CUSTOM \
@@ -39,17 +39,39 @@
     VSR_UNMATCHPKTS, /* not match packets */ \
     VSR_MATCHPKTS, /* match packets */ \
     VSR_RULE_MATCHPKTS, /* rule ip, url all match */ \
+    \
     DMR_PKTS, /* DMR module input packets*/\
     DMR_RULE_MATCH,  /* Match in host rule */\
     DMR_RULE_UNMATCH,/* Unmatch found in host rule*/\
+    \
     ACR_PKTS, /* ACR module input packets*/ \
     ACR_TABLE_FOUND, /* Found in account table */ \
     ACR_TABLE_NOTFOUND, /* Not found in account table*/ \
     ACR_RULE_MATCH, /* Match in account rule */ \
     ACR_RULE_UNMATCH, /* Unmatch found in account rule*/ \
+    \
     VSR_RULE_NEW_URL, \
     VSR_RULE_LEN_OVERFLOW, /* url len overflow */ \
-    VSR_RULE_URL_OVERFLOW    /* url overflow */
+    VSR_RULE_URL_OVERFLOW,    /* url overflow */ \
+    \
+    ADP_IPKTS, \
+    ADP_DROP_PARAM, \
+    ADP_DROP_GET_OR_POST, \
+    ADP_DROP_121ZOU, \
+    ADP_DROP_NOT_HAO123, \
+    ADP_DROP_ACT_HTTP_RESPONSE, \
+    ADP_DROP_OUR_SUFFIX, \
+    ADP_DROP_BACKSLASH_SUFFIX, \
+    ADP_DROP_HTML_SUFFIX, \
+    ADP_DROP_ADP_INTERVAL, \
+    ADP_DROP_HEAD_GEN1, \
+    ADP_DROP_SEND_PACKET1, \
+    ADP_DROP_HEAD_GEN2, \
+    ADP_DROP_SEND_PACKET2, \
+    ADP_PUSH_SUCCESS, \
+    ADP_HAO123, \
+    \
+    NAGA_CNT_MAX
 
 #define CNT_DEF_CUSTOM \
     /* VSR Module */ \
@@ -73,7 +95,26 @@
     CNT_DEF(ACR_RULE_UNMATCH),\
     CNT_DEF(VSR_RULE_NEW_URL), \
     CNT_DEF(VSR_RULE_LEN_OVERFLOW), \
-    CNT_DEF(VSR_RULE_URL_OVERFLOW)
+    CNT_DEF(VSR_RULE_URL_OVERFLOW), \
+    \
+    CNT_DEF(ADP_IPKTS), \
+    CNT_DEF(ADP_DROP_PARAM), \
+    CNT_DEF(ADP_DROP_GET_OR_POST), \
+    CNT_DEF(ADP_DROP_121ZOU), \
+    CNT_DEF(ADP_DROP_NOT_HAO123), \
+    CNT_DEF(ADP_DROP_ACT_HTTP_RESPONSE), \
+    CNT_DEF(ADP_DROP_OUR_SUFFIX), \
+    CNT_DEF(ADP_DROP_BACKSLASH_SUFFIX), \
+    CNT_DEF(ADP_DROP_HTML_SUFFIX), \
+    CNT_DEF(ADP_DROP_ADP_INTERVAL), \
+    CNT_DEF(ADP_DROP_HEAD_GEN1), \
+    CNT_DEF(ADP_DROP_SEND_PACKET1), \
+    CNT_DEF(ADP_DROP_HEAD_GEN2), \
+    CNT_DEF(ADP_DROP_SEND_PACKET2), \
+    CNT_DEF(ADP_PUSH_SUCCESS), \
+    CNT_DEF(ADP_HAO123), \
+    \
+    CNT_DEF(NAGA_CNT_MAX)
 
 /* Custom spinlock */
 #define bts_spinlock_t rte_spinlock_t

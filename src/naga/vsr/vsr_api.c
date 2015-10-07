@@ -59,7 +59,7 @@ berr vsr_api_del_rule_by_index(uint32_t index)
             /* log */
            printf("rule vsr index(%d) url(%d) uneffective ,abnormal!!!\n", index, i); 
            VSR_RULE_UNLOCK(index);
-           return E_EFFECTIVE;
+           BRET(E_EFFECTIVE);
         }
 
         vsr_set_url_len(index, i, VSR_RULE_URL_LEN_UNEFFECTIVE);
@@ -143,7 +143,7 @@ berr vsr_api_get_rule_entry(uint32_t index, vsr_rule_entry_t *rule)
     if(vsr_check_rule_effective(index)== VSR_RULE_UNEFFECTIVE)
     {
         VSR_RULE_UNLOCK(index);
-        return E_NULL;
+        BRET(E_NULL);
     }
 
     /*copy to */
@@ -182,7 +182,7 @@ berr vsr_api_flush_url(uint32_t index)
             /* log */
            printf("rule vsr index(%d) url(%d) uneffective ,abnormal!!!\n", index, i); 
            VSR_RULE_UNLOCK(index);
-           return E_EFFECTIVE;
+           BRET(E_EFFECTIVE);
         }
 
         vsr_set_url_len(index, i, VSR_RULE_URL_LEN_UNEFFECTIVE);
@@ -223,7 +223,7 @@ berr vsr_api_clear_statistics(uint32_t index)
             /* log */
            printf("rule vsr index(%d) url(%d) uneffective ,abnormal!!!\n", index, i); 
            VSR_RULE_UNLOCK(index);
-           return E_EFFECTIVE;
+           BRET(E_EFFECTIVE);
         }
 
         vsr_set_url_pkt(index, i, 0);
@@ -274,7 +274,7 @@ berr vsr_dp_api_match(uint32_t index, uint32_t ip, char* url, uint16_t len)
     {
         /* unlock */
         VSR_RULE_UNLOCK(index);
-        return E_NULL;
+        BRET(E_NULL);
     }
 
     /* check ip */
@@ -282,7 +282,7 @@ berr vsr_dp_api_match(uint32_t index, uint32_t ip, char* url, uint16_t len)
     {
         /* unlock */
         VSR_RULE_UNLOCK(index);
-        return E_MATCH;
+        BRET(E_MATCH);
     }
 
     /* update rule statistics */
@@ -331,7 +331,7 @@ berr vsr_dp_api_match(uint32_t index, uint32_t ip, char* url, uint16_t len)
             cnt_inc(VSR_RULE_URL_OVERFLOW);
             /* unlock */
             VSR_RULE_UNLOCK(index);
-            return E_OVER;
+            BRET(E_OVER);
         }
         /* update hash*/
          vsr_set_url_hash(index, i,hash);

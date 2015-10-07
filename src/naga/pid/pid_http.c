@@ -14,7 +14,7 @@
 #define STRING_HTTP_AGENT     "User-Agent"
 #define STRING_HTTP_AGENT_LEN 10
 
-static inline berr pid_http_request_method(uint8_t *p ,  uint8_t *method, uint16_t *len)
+static inline int pid_http_request_method(uint8_t *p ,  uint8_t *method, uint16_t *len)
 {
 	int i = 0;
 	while((0x20 != *p) && ('\0' != *p))    /*GET*/
@@ -22,7 +22,7 @@ static inline berr pid_http_request_method(uint8_t *p ,  uint8_t *method, uint16
 		if (i + 1 > MAX_METHOD_LEN)
 		{
 			pid_incr_count(HTTP_METHOD_EXCEED);
-			return E_FAIL;
+			return FALSE;
 		}
 		else
 		{
@@ -33,7 +33,7 @@ static inline berr pid_http_request_method(uint8_t *p ,  uint8_t *method, uint16
 	method[i] = '\0';
 	*len = i;
 
-	return E_SUCCESS;
+	return TRUE;
 }
 
 
@@ -46,7 +46,7 @@ static inline berr pid_http_request_url(uint8_t *p ,  uint8_t *url, uint16_t *le
 		if (i + 1 > URL_MAX_LEN)
 		{
 			pid_incr_count(HTTP_URL_EXCEED);
-			return E_FAIL;
+			BRET(E_FAIL);
 		}
 		else
 		{
@@ -69,7 +69,7 @@ static inline berr pid_http_request_version_skip(uint8_t *p, uint16_t *len)
 		if (i + 1 > STRING_HTTP_VERSION_MAX)
 		{
 			//pid_incr_count(HTTP_URL_EXCEED);
-			return E_FAIL;
+			BRET(E_FAIL);
 		}
 		else
 		{
@@ -94,7 +94,7 @@ static inline berr pid_http_request_host(uint8_t *p ,  uint8_t *host, uint16_t *
 		if (i + 1 > MAX_HOST_LEN)
 		{
 			//pid_incr_count(HTTP_URL_EXCEED);
-			return E_FAIL;
+			BRET(E_FAIL);
 		}
 		else
 		{
@@ -113,7 +113,7 @@ static inline berr pid_http_request_host(uint8_t *p ,  uint8_t *host, uint16_t *
 berr pid_http_down(struct pbuf *p ,  hytag_t * hytag )
 {
     if( NULL == p || NULL == hytag)
-        return E_PARAM;
+        BRET(E_PARAM);
     return E_SUCCESS;
 }
 
@@ -130,7 +130,7 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
 
     hytag->app_type = APP_TYPE_HTTP_OTHER; 
 
-	if(E_SUCCESS != pid_http_request_method(http_p, method_http, &method_len))
+	if(!pid_http_request_method(http_p, method_http, &method_len))
 	{
         /*Tcp syn without method*/
 		return E_SUCCESS;

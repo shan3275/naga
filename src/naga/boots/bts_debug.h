@@ -13,7 +13,6 @@ typedef enum {
       DOPT_WARN,
       DOPT_ERR,
       DOPT_ETRACE,
-      //DOPT_TAGMON,
       DOPT_TINYSTEP,
       DOPT_TRAP,
       DOPT_CALLSTACK,
@@ -60,7 +59,7 @@ int dopts_get_switch(dopte dop);
     berr _rv = (e);\
     if ((_rv != E_SUCCESS) && dopts_array[DOPT_ETRACE].enable) \
     { \
-        printf("[ETRACE] %s.%d: return %s!", __FUNCTION__, __LINE__, berr_msg(_rv)); \
+        printf("[ETRACE] %s.%d: return %s!\n", __FUNCTION__, __LINE__, berr_msg(_rv)); \
     } \
     return _rv; \
 }

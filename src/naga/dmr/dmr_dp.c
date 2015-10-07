@@ -22,7 +22,7 @@ berr naga_dmr(hytag_t *tag)
 	naga_host_rule_t host_info;
     if (NULL == tag)
     {
-        return E_FAIL;
+        BRET(E_FAIL);
     }
 
 	CNT_INC(DMR_PKTS);

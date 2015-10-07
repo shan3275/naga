@@ -19,7 +19,7 @@ berr pid_ethernet(struct pbuf *p, hytag_t *hytag)
 	if(check_pbuf_len(p, SIZEOF_ETH_HDR))
 	{
 		pid_incr_count(HEADER_UNEXPECT);
-		return E_EXCEED;
+		BRET(E_EXCEED);
 	}
 	
 	PBUF_CUR_FORMAT(struct eth_hdr *, eth_header, p);

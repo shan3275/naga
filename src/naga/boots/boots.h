@@ -28,6 +28,9 @@ typedef rte_atomic32_t    bts_atomic32_t;
 #define ON  1
 #define BAS 2
 
+#define FALSE   0
+#define TRUE    1
+
 #include "boots_custom.h"
 
 typedef enum {

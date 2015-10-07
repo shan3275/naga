@@ -77,7 +77,7 @@ berr rule_vsr_cmd_get_index_by_ip(uint32_t ip, uint32_t *index)
     /* check  index pointer */
     if (NULL == index)
     {
-        return E_PARAM;
+        BRET(E_PARAM);
     }
 
 
@@ -102,7 +102,7 @@ berr rule_vsr_cmd_get_index_by_ip(uint32_t ip, uint32_t *index)
 
     if ( i == VSR_RULE_NUM_MAX)
     {
-        return E_FOUND;
+        BRET(E_FOUND);
     }
     *index = i;
     debug("match index(%d)", i);
@@ -115,12 +115,12 @@ berr rule_vsr_cmd_get_ip(uint32_t index, uint32_t *ip)
     /* check  index pointer */
     if ( index >= VSR_RULE_NUM_MAX )
     {
-        return E_PARAM;
+        BRET(E_PARAM);
     }
 
     if (NULL == ip)
     {
-        return E_PARAM;
+        BRET(E_PARAM);
     }
 
     *ip = vsr_api_get_ip_by_index(index);
@@ -132,12 +132,12 @@ berr rule_vsr_cmd_get_mobile(uint32_t index, uint64_t *mobile)
     /* check  index pointer */
     if ( index >= VSR_RULE_NUM_MAX )
     {
-        return E_PARAM;
+        BRET(E_PARAM);
     }
 
     if (NULL == mobile)
     {
-        return E_PARAM;
+        BRET(E_PARAM);
     }
 
     *mobile = vsr_api_get_mobile_by_index(index);
@@ -154,7 +154,7 @@ berr rule_vsr_cmd_get_index_by_mobile(uint64_t mobile, uint32_t *index)
     /* check  index pointer */
     if (NULL == index)
     {
-        return E_PARAM;
+        BRET(E_PARAM);
     }
 
     /* loop to find out the matched ip */
@@ -170,7 +170,7 @@ berr rule_vsr_cmd_get_index_by_mobile(uint64_t mobile, uint32_t *index)
 
     if ( i == VSR_RULE_NUM_MAX)
     {
-        return E_FOUND;
+        BRET(E_FOUND);
     }
     *index = i;
     debug("match index(%d)", i);
@@ -224,7 +224,7 @@ berr rule_vsr_cmd_dump(uint32_t index, uint8_t *buff, uint32_t len)
     if(NULL == buff)
     {
         debug("para err");
-        return E_PARAM;
+        BRET(E_PARAM);
     }
 
     /*get rule entry content*/
@@ -264,7 +264,7 @@ berr rule_vsr_cmd_total_dump(uint8_t *buff, uint32_t len)
     if(NULL == buff)
     {
         debug("para err");
-        return E_PARAM;
+        BRET(E_PARAM);
     }
 
     encourage_num = vsr_api_encourage_get();

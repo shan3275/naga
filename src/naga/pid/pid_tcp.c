@@ -18,7 +18,7 @@ berr pid_tcp(struct pbuf *p, hytag_t *hytag, int inner_outer)
             pid_incr_count(OUTERL4_HD);//drop packet and incr counter, then return;
         else
             pid_incr_count(INNERL4_HD);
-		return E_EXCEED;
+		BRET(E_EXCEED);
 	}
 
 	PBUF_CUR_FORMAT(struct tcp_hdr_s *, tcp_hdr, p);

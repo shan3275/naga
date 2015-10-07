@@ -67,12 +67,12 @@ ads_tcp_head_modify(struct tcp_hdr *tcphdr, hytag_t *hytag, uint8_t direction)
 
     if ( NULL == tcphdr || NULL == hytag )
     {
-        return E_PARAM;
+        BRET(E_PARAM);
     }
 
     if ( DIRECTION_DIFFERENT != direction &&  DIRECTION_SAME != direction)
     {
-        return E_PARAM;
+        BRET(E_PARAM);
     }
 
     /* switch sport and dport */
@@ -112,7 +112,7 @@ ads_tcp_head_modify(struct tcp_hdr *tcphdr, hytag_t *hytag, uint8_t direction)
         timestamp_hdr = (struct tcp_option_timestamp_hdr *) (((char *)tcphdr) + TCP_OPTION_TIMESTAMP_OFFSET_START);
         if ( NULL == timestamp_hdr )
         {
-            return E_NULL;
+            BRET(E_NULL);
         }
         time = timestamp_hdr->value;
         echo = timestamp_hdr->echo;
@@ -139,19 +139,17 @@ ads_ip_head_modify(struct ipv4_hdr* ip_hdr, hytag_t *hytag, uint8_t direction)
     
     if ( NULL == ip_hdr || NULL == hytag)
     {
-        return E_PARAM;
+        BRET(E_PARAM);
     }
 
     if ( DIRECTION_DIFFERENT != direction && DIRECTION_SAME != direction)
     {
-        return E_PARAM;
+        BRET(E_PARAM);
     }
 
     /* update total length */
     uint16_t ip_paylen = (hytag->l5_offset - hytag->l3_offset + hytag->l5_len);
     ip_hdr->total_length = htons(ip_paylen );
-    debug("ip_hdr total_length(%d) <%d-%d-%d>", ntohs(ip_hdr->total_length),
-                  hytag->l5_offset , hytag->l3_offset , hytag->l5_len);
 
     /* update ip */
     if (DIRECTION_DIFFERENT == direction)
@@ -172,7 +170,7 @@ ads_ipv4_cksum_update( struct ipv4_hdr *ip_hdr)
 {
     if ( NULL == ip_hdr )
     {
-        return E_PARAM;
+        BRET(E_PARAM);
     }
 
     ip_hdr->hdr_checksum = 0;
@@ -187,12 +185,12 @@ ads_eth_head_modify(struct ether_hdr *eth_hdr, hytag_t *hytag, uint8_t direction
     struct ether_addr dst_mac;
     if ( NULL == eth_hdr || NULL == hytag )
     {
-        return E_PARAM;
+        BRET(E_PARAM);
     }
 
     if ( DIRECTION_DIFFERENT != direction &&  DIRECTION_SAME != direction)
     {
-        return E_PARAM;
+        BRET(E_PARAM);
     }
 
     if (DIRECTION_DIFFERENT == direction )
@@ -226,17 +224,16 @@ ads_response_head_generator(struct rte_mbuf *m, hytag_t *hytag)
 
     if ( NULL == m || NULL == hytag )
     {
-        return E_PARAM;
+        BRET(E_PARAM);
     }
 
     ptr = rte_pktmbuf_mtod(m, void *);
     if (NULL == ptr)
     {
-        return E_NULL;
+        BRET(E_NULL);
     }
 
-    printf("l2 offset = %d, l3_offset= %d, l4_offset=%d\n",
-        hytag->l2_offset,hytag->l3_offset,hytag->l4_offset);
+
     /* l4 first than l5, because update l4 need use l5 old len */
     /* l4 switch */
     tcp_hdr = (struct tcp_hdr *)(((char *)ptr) + hytag->l4_offset);
@@ -250,7 +247,7 @@ ads_response_head_generator(struct rte_mbuf *m, hytag_t *hytag)
     /* l5 fill */
     debug("old l5_len(%d)", hytag->l5_len);
     http_head = ((char *)ptr) + hytag->l5_offset;
-    
+
     rv = ads_http_ok_head_fill(http_head, hytag);
     if (rv)
     {
@@ -258,7 +255,6 @@ ads_response_head_generator(struct rte_mbuf *m, hytag_t *hytag)
     }
 
     debug("new l5_len(%d)", hytag->l5_len);
-
 
     /* l3 switch */
     ip_hdr = (struct ipv4_hdr *)(((char *)ptr) + hytag->l3_offset);
@@ -311,13 +307,13 @@ ads_response_content_generator(struct rte_mbuf *m, hytag_t *hytag)
 
     if ( NULL == m || NULL == hytag )
     {
-        return E_PARAM;
+        BRET(E_PARAM);
     }
 
     ptr = rte_pktmbuf_mtod(m, void *);
     if (NULL == ptr)
     {
-        return E_NULL;
+        BRET(E_NULL);
     }
 
     /* l4 first than l5, because update l4 need use l5 old len */

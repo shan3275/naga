@@ -352,7 +352,7 @@ berr ads_http_ok_head_fill(char *buf, hytag_t *hytag)
 
     if ( NULL == buf || NULL == hytag )
     {
-        return E_PARAM;
+        BRET(E_PARAM);
     }
 
     rte_memcpy(buf + len, http_head_response1, (size_t) strlen(http_head_response1));
@@ -411,14 +411,14 @@ berr ads_http_content_fill(char *buf, hytag_t *hytag)
 
     if ( NULL == buf || NULL == hytag )
     {
-        return E_PARAM;
+        BRET(E_PARAM);
     }
 
     debug("hytag->content_offset(%d), hytag->fill_len(%d), hytag->content_len(%d)", hytag->content_offset,
             hytag->fill_len, hytag->content_len);
     if ( hytag->content_offset + hytag->fill_len > hytag->content_len)
     {
-        return E_PARAM;
+        BRET(E_PARAM);
     }
     /* first seek the begin */
     /* start at the head segment */
@@ -524,7 +524,7 @@ berr ads_http_content_fill(char *buf, hytag_t *hytag)
         if ( NULL != _http_body->_element ) \
         { \
             printf("%s %d http_body alloc failed \n", __func__, __LINE__); \
-            return E_NULL; \
+            BRET(E_NULL); \
         } \
         else \
         { \
@@ -539,7 +539,7 @@ berr ads_http_content_fill(char *buf, hytag_t *hytag)
         else \
         { \
             printf("%s %d http_body %d free failed\n", __func__, __LINE__, _num); \
-            return E_NULL; \
+            BRET(E_NULL); \
         }
 
 berr ads_template_fill(http_body_t *http_to, http_body_t *http_from)
@@ -547,7 +547,7 @@ berr ads_template_fill(http_body_t *http_to, http_body_t *http_from)
 
     if ( NULL == http_to || NULL == http_from )
     {
-        return E_PARAM;
+        BRET(E_PARAM);
     }
 
     HTTP_BODY_ELEMENT_ALLOC(http_to, name, strlen(http_from->name));
@@ -571,7 +571,7 @@ berr ads_template_default_load( http_body_t *http_body)
     if ( NULL == http_body )
     {
         printf("%s %d http_body malloc failed\n", __func__, __LINE__);
-        return E_PARAM;
+        BRET(E_PARAM);
     }
 
     for ( i = 0; i < AD_TEMPLATE_MAX; i++ )
@@ -593,7 +593,7 @@ berr ads_template_free( http_body_t *http_body)
     if ( NULL == http_body )
     {
         printf("%s %d http_body malloc failed\n", __func__, __LINE__);
-        return E_NULL;
+        BRET(E_NULL);
     }
 
     for ( i = 0; i < AD_TEMPLATE_MAX; i++ )
@@ -616,7 +616,7 @@ berr ads_template_init(void)
     if (NULL == http_body)
     {
         printf("%s %d http_body malloc failed\n", __func__, __LINE__);
-        return E_NULL;
+        BRET(E_NULL);
     }
 
     memset(http_body, 0, sizeof(http_body_t)*AD_TEMPLATE_MAX);

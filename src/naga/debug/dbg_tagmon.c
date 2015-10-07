@@ -3,6 +3,7 @@
 
 #define IP4_STR_SZ 20
 #define IP6_STR_SZ 128
+
 #define HYTAG_U16_DUMP(_tag, _field) { \
     printf("HYTAG[%d] %s: %.4d(0x%.4x)\n", rte_lcore_id(), #_field, _tag->_field, _tag->_field); \
 }

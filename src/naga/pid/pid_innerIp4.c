@@ -14,7 +14,7 @@ berr pid_innerip(struct pbuf *p,  hytag_t * hytag)
 		pid_incr_count(INNERL3_HD);//drop packet and incr counter, then return;
 		//PRINTF_PKT(p);
         //sleep(100);
-		return E_EXCEED;
+		BRET(E_EXCEED);
 	}
 
     
@@ -27,11 +27,11 @@ berr pid_innerip(struct pbuf *p,  hytag_t * hytag)
         case 6:
             pid_incr_count(INNERL3_IPV6);
             //goto ipv6
-            return E_COMPARE;
+            BRET(E_COMPARE);
             break;
         default:
             pid_incr_count(INNERL3_NOIP);
-            return E_COMPARE;
+            BRET(E_COMPARE);
             break;
     }
     

@@ -57,7 +57,7 @@ naga_acr(hytag_t *tag)
 	acr_account_rule_t data;
     if (NULL == tag)
     {
-		return E_FAIL;
+		BRET(E_FAIL);
 	}
     CNT_INC(ACR_PKTS);
     memset(&data, 0, sizeof(acr_account_rule_t));

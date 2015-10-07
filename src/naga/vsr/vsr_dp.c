@@ -121,7 +121,7 @@ berr vsr_dp_encourage_test(hytag_t *hytag)
 
     if (NULL == hytag)
     {
-        return E_PARAM;
+        BRET(E_PARAM);
     }
 
     if(vsr_api_encourage_get())
@@ -137,7 +137,7 @@ berr vsr_dp_encourage_test(hytag_t *hytag)
         return E_SUCCESS; 
     }
 
-    return E_NULL;
+    BRET(E_NULL);
 }
 
 void vsr_dp_test(void)

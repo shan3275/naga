@@ -1,5 +1,6 @@
 #include "stdio.h"
 #include "boots.h"
+#include "bts_debug.h"
 #include "naga_types.h"
 
 int
@@ -52,7 +53,7 @@ int action_str2int(const char *str, uint32_t *action)
 	}
 	else
 	{
-		return E_FAIL;
+		BRET(E_FAIL);
 	}
 
 	return E_SUCCESS;

@@ -8,19 +8,15 @@
 #include <rte_branch_prediction.h>
 
 #include "boots.h"
+#include "bts_debug.h"
+
 #include "naga_types.h"
-
-
-
-
-
-
 
 static inline berr check_pbuf_len(struct pbuf *p, int incr_len)
 {
 	if(p->ptr_offset + incr_len > p->len)
 	{
-	 	return E_EXCEED;
+	 	BRET(E_EXCEED);
 	}
 	else
 	{

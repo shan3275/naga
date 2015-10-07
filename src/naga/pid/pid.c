@@ -9,5 +9,5 @@ berr naga_pid(hytag_t *hytag)
 	return pid_ethernet(p, hytag);
 }
 
-
+/* End of file */
 

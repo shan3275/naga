@@ -14,6 +14,10 @@
 #include "zebra.h"
 #include "getopt.h"
 #include "command.h"
+
+#include "boots.h"
+#include "bts_debug.h"
+
 #include "naga_types.h"
 #include "naga_host_rule.h"
 #include "dmr_cmd_api.h"
@@ -76,7 +80,7 @@ static berr convertChar(const char *keyword, uint8_t *data, uint32_t *cnt)
             } 
             else 
             {
-                return E_FAIL;
+                BRET(E_FAIL);
             }
                 
             if (keyword[3] > 0x2f && keyword[3] < 0x3a) 
@@ -91,7 +95,7 @@ static berr convertChar(const char *keyword, uint8_t *data, uint32_t *cnt)
             } 
             else 
             {
-                return E_FAIL;
+                BRET(E_FAIL);
             }
             
             *data = temp;
@@ -111,7 +115,7 @@ static berr convertChar(const char *keyword, uint8_t *data, uint32_t *cnt)
             } 
             else 
             {
-                return E_FAIL;
+                BRET(E_FAIL);
             }
             
             if (keyword[3] > 0x2f && keyword[3] < 0x3a) 
@@ -126,7 +130,7 @@ static berr convertChar(const char *keyword, uint8_t *data, uint32_t *cnt)
             } 
             else 
             {
-                return E_FAIL;
+                BRET(E_FAIL);
             }
             
             *data = temp;
@@ -146,7 +150,7 @@ static berr convertChar(const char *keyword, uint8_t *data, uint32_t *cnt)
             } 
             else 
             {
-                return E_FAIL;
+                BRET(E_FAIL);
             }
             
             if (keyword[5] > 0x2f && keyword[5] < 0x3a) 
@@ -163,7 +167,7 @@ static berr convertChar(const char *keyword, uint8_t *data, uint32_t *cnt)
             } 
             else 
             {
-                return E_FAIL;
+                BRET(E_FAIL);
             }
             
             *cnt = 5;
@@ -171,7 +175,7 @@ static berr convertChar(const char *keyword, uint8_t *data, uint32_t *cnt)
         case 'i': /* ignore case , must a-z|A-Z */
             if ((keyword[2] | 0x20) > 0x7a || (keyword[2] | 0x20) < 0x61) 
             {
-                return E_FAIL;
+                BRET(E_FAIL);
             }
             
             *data = keyword[2];
@@ -223,7 +227,7 @@ static berr convertChar(const char *keyword, uint8_t *data, uint32_t *cnt)
             break;
 
         default:
-            return E_FAIL;
+            BRET(E_FAIL);
     }
     
     return E_SUCCESS;
@@ -237,7 +241,7 @@ static berr host_str2bit(const char *str, uint8_t *data, uint32_t *len)
 
     if ((str == NULL) || (data == NULL) || (len == NULL))
     {
-        return E_FAIL;
+        BRET(E_FAIL);
     }
 
     for (i = 0; i < MAX_HOST_LEN; i++, j++) 
@@ -252,7 +256,7 @@ static berr host_str2bit(const char *str, uint8_t *data, uint32_t *len)
 	        case '\\':
 	            if (convertChar(&str[i], &data[j], &cnt) != E_SUCCESS)
 	            {              
-	                return E_FAIL;
+	                BRET(E_FAIL);
 	            }
 	            
 	            i += cnt; /* skip character */

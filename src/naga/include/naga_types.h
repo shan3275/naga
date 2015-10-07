@@ -94,6 +94,7 @@ typedef struct
 
     /* L4 offset */
     uint16_t l4_offset;
+    uint16_t l4_paylen;
 
     /* L5 offset */
     uint16_t l5_offset;
@@ -108,6 +109,9 @@ typedef struct
     /*OT L4*/
 	uint16_t outer_srcport;
 	uint16_t outer_dstport;
+
+    uint32_t outer_seq;
+    uint32_t outer_ack;
 
     uint32_t teid;
     /*IN L3*/

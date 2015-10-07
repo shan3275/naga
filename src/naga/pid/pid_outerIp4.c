@@ -11,7 +11,7 @@ berr pid_outerip4(struct pbuf *p,  hytag_t * hytag)
 	{
         /*drop packet and incr counter, return;*/
 		pid_incr_count(OUTERL3_HD);
-		return E_EXCEED;
+		BRET(E_EXCEED);
 	}
 
     
@@ -23,7 +23,7 @@ berr pid_outerip4(struct pbuf *p,  hytag_t * hytag)
 		//incr err  
 		
 		pid_incr_count(OUTERL3_HD);
-		return E_COMPARE;
+		BRET(E_COMPARE);
 	}
 	//pid_incr_count(OUTERL3_IPV4);
   	/* obtain IP header length in number of 32-bit words */

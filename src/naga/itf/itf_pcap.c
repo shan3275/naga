@@ -1,10 +1,11 @@
 #include <stdio.h>
 #include "netinet/in.h"
 #include <pcap.h>
+
 #include "boots.h"
+#include "bts_debug.h"
+
 #include "itf.h"
-
-
 
 pcap_t *gpcap_desc = NULL;
 
@@ -29,7 +30,7 @@ berr itf_raw_socket_init(char *ifname)
     {
             printf( "Pcap unable open the adapter %s reason is:\n", ifname);
             printf( "%s\n", errbuf );
-            return E_FAIL;
+            BRET(E_FAIL);
     }
     return E_SUCCESS;
 }
@@ -43,7 +44,7 @@ berr ift_raw_send_packet(void* fp, uint8_t * buff, int len)
     if(rv < 0)
     {
         printf("Send Packet Failed %s %d\n", __func__, __LINE__);
-        return E_FAIL;
+        BRET(E_FAIL);
     }
     return E_SUCCESS;
 }
