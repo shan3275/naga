@@ -33,11 +33,33 @@ berr adp_get_interval(int *interval, uint64_t *adp_cnt, uint64_t *success)
     return E_SUCCESS;
 }
 
-
-
-
-
 extern struct rte_mempool * l2fwd_pktmbuf_pool;
+
+static inline struct rte_mbuf *rte_pktmbuf_real_clone(struct rte_mbuf *md,
+    struct rte_mempool *mp)
+{
+  struct rte_mbuf *mc;
+  if (unlikely ((mc = rte_pktmbuf_alloc(mp)) == NULL))
+    return (NULL);
+  /* copy data */
+  rte_memcpy((void *)mc, (void *)md, (size_t) mp->elt_size);
+
+  /* update the addr */
+  mc->buf_addr = (char *)mc + sizeof(struct rte_mbuf);
+  mc->buf_physaddr = rte_mempool_virt2phy(mp, mc) +
+      sizeof(struct rte_mbuf);
+  __rte_mbuf_sanity_check(mc, 1);
+
+  /* dump */
+#if 0
+  printf("old mbuf:\n");
+  rte_pktmbuf_dump(stdout, md, md->pkt_len);
+  printf("new mbuf:\n");
+  rte_pktmbuf_dump(stdout, mc, mc->pkt_len);
+#endif
+  return (mc);
+}
+
 berr naga_adp(hytag_t *hytag)
 {
 
@@ -164,7 +186,6 @@ berr naga_adp(hytag_t *hytag)
     
  
 #if USE_D_PACKET
-   //txm =rte_pktmbuf_clone(txm, txm->pool);
 #define CONTENT_FILL_LEN_MAX 1400
    hytag->content_offset = 0;
   /*
@@ -175,6 +196,13 @@ berr naga_adp(hytag_t *hytag)
   
    while ( hytag->content_offset < hytag->content_len)
    {
+       txm =rte_pktmbuf_real_clone(txm, txm->pool);
+       if ( NULL == txm )
+       {
+           printf("Requse packet buffer  Failed\n");
+           return E_SUCCESS;
+       }
+
        if ( hytag->content_len - hytag->content_offset >= CONTENT_FILL_LEN_MAX)
        {
            hytag->fill_len = CONTENT_FILL_LEN_MAX;
@@ -216,7 +244,12 @@ berr naga_adp(hytag_t *hytag)
        }
        else
        {
+#if 0
+           printf("update content mbuf:\n");
+           rte_pktmbuf_dump(stdout, txm, txm->pkt_len);
+#endif
            itf_send_packet_imm(txm, txm->port);
+           rte_pktmbuf_free(txm);
        }
        
    }
@@ -232,10 +265,10 @@ berr naga_adp(hytag_t *hytag)
     return E_SUCCESS;
 }
 
-
 berr adp_dp_init(void)
 {   
    //berr rv; 
    cmdline_adp_init();
    return E_SUCCESS;
 }
+
