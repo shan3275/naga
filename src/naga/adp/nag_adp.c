@@ -84,6 +84,7 @@ berr naga_adp(hytag_t *hytag)
     }
 
     /* */
+#if 0
     if(!strcmp("www.121zou.com", (char *)hytag->host))
     {
         CNT_INC(ADP_DROP_121ZOU);
@@ -101,7 +102,7 @@ berr naga_adp(hytag_t *hytag)
         CNT_INC(ADP_HAO123);
     }
 
-#if 0
+#else
 	if(0 == (hytag->acl.actions & ACT_HTTP_RESPONSE))
 	{
         CNT_INC(ADP_DROP_ACT_HTTP_RESPONSE);

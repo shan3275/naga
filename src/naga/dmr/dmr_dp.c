@@ -25,6 +25,11 @@ berr naga_dmr(hytag_t *tag)
         BRET(E_FAIL);
     }
 
+	if( APP_TYPE_HTTP_GET_OR_POST != tag->app_type)
+    {
+        return E_SUCCESS;
+    }
+
 	CNT_INC(DMR_PKTS);
 	memset(&host_info, 0, sizeof(naga_host_rule_t));
     dmr_host_fill(tag, &host_info);
