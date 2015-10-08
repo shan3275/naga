@@ -19,6 +19,13 @@ uint64_t  g_adp_cnt = 0;
 uint64_t  g_adp_interval = 1;
 uint64_t  g_adp_success=0;
 
+uint64_t  g_adp_push_switch = 0;
+
+berr adp_switch_set(int on)
+{
+    g_adp_push_switch = on;    
+}
+
 berr adp_set_interval(int interval)
 {
     g_adp_interval = interval;
@@ -66,7 +73,6 @@ berr naga_adp(hytag_t *hytag)
     berr rv;
 	char *rear = NULL;
     struct rte_mbuf *txm = NULL; 
-    struct rte_mbuf *m = NULL; 
 
     CNT_INC(ADP_IPKTS);
 
@@ -76,6 +82,10 @@ berr naga_adp(hytag_t *hytag)
         BRET(E_PARAM);
     }
 
+    if (likely(!g_adp_push_switch))
+    {
+        return E_SUCCESS;
+    }    
     /* */
     if( APP_TYPE_HTTP_GET_OR_POST != hytag->app_type)
     {
@@ -84,7 +94,6 @@ berr naga_adp(hytag_t *hytag)
     }
 
     /* */
-#if 0
     if(!strcmp("www.121zou.com", (char *)hytag->host))
     {
         CNT_INC(ADP_DROP_121ZOU);
@@ -102,7 +111,7 @@ berr naga_adp(hytag_t *hytag)
         CNT_INC(ADP_HAO123);
     }
 
-#else
+#if 0
 	if(0 == (hytag->acl.actions & ACT_HTTP_RESPONSE))
 	{
         CNT_INC(ADP_DROP_ACT_HTTP_RESPONSE);
@@ -139,7 +148,7 @@ berr naga_adp(hytag_t *hytag)
 		
 	}
 
-    if(g_adp_cnt % g_adp_interval != 0)
+    if(g_adp_cnt++ % g_adp_interval != 0)
     {
         CNT_INC(ADP_DROP_ADP_INTERVAL);
         return E_SUCCESS;
@@ -198,17 +207,11 @@ berr naga_adp(hytag_t *hytag)
   
    while ( hytag->content_offset < hytag->content_len)
    {
-       m = txm;
        txm =rte_pktmbuf_real_clone(txm, txm->pool);
        if ( NULL == txm )
        {
            printf("Requse packet buffer  Failed\n");
            return E_SUCCESS;
-       }
-
-       if ( hytag->content_offset)
-       {
-           rte_pktmbuf_free(m);
        }
 
        if ( hytag->content_len - hytag->content_offset >= CONTENT_FILL_LEN_MAX)
@@ -257,11 +260,10 @@ berr naga_adp(hytag_t *hytag)
            rte_pktmbuf_dump(stdout, txm, txm->pkt_len);
 #endif
            itf_send_packet_imm(txm, txm->port);
+           rte_pktmbuf_free(txm);
        }
        
    }
-
-   rte_pktmbuf_free(txm);
 
 #endif
     //printf("url: <%s> url_len=%d\n", hytag->url, hytag->url_len);

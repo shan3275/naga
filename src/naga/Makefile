@@ -43,6 +43,7 @@ DIRS-y += acr
 DIRS-y += template
 DIRS-y += adp
 DIRS-y += debug
+DIRS-y += pcre 
 DIRS-y += main
 
 include $(RTE_SDK)/mk/rte.extsubdir.mk
