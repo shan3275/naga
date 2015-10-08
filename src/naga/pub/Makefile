@@ -31,19 +31,22 @@
 
 include $(RTE_SDK)/mk/rte.vars.mk
 
-DIRS-y += include
-DIRS-y += boots
-DIRS-y += libzebra
-DIRS-y += cmdline
-DIRS-y += vsr
-DIRS-y += pid
-DIRS-y += itf
-DIRS-y += dmr
-DIRS-y += acr
-DIRS-y += template
-DIRS-y += adp
-DIRS-y += debug
-DIRS-y += pub
-DIRS-y += main
+#
+# library name
+#
+LIB = libpub.a
 
-include $(RTE_SDK)/mk/rte.extsubdir.mk
+CFLAGS +=   -I ../boots -I ../include -I ../libzebra -I ../pid
+#CFLAGS += $(WERROR_FLAGS)
+
+EXPORT_MAP := lib_pub_version.map
+
+LIBABIVER := 1
+
+SRCS-y := naga_util.c
+
+
+
+
+include $(RTE_SDK)/mk/rte.lib.mk
+

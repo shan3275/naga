@@ -8,10 +8,14 @@ typedef uint32_t ipaddr_t;
 #define NAGA_ACCOUNT_STR_SZ 32
 
 
-#define ACT_DROP            1
-#define ACT_HTTP_RESPONSE   2
-#define ACT_LOG             4   
-#define ACT_COUNT           8
+#define ACT_LOG         1
+#define ACT_TRACE       2
+#define ACT_DROP        4   
+#define ACT_PUSH        8
+#define ACT_REDIR       16
+
+#define ACT_IS_VAILD(_val, _act) \
+    (((_val) & (_act)) == (_act))
 
 typedef struct {
     uint32_t actions;
@@ -31,8 +35,8 @@ typedef struct {
 #define ACL_LOG(_acl) \
     _acl.actions |= ACT_LOG
 
-#define ACL_CNT(_acl) \
-    _acl.actions |= ACT_COUNT
+#define ACL_TRACE(_acl) \
+    _acl.actions |= ACT_TRACE
 
 #define ACL_HIT(_acl) \
     bts_atomic64_inc(&(_acl.cnt))

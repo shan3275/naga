@@ -54,7 +54,7 @@ CFLAGS  += -I ../cmdline  -I ../libzebra  -I ../boots -I ../include -I ../vsr -I
 CFLAGS  += -I ../itf -I ../dmr -I ../acr -I ../adp
 #LDFLAGS += -L ../libzebra -L /mnt/hgfs/code/rose/src/dpdk-2.0.0/app/naga/cmdline -L ../vsr
 LDLIBS  +=  ../cmdline/libcmdline.a  ../libzebra/libzebra.a
-LDLIBS  +=   ../vsr/libvsr.a  ../pid/libpid.a ../itf/libitf.a   ../dmr/libdmr.a ../acr/libacr.a ../boots/libboots.a
+LDLIBS  +=   ../vsr/libvsr.a  ../pid/libpid.a ../itf/libitf.a   ../dmr/libdmr.a ../acr/libacr.a ../boots/libboots.a ../pub/libpub.a
 LDLIBS  +=   ../adp/libadp.a ../template/libtemp.a ../debug/libdebug.a ../itf/libitf.a 
 LDLIBS  +=   -lcrypt -lreadline -lrt -lpcap
 

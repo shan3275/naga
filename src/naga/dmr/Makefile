@@ -36,15 +36,14 @@ include $(RTE_SDK)/mk/rte.vars.mk
 #
 LIB = libdmr.a
 
-CFLAGS +=   -I ../boots -I ../include -I ../libzebra -I ../pid
+CFLAGS +=   -I ../boots -I ../include -I ../pub -I ../libzebra -I ../pid 
 #CFLAGS += $(WERROR_FLAGS)
 
-EXPORT_MAP := lib_vsr_version.map
+EXPORT_MAP := lib_dmr_version.map
 
 LIBABIVER := 1
 
-SRCS-y := naga_host_rule.c dmr_dp.c dmr_cmd.c dmr_cmd_api.c dmr_api.c
-
+SRCS-y := dmr.c dmr_dp.c dmr_cmd.c
 
 #
 # Export include files

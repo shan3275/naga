@@ -40,26 +40,6 @@ bts_str_cmp(void *val1, void *val2)
     return strcmp(val1, val2);
 }
 
-
-int action_str2int(const char *str, uint32_t *action)
-{
-	if (!strcmp("push", str))
-	{
-		*action |= ACT_HTTP_RESPONSE;
-	}
-	else if (!strcmp("drop", str))
-	{
-		*action |= ACT_DROP;
-	}
-	else
-	{
-		BRET(E_FAIL);
-	}
-
-	return E_SUCCESS;
-}
-
-
 void bts_ip_string(uint32_t ip, char *str)
 {
     sprintf(str, "%d.%d.%d.%d",
