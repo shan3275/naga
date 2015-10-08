@@ -42,6 +42,7 @@ DIRS-y += dmr
 DIRS-y += acr
 DIRS-y += template
 DIRS-y += adp
+DIRS-y += pub 
 DIRS-y += debug
 DIRS-y += main
 
