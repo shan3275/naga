@@ -59,6 +59,13 @@ naga_acr(hytag_t *tag)
     {
 		BRET(E_FAIL);
 	}
+
+	if( APP_TYPE_HTTP_GET_OR_POST != tag->app_type)
+	{
+		return E_SUCCESS;
+	}
+
+	
     CNT_INC(ACR_PKTS);
     memset(&data, 0, sizeof(acr_account_rule_t));
     acr_account_fill(tag, &data);
