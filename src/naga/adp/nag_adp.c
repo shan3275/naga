@@ -66,6 +66,7 @@ berr naga_adp(hytag_t *hytag)
     berr rv;
 	char *rear = NULL;
     struct rte_mbuf *txm = NULL; 
+    struct rte_mbuf *m = NULL; 
 
     CNT_INC(ADP_IPKTS);
 
@@ -196,11 +197,17 @@ berr naga_adp(hytag_t *hytag)
   
    while ( hytag->content_offset < hytag->content_len)
    {
+       m = txm;
        txm =rte_pktmbuf_real_clone(txm, txm->pool);
        if ( NULL == txm )
        {
            printf("Requse packet buffer  Failed\n");
            return E_SUCCESS;
+       }
+
+       if ( hytag->content_offset)
+       {
+           rte_pktmbuf_free(m);
        }
 
        if ( hytag->content_len - hytag->content_offset >= CONTENT_FILL_LEN_MAX)
@@ -249,10 +256,11 @@ berr naga_adp(hytag_t *hytag)
            rte_pktmbuf_dump(stdout, txm, txm->pkt_len);
 #endif
            itf_send_packet_imm(txm, txm->port);
-           rte_pktmbuf_free(txm);
        }
        
    }
+
+   rte_pktmbuf_free(txm);
 
 #endif
     //printf("url: <%s> url_len=%d\n", hytag->url, hytag->url_len);
