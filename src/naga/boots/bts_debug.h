@@ -2,10 +2,8 @@
 #define __BTS_DEBUG_H__
 
 #include "boots.h"
-#include "stdio.h"
+#include <stdio.h>
 #include "bts_cnt.h"
-
-
 
 typedef enum {
       DOPT_INFO,
@@ -16,7 +14,6 @@ typedef enum {
       DOPT_TINYSTEP,
       DOPT_TRAP,
       DOPT_CALLSTACK,
-      //DOPT_FAILPKT,
 #ifdef DOPT_CUSTOM
       DOPT_CUSTOM,
 #endif
@@ -33,7 +30,6 @@ typedef struct {
 extern dopt_t dopts_array[DOPT_MAX];
 
 int dopts_get_switch(dopte dop);
-
 
 #define BTS_DEBUG_DUMP(_mod, _opt, _fmt, _args...) { \
     if ((_mod < MOD_MAX) || (_opt < DOPT_MAX)) { \
@@ -55,7 +51,8 @@ int dopts_get_switch(dopte dop);
 #define DBG_ERR(_mod, _fmt, _args...) \
     BTS_DEBUG_DUMP(_mod, DOPT_ERR, _fmt, ##_args)
 
-#define BRET(e) { \
+#define BRET(e) \
+{ \
     berr _rv = (e);\
     if ((_rv != E_SUCCESS) && dopts_array[DOPT_ETRACE].enable) \
     { \

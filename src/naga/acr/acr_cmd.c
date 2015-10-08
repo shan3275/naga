@@ -230,7 +230,7 @@ static int acr_cmd_add_account(struct vty *vty, const char *account, const char 
 	}
 	
     //index  = atoi(index_str);
-	action_str2int(action_str, &action);
+	naga_action_parse(action_str, &action);
 #if 0
 	if (account_str2bit(account, data, &len))
 	{

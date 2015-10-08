@@ -2,7 +2,7 @@
 #ifndef __ACR_DP_H__
 #define __ACR_DP_H__
 
-#include "naga_host_rule.h"
+#include "dmr.h"
 #include "naga_types.h"
 #include "boots.h"
 

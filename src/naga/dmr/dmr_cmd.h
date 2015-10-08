@@ -3,7 +3,7 @@
 #define __DMR_CMD_H__
 
 
-#include "naga_host_rule.h"
+#include "dmr.h"
 
 void cmdline_dmr_init(void);
 

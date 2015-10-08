@@ -52,7 +52,7 @@
 #include "cmd.h"
 #include "pid.h"
 #include "itf.h"
-#include "naga_host_rule.h"
+#include "dmr.h"
 #include "nag_adp.h"
 #include "bts_log.h"
 

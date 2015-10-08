@@ -1,10 +1,9 @@
-
 #include <string.h>
+#include <assert.h>
+
 #include "bts_hashtable.h"
 #include "bts_debug.h"
 #include "bts_linklist.h"
-
-
 
 berr 
 bts_hashtable_init(bts_hashtable_t *tab, uint32_t bucket_number, bts_hash_func hash, bts_list_cmp_func cmp, bts_list_del_func del)
@@ -169,7 +168,6 @@ bts_hashtable_del_by_key(bts_hashtable_t *tab, void *data)
     BRET(E_SUCCESS);
 }
 
-
 berr
 bts_hashtable_del_all(bts_hashtable_t *tab)
 {
@@ -183,7 +181,30 @@ bts_hashtable_del_all(bts_hashtable_t *tab)
     {
 		bts_list_delete_all_node(&tab->buckets[i]);
     }
-	BRET(E_SUCCESS);
+
+    return E_SUCCESS;
+}
+
+berr
+bts_hashtable_iter(bts_hashtable_t *tab, bts_iter_func func, void *param)
+{
+    bts_list_t *bucket = NULL;
+    bts_listnode_t *node = NULL;
+    void *entry = NULL;
+
+    int i = 0;
+
+    for(i = 0; i < tab->total_bucket; i++)
+    {
+        bucket = &tab->buckets[i];
+
+        for (ALL_BTS_LIST_ELEMENTS_RO(bucket, node, entry))
+        {
+            (*func)(entry, param);
+        }
+    }
+
+    return E_SUCCESS;
 }
 
 /* End of file */
