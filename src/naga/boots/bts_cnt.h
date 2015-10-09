@@ -2,6 +2,7 @@
 #define __BTS_CNT_H__
 
 #include "boots.h"
+#include "boots_custom.h"
 
 typedef enum {
       ITF_IPKTS,
