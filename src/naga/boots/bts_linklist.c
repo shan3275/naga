@@ -418,6 +418,27 @@ bts_list_delete_all_node (struct bts_list *bts_list)
 }
 
 
+void 
+bts_list_all_element_lo(struct bts_list *bts_list, bts_iter_func func, void *param)
+{
+	struct bts_listnode *node = NULL;
+	struct list_head *pos = NULL, *next = NULL;
+	assert(bts_list);
+
+	list_for_each_safe(pos, next, &(bts_list->bucket_head))
+    {
+        node  = list_entry(pos, bts_listnode_t, node);
+		if (node->data)
+		{
+			(*func)(node->data, param);
+		}
+
+    } 
+    return;
+
+}
+
+
 #else
 
 /* Delete all bts_listnode from the bts_list. */

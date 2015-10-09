@@ -725,5 +725,9 @@ static inline void hlist_move_list(struct hlist_head *old,
     ({ tpos = hlist_entry(pos, typeof(*tpos), member); 1;}); \
             pos = n)
 
+
+
+
+
 #endif
 

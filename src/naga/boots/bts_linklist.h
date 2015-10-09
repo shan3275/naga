@@ -1,6 +1,9 @@
 #ifndef __BTS_LINKLIST_H__
 #define __BTS_LINKLIST_H__
+
+
 #include "bts_list.h"
+//#include "bts_hashtable.h"
 /* bts_listnodes must always contain data to be valid. Adding an empty node
  * to a bts_list is invalid
  */
@@ -72,6 +75,9 @@ extern void bts_list_add_bts_list (struct bts_list *, struct bts_list *);
 
 extern bts_listnode_t *bts_listnode_lookup_by_key (bts_list_t *bts_list, void *key);
 
+typedef void (*bts_iter_func)(void *data, void *param);
+
+extern void bts_list_all_element_lo(struct bts_list *bts_list, bts_iter_func func, void *param);
 
 
 /* List iteration macro. 

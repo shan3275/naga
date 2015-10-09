@@ -46,7 +46,8 @@ static inline berr pid_http_request_url(uint8_t *p ,  uint8_t *url, uint16_t *le
 		if (i + 1 > URL_MAX_LEN)
 		{
 			pid_incr_count(HTTP_URL_EXCEED);
-			BRET(E_FAIL);
+			//BRET(E_FAIL);
+			return E_FAIL;
 		}
 		else
 		{
@@ -69,7 +70,8 @@ static inline berr pid_http_request_version_skip(uint8_t *p, uint16_t *len)
 		if (i + 1 > STRING_HTTP_VERSION_MAX)
 		{
 			//pid_incr_count(HTTP_URL_EXCEED);
-			BRET(E_FAIL);
+			//BRET(E_FAIL);
+			return E_FAIL;
 		}
 		else
 		{
@@ -154,7 +156,7 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
 	if (pid_http_request_url(http_p, (uint8_t *)hytag->uri, &hytag->uri_len))
 	{
 		//hytag->app_type = URL_IN_NULL;
-		;
+		return E_SUCCESS;
 	}
 	else
 	{
