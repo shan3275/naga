@@ -36,15 +36,39 @@ DEFUN(adp_interval_get,
 
 
 
+DEFUN(adp_switch_set_on, 
+      adp_switch_set_on_cmd,
+      "adp switch on", "\n")
+{
+    adp_switch_set(1);
+    return 0;
+}
+
+DEFUN(adp_switch_set_off, 
+      adp_switch_set_off_cmd,
+      "adp switch off", "\n")
+{
+
+    adp_switch_set(0);
+    return 0;
+}
+
+
+
+
+
+
+
 /*
  * vsr module cmdline register and init 
  *
  * */
 void cmdline_adp_init(void)
 {
-    
     install_element(CMD_NODE, &adp_interval_cmd);
-    install_element(CMD_NODE, &adp_interval_get_cmd);    
+    install_element(CMD_NODE, &adp_interval_get_cmd);
+    install_element(CMD_NODE, &adp_switch_set_on_cmd); 
+    install_element(CMD_NODE, &adp_switch_set_off_cmd);     
     return ;
 }
 

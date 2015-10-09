@@ -53,6 +53,23 @@
 /*
  * data plane main process flow, not include rx & tx
 */
+berr naga_data_process_module(hytag_t * hytag)
+{
+    itf_set_hytag_pcap(hytag);
+
+    HYTAG_DUMP(hytag);
+ 
+    DPF_NODE(MOD_PID, hytag, naga_pid);
+
+    //DPF_NODE(MOD_VSR, &hytag, naga_vsr);
+    DPF_NODE(MOD_DMR, hytag, naga_dmr);
+    DPF_NODE(MOD_ACR, hytag, naga_acr);
+    DPF_NODE(MOD_ADP, hytag, naga_adp);
+    
+  
+    HYTAG_LOG(hytag);  
+    return E_SUCCESS;
+}
 
 berr naga_data_process_flow(struct rte_mbuf *m)
 {
@@ -66,20 +83,8 @@ berr naga_data_process_flow(struct rte_mbuf *m)
     hytag.pbuf.ptr_offset = 0;
     hytag.m = m;
     
-    itf_set_hytag_pcap(&hytag);
 
-    HYTAG_DUMP(&hytag);
- 
-    DPF_NODE(MOD_PID, &hytag, naga_pid);
-
-    //DPF_NODE(MOD_VSR, &hytag, naga_vsr);
-    DPF_NODE(MOD_DMR, &hytag, naga_dmr);
-    DPF_NODE(MOD_ACR, &hytag, naga_acr);
-    DPF_NODE(MOD_ADP, &hytag, naga_adp);
-    
-  
-    HYTAG_LOG(&hytag);
-    return E_SUCCESS;
+    return naga_data_process_module(&hytag);
 }
 
 

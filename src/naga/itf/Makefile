@@ -42,12 +42,12 @@ include $(RTE_SDK)/mk/rte.vars.mk
 LIB  = libitf.a
 
 # all source are stored in SRCS-y
-SRCS-y := itf_rx.c  itf_tx.c itf_pcap.c
+SRCS-y := itf_rx.c  itf_tx.c itf_pcap.c itf_cmd.c
 
 
 CFLAGS += -O3
 CFLAGS += $(WERROR_FLAGS)
-CFLAGS += -I ../boots -I ../include
+CFLAGS += -I ../boots -I ../include -I ../pid -I ../debug  -I ../libzebra
 
 # workaround for a gcc bug with noreturn attribute
 # http://gcc.gnu.org/bugzilla/show_bug.cgi?id=12603

@@ -84,6 +84,11 @@ berr ift_raw_send_packet(void *fp, uint8_t * buff, int len);
 berr itf_raw_socket_init(char *ifname);
 
 void itf_set_hytag_pcap(hytag_t * tag);
-    
+
+
+berr libpcap_rx_loop_setup(char * ifname);
+
+berr libpcap_rx_loop_unset(char * ifname);
+
 
 #endif /* !__ITF_H__ */
