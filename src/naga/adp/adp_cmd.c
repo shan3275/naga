@@ -57,13 +57,14 @@ DEFUN(adp_switch_set_off,
 
 
 
+
+
 /*
  * vsr module cmdline register and init 
  *
  * */
 void cmdline_adp_init(void)
 {
-    
     install_element(CMD_NODE, &adp_interval_cmd);
     install_element(CMD_NODE, &adp_interval_get_cmd);
     install_element(CMD_NODE, &adp_switch_set_on_cmd); 

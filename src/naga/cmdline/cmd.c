@@ -36,7 +36,7 @@
 #include "dmr_cmd.h"
 #include "bts_cmd.h"
 #include "acr_cmd.h"
-
+#include "itf_cmd.h"
 /* Zebra instance */
 struct zebra_t zebrad =
 {
@@ -245,6 +245,7 @@ int cmdline (int argc, char **argv)
 	cmdline_dmr_init();
 	cmdline_acr_init();
     cmdline_adp_init();
+    cmdline_itf_init();
     /* Zebra related initialize. */
     //access_list_init ();
 
