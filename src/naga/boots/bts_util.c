@@ -64,7 +64,7 @@ bswt_parse(char *str, bswt *val)
     } 
     else if (!strncmp(str, "off"))
     {
-        *val = ON;
+        *val = OFF;
     } 
     else if (!strncmp(str, "bas"))
     {

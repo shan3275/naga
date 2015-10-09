@@ -22,18 +22,39 @@ typedef enum {
 
 typedef struct {
       dopte idx;
-      uint32_t enable;
+      bswt enable;
       char *name;
       char *desc;
 } dopt_t;
 
-extern dopt_t dopts_array[DOPT_MAX];
+extern dopt_t dopt_array[DOPT_MAX];
 
-int dopts_is_enable(dopte dop);
+int dopt_is_enable(dopte dop);
+dopt_t* dopt_lookup(char *name);
+berr dopt_modify(char *name, bswt enable);
+
+typedef enum {
+    MOD_DBG,
+    MOD_CUSTOM,
+    MOD_MAX,
+} bmod;
+
+typedef struct {
+    bmod  mod;      /* Module ID*/
+    bswt  enable;      /* Turn on/off this module */
+    bswt  debug;      /* Turn on/off the debug dump of this module */
+    int   resv;     
+    char *abbr;
+    char *desc;
+} mod_t;
+
+mod_t mod_array[MOD_MAX];
+mod_t* mod_lookup(char *name);
+berr mod_modify(char *name, bswt enable, bswt debug);
 
 #define BTS_DEBUG_DUMP(_mod, _opt, _fmt, _args...) { \
     if ((_mod < MOD_MAX) || (_opt < DOPT_MAX)) { \
-        if (dopts_array[_opt].enable && dopts_array[_mod].enable) { \
+        if (dopt_array[_opt].enable && dopt_array[_mod].enable) { \
             printf("[%s.%s] %s.%d:" _fmt, #_mod, #_opt, __func__, __LINE__, ##_args); \
         } \
     } \
@@ -54,30 +75,11 @@ int dopts_is_enable(dopte dop);
 #define BRET(e) \
 { \
     berr _rv = (e);\
-    if ((_rv != E_SUCCESS) && dopts_array[DOPT_ETRACE].enable) \
+    if ((_rv != E_SUCCESS) && dopt_array[DOPT_ETRACE].enable) \
     { \
         printf("[ETRACE] %s.%d: return %s!\n", __FUNCTION__, __LINE__, berr_msg(_rv)); \
     } \
     return _rv; \
 }
-
-typedef enum {
-    MOD_DBG,
-    MOD_CUSTOM,
-    MOD_MAX,
-} bmod;
-
-typedef struct {
-    bmod  mod;      /* Module ID*/
-    bswt  enable;      /* Turn on/off this module */
-    bswt  debug;      /* Turn on/off the debug dump of this module */
-    int   resv;     
-    char *abbr;
-    char *desc;
-} mod_t;
-
-mod_t mod_array[MOD_MAX];
-
-mod_t* mod_lookup(char *name);
 
 #endif
