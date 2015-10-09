@@ -44,7 +44,7 @@ EXPORT_MAP := lib_vsr_version.map
 
 LIBABIVER := 1
 
-SRCS-y += boots_parse.c
+SRCS-y += bts_debug.c
 SRCS-y += bts_cnt.c
 SRCS-y += bts_cmd.c
 SRCS-y += bts_hash.c

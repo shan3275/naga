@@ -3,7 +3,7 @@
 
 #include "boots.h"
 #include <stdio.h>
-#include "bts_cnt.h"
+#include "boots_custom.h"
 
 typedef enum {
       DOPT_INFO,
@@ -29,7 +29,7 @@ typedef struct {
 
 extern dopt_t dopts_array[DOPT_MAX];
 
-int dopts_get_switch(dopte dop);
+int dopts_is_enable(dopte dop);
 
 #define BTS_DEBUG_DUMP(_mod, _opt, _fmt, _args...) { \
     if ((_mod < MOD_MAX) || (_opt < DOPT_MAX)) { \
@@ -60,5 +60,24 @@ int dopts_get_switch(dopte dop);
     } \
     return _rv; \
 }
+
+typedef enum {
+    MOD_DBG,
+    MOD_CUSTOM,
+    MOD_MAX,
+} bmod;
+
+typedef struct {
+    bmod  mod;      /* Module ID*/
+    bswt  enable;      /* Turn on/off this module */
+    bswt  debug;      /* Turn on/off the debug dump of this module */
+    int   resv;     
+    char *abbr;
+    char *desc;
+} mod_t;
+
+mod_t mod_array[MOD_MAX];
+
+mod_t* mod_lookup(char *name);
 
 #endif

@@ -24,29 +24,14 @@ typedef rte_atomic64_t    bts_atomic64_t;
 typedef rte_atomic32_t    bts_atomic32_t;
 #define CMD_NODE          VIEW_NODE
 
-#define OFF 0
-#define ON  1
-#define BAS 2
+typedef enum {
+    OFF,
+    ON,
+    BAS
+} bswt;
 
 #define FALSE   0
 #define TRUE    1
-
-#include "boots_custom.h"
-
-typedef enum {
-    MOD_DBG,
-    MOD_CUSTOM,
-    MOD_MAX,
-} bmod;
-
-typedef struct {
-    bmod mod;
-    int  swt;
-    int  resv;
-    int  resv1;
-    char *abbr;
-    char *desc;
-} mod_t;
 
 typedef enum {
     E_SUCCESS,  // 成功
@@ -62,9 +47,8 @@ typedef enum {
     E_EXIST,    // 已经存在
     E_BUSY,     // 繁忙 
     E_COMPARE,
-    E_OVER,     //溢出
-    E_KNOWN,
     E_INIT,
+    E_FORMAT,
     E_MAX,      // 错误码的最大值
 } berr;
 
@@ -77,7 +61,5 @@ typedef struct {
 typedef uint32_t bts_ipaddr_t;
 
 char* berr_msg(berr e);
-
-int get_mod_switch(bmod mod);
 
 #endif

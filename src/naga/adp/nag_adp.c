@@ -1,5 +1,6 @@
 #include "boots.h"
 #include "bts_debug.h"
+#include "bts_cnt.h"
 
 #include "naga_types.h"
 #include "nag_adp.h"

@@ -331,7 +331,7 @@ berr vsr_dp_api_match(uint32_t index, uint32_t ip, char* url, uint16_t len)
             cnt_inc(VSR_RULE_URL_OVERFLOW);
             /* unlock */
             VSR_RULE_UNLOCK(index);
-            BRET(E_OVER);
+            BRET(E_EXCEED);
         }
         /* update hash*/
          vsr_set_url_hash(index, i,hash);

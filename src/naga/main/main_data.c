@@ -32,7 +32,7 @@
 #include "nag_adp.h"
 
 
-#define MOD_IS_TURN_ON(mod)  (get_mod_switch(mod) == ON)
+#define MOD_IS_TURN_ON(mod)  (mod_is_enable(mod) == ON)
 
 
 #define DPF_NODE(_mod, _tag, _func) { \

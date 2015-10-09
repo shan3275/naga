@@ -21,6 +21,9 @@
 #include "privs.h"
 #include "acr_account_rule.h"
 
+#include "boots.h"
+#include "bts_debug.h"
+
 #define RULE_STR                    "Access control list\n"
 #define ACR_STR                     "Vister Record list\n"
 #define ADD_STR                     "ADD Operation\n"

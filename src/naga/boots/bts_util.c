@@ -50,7 +50,59 @@ void bts_ip_string(uint32_t ip, char *str)
 
 }
 
+berr 
+bswt_parse(char *str, bswt *val)
+{
+    if ((NULL == str) || (NULL == val))
+    {
+        BRET(E_PARAM);
+    }
 
+    if (!strncmp(str, "on"))
+    {
+        *val = ON;
+    } 
+    else if (!strncmp(str, "off"))
+    {
+        *val = ON;
+    } 
+    else if (!strncmp(str, "bas"))
+    {
+        *val = BAS;
+    }
+    else
+    {
+        BRET(E_FORMAT);
+    }
+
+    return E_SUCCESS;
+}
+
+void
+bswt_string(bswt *val, char *str)
+{
+    if ((NULL == str) || (NULL == val))
+    {
+        return;
+    }
+
+    if (ON == *val)
+    {
+        sprintf(str, "on");
+    }
+    else if (OFF == *val)
+    {
+        sprintf(str, "off");
+    }
+    else if (BAS == *val)
+    {
+        sprintf(str, "bas");
+    }
+    else 
+    {
+        sprintf(str, "na");
+    }
+}
 
 
 

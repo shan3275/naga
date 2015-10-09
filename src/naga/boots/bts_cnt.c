@@ -1,24 +1,6 @@
+#include "boots_custom.h"
 #include "bts_cnt.h"
-
-dopt_t dopts_array[DOPT_MAX] = {
-      {DOPT_INFO,     OFF, "info",      "normal debug message"},
-      {DOPT_VERB,     ON,  "verb",      "verbose debug message"},
-      {DOPT_WARN,     ON,  "warn",      "warning message"},
-      {DOPT_ERR,      ON,  "err",       "error message"},
-      {DOPT_ETRACE,   ON,  "etrace",    "error return trace"},
-      {DOPT_TAGMON,   OFF,  "tagmon",    "hytag monitor"},
-      {DOPT_TINYSTEP, ON,  "tinystep",  "time spand of a section code"},
-      {DOPT_TRAP,     ON,  "trap",      "a trap trigger by condition"},
-#ifdef DOPT_ARRAY_CUSTOM
-      DOPT_ARRAY_CUSTOM,
-#endif
-};
-
-int dopts_get_switch(dopte dop)
-{
-    return dop < DOPT_MAX ? dopts_array[dop].enable : OFF;
-}
-
+#include "bts_debug.h"
 
 cnt_t cnt_array[CNT_MAX] =
 {
