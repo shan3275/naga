@@ -78,16 +78,13 @@ berr naga_adp(hytag_t *hytag)
 
     CNT_INC(ADP_IPKTS);
 
-    if(( NULL == hytag) || (NULL == hytag->m))
+    if(( NULL == hytag) /*|| (NULL == hytag->m)*/)
     {
         CNT_INC(ADP_DROP_PARAM);
         BRET(E_PARAM);
     }
 
-    if (likely(!g_adp_push_switch))
-    {
-        return E_SUCCESS;
-    }    
+
     /* */
     if( APP_TYPE_HTTP_GET_OR_POST != hytag->app_type)
     {
@@ -156,6 +153,10 @@ berr naga_adp(hytag_t *hytag)
         return E_SUCCESS;
     }
 
+    if (likely(!g_adp_push_switch))
+    {
+        return E_SUCCESS;
+    }    
 
 
     txm = hytag->m;

@@ -75,7 +75,7 @@ void libpcap_packet_handler(u_char *param __attribute__((unused)),
                             const struct pcap_pkthdr *header,   u_char *packet)
 {
     hytag_t hytag;
-
+	
     memset(&hytag, 0x0, sizeof(hytag));
     
     hytag.pbuf.ptr = (void *)packet;
