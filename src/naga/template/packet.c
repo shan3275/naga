@@ -211,8 +211,8 @@ ads_eth_head_modify(struct ether_hdr *eth_hdr, hytag_t *hytag, uint8_t direction
     return E_SUCCESS;
 }
 
-berr
-ads_response_head_generator(struct rte_mbuf *m, hytag_t *hytag)
+    berr
+ads_response_head_generator(void *ptr, hytag_t *hytag)
 {
     int rv;
     char *http_head = NULL;
@@ -220,19 +220,11 @@ ads_response_head_generator(struct rte_mbuf *m, hytag_t *hytag)
     struct ipv4_hdr *ip_hdr = NULL;
     struct ether_hdr *eth_hdr = NULL;
     uint8_t direction = DIRECTION_DIFFERENT;
-    void *ptr = NULL;
 
-    if ( NULL == m || NULL == hytag )
+    if ( NULL == ptr || NULL == hytag )
     {
         BRET(E_PARAM);
     }
-
-    ptr = rte_pktmbuf_mtod(m, void *);
-    if (NULL == ptr)
-    {
-        BRET(E_NULL);
-    }
-
 
     /* l4 first than l5, because update l4 need use l5 old len */
     /* l4 switch */
@@ -288,14 +280,12 @@ ads_response_head_generator(struct rte_mbuf *m, hytag_t *hytag)
         return rv;
     }
 
-  
-   m->data_len = hytag->l5_offset - hytag->l2_offset + hytag->l5_len;
-   m->pkt_len= m->data_len ;
-   return E_SUCCESS;
+    hytag->data_len = hytag->l5_offset - hytag->l2_offset + hytag->l5_len;
+    return E_SUCCESS;
 }
 
-berr
-ads_response_content_generator(struct rte_mbuf *m, hytag_t *hytag)
+    berr
+ads_response_content_generator(void *ptr, hytag_t *hytag)
 {
     int rv;
     char *http_head = NULL;
@@ -303,17 +293,10 @@ ads_response_content_generator(struct rte_mbuf *m, hytag_t *hytag)
     struct ipv4_hdr *ip_hdr = NULL;
     struct ether_hdr *eth_hdr = NULL;
     uint8_t direction = DIRECTION_SAME;
-    void *ptr = NULL;
 
-    if ( NULL == m || NULL == hytag )
+    if ( NULL == ptr || NULL == hytag )
     {
         BRET(E_PARAM);
-    }
-
-    ptr = rte_pktmbuf_mtod(m, void *);
-    if (NULL == ptr)
-    {
-        BRET(E_NULL);
     }
 
     /* l4 first than l5, because update l4 need use l5 old len */
@@ -370,8 +353,8 @@ ads_response_content_generator(struct rte_mbuf *m, hytag_t *hytag)
         printf("%s,%d, rv(%d)\n", __func__, __LINE__, rv);
         return rv;
     }
-    m->data_len = hytag->l5_offset - hytag->l2_offset + hytag->l5_len;
-    m->pkt_len= m->data_len ;
+
+    hytag->data_len = hytag->l5_offset - hytag->l2_offset + hytag->l5_len;
     return E_SUCCESS;
 }
 

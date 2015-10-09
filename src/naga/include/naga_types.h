@@ -163,6 +163,7 @@ typedef struct
     uint16_t content_len; /* ad template content total length */
     uint16_t content_offset; /* ad template content offset, used for multiple transmit */
     uint16_t fill_len;       /* single time fill length */ 
+    uint16_t data_len;       /* total packet length, used for template */
 }hytag_t;
 
 #define HYTAG_ACL_MERGE(_tagacl, _ruleacl) \

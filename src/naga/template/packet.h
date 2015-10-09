@@ -14,9 +14,8 @@
 #define __PACKET_INCLUDE_H__
 #include "naga_types.h"
 
-
 berr
-ads_response_head_generator(struct rte_mbuf *m, hytag_t *hytag);
+ads_response_head_generator(void *ptr, hytag_t *hytag);
 berr
-ads_response_content_generator(struct rte_mbuf *m, hytag_t *hytag);
+ads_response_content_generator(void *ptr, hytag_t *hytag);
 #endif
