@@ -46,9 +46,13 @@ void dmr_dp_init(void)
 	rv = dmr_init(MAX_HOST_RULE_NUM);
 	if (E_SUCCESS != rv)
 	{
-		printf("Host rule init FAIL!\n");
-		return;
+		printf("Domain rule init FAIL!\n");
 	}
+	else
+	{
+		printf("Domain rule init success!\n");
+	}
+	return;
 }
 
 

@@ -31,7 +31,9 @@
 #include "privs.h"
 
 #define DOMAIN_STR					"Domain rule\n"
-#define DOMAIN_NAME_STR             "name of domain\n" 
+#define DOMAIN_NAME_STR             "Name of domain\n" 
+#define DOMAIN_ALL_STR             "All the domain\n"
+
 
 #define DMR_DEBUG
 #ifdef  DMR_DEBUG
@@ -290,7 +292,7 @@ dmr_dump_vty(void *data, void *param)
 
     char action_str[NAGA_ACTION_STR_SZ];
 
-    if ((NULL == vty) || (NULL == data))
+    if ((NULL == param) || (NULL == data))
     {
         return;
     }
@@ -307,32 +309,49 @@ dmr_dump_vty(void *data, void *param)
 static int cmd_dmr_show(struct vty *vty, const char *host)
 {
 	int ret = 0;
-	
+
+	vty_out(vty, "%-32s %-32s %-16s %s","host","action", "cnt",VTY_NEWLINE);
+    vty_out(vty, "------------------------------------------------%s", VTY_NEWLINE);
 	if (NULL == host)
 	{
-        vty_out(vty, "%-32s %-16s %-16s %s","host","action", "cnt",VTY_NEWLINE);
-    	vty_out(vty, "---------------------------------%s", VTY_NEWLINE);
-        dmr_iter(dmr_dump_vty, vty);
+        return CMD_ERR_NOTHING_TODO;
 	}
-    else
-    {
-        dmr_t *entry = NULL;
-        entry = api_dmr_get((char *)host);
-        if (NULL == entry)
-        {
-            vty_out(vty, "dmr host<%s> empty%s", host, VTY_NEWLINE);
-            return CMD_WARNING;
-        }
 
-        dmr_dump_vty(entry, (char *)host);
+    dmr_t *entry = NULL;
+	
+    entry = api_dmr_get((char *)host);
+    if (NULL == entry)
+    {
+        vty_out(vty, "dmr host<%s> empty%s", host, VTY_NEWLINE);
+        return CMD_WARNING;
     }
+
+    dmr_dump_vty((void *)entry, (void *)vty);
+   
+    return CMD_SUCCESS;
+}
+
+
+static int cmd_dmr_show_all(struct vty *vty)
+{
+	int ret = 0;
+
+	vty_out(vty, "%-32s %-32s %-16s %s","host","action", "cnt",VTY_NEWLINE);
+    vty_out(vty, "------------------------------------------------%s", VTY_NEWLINE);
+	
+    dmr_iter(dmr_dump_vty, vty);
+
+   
 
     return CMD_SUCCESS;
 }
 
+
+
+
 DEFUN(show_domain,
       show_domain_cmd,
-      "show domain [NAME]",
+      "show domain NAME",
       SHOW_STR
       DOMAIN_STR
       DOMAIN_NAME_STR)
@@ -340,32 +359,57 @@ DEFUN(show_domain,
     return cmd_dmr_show(vty, argv[0]);
 }
 
+
+DEFUN(show_domain_all,
+      show_domain_all_cmd,
+      "show domain NAME",
+      SHOW_STR
+      DOMAIN_STR
+      DOMAIN_ALL_STR)
+{
+    return cmd_dmr_show_all(vty);
+}
+
+
+
 static int cmd_dmr_del(struct vty *vty, const char *host)
 {
     int ret = 0;
 	
 	if (NULL == host)
 	{
-        ret = api_dmr_clear();
+        return CMD_ERR_NOTHING_TODO;
 	}
-    else
-    {
-        ret = api_dmr_del((char *)host);
-        
-    }
+
+    ret = api_dmr_del((char *)host);
 
     if (ret)
     {
-        vty_out(vty, "dmr del fail:(%s)%s", host, berr_msg(ret), VTY_NEWLINE);
+        vty_out(vty, "dmr del  %s fail:(%s)%s", host, berr_msg(ret), VTY_NEWLINE);
         return CMD_WARNING;
     }
 
     return CMD_SUCCESS;
 }
 
+
+static int cmd_dmr_del_all(struct vty *vty)
+{
+	int ret = 0;
+	ret = api_dmr_clear();
+	if (ret)
+    {
+        vty_out(vty, "dmr del all domain fail:(%s)%s", berr_msg(ret), VTY_NEWLINE);
+        return CMD_WARNING;
+    }
+
+    return CMD_SUCCESS;
+}
+
+
 DEFUN(remove_domain, 
       remove_domain_cmd,
-      "remove domain [NAME]",
+      "remove domain NAME",
       REMOVE_STR
       DOMAIN_STR
       DOMAIN_NAME_STR)
@@ -373,28 +417,43 @@ DEFUN(remove_domain,
     return cmd_dmr_del(vty, argv[0]);
 }
 
+DEFUN(remove_domain_all, 
+      remove_domain_all_cmd,
+      "remove domain all",
+      REMOVE_STR
+      DOMAIN_STR
+      DOMAIN_ALL_STR)
+{
+    return cmd_dmr_del_all(vty);
+}
+
+
 static int cmd_dmr_add(struct vty *vty, const char *host, const char *action_str)
 {
     berr ret = 0;
 
-	dmr_t entry;
+	dmr_t *entry = NULL;
 		
 	if ((NULL == host) || (NULL == action_str))
 	{
         return CMD_ERR_NO_MATCH;
 	}
 
-    memset(&entry, 0, sizeof(dmr_t));
+    entry = dmr_entry_new();
+	if (NULL == entry)
+	{
+        return CMD_ERR_NO_MATCH;
+	}
 
-	if(naga_action_parse((char *)action_str, &entry.acl.actions))
+	if(naga_action_parse((char *)action_str, &entry->acl.actions))
     {
         return CMD_ERR_NO_MATCH;
     }
 	
-	entry.host_len = strlen(host);
-	memcpy(entry.host, host, entry.host_len);
+	entry->host_len = strlen(host);
+	memcpy(entry->host, host, entry->host_len);
 
-    ret = api_dmr_add(&entry);
+    ret = api_dmr_add(entry);
     if (ret)
     {
         vty_out(vty, "dmr add host fail: ret(%s)%s", berr_msg(ret), VTY_NEWLINE);
@@ -408,7 +467,7 @@ static int cmd_dmr_add(struct vty *vty, const char *host, const char *action_str
 
 DEFUN(domain, 
       domain_cmd,
-      "domain NAME {push|drop}",
+      "domain NAME ACT",
       DOMAIN_STR
       DOMAIN_NAME_STR
       ACTION_STR)
@@ -472,19 +531,38 @@ static int cmd_dmr_clear_stat(struct vty *vty, const char *host)
 
     if (NULL == host)
     {
-        ret = api_dmr_stat_clear_all();
+        return CMD_ERR_NOTHING_TODO;
     }
-    else {
-        ret = api_dmr_stat_clear((char *)host); 
+	
+    ret = api_dmr_stat_clear((char *)host); 
+	if (ret)
+    {
+        vty_out(vty, "dmr clear domain %s rule stat fail:(%s)%s", host, berr_msg(ret), VTY_NEWLINE);
+        return CMD_WARNING;
     }
 
     return CMD_SUCCESS;
 
 }
 
+
+static int cmd_dmr_clear_stat_all(struct vty *vty)
+{
+	int ret = 0;
+	ret = api_dmr_stat_clear_all();
+	if (ret)
+    {
+        vty_out(vty, "dmr clear all domain rule stat fail:(%s)%s", berr_msg(ret), VTY_NEWLINE);
+        return CMD_WARNING;
+    }
+
+    return CMD_SUCCESS;
+}
+
+
 DEFUN(clear_domain_stat,
       clear_domain_stat_cmd,
-      "clear domain stat [DOMAIN]",
+      "clear domain stat DOMAIN",
       CLEAR_STR
       DOMAIN_STR
       STAT_STR
@@ -493,6 +571,16 @@ DEFUN(clear_domain_stat,
     return cmd_dmr_clear_stat(vty, argv[0]);
 }
 
+DEFUN(clear_domain_stat_all,
+      clear_domain_stat_all_cmd,
+      "clear domain stat all",
+      CLEAR_STR
+      DOMAIN_STR
+      STAT_STR
+      DOMAIN_ALL_STR)
+{
+    return cmd_dmr_clear_stat_all(vty);
+}
 
 /*
  * dmr module cmdline register and init
@@ -502,9 +590,12 @@ void cmdline_dmr_init(void)
 {
 	install_element(CMD_NODE, &domain_cmd);
 	install_element(CMD_NODE, &remove_domain_cmd);
+	install_element(CMD_NODE, &remove_domain_all_cmd);
 	install_element(CMD_NODE, &load_domain_cmd);
 	install_element(CMD_NODE, &clear_domain_stat_cmd);
+	install_element(CMD_NODE, &clear_domain_stat_all_cmd);
 	install_element(CMD_NODE, &show_domain_cmd);
+	install_element(CMD_NODE, &show_domain_all_cmd);
 
     return ;
 }

@@ -1,13 +1,16 @@
+#include <string.h>
 #include "boots.h"
 #include "bts_debug.h"
 
 #include "naga_types.h"
 #include "naga_util.h"
 
+
 berr 
 naga_action_parse(char *str, uint32_t *actions)
 {
     char *tokp = NULL; 
+	char *act_str = NULL;
 
     if ((NULL == str) || (NULL == actions))
     {
@@ -16,7 +19,9 @@ naga_action_parse(char *str, uint32_t *actions)
 
     *actions = 0;
 
-    tokp = strtok(str, ",");
+	act_str = strdup(str);
+
+    tokp = strtok(act_str, ",");
 
     while(tokp != NULL) {
         
@@ -65,15 +70,14 @@ naga_action_string(uint32_t *action, char *str)
 
     if (ACT_IS_VAILD(*action, ACT_LOG))
     {
-        if (cp != str)
+    	if (cp != str)
         {
             cp += sprintf(cp, ",");
         }
-
         cp += sprintf(cp, "log");
     }
 
-    if (ACT_IS_VAILD(*action, ACT_TRACE))
+    else if (ACT_IS_VAILD(*action, ACT_TRACE))
     {
         if (cp != str)
         {

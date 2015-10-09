@@ -45,10 +45,42 @@ dmr_init(uint32_t number)
     return bts_hashtable_init(&dmr_table, number, dmr_hash_func, dmr_cmp_func, NULL);
 }
 
+#if 0
+void
+dmr_get_func(void *data, void *param)
+{
+	dmr_t *entry = NULL;
+	FILE *fp = NULL;
+	char action_str[NAGA_ACTION_STR_SZ];
+    if (NULL == data)
+    {
+        return;
+
+    }
+
+	entry = (dmr_t *)data;
+
+	fp = fopen(DOMAIN_TMP_FILE, "a+");
+	if (NULL == fp )
+	{
+		return;
+	}
+	naga_action_string(&entry->acl.actions, action_str);
+	fprintf(fp, "%-32s %-32s %-16ld\n", entry->host, action_str, (uint64_t) entry->acl.cnt.cnt);
+	fclose(fp);
+}
+
+#endif
+
 dmr_t*
 dmr_get(char *key)
 {
-    return (dmr_t *)bts_hashtable_lookup(&dmr_table, (void*) key);
+	dmr_t data;
+
+	memset(&data, 0, sizeof(dmr_t));
+	data.host_len = strlen(key);
+	memcpy(data.host, key, data.host_len);
+    return (dmr_t *)bts_hashtable_lookup(&dmr_table, (void*) (&data));
 }
 
 berr
@@ -56,6 +88,22 @@ dmr_add(dmr_t *entry)
 {
     return bts_hashtable_add(&dmr_table, (void *) entry);
 }
+
+
+void
+dmr_clear_func(void *data, void *param)
+{
+    if (NULL == data)
+    {
+        return;
+
+    }
+
+    bts_hashtable_del(&dmr_table, data);
+}
+
+
+
 
 berr
 dmr_del(char *host)
@@ -74,7 +122,12 @@ dmr_del(char *host)
 berr
 dmr_clear(void)
 {
+	#if 0
     return bts_hashtable_del_all(&dmr_table);
+	#else
+	bts_hashtable_iter(&dmr_table, dmr_clear_func, NULL);
+	return E_SUCCESS;
+	#endif
 }
 
 void

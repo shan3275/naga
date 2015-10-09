@@ -1,5 +1,5 @@
-#ifndef __NAGA_HOST_RULE_H__
-#define __NAGA_HOST_RULE_H__
+#ifndef __DMR_H__
+#define __DMR_H__
 
 
 #include <stdio.h>
@@ -30,6 +30,7 @@ berr dmr_clear(void);
 #define api_dmr_stat_clear dmr_stat_clear
 #define api_dmr_stat_clear_all  dmr_stat_clear_all
 
+#define DOMAIN_TMP_FILE  "domain_tmp.txt"
 
 
 #endif /* !__HOR_DOMAIN_RULE_H__ */

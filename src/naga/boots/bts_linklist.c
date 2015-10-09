@@ -297,6 +297,10 @@ bts_list_add_list (struct bts_list *l, struct bts_list *m)
     bts_listnode_add (l, n->data);
 }
 
+
+
+
+
 #if USE_BTS_LIST
 bts_listnode_t *
 bts_listnode_lookup_by_key (bts_list_t *bts_list, void *key)
@@ -412,6 +416,7 @@ bts_list_delete_all_node (struct bts_list *bts_list)
     } 
     return;
 }
+
 
 #else
 
