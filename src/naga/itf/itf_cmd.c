@@ -14,16 +14,16 @@
 
 DEFUN(itf_rxtx, 
       itf_rxtx_cmd,
-      "interface {enable|disable} rx eth IFNAME", "interface setting\nenable or disable\nrx or tx\n")
+      "interface enable rx eth IFNAME", "interface setting\nenable or disable\nrx or tx\n")
 {
     if(argv[0] != NULL)
     {
         char * ifname = strdup(argv[0]);
         berr rv=  libpcap_rx_loop_setup(ifname);
         if(rv == E_SUCCESS)
-            vty_out(vty, "Success to open %s rx", ifname);
+            vty_out(vty, "Success to open %s rx\n", ifname);
         else
-            vty_out(vty, "Failed to open %s rx", ifname);
+            vty_out(vty, "Failed to open %s rx\n", ifname);
         free(ifname);
         return 0;
     }
