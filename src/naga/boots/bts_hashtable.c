@@ -197,11 +197,14 @@ bts_hashtable_iter(bts_hashtable_t *tab, bts_iter_func func, void *param)
     for(i = 0; i < tab->total_bucket; i++)
     {
         bucket = &tab->buckets[i];
-
+#if 0
         for (ALL_BTS_LIST_ELEMENTS_RO(bucket, node, entry))
         {
             (*func)(entry, param);
         }
+		bts_list_all_element_lo()
+#endif
+        bts_list_all_element_lo(bucket, func, param);
     }
 
     return E_SUCCESS;

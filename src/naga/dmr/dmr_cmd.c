@@ -310,21 +310,21 @@ static int cmd_dmr_show(struct vty *vty, const char *host)
 {
 	int ret = 0;
 
-	vty_out(vty, "%-32s %-32s %-16s %s","host","action", "cnt",VTY_NEWLINE);
-    vty_out(vty, "------------------------------------------------%s", VTY_NEWLINE);
+	dmr_t *entry = NULL;
+
 	if (NULL == host)
 	{
         return CMD_ERR_NOTHING_TODO;
 	}
 
-    dmr_t *entry = NULL;
-	
     entry = api_dmr_get((char *)host);
     if (NULL == entry)
     {
         vty_out(vty, "dmr host<%s> empty%s", host, VTY_NEWLINE);
         return CMD_WARNING;
     }
+	vty_out(vty, "%-32s %-32s %-16s %s","host","action", "cnt",VTY_NEWLINE);
+    vty_out(vty, "------------------------------------------------%s", VTY_NEWLINE);
 
     dmr_dump_vty((void *)entry, (void *)vty);
    
@@ -362,7 +362,7 @@ DEFUN(show_domain,
 
 DEFUN(show_domain_all,
       show_domain_all_cmd,
-      "show domain NAME",
+      "show domain all",
       SHOW_STR
       DOMAIN_STR
       DOMAIN_ALL_STR)
