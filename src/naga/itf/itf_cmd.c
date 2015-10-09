@@ -36,7 +36,7 @@ static int itf_cmd_show_status(struct vty *vty)
     int rv;
     itf_stat stat;
     stat.direction = ITF_TX;
-    rv = itf_stat_set( &stat);
+    rv = itf_stat_get( &stat);
     if (rv)
     {
         vty_out(vty, "get tx status fail rv(%d)%s", rv, VTY_NEWLINE);
@@ -47,7 +47,7 @@ static int itf_cmd_show_status(struct vty *vty)
     }
 
     stat.direction = ITF_RX;
-    rv = itf_stat_set( &stat);
+    rv = itf_stat_get( &stat);
     if (rv)
     {
         vty_out(vty, "get rx status fail rv(%d)%s", rv, VTY_NEWLINE);
@@ -117,7 +117,7 @@ static int itf_cmd_set(struct vty *vty, const char *dir_str, const char *en_str)
 }
 DEFUN(itf_set,
       itf_set_cmd,
-      "itf {rx|tx} {enable|disable}",
+      "itf (rx|tx) (enable|disable)",
       INTERFACE_STR
       "Rx or Tx direction\n"
       "En or Disable operation\n" 
