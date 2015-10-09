@@ -82,8 +82,8 @@ void libpcap_packet_handler(u_char *param __attribute__((unused)),
     hytag.pbuf.len = header->len;
     hytag.pbuf.ptr_offset = 0;
     hytag.m = NULL;
-    //printf("Success packet\n");
-    //return ;
+    printf("Success packet\n");
+    return;
     
     naga_data_process_module(&hytag);
     return;
