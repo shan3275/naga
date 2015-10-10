@@ -28,9 +28,9 @@ DEFUN(adp_interval_get,
     uint64_t adp_count;
     uint64_t adp_success;
     adp_get_interval(&interval, &adp_count, &adp_success);  
-    vty_out(vty, "Interval  : %d\n", interval);
-    vty_out(vty, "Ad-Total  : %ld\n", adp_count);    
-    vty_out(vty, "Ad-Success: %ld\n", adp_success);  
+    vty_out(vty, "Interval  : %d%s", interval, VTY_NEWLINE);
+    vty_out(vty, "Ad-Total  : %ld%s", adp_count, VTY_NEWLINE);    
+    vty_out(vty, "Ad-Success: %ld%s", adp_success, VTY_NEWLINE);  
     return 0;
 }
 
