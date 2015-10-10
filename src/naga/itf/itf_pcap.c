@@ -51,6 +51,7 @@ berr ift_raw_send_packet(void* fp, uint8_t * buff, int len)
                 printf("Send Packet Failed %s %d\n", __func__, __LINE__);
                     BRET(E_FAIL);
             }
+                printf("Send Packet Success %s %d\n", __func__, __LINE__);			
     }
     return E_SUCCESS;
 }
@@ -99,6 +100,7 @@ void* pcap_rx_loop(void *_param);
 void *pcap_rx_loop(void *_param)
 {
     libpcap_param_t *param = (libpcap_param_t *)_param;
+	
     pcap_loop(param->fp, 0, (pcap_handler)libpcap_packet_handler, (void*)_param);
     return NULL;
 }

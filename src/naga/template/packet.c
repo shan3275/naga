@@ -202,12 +202,12 @@ ads_eth_head_modify(struct ether_hdr *eth_hdr, hytag_t *hytag, uint8_t direction
         ether_addr_copy(&dst_mac, &(eth_hdr->s_addr));
         
     }
-    eth_hdr->s_addr.addr_bytes[0] = 0x00;
-    eth_hdr->s_addr.addr_bytes[1] = 0x01;
-    eth_hdr->s_addr.addr_bytes[2] = 0x02;
-    eth_hdr->s_addr.addr_bytes[3] = 0x03;
-    eth_hdr->s_addr.addr_bytes[4] = 0x04;
-    eth_hdr->s_addr.addr_bytes[5] = 0x05;   
+    //eth_hdr->s_addr.addr_bytes[0] = 0x00;
+    //eth_hdr->s_addr.addr_bytes[1] = 0x01;
+    //eth_hdr->s_addr.addr_bytes[2] = 0x02;
+    //eth_hdr->s_addr.addr_bytes[3] = 0x03;
+    //eth_hdr->s_addr.addr_bytes[4] = 0x04;
+    //eth_hdr->s_addr.addr_bytes[5] = 0x05;   
     return E_SUCCESS;
 }
 
