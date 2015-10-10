@@ -118,7 +118,7 @@ berr pid_http_down(struct pbuf *p ,  hytag_t * hytag )
         BRET(E_PARAM);
     return E_SUCCESS;
 }
-
+#if 0
 
 berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
 {
@@ -238,9 +238,9 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
 
 
 
+#else
 
-
-berr pid_http_up2(struct pbuf *p ,  hytag_t * hytag )
+berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
 {
     
     
@@ -249,14 +249,18 @@ berr pid_http_up2(struct pbuf *p ,  hytag_t * hytag )
     char *l5_ptr = NULL; 
     char * line = NULL;
     uint16_t l5_len;
-    char *method = NULL, *uri = NULL, *version;    
+    char *method = NULL, *uri = NULL;    
     char *begin = NULL;
-    l5_len = p->len - p->ptr_offset;
+ 
     
     l5_ptr = l5payload;
+    l5_len = p->len - p->ptr_offset;
+
+
+    
     PBUF_CUR_FORMAT(uint8_t *, http_p, p);
     memcpy(l5_ptr, http_p, l5_len);
-
+    l5_ptr[l5_len] = '\0';
  
     line = strsep(&l5_ptr, "\n");
     if(line != NULL)
@@ -310,7 +314,7 @@ berr pid_http_up2(struct pbuf *p ,  hytag_t * hytag )
 
 
 
-
+#endif
 
 
 
