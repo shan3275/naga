@@ -80,6 +80,7 @@ typedef void (*bts_iter_func)(void *data, void *param);
 extern void bts_list_all_element_lo(struct bts_list *bts_list, bts_iter_func func, void *param);
 
 
+
 /* List iteration macro. 
  * Usage: for (ALL_BTS_LIST_ELEMENTS (...) { ... }
  * It is safe to delete the bts_listnode using this macro.

@@ -3,50 +3,40 @@
 #       Copyright (c) 2015
 #       All rights reserved
 #
-#       @author       :shan
+#       @author       :gongjianhua
 #       @name         :Sam Liu
-#       @file         :/home/shan/work/rose/src/naga/acr\acr_cmd.c
+#       @file         :/home/shan/work/rose/src/naga/vsr\vsr_cmd.c
 #       @date         :2015/09/05 11:53
 #       @algorithm    :
 =============================================================================*/
 #include <string.h>
 
-#include "acr_cmd_api.h"
 #include "zebra.h"
-#include "version.h"
 #include "getopt.h"
 #include "command.h"
-#include "filter.h"
-#include "prefix.h"
-#include "privs.h"
-#include "acr_account_rule.h"
 
 #include "boots.h"
 #include "bts_debug.h"
 
-#define RULE_STR                    "Access control list\n"
-#define ACR_STR                     "Vister Record list\n"
-#define ADD_STR                     "ADD Operation\n"
-#define DEL_STR                     "Del Operation\n"
-//#define SHOW_STR                    "Show entry content\n"
+#include "naga_types.h"
+#include "naga_util.h"
+#include "naga_cmd.h"
 
-#define ACR_ALL_STR                 "All Vister Record list\n"
+#include "acr.h"
 
-//#define CLEAR_STR                   "Clear Operation\n"
+#include "version.h"
+#include "command.h"
+#include "filter.h"
+#include "prefix.h"
+#include "privs.h"
 
-
-#define ACCOUNT_STR                    "Opearation of http host\n"
-#define ACR_ACCOUNT_STR                "Http host\n"
-#define ACTION_STR                  "forward or drop\n"
-#define LOAD_STR                    "load host file\n"
-#define ACCOUNT_FILE_STR               "Host file to be loaded\n"
-#define ALL_STR                     "All rules\n"
-#define ACR_STAT_STR                    "acr rule stat\n" 
+#define ACCOUNT_STR					"Account rule\n"
+#define ACCOUNT_NAME_STR             "Name of account\n" 
+#define ACCOUNT_ALL_STR             "All the account\n"
 
 
-
-//#define DEBUG
-#ifdef  DEBUG
+#define ACR_DEBUG
+#ifdef  ACR_DEBUG
 #define acr_debug(fmt,args...)  vty_out(vty, "func=%s line=%d:" fmt "%s", __FUNCTION__, __LINE__, ##args, VTY_NEWLINE)
 #else
 #define acr_debug(fmt,args...)
@@ -54,62 +44,77 @@
 
 
 
-static acr_account_rule_t *acr_account_entry_new(void)
+static acr_t *acr_entry_new(void)
 {
-	acr_account_rule_t *entry = NULL;
+	acr_t *entry = NULL;
 
-	entry = malloc(sizeof(acr_account_rule_t));
+	entry = malloc(sizeof(acr_t));
 	if (NULL != entry)
 	{
-		memset(entry, 0, sizeof(acr_account_rule_t));
+		memset(entry, 0, sizeof(acr_t));
 	}
 
 	return entry;
 }
 
-
-
-
-
-
-
-static int acr_cmd_show_account(struct vty *vty, const char *account)
+void
+acr_dump_vty(void *data, void *param)
 {
+    acr_t *entry = NULL;
+    struct vty *vty = NULL;
 
+    char action_str[NAGA_ACTION_STR_SZ];
+
+    if ((NULL == param) || (NULL == data))
+    {
+        return;
+    }
+
+    entry = (acr_t *) data;
+    vty   = (struct vty *) param;
+
+    naga_action_string(&entry->acl.actions, action_str);
+
+    vty_out(vty, "%-32s %-32s %-16ld %s", entry->account, action_str, 
+            (uint64_t) entry->acl.cnt.cnt, VTY_NEWLINE);
+}
+
+static int cmd_acr_show(struct vty *vty, const char *account)
+{
 	int ret = 0;
-	uint32_t len = 0;
-	acr_account_rule_t *entry;
-	acr_account_rule_t data;
-	//memset(&account_info, 0, sizeof(acr_account_rule_t));
-	
+
+	acr_t *entry = NULL;
+
 	if (NULL == account)
 	{
-        return CMD_ERR_NO_MATCH;
+        return CMD_ERR_NOTHING_TODO;
 	}
-	#if 0
-	if (account_str2bit(account, data, &len))
-	{
-		return CMD_ERR_NO_MATCH;
-	}
-#endif
-	memset(&data, 0, sizeof(acr_account_rule_t));
 
-	len = strlen(account);
-	data.account_len = len;
-	memcpy(data.account, account, len);
-
-	vty_out(vty, "%-32s %-16s %-16s %s","account","action", "cnt",VTY_NEWLINE);
-	vty_out(vty, "---------------------------------%s", VTY_NEWLINE);
-
-    entry = rule_acr_cmd_show_account(&data);
+    entry = api_acr_get((char *)account);
     if (NULL == entry)
     {
-        vty_out(vty, "account %s empty%s", account, VTY_NEWLINE);
+        vty_out(vty, "acr account<%s> empty%s", account, VTY_NEWLINE);
         return CMD_WARNING;
     }
+	vty_out(vty, "%-32s %-32s %-16s %s","account","action", "cnt",VTY_NEWLINE);
+    vty_out(vty, "------------------------------------------------%s", VTY_NEWLINE);
 
-	vty_out(vty, "%-32s %-16d %-16ld %s", entry->account, entry->acl.actions, 
-		(uint64_t)entry->acl.cnt.cnt, VTY_NEWLINE);
+    acr_dump_vty((void *)entry, (void *)vty);
+   
+    return CMD_SUCCESS;
+}
+
+
+static int cmd_acr_show_all(struct vty *vty)
+{
+	int ret = 0;
+
+	vty_out(vty, "%-32s %-32s %-16s %s","account","action", "cnt",VTY_NEWLINE);
+    vty_out(vty, "------------------------------------------------%s", VTY_NEWLINE);
+	
+    acr_iter(acr_dump_vty, vty);
+
+   
 
     return CMD_SUCCESS;
 }
@@ -117,47 +122,43 @@ static int acr_cmd_show_account(struct vty *vty, const char *account)
 
 
 
-DEFUN(acr_show_account,
-      acr_show_account_cmd,
-      "rule acr account show ACCOUNT",
-      RULE_STR
-      ACR_STR
-      ACCOUNT_STR
+DEFUN(show_account,
+      show_account_cmd,
+      "show account NAME",
       SHOW_STR
-      ACR_ACCOUNT_STR)
+      ACCOUNT_STR
+      ACCOUNT_NAME_STR)
 {
-    return acr_cmd_show_account(vty, argv[0]);
+    return cmd_acr_show(vty, argv[0]);
+}
+
+
+DEFUN(show_account_all,
+      show_account_all_cmd,
+      "show account all",
+      SHOW_STR
+      ACCOUNT_STR
+      ACCOUNT_ALL_STR)
+{
+    return cmd_acr_show_all(vty);
 }
 
 
 
-
-static int acr_cmd_del_account(struct vty *vty, const char *account)
+static int cmd_acr_del(struct vty *vty, const char *account)
 {
     int ret = 0;
-	uint32_t len;
-	acr_account_rule_t entry;
-	
-	memset(&entry, 0, sizeof(acr_account_rule_t));
 	
 	if (NULL == account)
 	{
-        return CMD_ERR_NO_MATCH;
+        return CMD_ERR_NOTHING_TODO;
 	}
-#if 0
-	if (account_str2bit(account, data, &len))
-	{
-		return CMD_ERR_NO_MATCH;
-	}
-#endif
-	len = strlen(account);
-	entry.account_len = len;
-	memcpy(entry.account, account, len);
 
-    ret = rule_acr_cmd_del_account(&entry);
+    ret = api_acr_del((char *)account);
+
     if (ret)
     {
-        vty_out(vty, "acr del account, %s ret(%d)%s", account, ret, VTY_NEWLINE);
+        vty_out(vty, "acr del  %s fail:(%s)%s", account, berr_msg(ret), VTY_NEWLINE);
         return CMD_WARNING;
     }
 
@@ -165,125 +166,92 @@ static int acr_cmd_del_account(struct vty *vty, const char *account)
 }
 
 
-
-
-
-DEFUN(acr_del_account, 
-      acr_del_account_cmd,
-      "rule acr account del ACCOUNT",
-      RULE_STR
-      ACR_STR
-      ACCOUNT_STR
-      DEL_STR
-      ACR_ACCOUNT_STR)
-{
-    return acr_cmd_del_account(vty, argv[0]);
-}
-
-
-
-static int acr_cmd_del_all(struct vty *vty)
+static int cmd_acr_del_all(struct vty *vty)
 {
 	int ret = 0;
-	ret = rule_acr_cmd_del_all();
+	ret = api_acr_clear();
 	if (ret)
     {
-        vty_out(vty, "acr delete all account failed! ret(%d)%s", ret, VTY_NEWLINE);
+        vty_out(vty, "acr del all account fail:(%s)%s", berr_msg(ret), VTY_NEWLINE);
         return CMD_WARNING;
     }
 
     return CMD_SUCCESS;
-	
 }
 
-DEFUN(acr_del_all_account, 
-      acr_del_all_account_cmd,
-      "rule acr account del all",
-      RULE_STR
-      ACR_STR
+
+DEFUN(remove_account, 
+      remove_account_cmd,
+      "remove account NAME",
+      REMOVE_STR
       ACCOUNT_STR
-      DEL_STR
-      ALL_STR)
+      ACCOUNT_NAME_STR)
 {
+    return cmd_acr_del(vty, argv[0]);
+}
 
-    return acr_cmd_del_all(vty);
+DEFUN(remove_account_all, 
+      remove_account_all_cmd,
+      "remove account all",
+      REMOVE_STR
+      ACCOUNT_STR
+      ACCOUNT_ALL_STR)
+{
+    return cmd_acr_del_all(vty);
 }
 
 
-
-
-
-static int acr_cmd_add_account(struct vty *vty, const char *account, const char *action_str)
+static int cmd_acr_add(struct vty *vty, const char *account, const char *action_str)
 {
-    int ret = 0;
-    uint32_t  action = 0, len = 0;
-	//suint8_t data[MAX_ACCOUNT_LEN];
+    berr ret = 0;
 
-	acr_account_rule_t *entry;
+	acr_t *entry = NULL;
 		
 	if ((NULL == account) || (NULL == action_str))
 	{
         return CMD_ERR_NO_MATCH;
 	}
 
-	entry = acr_account_entry_new();
+    entry = acr_entry_new();
 	if (NULL == entry)
 	{
-		return CMD_ERR_NO_MATCH;
+        return CMD_ERR_NO_MATCH;
 	}
+
+	if(naga_action_parse((char *)action_str, &entry->acl.actions))
+    {
+        return CMD_ERR_NO_MATCH;
+    }
 	
-    //index  = atoi(index_str);
-	naga_action_parse(action_str, &action);
-#if 0
-	if (account_str2bit(account, data, &len))
-	{
-		return CMD_ERR_NO_MATCH;
-	}
-#endif
+	entry->account_len = strlen(account);
+	memcpy(entry->account, account, entry->account_len);
 
-	
-	len = strlen(account);
-	entry->acl.actions = action;
-	entry->account_len = len;
-	memcpy(entry->account, account, len);
-
-	printf("account = %s, account_len = %d\n", account, len);
-
-    ret = rule_acr_cmd_add_account(entry);
+    ret = api_acr_add(entry);
     if (ret)
     {
-        vty_out(vty, "acr add account account(%s) ret(%d)%s", account, ret, VTY_NEWLINE);
+        vty_out(vty, "acr add account fail: ret(%s)%s", berr_msg(ret), VTY_NEWLINE);
         return CMD_WARNING;
     }
 
     return CMD_SUCCESS;
 }
 
-
-
-
-
 /*account operation*/
 
-DEFUN(acr_add_account, 
-      acr_add_account_cmd,
-      "rule acr account add ACCOUNT {push|drop}",
-      RULE_STR
-      ACR_STR
+DEFUN(account, 
+      account_cmd,
+      "account NAME ACT",
       ACCOUNT_STR
-      ADD_STR
-      ACR_ACCOUNT_STR
+      ACCOUNT_NAME_STR
       ACTION_STR)
 {
-    return acr_cmd_add_account(vty, argv[0], argv[1]);
+    return cmd_acr_add(vty, argv[0], argv[1]);
 }
 
-
-
-static int acr_cmd_load_account(struct vty *vty, const char *file_name)
+static int cmd_acr_load(struct vty *vty, const char *file_name)
 {
 	FILE *fp = NULL;
-	char account_line[NAGA_ACCOUNT_STR_SZ] = {0};
+	char account_line[MAX_ACCOUNT_LEN] = {0};
 	int rv = 0;
 	char *p = NULL;
 
@@ -294,7 +262,7 @@ static int acr_cmd_load_account(struct vty *vty, const char *file_name)
 		return CMD_ERR_NOTHING_TODO;
 	}
 
-	while(NULL != fgets(account_line, NAGA_ACCOUNT_STR_SZ, fp))
+	while(NULL != fgets(account_line, MAX_ACCOUNT_LEN, fp))
 	{
 		if ('#' == account_line[0])
 		{
@@ -304,9 +272,9 @@ static int acr_cmd_load_account(struct vty *vty, const char *file_name)
 		if (NULL != (p = strchr(account_line, '\n')))
 		{
             *p = '\0';
-		}
+		}	
 
-		rv = acr_cmd_add_account(vty, account_line, "push");
+		rv = cmd_acr_add(vty, account_line, "push");
 		if (CMD_SUCCESS != rv)
 		{
 			acr_debug("Add account %s rule failed!\n", account_line);
@@ -320,75 +288,72 @@ static int acr_cmd_load_account(struct vty *vty, const char *file_name)
 }
 
 
-DEFUN(acr_load_account_cfg,
-      acr_load_account_cfg_cmd,
-      "rule acr load account FILE",
-      RULE_STR
-      ACR_STR
+DEFUN(load_account,
+      load_account_cmd,
+      "load account FILE",
       LOAD_STR
       ACCOUNT_STR
-      SHOW_STR
-      ACCOUNT_FILE_STR)
+      FILE_STR)
 {
-    return acr_cmd_load_account(vty, argv[0]);
+    return cmd_acr_load(vty, argv[0]);
 }
 
-
-
-
-static int acr_cmd_clear_account_stat(struct vty *vty, const char *account)
+static int cmd_acr_clear_stat(struct vty *vty, const char *account)
 {
 	int ret = 0;
-	uint32_t len;
-	acr_account_rule_t *entry;
-	acr_account_rule_t data;
-	
-	memset(&data, 0, sizeof(acr_account_rule_t));
-	
-	if (NULL == account)
-	{
-		return CMD_ERR_NO_MATCH;
-	}
-#if 0
-	if (account_str2bit(account, data, &len))
-	{
-		return CMD_ERR_NO_MATCH;
-	}
-#endif
-	len = strlen(account);
-	data.account_len = len;
-	memcpy(data.account, account, len);
 
-	entry = rule_acr_cmd_show_account(&data);
-	if (NULL == entry)
-	{
-		vty_out(vty, "This account %s rule does not exist%s", account, VTY_NEWLINE);
-		return CMD_ERR_NOTHING_TODO;
-	}
-
-	ACL_CNT_CLEAR(entry->acl);
+    if (NULL == account)
+    {
+        return CMD_ERR_NOTHING_TODO;
+    }
+	
+    ret = api_acr_stat_clear((char *)account); 
+	if (ret)
+    {
+        vty_out(vty, "acr clear account %s rule stat fail:(%s)%s", account, berr_msg(ret), VTY_NEWLINE);
+        return CMD_WARNING;
+    }
 
     return CMD_SUCCESS;
 
 }
 
 
-
-
-DEFUN(acr_clear_account_rule_stat,
-      acr_clear_account_rule_stat_cmd,
-      "rule acr clear account stat ACCOUNT",
-      RULE_STR
-      ACR_STR
-      CLEAR_STR
-      ACCOUNT_STR
-      ACR_STAT_STR
-      ACR_ACCOUNT_STR)
+static int cmd_acr_clear_stat_all(struct vty *vty)
 {
-    return acr_cmd_clear_account_stat(vty, argv[0]);
+	int ret = 0;
+	ret = api_acr_stat_clear_all();
+	if (ret)
+    {
+        vty_out(vty, "acr clear all account rule stat fail:(%s)%s", berr_msg(ret), VTY_NEWLINE);
+        return CMD_WARNING;
+    }
+
+    return CMD_SUCCESS;
 }
 
 
+DEFUN(clear_account_stat,
+      clear_account_stat_cmd,
+      "clear account stat ACCOUNT",
+      CLEAR_STR
+      ACCOUNT_STR
+      STAT_STR
+      ACCOUNT_STR)
+{
+    return cmd_acr_clear_stat(vty, argv[0]);
+}
+
+DEFUN(clear_account_stat_all,
+      clear_account_stat_all_cmd,
+      "clear account stat all",
+      CLEAR_STR
+      ACCOUNT_STR
+      STAT_STR
+      ACCOUNT_ALL_STR)
+{
+    return cmd_acr_clear_stat_all(vty);
+}
 
 /*
  * acr module cmdline register and init
@@ -396,12 +361,14 @@ DEFUN(acr_clear_account_rule_stat,
  * */
 void cmdline_acr_init(void)
 {
-	install_element(CMD_NODE, &acr_add_account_cmd);
-	install_element(CMD_NODE, &acr_del_all_account_cmd);
-	install_element(CMD_NODE, &acr_del_account_cmd);
-	install_element(CMD_NODE, &acr_show_account_cmd);
-	install_element(CMD_NODE, &acr_load_account_cfg_cmd);
-	install_element(CMD_NODE, &acr_clear_account_rule_stat_cmd);
+	install_element(CMD_NODE, &account_cmd);
+	install_element(CMD_NODE, &remove_account_cmd);
+	install_element(CMD_NODE, &remove_account_all_cmd);
+	install_element(CMD_NODE, &load_account_cmd);
+	install_element(CMD_NODE, &clear_account_stat_cmd);
+	install_element(CMD_NODE, &clear_account_stat_all_cmd);
+	install_element(CMD_NODE, &show_account_cmd);
+	install_element(CMD_NODE, &show_account_all_cmd);
 
     return ;
 }
