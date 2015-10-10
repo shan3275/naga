@@ -1,5 +1,6 @@
 #include "itf.h"
 #include "bts_debug.h"
+#include "bts_cnt.h"
 
 extern struct itf_port_statistics port_statistics[RTE_MAX_ETHPORTS];
 
@@ -54,6 +55,8 @@ void itf_rx_burst(rx_process_func process_func)
         for (j = 0; j < nb_rx; j++) {
             m = pkts_burst[j];
             rte_prefetch0(rte_pktmbuf_mtod(m, void *));
+            cnt_inc(ITF_IPKTS);
+            cnt_add(ITF_IBYTS, m->data_len);
 
             ec = process_func(m);
             if(ec != E_SUCCESS) {

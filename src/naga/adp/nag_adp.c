@@ -238,10 +238,6 @@ berr naga_adp(hytag_t *hytag)
 		   {
 			   hytag->fill_len = hytag->content_len - hytag->content_offset;
 		   }
-		   /*
-		      debug("hytag->content_len(%d), hytag->content_offset(%d), hytag->fill_len(%d)", 
-		      hytag->content_len, hytag->content_offset, hytag->fill_len);
-		    */
 
 		   rv = ads_response_content_generator(buffer, hytag);
 		   if(rv != E_SUCCESS){
@@ -250,15 +246,7 @@ berr naga_adp(hytag_t *hytag)
 			   return rv;
 		   }
 
-
 		   hytag->content_offset += hytag->fill_len;
-		   /*
-		      debug("hytag->content_len(%d), hytag->content_offset(%d), hytag->fill_len(%d)", 
-		      hytag->content_len, hytag->content_offset, hytag->fill_len);
-
-		    */
-
-
 		   rv = ift_raw_send_packet(hytag->fp, buffer, hytag->data_len);
 
 		   if(rv != E_SUCCESS)
@@ -295,10 +283,6 @@ berr naga_adp(hytag_t *hytag)
 		   {
 			   hytag->fill_len = hytag->content_len - hytag->content_offset;
 		   }
-		   /*
-		      debug("hytag->content_len(%d), hytag->content_offset(%d), hytag->fill_len(%d)", 
-		      hytag->content_len, hytag->content_offset, hytag->fill_len);
-		    */
 
 		   rv = ads_response_content_generator(rte_pktmbuf_mtod(txm, void *), hytag);
 		   if(rv != E_SUCCESS){
@@ -310,18 +294,11 @@ berr naga_adp(hytag_t *hytag)
 		   txm->data_len = txm->pkt_len = hytag->data_len;
 
 		   hytag->content_offset += hytag->fill_len;
-		   /*
-		      debug("hytag->content_len(%d), hytag->content_offset(%d), hytag->fill_len(%d)", 
-		      hytag->content_len, hytag->content_offset, hytag->fill_len);
-
-		    */
 
 		   itf_send_packet_imm(txm, txm->port);
-
-		   rte_pktmbuf_free(txm);
-
 	   }
 
+       rte_pktmbuf_free(txm);
 
    }
 #endif
