@@ -75,7 +75,7 @@ typedef enum
     AD_TEMPLATE_MAX,
 }ad_template_em;
 
-#define URL_MAX_LEN  512 //URL MAX LEN
+#define URL_MAX_LEN  1500//URL MAX LEN
 #define MAX_HOST_LEN 128
 #define MAX_USER_AGENT_LEN  256
 
@@ -140,17 +140,17 @@ typedef struct
     uint16_t url_len;
     uint16_t host_len;
 	uint16_t referer_len;
-	char url[URL_MAX_LEN];
-	uint8_t host[MAX_HOST_LEN];
-    char account[NAGA_ACCOUNT_STR_SZ];
-	char referer[URL_MAX_LEN];
+	char url[URL_MAX_LEN+1];
+	uint8_t host[MAX_HOST_LEN+1];
+    char account[NAGA_ACCOUNT_STR_SZ+1];
+	char referer[URL_MAX_LEN+1];
     uint16_t user_agent_len;
-    char  user_agent[MAX_USER_AGENT_LEN];
+    char  user_agent[MAX_USER_AGENT_LEN+1];
     
     naga_acl_t acl;
 
 
-    char     uri[URL_MAX_LEN];	
+    char     uri[URL_MAX_LEN+1];	
     uint16_t uri_len;
 
     struct pbuf pbuf;

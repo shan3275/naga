@@ -45,7 +45,7 @@ static inline berr pid_http_request_url(uint8_t *p ,  uint8_t *url, uint16_t *le
 	{
 		if (i + 1 > URL_MAX_LEN)
 		{
-			pid_incr_count(HTTP_URL_EXCEED);
+			//pid_incr_count(HTTP_URL_EXCEED);
 			//BRET(E_FAIL);
 			return E_FAIL;
 		}
@@ -118,7 +118,7 @@ berr pid_http_down(struct pbuf *p ,  hytag_t * hytag )
         BRET(E_PARAM);
     return E_SUCCESS;
 }
-
+#if 0
 
 berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
 {
@@ -137,7 +137,6 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
         /*Tcp syn without method*/
 		return E_SUCCESS;
 	}
-
 	if ((method_len != STRING_HTTP_GET_LEN ) ||
 		(memcmp(STRING_HTTP_GET, method_http, STRING_HTTP_GET_LEN)))
 	{
@@ -179,17 +178,127 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
 
 	len = vsr_len + 1;
 	UPDATE_PBUF_OFFSET(p, len);
+#if 1
 	PBUF_CUR_FORMAT(char *, context_p, p);
 
+	char http_buf[1500];
+	char *http_bak=http_buf;
+        
+	char line_buf[1500];
+	char *line_bak=line_buf;
+	
+	memcpy(http_bak, context_p, p->len-p->ptr_offset);
+	http_bak[p->len - p->ptr_offset+1] = '\0';	
+			
+	
+	while(NULL != (line = strsep(&http_bak, "\n")))
+	{
+
+		line_bak= line_buf;
+		strcpy(line_bak, line);
+		begin = strsep(&line_bak, ":");
+		if(  NULL != line_bak && NULL != begin )
+		{	
+		#if 0
+			int len =  strlen(line_bak);
+			if(len <= 2)
+			{
+				//printf("line = %s<%s>\n", line_bak, context_p);
+				continue;
+			}	
+			if (hytag->host_len ==0 
+					&& !strncasecmp(STRING_HTTP_HOST, begin, STRING_HTTP_HOST_LEN)) 
+			{
+
+				memcpy(hytag->host, &line_bak[1], (len-2));
+				hytag->host_len = len -2;
+			}
+			if (hytag->user_agent_len== 0 
+					&& !strncasecmp(STRING_HTTP_AGENT, begin, STRING_HTTP_AGENT_LEN))   
+			{
+
+				memcpy(hytag->user_agent, &line_bak[1], (len-2));
+				hytag->user_agent_len = len-2;
+			}				
+		#endif
+		}
+
+	}
+
+
+#endif
+	/*check The First char*/
+	if(hytag->uri[0] == '/')
+	{
+		hytag->url_len= snprintf(hytag->url, 256, "http://%s%s",hytag->host, hytag->uri);
+	}
+	return E_SUCCESS;
+}
+
+
+
+
+#else
+
+berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
+{
     
-	while(NULL != (line = strsep(&context_p, "\n")))
+    uint8_t *http_p = NULL;
+    char l5payload[1500];
+    char *l5_ptr = NULL; 
+    char * line = NULL;
+    uint16_t l5_len;
+    char *method = NULL, *uri = NULL;    
+    char *begin = NULL;
+ 
+    
+    l5_ptr = l5payload;
+    l5_len = p->len - p->ptr_offset;
+
+
+    
+    PBUF_CUR_FORMAT(uint8_t *, http_p, p);
+    memcpy(l5_ptr, http_p, l5_len);
+    l5_ptr[l5_len] = '\0';
+
+    
+    line = strsep(&l5_ptr, "\n");
+
+    if(line != NULL)
+    {
+        method = strsep(&line, " ");
+        if (NULL == method  || strncmp(STRING_HTTP_GET, method, STRING_HTTP_GET_LEN))
+        {
+        	pid_incr_count(APP_HTTP_OTHER);
+        	return E_SUCCESS;
+        }
+        pid_incr_count(APP_HTTP_GET);
+        uri = strsep(&line, " ");
+        if(uri != NULL)
+        {
+            strncpy(hytag->uri, uri, );
+            hytag->uri_len = strlen(uri);
+            hytag->app_type = APP_TYPE_HTTP_GET_OR_POST;
+        }
+        else
+        {
+            return E_SUCCESS;
+        }
+        
+    }
+    else
+    {
+        return E_SUCCESS;
+    }
+
+    
+	while(NULL != (line = strsep(&l5_ptr, "\n")))
 	{
 		if (NULL != (begin = strsep(&line, ":")))
 		{	
-            if( NULL== line )
-            {
+            if( NULL == line)
                 continue;
-            }
+            
 			if (hytag->host_len ==0 
                 && !strncmp(STRING_HTTP_HOST, begin, STRING_HTTP_HOST_LEN)) 
 			{
@@ -215,6 +324,16 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
 	}
     return E_SUCCESS;
 }
+
+
+
+#endif
+
+
+
+
+
+
 #if 0
 berr pid_http_get(struct pbuf *p,  hytag_t * hytag)
 	    irintf("")	

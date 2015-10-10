@@ -21,7 +21,7 @@ void hytag_log(hytag_t *tag);
 
 #define HYTAG_LOG(_tag) \
 { \
-    if (DOPT_IS_SELECTED(DOPT_TAGMON)) \
+    if (DOPT_IS_SELECTED(DOPT_LOG)) \
     { \
         hytag_log(_tag); \
     } \
