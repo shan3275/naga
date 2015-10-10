@@ -75,12 +75,12 @@ void libpcap_packet_handler(u_char *param __attribute__((unused)),
                             const struct pcap_pkthdr *header,   u_char *packet)
 {
     hytag_t hytag;
-    char buffer[2048];	
+    //char buffer[2048];	
 	
     memset(&hytag, 0x0, sizeof(hytag));
-    memcpy((void *)buffer, (void *)packet, header->len);	
+    //memcpy((void *)buffer, (void *)packet, header->len);	
     
-    hytag.pbuf.ptr = (void *)buffer;
+    hytag.pbuf.ptr = (void *)packet;
     hytag.pbuf.len = header->len;
     hytag.pbuf.ptr_offset = 0;
     hytag.m = NULL;

@@ -181,27 +181,44 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
 #if 1
 	PBUF_CUR_FORMAT(char *, context_p, p);
 
+	char http_buf[1500];
+	char *http_bak=http_buf;
+        
 	char line_buf[1500];
-	char *line_bak = line_buf;
-	while(NULL != (line = strsep(&context_p, "\n")))
+	char *line_bak=line_buf;
+	
+	memcpy(http_bak, context_p, p->len-p->ptr_offset);
+	http_bak[p->len - p->ptr_offset+1] = '\0';	
+			
+	
+	while(NULL != (line = strsep(&http_bak, "\n")))
 	{
+
+		line_bak= line_buf;
+		strcpy(line_bak, line);
 		begin = strsep(&line_bak, ":");
 		if(  NULL != line_bak && NULL != begin )
 		{	
-		#if 1
+		#if 0
+			int len =  strlen(line_bak);
+			if(len <= 2)
+			{
+				//printf("line = %s<%s>\n", line_bak, context_p);
+				continue;
+			}	
 			if (hytag->host_len ==0 
-					&& !strncmp(STRING_HTTP_HOST, begin, STRING_HTTP_HOST_LEN)) 
+					&& !strncasecmp(STRING_HTTP_HOST, begin, STRING_HTTP_HOST_LEN)) 
 			{
 
-				memcpy(hytag->host, &line_bak[1], (strlen(line_bak)-2));
-				hytag->host_len = strlen(line_bak)-2;
+				memcpy(hytag->host, &line_bak[1], (len-2));
+				hytag->host_len = len -2;
 			}
 			if (hytag->user_agent_len== 0 
-					&& !strncmp(STRING_HTTP_AGENT, begin, STRING_HTTP_AGENT_LEN))   
+					&& !strncasecmp(STRING_HTTP_AGENT, begin, STRING_HTTP_AGENT_LEN))   
 			{
 
-				memcpy(hytag->user_agent, &line_bak[1], (strlen(line_bak)-2));
-				hytag->user_agent_len = strlen(line_bak)-2;
+				memcpy(hytag->user_agent, &line_bak[1], (len-2));
+				hytag->user_agent_len = len-2;
 			}				
 		#endif
 		}
