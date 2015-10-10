@@ -45,7 +45,7 @@ static inline berr pid_http_request_url(uint8_t *p ,  uint8_t *url, uint16_t *le
 	{
 		if (i + 1 > URL_MAX_LEN)
 		{
-			pid_incr_count(HTTP_URL_EXCEED);
+			//pid_incr_count(HTTP_URL_EXCEED);
 			//BRET(E_FAIL);
 			return E_FAIL;
 		}
@@ -137,7 +137,6 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
         /*Tcp syn without method*/
 		return E_SUCCESS;
 	}
-
 	if ((method_len != STRING_HTTP_GET_LEN ) ||
 		(memcmp(STRING_HTTP_GET, method_http, STRING_HTTP_GET_LEN)))
 	{
@@ -179,41 +178,44 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
 
 	len = vsr_len + 1;
 	UPDATE_PBUF_OFFSET(p, len);
+#if 1
 	PBUF_CUR_FORMAT(char *, context_p, p);
 
-    
+	char line_buf[1500];
+	char *line_bak = line_buf;
 	while(NULL != (line = strsep(&context_p, "\n")))
 	{
-		if (NULL != (begin = strsep(&line, ":")))
+		begin = strsep(&line_bak, ":");
+		if(  NULL != line_bak && NULL != begin )
 		{	
-            if( NULL== line )
-            {
-                continue;
-            }
+		#if 1
 			if (hytag->host_len ==0 
-                && !strncmp(STRING_HTTP_HOST, begin, STRING_HTTP_HOST_LEN)) 
+					&& !strncmp(STRING_HTTP_HOST, begin, STRING_HTTP_HOST_LEN)) 
 			{
-               
-				memcpy(hytag->host, &line[1], (strlen(line)-2));
-				hytag->host_len = strlen(line)-2;
+
+				memcpy(hytag->host, &line_bak[1], (strlen(line_bak)-2));
+				hytag->host_len = strlen(line_bak)-2;
 			}
 			if (hytag->user_agent_len== 0 
-                    && !strncmp(STRING_HTTP_AGENT, begin, STRING_HTTP_AGENT_LEN))   
+					&& !strncmp(STRING_HTTP_AGENT, begin, STRING_HTTP_AGENT_LEN))   
 			{
-           
-				memcpy(hytag->user_agent, &line[1], (strlen(line)-2));
-				hytag->user_agent_len = strlen(line)-2;
-			}			
-		
+
+				memcpy(hytag->user_agent, &line_bak[1], (strlen(line_bak)-2));
+				hytag->user_agent_len = strlen(line_bak)-2;
+			}				
+		#endif
 		}
+
 	}
 
-    /*check The First char*/
+
+#endif
+	/*check The First char*/
 	if(hytag->uri[0] == '/')
 	{
 		hytag->url_len= snprintf(hytag->url, 256, "http://%s%s",hytag->host, hytag->uri);
 	}
-    return E_SUCCESS;
+	return E_SUCCESS;
 }
 #if 0
 berr pid_http_get(struct pbuf *p,  hytag_t * hytag)
