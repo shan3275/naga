@@ -244,10 +244,10 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
 {
     
     uint8_t *http_p = NULL;
-    char l5payload[1500];
+    char l5payload[PACKET_MTU];
     char *l5_ptr = NULL; 
     char * line = NULL;
-    uint16_t l5_len;
+    uint16_t l5_len = 0;
     char *method = NULL, *uri = NULL;    
     char *begin = NULL;
  
@@ -258,7 +258,7 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
 
     
     PBUF_CUR_FORMAT(uint8_t *, http_p, p);
-    if(l5_len <= 0 )
+    if( l5_len <= 0  || l5_len > PACKET_MTU)
     {
 
 	    return E_SUCCESS;
@@ -340,9 +340,9 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
 	}
 
     /*check The First char*/
-	if(hytag->uri[0] == '/')
+	if(hytag->uri[0] == '/' && hytag->host_len > 0 && hytag->uri_len > 0)
 	{
-		hytag->url_len= snprintf(hytag->url, 256, "http://%s%s",hytag->host, hytag->uri);
+		hytag->url_len= snprintf(hytag->url, 256, "http://%s%s", hytag->host, hytag->uri);
 	}
     return E_SUCCESS;
 }

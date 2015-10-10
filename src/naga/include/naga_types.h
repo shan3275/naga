@@ -6,7 +6,7 @@
 typedef uint32_t ipaddr_t;
 
 #define NAGA_ACCOUNT_STR_SZ 32
-
+#define PACKET_MTU    1500
 
 #define ACT_LOG         1
 #define ACT_TRACE       2
