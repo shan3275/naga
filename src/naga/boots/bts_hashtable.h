@@ -21,6 +21,7 @@ extern berr bts_hashtable_del(bts_hashtable_t *tab, void *data);
 extern berr bts_hashtable_del_all(bts_hashtable_t *tab);
 
 //typedef void (*bts_iter_func)(void *data, void *param);
+
 berr bts_hashtable_iter(bts_hashtable_t *tab, bts_iter_func func, void *param);
 
 #endif /* !__BTS_HASHTABLE_H__ */

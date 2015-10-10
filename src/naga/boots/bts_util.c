@@ -40,8 +40,14 @@ bts_str_cmp(void *val1, void *val2)
     return strcmp(val1, val2);
 }
 
+
+
 void bts_ip_string(uint32_t ip, char *str)
 {
+	if (NULL == str)
+	{
+		return;
+	}
     sprintf(str, "%d.%d.%d.%d",
             ((ip >> 24) & 0xff),
             ((ip >> 16) & 0xff),

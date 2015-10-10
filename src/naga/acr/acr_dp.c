@@ -1,7 +1,7 @@
 //#include "naga_account_table.h"
 #include "string.h"
-#include "acr_account_rule.h"
-#include "acr_account_table.h"
+#include "acr.h"
+//#include "acr_account_table.h"
 #include "naga_types.h"
 #include "bts_debug.h"
 
@@ -12,7 +12,7 @@
 #define MAX_ACCOUNT_RULE_NUM 10000
 
 
-
+#if 0
 void
 acr_account_fill(hytag_t *tag, acr_account_rule_t *data)
 {
@@ -35,15 +35,15 @@ acr_account_fill(hytag_t *tag, acr_account_rule_t *data)
 	data->account_len = strlen(tag->account);
 	
 }
-
+#endif
 
 void acr_dp_init(void)
 {
 	berr rv;
-    rv = acr_account_rule_init(MAX_ACCOUNT_RULE_NUM);
+    rv = acr_init(MAX_ACCOUNT_RULE_NUM);
 	if (E_SUCCESS != rv)
 	{
-		printf("Host rule init FAIL!\n");
+		printf("account rule init FAIL!\n");
 		return;
 	}
 }
@@ -53,8 +53,7 @@ void acr_dp_init(void)
 berr
 naga_acr(hytag_t *tag)
 {
-    acr_account_rule_t* rule = NULL;
-	acr_account_rule_t data;
+    acr_t* rule = NULL;
     if (NULL == tag)
     {
 		BRET(E_FAIL);
@@ -67,10 +66,9 @@ naga_acr(hytag_t *tag)
 
 	
     CNT_INC(ACR_PKTS);
-    memset(&data, 0, sizeof(acr_account_rule_t));
-    acr_account_fill(tag, &data);
 
-    rule = acr_account_rule_lookup((void *)(&data));
+   	bts_ip_string(tag->inner_srcip4, tag->account);
+    rule = acr_get(tag->account);
 
     if (NULL == rule)
     {
