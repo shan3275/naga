@@ -22,9 +22,9 @@ DEFUN(itf_rxtx,
         char * ifname = strdup(argv[0]);
         berr rv=  libpcap_rx_loop_setup(ifname);
         if(rv == E_SUCCESS)
-            vty_out(vty, "Success to open %s rx\n", ifname);
+            vty_out(vty, "Success to open %s rx%s", ifname, VTY_NEWLINE);
         else
-            vty_out(vty, "Failed to open %s rx\n", ifname);
+            vty_out(vty, "Failed to open %s rx%s", ifname, VTY_NEWLINE);
         free(ifname);
         return 0;
     }
