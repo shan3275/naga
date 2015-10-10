@@ -260,8 +260,10 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
     PBUF_CUR_FORMAT(uint8_t *, http_p, p);
     memcpy(l5_ptr, http_p, l5_len);
     l5_ptr[l5_len] = '\0';
- 
+
+    
     line = strsep(&l5_ptr, "\n");
+
     if(line != NULL)
     {
         method = strsep(&line, " ");
@@ -274,7 +276,7 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
         uri = strsep(&line, " ");
         if(uri != NULL)
         {
-            strcpy(hytag->uri, uri);
+            strncpy(hytag->uri, uri, );
             hytag->uri_len = strlen(uri);
             hytag->app_type = APP_TYPE_HTTP_GET_OR_POST;
         }
