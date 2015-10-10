@@ -50,8 +50,7 @@ berr ift_raw_send_packet(void* fp, uint8_t * buff, int len)
             {
                 printf("Send Packet Failed %s %d\n", __func__, __LINE__);
                     BRET(E_FAIL);
-            }
-                printf("Send Packet Success %s %d\n", __func__, __LINE__);			
+            }		
     }
     return E_SUCCESS;
 }
