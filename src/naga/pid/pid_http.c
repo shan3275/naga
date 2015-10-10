@@ -276,7 +276,7 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
         uri = strsep(&line, " ");
         if(uri != NULL)
         {
-            strncpy(hytag->uri, uri, );
+            strncpy(hytag->uri, uri, strlen(uri));
             hytag->uri_len = strlen(uri);
             hytag->app_type = APP_TYPE_HTTP_GET_OR_POST;
         }
