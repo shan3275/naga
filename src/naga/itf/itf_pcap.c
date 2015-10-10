@@ -8,6 +8,7 @@
 #include "itf.h"
 #include "boots_custom.h"
 #include "dbg_tagmon.h"
+#include "itf_stat.h"
 
 
 pcap_t *gpcap_desc = NULL;
@@ -39,14 +40,17 @@ berr itf_raw_socket_init(char *ifname)
 
 
 berr ift_raw_send_packet(void* fp, uint8_t * buff, int len)
-{  
+{
     int rv;
-    rv =  pcap_sendpacket((pcap_t *)fp, buff, len); 
-
-    if(rv < 0)
+    if (itf_tx_is_enable())
     {
-        printf("Send Packet Failed %s %d\n", __func__, __LINE__);
-        BRET(E_FAIL);
+        rv =  pcap_sendpacket((pcap_t *)fp, buff, len); 
+            
+            if(rv < 0)
+            {
+                printf("Send Packet Failed %s %d\n", __func__, __LINE__);
+                    BRET(E_FAIL);
+            }
     }
     return E_SUCCESS;
 }

@@ -119,7 +119,10 @@ void naga_data_main_loop()
 		/*
 		 * Read packet from RX queues
 		 */
-        itf_rx_burst(naga_data_process_flow);
+        if (itf_rx_is_enable())
+        {
+            itf_rx_burst(naga_data_process_flow);
+        }
 	}
 }
 

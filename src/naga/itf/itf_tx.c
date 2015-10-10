@@ -3,6 +3,7 @@
 //#include <rte_config.h>
 //#include <rte_ethdev.h>
 #include "bts_debug.h"
+#include "itf_stat.h"
 
 extern struct itf_port_statistics port_statistics[RTE_MAX_ETHPORTS];
 extern struct lcore_queue_conf lcore_queue_conf[RTE_MAX_LCORE];
@@ -73,10 +74,13 @@ int itf_send_packet(struct rte_mbuf *m, uint8_t port)
 
 int itf_send_packet_imm(struct rte_mbuf *m, uint8_t port)
 {
-    int ret;
+    int ret = 0;
     signed queueid = 0;
     
-    ret = rte_eth_tx_burst(port, (uint16_t) queueid, &m, 1);
+    if (itf_tx_is_enable())
+    {
+        ret = rte_eth_tx_burst(port, (uint16_t) queueid, &m, 1);
+    }
     
     return ret;
 }
