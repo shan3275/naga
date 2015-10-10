@@ -286,6 +286,7 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
 		{	
             if( NULL == line)
                 continue;
+            
 			if (hytag->host_len ==0 
                 && !strncmp(STRING_HTTP_HOST, begin, STRING_HTTP_HOST_LEN)) 
 			{

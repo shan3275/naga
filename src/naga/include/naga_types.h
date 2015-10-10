@@ -75,7 +75,7 @@ typedef enum
     AD_TEMPLATE_MAX,
 }ad_template_em;
 
-#define URL_MAX_LEN  1024//URL MAX LEN
+#define URL_MAX_LEN  1500//URL MAX LEN
 #define MAX_HOST_LEN 128
 #define MAX_USER_AGENT_LEN  256
 
