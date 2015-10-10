@@ -243,7 +243,6 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
 berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
 {
     
-    
     uint8_t *http_p = NULL;
     char l5payload[1500];
     char *l5_ptr = NULL; 
@@ -271,15 +270,26 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
         	pid_incr_count(APP_HTTP_OTHER);
         	return E_SUCCESS;
         }
+        pid_incr_count(APP_HTTP_GET);
         uri = strsep(&line, " ");
         if(uri != NULL)
         {
             strcpy(hytag->uri, uri);
             hytag->uri_len = strlen(uri);
+            hytag->app_type = APP_TYPE_HTTP_GET_OR_POST;
+        }
+        else
+        {
+            return E_SUCCESS;
         }
         
     }
+    else
+    {
+        return E_SUCCESS;
+    }
 
+    
 	while(NULL != (line = strsep(&l5_ptr, "\n")))
 	{
 		if (NULL != (begin = strsep(&line, ":")))
