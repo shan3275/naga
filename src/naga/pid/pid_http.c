@@ -258,9 +258,8 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
 
     
     PBUF_CUR_FORMAT(uint8_t *, http_p, p);
-    if( l5_len <= 0  || l5_len > PACKET_MTU)
+    if( l5_len <= 0  || l5_len >= PACKET_MTU)
     {
-
 	    return E_SUCCESS;
     }	 	
     memcpy(l5_ptr, http_p, l5_len);
