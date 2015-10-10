@@ -5,7 +5,7 @@
 #include <pcap.h>
 typedef uint32_t ipaddr_t;
 
-#define NAGA_ACCOUNT_STR_SZ 32
+
 #define PACKET_MTU    1500
 
 #define ACT_LOG         1
@@ -77,6 +77,7 @@ typedef enum
 
 #define URL_MAX_LEN  1500//URL MAX LEN
 #define MAX_HOST_LEN 128
+#define MAX_ACCOUNT_LEN   64
 #define MAX_USER_AGENT_LEN  256
 
 #define ENABLE 1
@@ -142,7 +143,7 @@ typedef struct
 	uint16_t referer_len;
 	char url[URL_MAX_LEN+1];
 	uint8_t host[MAX_HOST_LEN+1];
-    char account[NAGA_ACCOUNT_STR_SZ+1];
+    char account[MAX_ACCOUNT_LEN+1];
 	char referer[URL_MAX_LEN+1];
     uint16_t user_agent_len;
     char  user_agent[MAX_USER_AGENT_LEN+1];
