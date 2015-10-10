@@ -234,6 +234,89 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
 	}
 	return E_SUCCESS;
 }
+
+
+
+
+
+
+berr pid_http_up2(struct pbuf *p ,  hytag_t * hytag )
+{
+    
+    
+    uint8_t *http_p = NULL;
+    char l5payload[1500];
+    char *l5_ptr = NULL; 
+    char * line = NULL;
+    uint16_t l5_len;
+    char *method = NULL, *uri = NULL, *version;    
+    char *begin = NULL;
+    l5_len = p->len - p->ptr_offset;
+    
+    l5_ptr = l5payload;
+    PBUF_CUR_FORMAT(uint8_t *, http_p, p);
+    memcpy(l5_ptr, http_p, l5_len);
+
+ 
+    line = strsep(&l5_ptr, "\n");
+    if(line != NULL)
+    {
+        method = strsep(&line, " ");
+        if (NULL == method  || strncmp(STRING_HTTP_GET, method, STRING_HTTP_GET_LEN))
+        {
+        	pid_incr_count(APP_HTTP_OTHER);
+        	return E_SUCCESS;
+        }
+        uri = strsep(&line, " ");
+        if(uri != NULL)
+        {
+            strcpy(hytag->uri, uri);
+            hytag->uri_len = strlen(uri);
+        }
+        
+    }
+
+	while(NULL != (line = strsep(&l5_ptr, "\n")))
+	{
+		if (NULL != (begin = strsep(&line, ":")))
+		{	
+            if( NULL == line)
+                continue;
+			if (hytag->host_len ==0 
+                && !strncmp(STRING_HTTP_HOST, begin, STRING_HTTP_HOST_LEN)) 
+			{
+               
+				memcpy(hytag->host, &line[1], (strlen(line)-2));
+				hytag->host_len = strlen(line)-2;
+			}
+			if (hytag->user_agent_len== 0 
+                    && !strncmp(STRING_HTTP_AGENT, begin, STRING_HTTP_AGENT_LEN))   
+			{
+           
+				memcpy(hytag->user_agent, &line[1], (strlen(line)-2));
+				hytag->user_agent_len = strlen(line)-2;
+			}			
+		
+		}
+	}
+
+    /*check The First char*/
+	if(hytag->uri[0] == '/')
+	{
+		hytag->url_len= snprintf(hytag->url, 256, "http://%s%s",hytag->host, hytag->uri);
+	}
+    return E_SUCCESS;
+}
+
+
+
+
+
+
+
+
+
+
 #if 0
 berr pid_http_get(struct pbuf *p,  hytag_t * hytag)
 	    irintf("")	
