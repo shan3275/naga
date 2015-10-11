@@ -2,7 +2,7 @@
 #define __ADP_CMD_H
 
 
-
+#include "vty.h"
 void cmdline_adp_init(void);
 
 
