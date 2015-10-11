@@ -43,7 +43,7 @@ EXPORT_MAP := lib_vsr_version.map
 
 LIBABIVER := 1
 
-SRCS-y += packet.c packet_http.c
+SRCS-y += packet.c packet_http.c adt_cmd.c
 
 #
 # Export include files

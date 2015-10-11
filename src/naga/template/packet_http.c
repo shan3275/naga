@@ -35,7 +35,7 @@
 #include "boots.h"
 #include "packet_http.h"
 #include "rte_memcpy.h"
-#include "naga_types.h"
+#include "bts_debug.h"
 
 //#define DEBUG
 #ifdef  DEBUG   
@@ -44,14 +44,6 @@
 #define debug(fmt,args...)   
 #endif  /* DEBUG */ 
 
-
-typedef struct
-{
-    char *name;
-    char *head;
-    char *url;
-    char *tail;
-}http_body_t;
 
 http_body_t *http_body = NULL;
 
@@ -248,43 +240,43 @@ http_body_t default_http_body[AD_TEMPLATE_MAX] =
         .head = 
             "<!DOCTYPE HTML>\n"
             "<html>\n"
-            "<head>\n"
-            "<meta charset=\"utf-8\">"
-            "<title></title>\n"
-            "<script>\n"
-            "d=document;\n"
-            "function u(){\n"
-            "var f = \"",
+            "   <head>\n"
+            "       <meta charset=\"utf-8\">\n"
+            "       <title></title>\n"
+            "       <script>\n"
+            "           d=document;\n"
+            "           function u(){\n"
+            "           var f = \"",
         .url =
             "www.taobao.com",
         .tail =
             "\";\n"
-            "d.getElementById(\"m\").src=f+(f.indexOf(\"&\")<0\?\'\?\':\'&\')+\'_t=t\';\n"
+            "           d.getElementById(\"m\").src=f+(f.indexOf(\"&\")<0\?\'\?\':\'&\')+\'_t=t\';\n"
             "}\n"
             "\n"
-            "setTimeout(function(){d.getElementById(\"x\").style.display=\'block\';}, 2000);\n"
+            "           setTimeout(function(){d.getElementById(\"x\").style.display=\'block\';}, 2000);\n"
             "\n"
-            "function c(){\n"
-            "x.style.display=\"none\"\n"
-            "}\n"
+            "           function c(){\n"
+            "           x.style.display=\"none\"\n"
+            "           }\n"
             "\n"
-            "</script>\n"
-            "<style>\n"
-            "body {margin:0;color:#000;overflow:hidden;padding:0;height:100%;font-family:Arial}\n"
-            "a{cursor:pointer;display:block;position:absolute;border:1px;border-radius:1em;background-color:#555;color:#eee;z-index:3;right:5px;top:5px;line-height:20px;text-align:center;width:20px;font-size:10px}\n"
-            "#x{position:absolute;z-index:2;right:18px;bottom:0px;width:300px;height:250px}\n"
-            "#i{display:block; position:absolute; z-index:1; width:100%; height:100%}\n"
-            "</style>\n"
-            "</head>\n"
-            "<body onLoad=u()>\n"
-            "<div id=i>\n"
-            "<iframe id=m frameborder=0 width=100% height=100%></iframe>\n" 
-            "</div>\n"
-            "<div id=x>\n"
-            "<iframe src=\"http://180.96.27.113/ad/pc.html\" width=300 height=250 scrolling=no frameborder=0></iframe>\n"
-            "</div>\n"
+            "       </script>\n"
+            "       <style>\n"
+            "           body {margin:0;color:#000;overflow:hidden;padding:0;height:100%;font-family:Arial}\n"
+            "           a{cursor:pointer;display:block;position:absolute;border:1px;border-radius:1em;background-color:#555;color:#eee;z-index:3;right:5px;top:5px;line-height:20px;text-align:center;width:20px;font-size:10px}\n"
+            "           #x{position:absolute;z-index:2;right:18px;bottom:0px;width:300px;height:250px}\n"
+            "           #i{display:block; position:absolute; z-index:1; width:100%; height:100%}\n"
+            "       </style>\n"
+            "   </head>\n"
+            "   <body onLoad=u()>\n"
+            "       <div id=i>\n"
+            "           <iframe id=m frameborder=0 width=100% height=100%></iframe>\n" 
+            "       </div>\n"
+            "       <div id=x>\n"
+            "           <iframe src=\"http://180.96.27.113/ad/pc.html\" width=300 height=250 scrolling=no frameborder=0></iframe>\n"
+            "       </div>\n"
             "\n"
-            "</body>\n"
+            "   </body>\n"
             "</html>\n"
             "\n",
     },
@@ -518,48 +510,16 @@ berr ads_http_content_fill(char *buf, hytag_t *hytag)
     return E_SUCCESS;
 }
 
-
-
-#define HTTP_BODY_ELEMENT_ALLOC(_http_body, _element, _size) \
-        if ( NULL != _http_body->_element ) \
-        { \
-            printf("%s %d http_body alloc failed \n", __func__, __LINE__); \
-            BRET(E_NULL); \
-        } \
-        else \
-        { \
-            _http_body->_element = malloc(_size); \
-        }
-
-#define HTTP_BODY_ELEMENT_FREE(_http_body, _element, _num) \
-        if ( NULL != _http_body->_element ) \
-        { \
-            free((void *)_http_body->_element); \
-        } \
-        else \
-        { \
-            printf("%s %d http_body %d free failed\n", __func__, __LINE__, _num); \
-            BRET(E_NULL); \
-        }
-
 berr ads_template_fill(http_body_t *http_to, http_body_t *http_from)
 {
-
     if ( NULL == http_to || NULL == http_from )
     {
         BRET(E_PARAM);
     }
 
-    HTTP_BODY_ELEMENT_ALLOC(http_to, name, strlen(http_from->name));
     rte_memcpy(http_to->name, http_from->name, (size_t)strlen(http_from->name));
-
-    HTTP_BODY_ELEMENT_ALLOC(http_to, head, strlen(http_from->head));
     rte_memcpy(http_to->head, http_from->head, (size_t)strlen(http_from->head));
-
-    HTTP_BODY_ELEMENT_ALLOC(http_to, url, strlen(http_from->url));
-    rte_memcpy(http_to->url, http_from->url, (size_t)strlen(http_from->url));
-
-    HTTP_BODY_ELEMENT_ALLOC(http_to, tail, strlen(http_from->tail));
+    rte_memcpy(http_to->url,  http_from->url,  (size_t)strlen(http_from->url));
     rte_memcpy(http_to->tail, http_from->tail, (size_t)strlen(http_from->tail));
     return E_SUCCESS;
 }
@@ -587,24 +547,120 @@ berr ads_template_default_load( http_body_t *http_body)
     return E_SUCCESS;
 }
 
-berr ads_template_free( http_body_t *http_body)
+http_body_t *adt_get_http_body(void)
 {
+    return http_body;
+}
+
+berr adt_fill_template(ad_template_em template, const char *name, char * buff)
+{
+    http_body_t *http_to = NULL;
+    char *head = NULL;
+    size_t head_len = 0;
+    char *url =  NULL;
+    size_t url_len = 0;
+    char *tail = NULL;
+    size_t tail_len = 0;
+    char *del = "var f = \"";
+    char *url_del = "http://www.taobao.com";
     int i;
-    if ( NULL == http_body )
+
+    http_to = &http_body[template];
+
+    rte_memcpy(http_to->name, name, (size_t)strlen(name));
+    
+    head = strstr(buff, del);
+    head += strlen(del);
+    head_len = head - buff;
+    debug("head:");
+    for ( i = 0; i < head_len; i++ )
     {
-        printf("%s %d http_body malloc failed\n", __func__, __LINE__);
-        BRET(E_NULL);
+        //printf("%c", buff[i]);
     }
 
-    for ( i = 0; i < AD_TEMPLATE_MAX; i++ )
+    url =  strstr(head, url_del);
+    url_len = strlen(url_del);
+    debug("url:");
+    for ( i = 0; i < url_len; i++ )
     {
-        HTTP_BODY_ELEMENT_FREE(http_body, name, i);
-        HTTP_BODY_ELEMENT_FREE(http_body, head, i);
-        HTTP_BODY_ELEMENT_FREE(http_body, url,  i);
-        HTTP_BODY_ELEMENT_FREE(http_body, tail, i);
+       // printf("%c", buff[i + head_len]);
     }
 
-    printf("%s %d http_body free succeed!\n", __func__, __LINE__);
+    tail = buff + head_len + url_len;
+    tail_len = strlen(buff) - head_len - url_len;
+    debug("url:");
+    for ( i = 0; i < tail_len; i++ )
+    {
+        //printf("%c", buff[i + head_len + url_len]);
+    }
+
+    memset(http_to, 0, sizeof(http_body_t));
+    rte_memcpy(http_to->name, name, (size_t)strlen(name));
+    rte_memcpy(http_to->head, buff, head_len);
+    rte_memcpy(http_to->url,  url,  url_len);
+    rte_memcpy(http_to->tail, tail, tail_len);
+
+    i = template;
+    debug("Template(%d):\n", i);
+    debug("name(%d):%s\n",   (int)strlen(http_body[i].name), http_body[i].name);
+    debug("head(%d):\n%s\n", (int)strlen(http_body[i].head),http_body[i].head);
+    debug("url(%d):\n%s\n",  (int)strlen(http_body[i].url), http_body[i].url);
+    debug("tail(%d):\n%s\n", (int)strlen(http_body[i].tail),http_body[i].tail);
+
+    return E_SUCCESS;
+}
+
+berr adt_set(ad_template_em template, const char *dir_str)
+{
+    int ret;
+    FILE *fp;
+    long L;
+    char *buff;
+    size_t n,i;
+    if ( NULL == dir_str )
+    {
+        return E_PARAM;
+    }
+
+    fp = fopen (dir_str, "rb" );
+    if (fp==NULL) 
+    {
+        debug ("open error\n"); 
+        return E_OPEN;
+    }
+    fseek (fp , 0 , SEEK_END);
+    L = ftell (fp);
+    rewind (fp);
+    buff= (char*) malloc (sizeof(char)*L);
+    if (buff == NULL) 
+    {
+        debug("alloc error\n"); 
+        fclose (fp);
+        return E_MEMORY;
+    }
+    n = fread (buff,1,L,fp);
+    if (n != L) 
+    {
+        debug("read error\n");
+        fclose (fp);
+        return E_FAIL;
+    }
+    fclose (fp);
+    for (i=0;i<n;i++) {
+        //printf("%c",buff[i]);
+    }
+
+    /**/
+    ret = adt_fill_template(template, dir_str, buff);
+    if ( ret )
+    {
+        debug("adt_fill_template fail ret(%d)", ret);
+        free (buff);
+        return ret;
+    }
+
+    free (buff);
+
     return E_SUCCESS;
 }
 
@@ -630,10 +686,10 @@ berr ads_template_init(void)
     for( i = 0; i < AD_TEMPLATE_MAX; i++ )
     {
         debug("Template(%d):\n", i);
-        debug("name(%d):%s\n", strlen(http_body[i].name), http_body[i].name);
-        debug("head(%d):\n%s\n", strlen(http_body[i].head),http_body[i].head);
-        debug("url(%d):\n%s\n", strlen(http_body[i].url), http_body[i].url);
-        debug("tail(%d):\n%s\n", strlen(http_body[i].tail),http_body[i].tail);
+        debug("name(%d):%s\n",   (int)strlen(http_body[i].name), http_body[i].name);
+        debug("head(%d):\n%s\n", (int)strlen(http_body[i].head),http_body[i].head);
+        debug("url(%d):\n%s\n",  (int)strlen(http_body[i].url), http_body[i].url);
+        debug("tail(%d):\n%s\n", (int)strlen(http_body[i].tail),http_body[i].tail);
     }
     printf("ads template init success!\n");
 

@@ -34,6 +34,7 @@ Boston, MA 02111-1307, USA.  */
 #include "workqueue.h"
 #include "vsr_cmd.h"
 #include "itf_cmd.h"
+#include "adt_cmd.h"
 #include "naga_version.h"
 #include "dmr_cmd.h"
 #include "acr_cmd.h"
@@ -732,6 +733,7 @@ config_write_host (struct vty *vty)
 
   vsr_cmd_config_write(vty);
   itf_cmd_config_write(vty);
+  adt_cmd_config_write(vty);
   dmr_cmd_config_write(vty);
   acr_cmd_config_write(vty);
   adp_cmd_config_write(vty);
