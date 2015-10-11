@@ -189,8 +189,16 @@ berr libpcap_rx_loop_setup(char * ifname)
         }
 
         int rv = pthread_create(&recv_thread, NULL,  pcap_rx_loop, (void *)&param);
-        pthread_detach(recv_thread);
-		printf("Success Create Thread-%ld for interface-%s\n",recv_thread, ifname);
+		if(rv)
+		{
+			printf("Failed Create Thread for interface-%s\n", ifname);		
+		 	BRET(E_FAIL);
+		}
+		else
+		{
+			pthread_detach(recv_thread);
+			printf("Success Create Thread-%ld for interface-%s\n",recv_thread, ifname);
+		}
 		handle->recv_thread = recv_thread;
 		list_add_tail(&handle->node, &handle_head);
         return E_SUCCESS;
