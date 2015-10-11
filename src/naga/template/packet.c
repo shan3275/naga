@@ -185,11 +185,12 @@ uint8_t ads_mac[2][6];
 
 berr ads_mac_get(int dst_or_src, int *custom, uint8_t * mac)
 {
-	if(dst_or_src<0 || dst_or_src > 2)
+	if(dst_or_src < 0 || dst_or_src > 2)
 		return E_PARAM;
 
 	*custom = 	ads_mac_enable[dst_or_src];
 	memcpy(mac , ads_mac[dst_or_src], 6);
+	return E_SUCCESS;
 }
 
 
