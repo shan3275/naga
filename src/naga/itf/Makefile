@@ -46,7 +46,7 @@ SRCS-y := itf_rx.c  itf_tx.c itf_pcap.c itf_cmd.c itf_stat.c
 
 
 CFLAGS += -O3
-CFLAGS += $(WERROR_FLAGS)
+#CFLAGS += $(WERROR_FLAGS) -Werror=cast-qual
 CFLAGS += -I ../boots -I ../include -I ../pid -I ../debug  -I ../libzebra
 
 # workaround for a gcc bug with noreturn attribute

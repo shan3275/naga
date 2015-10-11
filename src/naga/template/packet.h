@@ -18,4 +18,13 @@ berr
 ads_response_head_generator(void *ptr, hytag_t *hytag);
 berr
 ads_response_content_generator(void *ptr, hytag_t *hytag);
+
+
+berr ads_mac_get(int dst_or_src, int *custom, uint8_t * mac);
+
+
+
+berr ads_mac_set(int dst_or_src, int custom, uint8_t* mac );
+
+
 #endif

@@ -178,6 +178,48 @@ ads_ipv4_cksum_update( struct ipv4_hdr *ip_hdr)
     return E_SUCCESS;
 }
 
+int   ads_mac_enable[2] = {0,0};
+uint8_t ads_mac[2][6];
+
+
+
+berr ads_mac_get(int dst_or_src, int *custom, uint8_t * mac)
+{
+	if(dst_or_src < 0 || dst_or_src > 2)
+		return E_PARAM;
+
+	*custom = 	ads_mac_enable[dst_or_src];
+	memcpy(mac , ads_mac[dst_or_src], 6);
+	return E_SUCCESS;
+}
+
+
+berr ads_mac_set(int dst_or_src, int custom, uint8_t* mac )
+{
+	if(dst_or_src<0 || dst_or_src > 2)
+		return E_PARAM;
+
+	if(custom == 0)
+	{
+		ads_mac_enable[dst_or_src] = 0;
+	}
+	else
+	{
+		ads_mac[dst_or_src][0] = mac[0];
+		ads_mac[dst_or_src][1] = mac[1];
+		ads_mac[dst_or_src][2] = mac[2];
+		ads_mac[dst_or_src][3] = mac[3];
+		ads_mac[dst_or_src][4] = mac[4];
+		ads_mac[dst_or_src][5] = mac[5];
+
+		ads_mac_enable[dst_or_src] = 1;
+
+	}
+
+	return E_SUCCESS;
+	
+}
+
 berr
 ads_eth_head_modify(struct ether_hdr *eth_hdr, hytag_t *hytag, uint8_t direction)
 {
@@ -195,15 +237,26 @@ ads_eth_head_modify(struct ether_hdr *eth_hdr, hytag_t *hytag, uint8_t direction
 
     if (DIRECTION_DIFFERENT == direction )
     {
+
         ether_addr_copy(&(eth_hdr->d_addr),&dst_mac);
         ether_addr_copy(&(eth_hdr->s_addr),&src_mac);
 
         ether_addr_copy(&src_mac, &(eth_hdr->d_addr));
         ether_addr_copy(&dst_mac, &(eth_hdr->s_addr));
-        
+
+		
+		if(ads_mac_enable[0])
+		{
+			memcpy(eth_hdr->d_addr.addr_bytes, ads_mac[0], 6);	
+		}
+		if(ads_mac_enable[1])
+		{
+			memcpy(eth_hdr->s_addr.addr_bytes, ads_mac[1], 6);	
+		}
+				
     }
 
-#if 0	
+#if 1	
     eth_hdr->s_addr.addr_bytes[0] = 0x90;
     eth_hdr->s_addr.addr_bytes[1] = 0xe2;
     eth_hdr->s_addr.addr_bytes[2] = 0xba;
@@ -213,22 +266,12 @@ ads_eth_head_modify(struct ether_hdr *eth_hdr, hytag_t *hytag, uint8_t direction
 
 
 
-#else
-	#if 1 
     eth_hdr->d_addr.addr_bytes[0] = 0x00;
     eth_hdr->d_addr.addr_bytes[1] = 0x1d;
     eth_hdr->d_addr.addr_bytes[2] = 0x71;
     eth_hdr->d_addr.addr_bytes[3] = 0xa6;
     eth_hdr->d_addr.addr_bytes[4] = 0x91;
     eth_hdr->d_addr.addr_bytes[5] = 0xc2;
-	#else
-	eth_hdr->d_addr.addr_bytes[0] = 0xff;
-    eth_hdr->d_addr.addr_bytes[1] = 0xff;
-    eth_hdr->d_addr.addr_bytes[2] = 0xff;
-    eth_hdr->d_addr.addr_bytes[3] = 0xff;
-    eth_hdr->d_addr.addr_bytes[4] = 0xff;
-    eth_hdr->d_addr.addr_bytes[5] = 0xff;   
-	#endif
 
 #endif
 

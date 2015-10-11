@@ -334,14 +334,10 @@ static int cmd_dmr_show(struct vty *vty, const char *host)
 
 static int cmd_dmr_show_all(struct vty *vty)
 {
-	int ret = 0;
-
 	vty_out(vty, "%-32s %-32s %-16s %s","host","action", "cnt",VTY_NEWLINE);
     vty_out(vty, "------------------------------------------------%s", VTY_NEWLINE);
 	
     dmr_iter(dmr_dump_vty, vty);
-
-   
 
     return CMD_SUCCESS;
 }
@@ -586,6 +582,40 @@ DEFUN(clear_domain_stat_all,
  * dmr module cmdline register and init
  *
  * */
+
+
+
+void
+dmr_write_config_vty(void *data, void *param)
+{
+    dmr_t *entry = NULL;
+
+    struct vty *vty = NULL;
+
+    char action_str[NAGA_ACTION_STR_SZ];
+
+    if ((NULL == param) || (NULL == data))
+    {
+        return;
+    }
+
+    entry = (dmr_t *) data;
+    vty   = (struct vty *) param;
+
+    naga_action_string(&entry->acl.actions, action_str);
+    vty_out(vty, "domain %s %s %s", entry->host, action_str, VTY_NEWLINE);
+	
+}
+
+
+
+void dmr_cmd_config_write(struct vty *vty)
+{
+	 dmr_iter(dmr_write_config_vty, vty);
+}
+
+
+
 void cmdline_dmr_init(void)
 {
 	install_element(CMD_NODE, &domain_cmd);

@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "netinet/in.h"
 #include <pcap.h>
-
+#include <pthread.h>
 #include "boots.h"
 #include "bts_debug.h"
 
@@ -10,6 +10,7 @@
 #include "dbg_tagmon.h"
 #include "itf_stat.h"
 #include "bts_cnt.h"
+#include "bts_list.h"
 
 
 pcap_t *gpcap_desc = NULL;
@@ -112,11 +113,17 @@ void *pcap_rx_loop(void *_param)
 }
 
 
-pthread_t recv_thread;
-pcap_t * g_rxfp = NULL;
+
+
 
 
 #define NAGA_CONTROL_FILTER "dst port 80"
+
+
+
+
+BTS_LIST_HEAD(handle_head);
+
 
 berr libpcap_rx_loop_setup(char * ifname)
 {
@@ -124,7 +131,27 @@ berr libpcap_rx_loop_setup(char * ifname)
         char packet_filter[128];
         struct bpf_program fcode;
         libpcap_param_t param ;
-        
+		pthread_t recv_thread;
+
+		libpcap_handler_t *pos = NULL, *next = NULL;
+		
+		list_for_each_entry_safe(pos, next, (&handle_head), node)
+
+		{			
+			if(!strcmp(pos->ifname, ifname))
+			{
+				printf("ifname have Created\n");
+				return E_FOUND;
+			}
+		}
+
+
+		libpcap_handler_t *handle = (libpcap_handler_t *)
+								malloc(sizeof(libpcap_handler_t));
+		if(handle == NULL)
+		{	
+			return E_FAIL;		
+		}
         
         memset(packet_filter, 0, 128);
         snprintf(packet_filter, 128, "%s", NAGA_CONTROL_FILTER);
@@ -150,7 +177,9 @@ berr libpcap_rx_loop_setup(char * ifname)
             BRET(E_FAIL);
         }
         param.fp = fp;
-        g_rxfp = fp;
+        handle->fp = fp;
+		handle->ifname = strdup(ifname);
+		
         if (pcap_compile(fp, &fcode, packet_filter, 0, 0) <0 ) 
         {
             printf("Unable to compile the packet filter. Check the syntax.\n");
@@ -164,8 +193,19 @@ berr libpcap_rx_loop_setup(char * ifname)
             BRET(E_FAIL);
         }
 
-        recv_thread = pthread_create(&recv_thread, NULL,  pcap_rx_loop, (void *)&param);
-        pthread_detach(recv_thread);
+        int rv = pthread_create(&recv_thread, NULL,  pcap_rx_loop, (void *)&param);
+		if(rv)
+		{
+			printf("Failed Create Thread for interface-%s\n", ifname);		
+		 	BRET(E_FAIL);
+		}
+		else
+		{
+			pthread_detach(recv_thread);
+			printf("Success Create Thread-%ld for interface-%s\n",recv_thread, ifname);
+		}
+		handle->recv_thread = recv_thread;
+		list_add_tail(&handle->node, &handle_head);
         return E_SUCCESS;
         
 }
@@ -173,8 +213,24 @@ berr libpcap_rx_loop_setup(char * ifname)
 
 berr libpcap_rx_loop_unset(char * ifname __attribute__((unused)))
 {
-    pcap_close(g_rxfp); 
-    g_rxfp = NULL; 
+#if 1
+	struct list_head *pos = NULL, *next = NULL;
+	libpcap_handler_t *handle = NULL;
+	//list_for_each_entry_safe(pos, next, (&handle_head), node)
+	list_for_each_safe(pos, next,&handle_head)
+
+	{
+		handle = (libpcap_handler_t *)list_entry(pos, libpcap_handler_t, node);
+		if(!strcmp(handle->ifname, ifname))
+		{
+			free(handle->ifname);
+			pcap_close(handle->fp); 
+			list_del(&handle->node);
+			pthread_cancel(handle->recv_thread);
+			free(handle);
+		}
+	}
+#endif	
     return E_SUCCESS;
 }
 

@@ -11,5 +11,5 @@ berr adp_dp_init(void);
 
 berr adp_get_interval(int *interval, uint64_t *adp_cnt, uint64_t *success);
 berr adp_switch_set(int on);
-
+berr adp_switch_get(int *on);
 #endif

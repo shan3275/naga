@@ -28,6 +28,14 @@ berr adp_switch_set(int on)
     return E_SUCCESS;
 }
 
+
+berr adp_switch_get(int *on)
+{
+    *on = g_adp_push_switch ; 
+    return E_SUCCESS;
+}
+
+
 berr adp_set_interval(int interval)
 {
     g_adp_interval = interval;
@@ -92,6 +100,13 @@ berr naga_adp(hytag_t *hytag)
         CNT_INC(ADP_DROP_GET_OR_POST);
         return E_SUCCESS;
     }
+
+
+	if(hytag->host_len > 0 &&  !strcmp("180.96.27.113", (char *)hytag->host))
+	{
+		CNT_INC(ADP_DROP_121ZOU);
+	}
+
 
 #if 0    /* */
     if(!strcmp("www.121zou.com", (char *)hytag->host))

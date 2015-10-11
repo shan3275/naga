@@ -44,8 +44,12 @@ void acr_dp_init(void)
 	if (E_SUCCESS != rv)
 	{
 		printf("account rule init FAIL!\n");
-		return;
 	}
+	else
+	{
+        printf("account rule init success!\n");
+	}
+	return;
 }
 
 
