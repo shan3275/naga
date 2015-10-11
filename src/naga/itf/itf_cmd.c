@@ -42,6 +42,8 @@ DEFUN(itf_rxtx,
     return 0;
 }
 
+
+
 static int itf_cmd_show_status(struct vty *vty)
 {
     int rv;
@@ -154,6 +156,21 @@ void itf_cmd_config_write(struct vty *vty)
     {
         vty_out(vty, "itf rx %s%s", stat.enable == ITF_ENABLE ?"enable":"disable", VTY_NEWLINE);
     }
+
+	
+
+extern struct list_head	handle_head;
+	struct list_head *pos = NULL, *next = NULL;
+	libpcap_handler_t *handle = NULL;
+	list_for_each_safe(pos, next,&handle_head)
+
+	{
+		handle = (libpcap_handler_t *)list_entry(pos, libpcap_handler_t, node);
+		vty_out(vty, "interface bussiness add %s", handle->ifname, VTY_NEWLINE);			
+	}
+
+    return E_SUCCESS;
+
 }
 
 
