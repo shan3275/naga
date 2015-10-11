@@ -37,6 +37,7 @@ Boston, MA 02111-1307, USA.  */
 #include "naga_version.h"
 #include "dmr_cmd.h"
 #include "acr_cmd.h"
+#include "adp_cmd.h"
 
 
 /* Command vector which includes some level of command lists. Normally
@@ -733,6 +734,7 @@ config_write_host (struct vty *vty)
   itf_cmd_config_write(vty);
   dmr_cmd_config_write(vty);
   acr_cmd_config_write(vty);
+  adp_cmd_config_write(vty);
 
   return 1;
 }

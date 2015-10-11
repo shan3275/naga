@@ -60,6 +60,26 @@ DEFUN(adp_mac_custom_set,
       "adp (dmac|smac) custom", "\n")
 {
 
+	int dst_src;
+	uint8_t mac[6];
+	
+	if(argv[0] == NULL)
+	{
+		vty_out(vty, "PARAM NULL %s", VTY_NEWLINE);
+		return E_SUCCESS;
+	}
+	else
+	{
+		if(!strcmp(argv[0], "dmac"))
+			dst_src = 0;
+		else if(!strcmp(argv[0], "smac"))	
+			dst_src = 1;
+		else
+			return E_PARAM;
+		
+		ads_mac_set(dst_src, 0, mac);	
+	}
+
 	
     return 0;
 }
@@ -69,9 +89,91 @@ DEFUN(adp_mac_special_set,
       "adp (dmac|smac) set MAC", "\n")
 {
 
+	int dst_src;
+	uint8_t mac[6];
+	char * mac_str = NULL;
+	char *arr = NULL; 
+	int i = 0;
+
+	
+	if(argv[0] == NULL)
+	{
+		vty_out(vty, "PARAM NULL %s", VTY_NEWLINE);
+		return E_PARAM;
+	}
+	else
+	{
+		if(!strcmp(argv[0], "dmac"))
+			dst_src = 0;
+		else if(!strcmp(argv[0], "smac"))	
+			dst_src = 1;
+		else
+		{
+			vty_out(vty, "PARAM smac or dmac %s", VTY_NEWLINE);		
+			return E_PARAM;
+		}
+		if(argv[2]) 
+			mac_str = strdup(argv[2]);
+
+		
+		while  (NULL != (arr = strsep(&mac_str, ":")))
+		{
+			if(i == 6)
+			{
+				vty_out(vty, "PARAM mac format err AA:BB:CC:DD:EE:FF%s", VTY_NEWLINE);				
+				return E_PARAM;
+			}	
+			mac[i++] = atoi(arr);	
+		}
+		
+		ads_mac_set(dst_src, 1, mac);	
+	}
 	
     return 0;
+
 }
+
+
+
+void adp_cmd_config_write(struct vty *vty)
+{
+    int ret = 0;
+	uint8_t mac[6];
+    int custom;
+	
+
+    ret =  ads_mac_get(0 , &custom, (uint8_t *)mac);
+    if(custom == 0)
+    {
+        vty_out(vty, "adp dmac custom%s", VTY_NEWLINE);  
+    }
+	else
+	{
+		vty_out(vty, "adp dmac set %02x:%02x:%02x:%02x:%02x:%02x%s",
+						mac[0],mac[1],mac[2],mac[3],mac[4],mac[5],
+					VTY_NEWLINE); 
+	}
+
+	ret =  ads_mac_get(1 , &custom, (uint8_t *)mac);
+	if(custom == 0)
+
+	{
+		vty_out(vty, "adp smac custom%s", VTY_NEWLINE);
+		
+	}
+	else 
+	{
+		vty_out(vty, "adp smac set %02x:%02x:%02x:%02x:%02x:%02x%s",
+						mac[0],mac[1],mac[2],mac[3],mac[4],mac[5],
+					VTY_NEWLINE); 	
+	}
+
+	
+	return 0;
+
+}
+
+
 
 
 
