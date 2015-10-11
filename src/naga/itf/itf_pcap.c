@@ -200,7 +200,7 @@ berr libpcap_rx_loop_setup(char * ifname)
 
 berr libpcap_rx_loop_unset(char * ifname __attribute__((unused)))
 {
-#if 0
+#if 1
 	struct list_head *pos = NULL, *next = NULL;
 	libpcap_handler_t *handle = NULL;
 	//list_for_each_entry_safe(pos, next, (&handle_head), node)
