@@ -127,8 +127,9 @@ typedef struct
 	struct list_head node;
 }libpcap_handler_t;
 
-struct list_head handle_head = LIST_HEAD_INIT(handle_head);
 
+
+LIST_HEAD(handle_head);
 
 
 berr libpcap_rx_loop_setup(char * ifname)
