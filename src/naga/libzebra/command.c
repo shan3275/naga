@@ -34,6 +34,7 @@ Boston, MA 02111-1307, USA.  */
 #include "workqueue.h"
 #include "vsr_cmd.h"
 #include "itf_cmd.h"
+#include "adt_cmd.h"
 #include "naga_version.h"
 
 /* Command vector which includes some level of command lists. Normally
@@ -728,6 +729,7 @@ config_write_host (struct vty *vty)
 
   vsr_cmd_config_write(vty);
   itf_cmd_config_write(vty);
+  adt_cmd_config_write(vty);
 
   return 1;
 }
