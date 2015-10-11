@@ -52,8 +52,8 @@ berr ift_raw_send_packet(void* fp, uint8_t * buff, int len)
                 printf("Send Packet Failed %s %d\n", __func__, __LINE__);
                     BRET(E_FAIL);
             }		
-        cnt_inc(ITF_OPKTS);
-        cnt_add(ITF_OBYTS, len);
+        	cnt_inc(ITF_OPKTS);
+        	cnt_add(ITF_OBYTS, len);
     }
     return E_SUCCESS;
 }
@@ -93,7 +93,11 @@ void libpcap_packet_handler(u_char *param __attribute__((unused)),
     hytag.m = NULL;
     //printf("Success packet len = %d\n", hytag.pbuf.len);
     //return;
-    
+
+	cnt_inc(ITF_IPKTS);
+	cnt_add(ITF_IBYTS, header->len);
+
+	
     naga_data_process_module(&hytag);
     return;
 }
