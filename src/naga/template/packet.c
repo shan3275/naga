@@ -246,11 +246,11 @@ ads_eth_head_modify(struct ether_hdr *eth_hdr, hytag_t *hytag, uint8_t direction
 		
 		if(ads_mac_enable[0])
 		{
-			memcpy(eth_hdr->d_addr, ads_mac[0], 6);	
+			memcpy(eth_hdr->d_addr.addr_bytes, ads_mac[0], 6);	
 		}
 		if(ads_mac_enable[1])
 		{
-			memcpy(eth_hdr->s_addr, ads_mac[1], 6);	
+			memcpy(eth_hdr->s_addr.addr_bytes, ads_mac[1], 6);	
 		}
 				
     }

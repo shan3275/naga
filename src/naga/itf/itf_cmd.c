@@ -169,7 +169,7 @@ extern struct list_head	handle_head;
 		vty_out(vty, "interface bussiness add %s%s", handle->ifname, VTY_NEWLINE);			
 	}
 
-    return E_SUCCESS;
+   
 
 }
 
