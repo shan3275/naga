@@ -7,7 +7,7 @@
 #include "filter.h"
 #include "prefix.h"
 #include "privs.h"
-
+#include "packet.h"
 #include "naga_types.h"
 #include "nag_adp.h"
 #include "adp_cmd.h"
