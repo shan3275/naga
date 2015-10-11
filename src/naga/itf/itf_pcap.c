@@ -140,6 +140,18 @@ berr libpcap_rx_loop_setup(char * ifname)
         libpcap_param_t param ;
 		pthread_t recv_thread;
 
+		libpcap_handler_t *pos = NULL, *next = NULL;
+		
+		list_for_each_entry_safe(pos, next, (&handle_head), node)
+
+		{			
+			if(!strcmp(pos->ifname, ifname))
+			{
+				printf("ifname have Created\n");
+				return E_FOUND;
+			}
+		}
+
 
 		libpcap_handler_t *handle = (libpcap_handler_t *)
 								malloc(sizeof(libpcap_handler_t));
@@ -212,7 +224,7 @@ berr libpcap_rx_loop_unset(char * ifname __attribute__((unused)))
 	struct list_head *pos = NULL, *next = NULL;
 	libpcap_handler_t *handle = NULL;
 	//list_for_each_entry_safe(pos, next, (&handle_head), node)
-	list_for_each_safe(pos, next,&handle_head);
+	list_for_each_safe(pos, next,&handle_head)
 
 	{
 		handle = (libpcap_handler_t *)list_entry(pos, libpcap_handler_t, node);
@@ -221,7 +233,7 @@ berr libpcap_rx_loop_unset(char * ifname __attribute__((unused)))
 			free(handle->ifname);
 			pcap_close(handle->fp); 
 			list_del(&handle->node);
-			//pthread_cancle(pos->recv_thread);
+			pthread_cancle(pos->recv_thread);
 			free(handle);
 		}
 	}
