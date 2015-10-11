@@ -355,6 +355,40 @@ DEFUN(clear_account_stat_all,
     return cmd_acr_clear_stat_all(vty);
 }
 
+void
+acr_write_config_vty(void *data, void *param)
+{
+    acr_t *entry = NULL;
+
+    struct vty *vty = NULL;
+
+    char action_str[NAGA_ACTION_STR_SZ];
+
+    if ((NULL == param) || (NULL == data))
+    {
+        return;
+    }
+
+    entry = (acr_t *) data;
+    vty   = (struct vty *) param;
+
+    naga_action_string(&entry->acl.actions, action_str);
+    vty_out(vty, "account %s %s %s", entry->account, action_str, VTY_NEWLINE);
+	
+}
+
+
+
+void acr_cmd_config_write(struct vty *vty)
+{
+	 acr_iter(acr_write_config_vty, vty);
+}
+
+
+
+
+
+
 /*
  * acr module cmdline register and init
  *
