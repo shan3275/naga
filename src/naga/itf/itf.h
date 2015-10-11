@@ -34,6 +34,7 @@
 
 #include "boots.h"
 #include "naga_types.h"
+#include "bts_list.h"
 
 #define MAX_PKT_BURST 32
 #define MAX_RX_QUEUE_PER_LCORE 16
