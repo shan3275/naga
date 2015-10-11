@@ -12,5 +12,6 @@
 #ifndef __ACR_CMD_H__
 #define __ACR_CMD_H__
 void cmdline_acr_init(void);
+void acr_cmd_config_write(struct vty *vty);
 
 #endif
