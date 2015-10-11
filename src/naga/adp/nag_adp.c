@@ -28,6 +28,14 @@ berr adp_switch_set(int on)
     return E_SUCCESS;
 }
 
+
+berr adp_switch_get(int *on)
+{
+    *on = g_adp_push_switch ; 
+    return E_SUCCESS;
+}
+
+
 berr adp_set_interval(int interval)
 {
     g_adp_interval = interval;
