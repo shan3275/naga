@@ -143,7 +143,14 @@ void adp_cmd_config_write(struct vty *vty)
 	
 
     ret =  ads_mac_get(0 , &custom, (uint8_t *)mac);
-    if(custom == 0)
+
+	if(ret != E_SUCCESS)
+	{
+		vty_out(vty, "Failed to get dmac %s", VTY_NEWLINE);  
+		return E_FAIL;
+	}
+	
+	if(custom == 0)
     {
         vty_out(vty, "adp dmac custom%s", VTY_NEWLINE);  
     }
@@ -154,7 +161,17 @@ void adp_cmd_config_write(struct vty *vty)
 					VTY_NEWLINE); 
 	}
 
-	ret =  ads_mac_get(1 , &custom, (uint8_t *)mac);
+	ret = ads_mac_get(1 , &custom, (uint8_t *)mac);
+
+	if(ret != E_SUCCESS)
+	{
+		vty_out(vty, "Failed to get smac %s", VTY_NEWLINE);  
+		return E_FAIL;
+	}
+	
+
+
+	
 	if(custom == 0)
 
 	{
@@ -168,8 +185,7 @@ void adp_cmd_config_write(struct vty *vty)
 					VTY_NEWLINE); 	
 	}
 
-	
-	return 0;
+
 
 }
 
