@@ -129,7 +129,7 @@ typedef struct
 
 
 
-LIST_HEAD(handle_head);
+BTS_LIST_HEAD(handle_head);
 
 
 berr libpcap_rx_loop_setup(char * ifname)
