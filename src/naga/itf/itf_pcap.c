@@ -9,6 +9,7 @@
 #include "boots_custom.h"
 #include "dbg_tagmon.h"
 #include "itf_stat.h"
+#include "bts_cnt.h"
 
 
 pcap_t *gpcap_desc = NULL;
@@ -51,6 +52,8 @@ berr ift_raw_send_packet(void* fp, uint8_t * buff, int len)
                 printf("Send Packet Failed %s %d\n", __func__, __LINE__);
                     BRET(E_FAIL);
             }		
+        cnt_inc(ITF_OPKTS);
+        cnt_add(ITF_OBYTS, len);
     }
     return E_SUCCESS;
 }

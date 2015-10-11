@@ -4,6 +4,7 @@
 //#include <rte_ethdev.h>
 #include "bts_debug.h"
 #include "itf_stat.h"
+#include "bts_cnt.h"
 
 extern struct itf_port_statistics port_statistics[RTE_MAX_ETHPORTS];
 extern struct lcore_queue_conf lcore_queue_conf[RTE_MAX_LCORE];
@@ -80,6 +81,8 @@ int itf_send_packet_imm(struct rte_mbuf *m, uint8_t port)
     if (itf_tx_is_enable())
     {
         ret = rte_eth_tx_burst(port, (uint16_t) queueid, &m, 1);
+        cnt_inc(ITF_OPKTS);
+        cnt_add(ITF_OBYTS, m->data_len);
     }
     
     return ret;
