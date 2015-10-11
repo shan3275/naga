@@ -15,19 +15,30 @@
 
 DEFUN(itf_rxtx, 
       itf_rxtx_cmd,
-      "interface enable rx eth IFNAME", "interface setting\nenable or disable\nrx or tx\n")
+      "interface bussiness (add|remove) IFNAME", "interface setting\nenable or disable\nrx or tx\n")
 {
-    if(argv[0] != NULL)
+    if( !strcmp (argv[0], "add"))
     {
-        char * ifname = strdup(argv[0]);
+        char * ifname = strdup(argv[1]);
         berr rv=  libpcap_rx_loop_setup(ifname);
         if(rv == E_SUCCESS)
-            vty_out(vty, "Success to open %s rx%s", ifname, VTY_NEWLINE);
+            vty_out(vty, "Success to add %s rx%s", ifname, VTY_NEWLINE);
         else
-            vty_out(vty, "Failed to open %s rx%s", ifname, VTY_NEWLINE);
+            vty_out(vty, "Failed to add %s rx%s", ifname, VTY_NEWLINE);
         free(ifname);
         return 0;
     }
+	else if(!strcmp (argv[0], "remove"))
+	{
+        char * ifname = strdup(argv[1]);
+        berr rv=  libpcap_rx_loop_unset(ifname);
+        if(rv == E_SUCCESS)
+            vty_out(vty, "Success to remove %s rx%s", ifname, VTY_NEWLINE);
+        else
+            vty_out(vty, "Failed to remove %s rx%s", ifname, VTY_NEWLINE);
+        free(ifname);
+        return 0;		
+	}
     return 0;
 }
 

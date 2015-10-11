@@ -10,6 +10,7 @@
 #include "dbg_tagmon.h"
 #include "itf_stat.h"
 #include "bts_cnt.h"
+#include "bts_list.h"
 
 
 pcap_t *gpcap_desc = NULL;
@@ -112,11 +113,23 @@ void *pcap_rx_loop(void *_param)
 }
 
 
-pthread_t recv_thread;
-pcap_t * g_rxfp = NULL;
+
+
 
 
 #define NAGA_CONTROL_FILTER "dst port 80"
+
+typedef struct
+{
+	pthread_t recv_thread;
+	pcap_t * fp;
+	char   *ifname;
+	struct list_head node;
+}libpcap_handler_t;
+
+struct list_head handle_head = LIST_HEAD_INIT(handle_head);
+
+
 
 berr libpcap_rx_loop_setup(char * ifname)
 {
@@ -124,7 +137,14 @@ berr libpcap_rx_loop_setup(char * ifname)
         char packet_filter[128];
         struct bpf_program fcode;
         libpcap_param_t param ;
-        
+		pthread_t recv_thread;
+
+
+		libpcap_handler_t *handle = (libpcap_handler_t *)malloc(sizeof(libpcap_handler_t))
+		if(handle == NULL)
+		{	
+			return E_FAIL;		
+		}
         
         memset(packet_filter, 0, 128);
         snprintf(packet_filter, 128, "%s", NAGA_CONTROL_FILTER);
@@ -150,7 +170,9 @@ berr libpcap_rx_loop_setup(char * ifname)
             BRET(E_FAIL);
         }
         param.fp = fp;
-        g_rxfp = fp;
+        handle->fp = fp;
+		handle->ifname = strdup(ifname);
+		
         if (pcap_compile(fp, &fcode, packet_filter, 0, 0) <0 ) 
         {
             printf("Unable to compile the packet filter. Check the syntax.\n");
@@ -166,6 +188,8 @@ berr libpcap_rx_loop_setup(char * ifname)
 
         recv_thread = pthread_create(&recv_thread, NULL,  pcap_rx_loop, (void *)&param);
         pthread_detach(recv_thread);
+		handle->recv_thread = recv_thread;
+		list_add_tail(&handle->node, &handle_head);
         return E_SUCCESS;
         
 }
@@ -173,8 +197,20 @@ berr libpcap_rx_loop_setup(char * ifname)
 
 berr libpcap_rx_loop_unset(char * ifname __attribute__((unused)))
 {
-    pcap_close(g_rxfp); 
-    g_rxfp = NULL; 
+
+	libpcap_handler_t *pos = NULL, *next = NULL;
+
+	list_for_each_entry_safe(pos, next, &handle_head, node)
+	{
+		if(!strcmp(pos->ifname, ifname))
+		{
+			free(pos->ifname);
+			pcap_close(pos->fp); 
+			list_del(pos);
+			pthread_cancle(pos->recv_thread);
+			free(pos);
+		}
+	}
     return E_SUCCESS;
 }
 
