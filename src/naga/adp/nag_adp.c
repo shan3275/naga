@@ -183,13 +183,16 @@ berr naga_adp(hytag_t *hytag)
        
         )
     {
-        hytag->template = AD_TEMPLATE_MOBILE;
+
+		hytag->template = AD_TEMPLATE_PC;
+  
  
 		CNT_INC(ADP_PUSH_PC);	
     }
     else
     {
-        hytag->template = AD_TEMPLATE_PC;
+
+		hytag->template = AD_TEMPLATE_MOBILE;
 		CNT_INC(ADP_PUSH_MOBILE);
     }
 

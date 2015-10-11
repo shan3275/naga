@@ -99,7 +99,10 @@ DEFUN(show_stat,
       MATCH_STR_STR
       )
 {
-    return cmd_show_stat(vty, argv[0]);
+	if(argc == 1)		
+    	return cmd_show_stat(vty, argv[0]);
+	else
+		return cmd_show_stat(vty, NULL);
 }
 
 void 
