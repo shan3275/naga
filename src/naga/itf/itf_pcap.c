@@ -140,7 +140,8 @@ berr libpcap_rx_loop_setup(char * ifname)
 		pthread_t recv_thread;
 
 
-		libpcap_handler_t *handle = (libpcap_handler_t *)malloc(sizeof(libpcap_handler_t))
+		libpcap_handler_t *handle = (libpcap_handler_t *)
+								malloc(sizeof(libpcap_handler_t));
 		if(handle == NULL)
 		{	
 			return E_FAIL;		
