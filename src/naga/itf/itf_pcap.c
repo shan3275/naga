@@ -119,13 +119,6 @@ void *pcap_rx_loop(void *_param)
 
 #define NAGA_CONTROL_FILTER "dst port 80"
 
-typedef struct
-{
-	pthread_t recv_thread;
-	pcap_t * fp;
-	char   *ifname;
-	struct list_head node;
-}libpcap_handler_t;
 
 
 
