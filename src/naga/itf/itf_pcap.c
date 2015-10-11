@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "netinet/in.h"
 #include <pcap.h>
-
+#include <pthread.h>
 #include "boots.h"
 #include "bts_debug.h"
 
@@ -207,7 +207,7 @@ berr libpcap_rx_loop_unset(char * ifname __attribute__((unused)))
 		{
 			free(pos->ifname);
 			pcap_close(pos->fp); 
-			list_del(pos);
+			list_del(&pos->node);
 			pthread_cancle(pos->recv_thread);
 			free(pos);
 		}
