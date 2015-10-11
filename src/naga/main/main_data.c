@@ -56,6 +56,12 @@
 */
 berr naga_data_process_module(hytag_t * hytag)
 {
+
+	if (!itf_rx_is_enable())
+	{
+		return E_SUCCESS;
+	}
+
     itf_set_hytag_pcap(hytag);
 
     //HYTAG_DUMP(hytag);
@@ -119,10 +125,9 @@ void naga_data_main_loop()
 		/*
 		 * Read packet from RX queues
 		 */
-        if (itf_rx_is_enable())
-        {
-            itf_rx_burst(naga_data_process_flow);
-        }
+
+        itf_rx_burst(naga_data_process_flow);
+
 	}
 }
 
