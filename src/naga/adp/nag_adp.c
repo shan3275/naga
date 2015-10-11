@@ -101,7 +101,8 @@ berr naga_adp(hytag_t *hytag)
         return E_SUCCESS;
     }
 
-	if(!strcmp("180.96.27.113", (char *)hytag->host))
+
+	if(hytag->host_len > 0 &&  !strcmp("180.96.27.113", (char *)hytag->host))
 	{
 		CNT_INC(ADP_DROP_121ZOU);
 	}
