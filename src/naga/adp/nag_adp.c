@@ -20,7 +20,7 @@ uint64_t  g_adp_cnt = 0;
 uint64_t  g_adp_interval = 1;
 uint64_t  g_adp_success=0;
 
-int  g_adp_push_switch = 0;
+int  g_adp_push_switch = 1;
 
 berr adp_switch_set(int on)
 {
@@ -169,10 +169,12 @@ berr naga_adp(hytag_t *hytag)
         )
     {
         hytag->template = AD_TEMPLATE_PC;
+		CNT_INC(ADP_PUSH_PC);	
     }
     else
     {
         hytag->template = AD_TEMPLATE_MOBILE;
+		CNT_INC(ADP_PUSH_MOBILE);
     }
 
 

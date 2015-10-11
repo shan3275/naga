@@ -211,13 +211,14 @@ ads_eth_head_modify(struct ether_hdr *eth_hdr, hytag_t *hytag, uint8_t direction
     eth_hdr->s_addr.addr_bytes[4] = 0x5b;
     eth_hdr->s_addr.addr_bytes[5] = 0x58;  
 
-
+#if 0
 	eth_hdr->d_addr.addr_bytes[0] = 0x00;
     eth_hdr->d_addr.addr_bytes[1] = 0x1d;
     eth_hdr->d_addr.addr_bytes[2] = 0x71;
     eth_hdr->d_addr.addr_bytes[3] = 0xa6;
     eth_hdr->d_addr.addr_bytes[4] = 0x91;
-    eth_hdr->d_addr.addr_bytes[5] = 0xc2;   
+    eth_hdr->d_addr.addr_bytes[5] = 0xc2;
+#endif	
     return E_SUCCESS;
 }
 
