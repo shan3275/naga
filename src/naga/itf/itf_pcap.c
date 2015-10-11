@@ -201,15 +201,15 @@ berr libpcap_rx_loop_unset(char * ifname __attribute__((unused)))
 {
 
 	libpcap_handler_t *pos = NULL, *next = NULL;
-
-	list_for_each_entry_safe(pos, next, &handle_head, node)
+	
+	list_for_each_entry_safe(pos, next, (&handle_head), node)
 	{
 		if(!strcmp(pos->ifname, ifname))
 		{
 			free(pos->ifname);
 			pcap_close(pos->fp); 
 			list_del(&pos->node);
-			pthread_cancle(pos->recv_thread);
+			//pthread_cancle(pos->recv_thread);
 			free(pos);
 		}
 	}
