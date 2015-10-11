@@ -147,7 +147,7 @@ void adp_cmd_config_write(struct vty *vty)
 	if(ret != E_SUCCESS)
 	{
 		vty_out(vty, "Failed to get dmac %s", VTY_NEWLINE);  
-		return E_FAIL;
+		return ;
 	}
 	
 	if(custom == 0)
@@ -166,7 +166,7 @@ void adp_cmd_config_write(struct vty *vty)
 	if(ret != E_SUCCESS)
 	{
 		vty_out(vty, "Failed to get smac %s", VTY_NEWLINE);  
-		return E_FAIL;
+		return ;
 	}
 	
 
