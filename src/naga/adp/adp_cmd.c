@@ -59,15 +59,17 @@ DEFUN(adp_mac_custom_set,
         adp_mac_custom_set_cmd,
       "adp (dmac|smac) custom", "\n")
 {
-    adp_switch_set(1);
+
+	
     return 0;
 }
 
 DEFUN(adp_mac_special_set, 
         adp_mac_special_set_cmd,
-      "adp (dmac|smac) set DMAC", "\n")
+      "adp (dmac|smac) set MAC", "\n")
 {
-    adp_switch_set(1);
+
+	
     return 0;
 }
 
@@ -85,7 +87,10 @@ void cmdline_adp_init(void)
     install_element(CMD_NODE, &adp_interval_cmd);
     install_element(CMD_NODE, &adp_interval_get_cmd);
     install_element(CMD_NODE, &adp_switch_set_on_cmd); 
-    install_element(CMD_NODE, &adp_switch_set_off_cmd);     
+    install_element(CMD_NODE, &adp_switch_set_off_cmd); 
+	
+    install_element(CMD_NODE, &adp_mac_custom_set_cmd);
+    install_element(CMD_NODE, &adp_mac_special_set_cmd);	
     return ;
 }
 
