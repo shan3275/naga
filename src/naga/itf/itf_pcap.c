@@ -200,17 +200,20 @@ berr libpcap_rx_loop_setup(char * ifname)
 berr libpcap_rx_loop_unset(char * ifname __attribute__((unused)))
 {
 
-	libpcap_handler_t *pos = NULL, *next = NULL;
-	
-	list_for_each_entry_safe(pos, next, (&handle_head), node)
+	struct list_head *pos = NULL, *next = NULL;
+	libpcap_handler_t *handle = NULL;
+	//list_for_each_entry_safe(pos, next, (&handle_head), node)
+	list_for_each_safe(pos, next,&handle_head);
+
 	{
-		if(!strcmp(pos->ifname, ifname))
+		handle = (libpcap_handler_t *)list_entry(pos, libpcap_handler_t, node);
+		if(!strcmp(handle->ifname, ifname))
 		{
-			free(pos->ifname);
-			pcap_close(pos->fp); 
-			list_del(&pos->node);
+			free(handle->ifname);
+			pcap_close(handle->fp); 
+			list_del(&handle->node);
 			//pthread_cancle(pos->recv_thread);
-			free(pos);
+			free(handle);
 		}
 	}
     return E_SUCCESS;
