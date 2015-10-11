@@ -64,6 +64,16 @@ struct l2fwd_port_statistics {
 	uint64_t dropped;
 } __rte_cache_aligned;
 
+
+typedef struct
+{
+	pthread_t recv_thread;
+	pcap_t * fp;
+	char   *ifname;
+	struct list_head node;
+}libpcap_handler_t;
+
+
 typedef berr (*rx_process_func)(struct rte_mbuf *m);
 
 //extern struct lcore_queue_conf lcore_queue_conf[RTE_MAX_LCORE];

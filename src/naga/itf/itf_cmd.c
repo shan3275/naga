@@ -166,7 +166,7 @@ extern struct list_head	handle_head;
 
 	{
 		handle = (libpcap_handler_t *)list_entry(pos, libpcap_handler_t, node);
-		vty_out(vty, "interface bussiness add %s", handle->ifname, VTY_NEWLINE);			
+		vty_out(vty, "interface bussiness add %s%s", handle->ifname, VTY_NEWLINE);			
 	}
 
     return E_SUCCESS;
