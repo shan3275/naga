@@ -55,6 +55,23 @@ DEFUN(adp_switch_set_off,
 
 
 
+DEFUN(adp_mac_custom_set, 
+        adp_mac_custom_set_cmd,
+      "adp (dmac|smac) custom", "\n")
+{
+    adp_switch_set(1);
+    return 0;
+}
+
+DEFUN(adp_mac_special_set, 
+        adp_mac_special_set_cmd,
+      "adp (dmac|smac) set DMAC", "\n")
+{
+    adp_switch_set(1);
+    return 0;
+}
+
+
 
 
 
