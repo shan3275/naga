@@ -233,7 +233,7 @@ berr libpcap_rx_loop_unset(char * ifname __attribute__((unused)))
 			free(handle->ifname);
 			pcap_close(handle->fp); 
 			list_del(&handle->node);
-			pthread_cancle(pos->recv_thread);
+			pthread_cancle(handle->recv_thread);
 			free(handle);
 		}
 	}
