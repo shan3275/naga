@@ -142,14 +142,14 @@ void itf_cmd_config_write(struct vty *vty)
     int rv;
     itf_stat stat;
     stat.direction = ITF_TX;
-    rv = itf_stat_set( &stat);
+    rv = itf_stat_get( &stat);
     if ( E_SUCCESS == rv)
     {
         vty_out(vty, "itf tx %s%s", stat.enable == ITF_ENABLE ?"enable":"disable", VTY_NEWLINE);
     }
 
     stat.direction = ITF_RX;
-    rv = itf_stat_set( &stat);
+    rv = itf_stat_get( &stat);
     if ( E_SUCCESS == rv)
     {
         vty_out(vty, "itf rx %s%s", stat.enable == ITF_ENABLE ?"enable":"disable", VTY_NEWLINE);
