@@ -90,7 +90,7 @@ DEFUN(adp_mac_special_set,
 {
 
 	int dst_src;
-	uint8_t mac[6];
+	uint8_t mac[6] = {0,0,0,0,0,0};
 	char * mac_str = NULL;
 	char *arr = NULL; 
 	int i = 0;
@@ -112,21 +112,29 @@ DEFUN(adp_mac_special_set,
 			vty_out(vty, "PARAM smac or dmac %s", VTY_NEWLINE);		
 			return E_PARAM;
 		}
-		if(argv[2]) 
-			mac_str = strdup(argv[2]);
-
+		if(argv[1]) 
+		{	
+			mac_str = strdup(argv[1]);
+		}
+		else
+		{
+			vty_out(vty, "PARAM smac or dmac %s", VTY_NEWLINE);		
+			return E_PARAM;
+		}	
 		
 		while  (NULL != (arr = strsep(&mac_str, ":")))
 		{
-			if(i == 6)
+			if(i == 6 || strlen(arr) != 2)
 			{
 				vty_out(vty, "PARAM mac format err AA:BB:CC:DD:EE:FF%s", VTY_NEWLINE);				
 				return E_PARAM;
-			}	
-			mac[i++] = atoi(arr);	
+			}
+				
+			mac[i++] = strtoul(arr, NULL, 16);	
 		}
 		
 		ads_mac_set(dst_src, 1, mac);	
+		free(mac_str);
 	}
 	
     return 0;
