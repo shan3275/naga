@@ -85,7 +85,7 @@ void libpcap_packet_handler(u_char *param __attribute__((unused)),
 {
     hytag_t hytag;
     //char buffer[2048];	
-    pthread_testcancel();
+//    pthread_testcancel();
 
     memset(&hytag, 0x0, sizeof(hytag));
     //memcpy((void *)buffer, (void *)packet, header->len);	
