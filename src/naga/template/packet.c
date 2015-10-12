@@ -1,5 +1,4 @@
 
-
 /*=============================================================================
 #       COPYRIGHT NOTICE
 #       Copyright (c) 2015
@@ -214,8 +213,13 @@ berr ads_mac_get(int dst_or_src, int *custom, uint8_t * mac)
 	if(dst_or_src < 0 || dst_or_src > 2)
 		return E_PARAM;
 
-	*custom = 	ads_mac_enable[dst_or_src];
-	memcpy(mac , ads_mac[dst_or_src], 6);
+	*custom =ads_mac_enable[dst_or_src];
+	mac[0] = ads_mac[dst_or_src][0];
+	mac[1] = ads_mac[dst_or_src][1];
+	mac[2] = ads_mac[dst_or_src][2];
+	mac[3] = ads_mac[dst_or_src][3];
+	mac[4] = ads_mac[dst_or_src][4];
+	mac[5] = ads_mac[dst_or_src][5];
 	return E_SUCCESS;
 }
 
@@ -270,19 +274,19 @@ ads_eth_head_modify(struct ether_hdr *eth_hdr, hytag_t *hytag, uint8_t direction
         ether_addr_copy(&src_mac, &(eth_hdr->d_addr));
         ether_addr_copy(&dst_mac, &(eth_hdr->s_addr));
 
-		
-		if(ads_mac_enable[0])
-		{
-			memcpy(eth_hdr->d_addr.addr_bytes, ads_mac[0], 6);	
-		}
-		if(ads_mac_enable[1])
-		{
-			memcpy(eth_hdr->s_addr.addr_bytes, ads_mac[1], 6);	
-		}
-				
+
+	if(ads_mac_enable[0])
+	{
+		memcpy(eth_hdr->d_addr.addr_bytes, ads_mac[0], 6);	
+	}
+	if(ads_mac_enable[1])
+	{
+		memcpy(eth_hdr->s_addr.addr_bytes, ads_mac[1], 6);	
+	}
+
     }
 
-#if 1	
+#if 0	
     eth_hdr->s_addr.addr_bytes[0] = 0x90;
     eth_hdr->s_addr.addr_bytes[1] = 0xe2;
     eth_hdr->s_addr.addr_bytes[2] = 0xba;
@@ -450,5 +454,4 @@ ads_response_content_generator(void *ptr, hytag_t *hytag)
     hytag->data_len = hytag->l5_offset - hytag->l2_offset + hytag->l5_len;
     return E_SUCCESS;
 }
-
 

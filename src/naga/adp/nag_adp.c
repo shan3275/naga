@@ -100,32 +100,7 @@ berr naga_adp(hytag_t *hytag)
         return E_SUCCESS;
     }
 
-#if 0    /* */
-	if(hytag->host_len > 0 &&  !strcmp("180.96.27.113", (char *)hytag->host))
-	{
-		CNT_INC(ADP_DROP_121ZOU);
-	}
 
-
-
-    if(!strcmp("www.121zou.com", (char *)hytag->host))
-    {
-        CNT_INC(ADP_DROP_121ZOU);
-        return E_SUCCESS;
-    }
-
-
-    if(strcmp("www.hao123.com", (char *)hytag->host))
-    {
-        CNT_INC(ADP_DROP_NOT_HAO123);
-        return E_SUCCESS;
-    }
-    else
-    {
-        CNT_INC(ADP_HAO123);
-    }
-
-#else
 	if(ACT_DROP == (hytag->acl.actions & ACT_DROP))
 	{
        	CNT_INC(ADP_DROP_ACT_DROP);
@@ -137,13 +112,8 @@ berr naga_adp(hytag_t *hytag)
        	CNT_INC(ADP_DROP_ACT_PUSH);
         return E_SUCCESS;
 	}
-    
-#endif 
-    if(NULL != strstr(hytag->uri, "?_t=t"))
-    {
-        CNT_INC(ADP_DROP_OUR_SUFFIX);
-	    return E_SUCCESS;
-    }
+
+
 
     if(hytag->uri_len == 1 && !strcmp(hytag->uri, "/"))
     {
@@ -155,6 +125,13 @@ berr naga_adp(hytag_t *hytag)
         return E_SUCCESS;           
     }
 
+#if 0
+    if(NULL != strstr(hytag->uri, "?_t=t"))
+    {
+        CNT_INC(ADP_DROP_OUR_SUFFIX);
+	    return E_SUCCESS;
+    }
+#endif
 #if 0
 
 	rear= strrchr(hytag->uri, '.');
@@ -183,21 +160,24 @@ berr naga_adp(hytag_t *hytag)
 	}
 #endif
 
+    if (likely(!g_adp_push_switch))
+    {
+        return E_SUCCESS;
+    }    
+
     if(g_adp_cnt++ % g_adp_interval != 0)
     {
         CNT_INC(ADP_DROP_ADP_INTERVAL);
         return E_SUCCESS;
     }
 
-    if (likely(!g_adp_push_switch))
-    {
-        return E_SUCCESS;
-    }    
+
 
     /*check The First char*/
 	if(hytag->uri[0] == '/' && hytag->host_len > 0 && hytag->uri_len > 0)
 	{
-		hytag->url_len= snprintf(hytag->url, URL_MAX_LEN, "http://%s%s", hytag->host, hytag->uri);
+		hytag->url_len= snprintf(hytag->url, URL_MAX_LEN, "http://%s%s",
+                                                hytag->host, hytag->uri);
 	}
 
 
