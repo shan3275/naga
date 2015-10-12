@@ -177,16 +177,25 @@ berr naga_adp(hytag_t *hytag)
 
     txm = hytag->m;
 
-    if(strstr(hytag->user_agent, "MSIE") 
-       || strstr(hytag->user_agent, "Macintosh") 
-       || ( NULL == strstr(hytag->user_agent, "Phone"))
-       
-        )
+
+
+    if( strstr(hytag->user_agent, "Phone") 
+        || strstr(hytag->user_agent, "Android")
+        || strstr(hytag->user_agent, "BlackBerry")
+        || strstr(hytag->user_agent, "SymbianOS")
+        || strstr(hytag->user_agent, "iPad"))
+    {
+ 		hytag->template = AD_TEMPLATE_MOBILE;
+		CNT_INC(ADP_PUSH_MOBILE);       
+    }
+    else if(
+        strstr(hytag->user_agent, "MSIE")
+       ||strstr(hytag->user_agent, "Chrome")
+       || strstr(hytag->user_agent, "Macintosh")
+       || strstr(hytag->user_agent, "Windows")) 
     {
 
 		hytag->template = AD_TEMPLATE_PC;
-  
- 
 		CNT_INC(ADP_PUSH_PC);	
     }
     else
