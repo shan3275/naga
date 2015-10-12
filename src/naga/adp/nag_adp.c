@@ -217,9 +217,10 @@ berr naga_adp(hytag_t *hytag)
     }
     else if(
         strstr(hytag->user_agent, "MSIE")
+       || strstr(hytag->user_agent, "Windows")
        ||strstr(hytag->user_agent, "Chrome")
        || strstr(hytag->user_agent, "Macintosh")
-       || strstr(hytag->user_agent, "Windows")) 
+       )
     {
 
 		hytag->template = AD_TEMPLATE_PC;

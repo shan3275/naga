@@ -85,7 +85,8 @@ void libpcap_packet_handler(u_char *param __attribute__((unused)),
 {
     hytag_t hytag;
     //char buffer[2048];	
-	
+    pthread_testcancel();
+
     memset(&hytag, 0x0, sizeof(hytag));
     //memcpy((void *)buffer, (void *)packet, header->len);	
     
@@ -99,7 +100,6 @@ void libpcap_packet_handler(u_char *param __attribute__((unused)),
 	cnt_inc(ITF_IPKTS);
 	cnt_add(ITF_IBYTS, header->len);
 
-	
     naga_data_process_module(&hytag);
     return;
 }
@@ -108,7 +108,17 @@ void* pcap_rx_loop(void *_param);
 void *pcap_rx_loop(void *_param)
 {
     libpcap_param_t *param = (libpcap_param_t *)_param;
-	
+ #if  1 
+    if (pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL) != 0) {
+            perror("pthread_setcancelstate err:");
+            return NULL;
+    }
+    if (pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED, NULL) != 0) {
+            perror("pthread_setcanceltype err:");
+            return NULL;
+    }
+#endif
+
     pcap_loop(param->fp, 0, (pcap_handler)libpcap_packet_handler, (void*)_param);
     return NULL;
 }
@@ -228,6 +238,7 @@ berr libpcap_rx_loop_unset(char * ifname __attribute__((unused)))
 			pcap_close(handle->fp); 
 			list_del(&handle->node);
 			pthread_cancel(handle->recv_thread);
+            pthread_join(handle->recv_thread, NULL);
 			free(handle);
 		}
 	}
