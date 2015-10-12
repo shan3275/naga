@@ -121,7 +121,7 @@ ads_tcp_head_modify(struct tcp_hdr *tcphdr, hytag_t *hytag, uint8_t direction)
             {
                 BRET(E_NULL);
             } 
-            if(timestamp_hdr.kind == 8 && timestamp_hdr.length == 10)
+            if(timestamp_hdr->kind == 8 && timestamp_hdr->length == 10)
             {
                 time = timestamp_hdr->value;
                 echo = timestamp_hdr->echo;
