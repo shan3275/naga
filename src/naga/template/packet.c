@@ -174,7 +174,7 @@ ads_ip_head_modify(struct ipv4_hdr* ip_hdr, hytag_t *hytag, uint8_t direction)
     uint16_t ip_paylen = (hytag->l5_offset - hytag->l3_offset + hytag->l5_len);
     ip_hdr->total_length = htons(ip_paylen );
 
-    ip_hdr->time_to_live = 128;
+    ip_hdr->time_to_live = 64;
     ip_hdr->packet_id ++;
     /* update ip */
     if (DIRECTION_DIFFERENT == direction)
@@ -182,7 +182,6 @@ ads_ip_head_modify(struct ipv4_hdr* ip_hdr, hytag_t *hytag, uint8_t direction)
         sip = ip_hdr->src_addr;
         dip = ip_hdr->dst_addr;
         ip_hdr->src_addr = dip;
-        //ip_hdr->src_addr = 0x0c64a8c0;
         ip_hdr->dst_addr = sip;
         
     }
