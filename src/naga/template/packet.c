@@ -135,7 +135,7 @@ ads_tcp_head_modify(struct tcp_hdr *tcphdr, hytag_t *hytag, uint8_t direction)
             }
             else
             {
-                 timestamp_hdr->value += 20001;
+                 //timestamp_hdr->value =htonl( ntohl(timestamp_hdr->value) + 20001);
             }
         }
    
