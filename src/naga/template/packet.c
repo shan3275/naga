@@ -151,6 +151,8 @@ ads_ip_head_modify(struct ipv4_hdr* ip_hdr, hytag_t *hytag, uint8_t direction)
     uint16_t ip_paylen = (hytag->l5_offset - hytag->l3_offset + hytag->l5_len);
     ip_hdr->total_length = htons(ip_paylen );
 
+    ip_hdr->time_to_live = 128;
+    ip_hdr->packet_id ++;
     /* update ip */
     if (DIRECTION_DIFFERENT == direction)
     {
