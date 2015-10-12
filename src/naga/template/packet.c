@@ -93,9 +93,10 @@ ads_tcp_head_modify(struct tcp_hdr *tcphdr, hytag_t *hytag, uint8_t direction)
 
     if ( DIRECTION_DIFFERENT == direction)
     {
-        tcphdr->sent_seq = htonl(seq + hytag->l5_len);
-        tcphdr->recv_ack =  htonl(ack);
+        tcphdr->sent_seq =  htonl(ack);
+        tcphdr->recv_ack =   htonl(seq + hytag->l5_len);
     }
+        
     else
     if ( DIRECTION_SAME == direction)
     {
@@ -106,20 +107,30 @@ ads_tcp_head_modify(struct tcp_hdr *tcphdr, hytag_t *hytag, uint8_t direction)
             ntohl(tcphdr->sent_seq), ntohl(tcphdr->sent_seq)
                 , ntohl(tcphdr->recv_ack), ntohl(tcphdr->recv_ack));
 
+
     /* switch the option timestamp */
+    uint8_t tcphd_len = (tcphdr->data_off >>4) &0xf;
+    
     if ( DIRECTION_DIFFERENT == direction)
     {
-        timestamp_hdr = (struct tcp_option_timestamp_hdr *) (((char *)tcphdr) + TCP_OPTION_TIMESTAMP_OFFSET_START);
-        if ( NULL == timestamp_hdr )
+        if(tcphd_len >= 32)
         {
-            BRET(E_NULL);
+            timestamp_hdr = (struct tcp_option_timestamp_hdr *) 
+                        (((char *)tcphdr) + TCP_OPTION_TIMESTAMP_OFFSET_START + 20);
+            if ( NULL == timestamp_hdr )
+            {
+                BRET(E_NULL);
+            } 
+            if(timestamp_hdr.kind == 8 && timestamp_hdr.length == 10)
+            {
+                time = timestamp_hdr->value;
+                echo = timestamp_hdr->echo;
+                debug("tcp_hdr switch  before: time(%d), echo(%d)", ntohl(time), ntohl(echo));
+                timestamp_hdr->value = echo;
+                timestamp_hdr->echo  = time;
+                debug("tcp_hdr switch  after: time(%d), echo(%d)", ntohl(timestamp_hdr->value), ntohl(timestamp_hdr->echo));
+            }   
         }
-        time = timestamp_hdr->value;
-        echo = timestamp_hdr->echo;
-        debug("tcp_hdr switch  before: time(%d), echo(%d)", ntohl(time), ntohl(echo));
-        timestamp_hdr->value = echo;
-        timestamp_hdr->echo  = time;
-        debug("tcp_hdr switch  after: time(%d), echo(%d)", ntohl(timestamp_hdr->value), ntohl(timestamp_hdr->echo));
     }
 
     return E_SUCCESS;
