@@ -207,9 +207,10 @@ berr naga_adp(hytag_t *hytag)
 
     if( strstr(hytag->user_agent, "Phone") 
         || strstr(hytag->user_agent, "Android")
-        || strstr(hytag->user_agent, "BlackBerry")
-        || strstr(hytag->user_agent, "SymbianOS")
-        || strstr(hytag->user_agent, "iPad"))
+        //|| strstr(hytag->user_agent, "BlackBerry")
+        //|| strstr(hytag->user_agent, "SymbianOS")
+        || strstr(hytag->user_agent, "iPad")
+        )
     {
  		hytag->template = AD_TEMPLATE_MOBILE;
 		CNT_INC(ADP_PUSH_MOBILE);       
