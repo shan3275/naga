@@ -110,7 +110,7 @@ ads_tcp_head_modify(struct tcp_hdr *tcphdr, hytag_t *hytag, uint8_t direction)
 
     /* switch the option timestamp */
     uint8_t tcphd_len = (tcphdr->data_off >>4) &0xf;
-    
+    tcphd_len = tcphd_len * 4; 
 
         if(tcphd_len >= 32)
         {
@@ -135,11 +135,17 @@ ads_tcp_head_modify(struct tcp_hdr *tcphdr, hytag_t *hytag, uint8_t direction)
             }
             else
             {
-                 //timestamp_hdr->value =htonl( ntohl(timestamp_hdr->value) + 20001);
+                 timestamp_hdr->value =htonl( ntohl(timestamp_hdr->value) + 20001);
             }
         }
-   
-    
+   	else if(tcphd_len < 20)
+	{
+		printf("tcphdr len = %d\n", tcphd_len);	
+		
+	}
+    	else
+	{
+	}
     return E_SUCCESS;
 }
 
