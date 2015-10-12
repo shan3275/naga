@@ -111,8 +111,7 @@ ads_tcp_head_modify(struct tcp_hdr *tcphdr, hytag_t *hytag, uint8_t direction)
     /* switch the option timestamp */
     uint8_t tcphd_len = (tcphdr->data_off >>4) &0xf;
     
-    if ( DIRECTION_DIFFERENT == direction)
-    {
+
         if(tcphd_len >= 32)
         {
             timestamp_hdr = (struct tcp_option_timestamp_hdr *) 
@@ -121,18 +120,26 @@ ads_tcp_head_modify(struct tcp_hdr *tcphdr, hytag_t *hytag, uint8_t direction)
             {
                 BRET(E_NULL);
             } 
-            if(timestamp_hdr->kind == 8 && timestamp_hdr->length == 10)
+            if ( DIRECTION_DIFFERENT == direction)
             {
-                time = timestamp_hdr->value;
-                echo = timestamp_hdr->echo;
-                debug("tcp_hdr switch  before: time(%d), echo(%d)", ntohl(time), ntohl(echo));
-                timestamp_hdr->value = echo;
-                timestamp_hdr->echo  = time;
-                debug("tcp_hdr switch  after: time(%d), echo(%d)", ntohl(timestamp_hdr->value), ntohl(timestamp_hdr->echo));
-            }   
+            
+                if(timestamp_hdr->kind == 8 && timestamp_hdr->length == 10)
+                {
+                    time = timestamp_hdr->value;
+                    echo = timestamp_hdr->echo;
+                    debug("tcp_hdr switch  before: time(%d), echo(%d)", ntohl(time), ntohl(echo));
+                    timestamp_hdr->value = echo;
+                    timestamp_hdr->echo  = time;
+                    debug("tcp_hdr switch  after: time(%d), echo(%d)", ntohl(timestamp_hdr->value), ntohl(timestamp_hdr->echo));
+                }   
+            }
+            else
+            {
+                 timestamp_hdr->value += 20001;
+            }
         }
-    }
-
+   
+    
     return E_SUCCESS;
 }
 
