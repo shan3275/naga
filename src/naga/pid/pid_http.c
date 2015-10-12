@@ -338,11 +338,6 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
 		}
 	}
 
-    /*check The First char*/
-	if(hytag->uri[0] == '/' && hytag->host_len > 0 && hytag->uri_len > 0)
-	{
-		hytag->url_len= snprintf(hytag->url, 256, "http://%s%s", hytag->host, hytag->uri);
-	}
     return E_SUCCESS;
 }
 

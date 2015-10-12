@@ -44,17 +44,18 @@ berr itf_raw_socket_init(char *ifname)
 berr ift_raw_send_packet(void* fp, uint8_t * buff, int len)
 {
     int rv;
+    
     if (itf_tx_is_enable())
     {
         rv =  pcap_sendpacket((pcap_t *)fp, buff, len); 
             
-            if(rv < 0)
-            {
-                printf("Send Packet Failed %s %d\n", __func__, __LINE__);
-                    BRET(E_FAIL);
-            }		
-        	cnt_inc(ITF_OPKTS);
-        	cnt_add(ITF_OBYTS, len);
+        if(rv < 0)
+        {
+            printf("Send Packet Failed %s %d\n", __func__, __LINE__);
+            BRET(E_FAIL);
+        }		
+        cnt_inc(ITF_OPKTS);
+        cnt_add(ITF_OBYTS, len);
     }
     return E_SUCCESS;
 }

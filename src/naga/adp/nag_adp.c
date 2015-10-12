@@ -81,7 +81,7 @@ berr naga_adp(hytag_t *hytag)
 {
 
     berr rv;
-	char *rear = NULL;
+    //char *rear = NULL;
     struct rte_mbuf *txm = NULL;
     struct rte_mbuf *m = NULL;
 	unsigned char buffer[2048]; 
@@ -93,7 +93,6 @@ berr naga_adp(hytag_t *hytag)
         BRET(E_PARAM);
     }
 
-
     /* */
     if( APP_TYPE_HTTP_GET_OR_POST != hytag->app_type)
     {
@@ -101,14 +100,14 @@ berr naga_adp(hytag_t *hytag)
         return E_SUCCESS;
     }
 
-
+#if 0    /* */
 	if(hytag->host_len > 0 &&  !strcmp("180.96.27.113", (char *)hytag->host))
 	{
 		CNT_INC(ADP_DROP_121ZOU);
 	}
 
 
-#if 0    /* */
+
     if(!strcmp("www.121zou.com", (char *)hytag->host))
     {
         CNT_INC(ADP_DROP_121ZOU);
@@ -127,11 +126,18 @@ berr naga_adp(hytag_t *hytag)
     }
 
 #else
+	if(ACT_DROP == (hytag->acl.actions & ACT_DROP))
+	{
+       	CNT_INC(ADP_DROP_ACT_DROP);
+        return E_SUCCESS;
+	}
+    
 	if(0 == (hytag->acl.actions & ACT_PUSH))
 	{
        	CNT_INC(ADP_DROP_ACT_PUSH);
         return E_SUCCESS;
 	}
+    
 #endif 
     if(NULL != strstr(hytag->uri, "?_t=t"))
     {
@@ -139,12 +145,25 @@ berr naga_adp(hytag_t *hytag)
 	    return E_SUCCESS;
     }
 
+    if(hytag->uri_len == 1 && !strcmp(hytag->uri, "/"))
+    {
+        
+    }
+    else
+    {
+        CNT_INC(ADP_DROP_BACKSLASH_SUFFIX);
+        return E_SUCCESS;           
+    }
+
+#if 0
+
 	rear= strrchr(hytag->uri, '.');
 
 	if(rear == NULL)
 	{
 	    if(hytag->uri_len == 1 && !strcmp(hytag->uri, "/"))
 	    {
+            
 	    }						
 	    else
 	    {
@@ -162,6 +181,7 @@ berr naga_adp(hytag_t *hytag)
 		}
 		
 	}
+#endif
 
     if(g_adp_cnt++ % g_adp_interval != 0)
     {
@@ -173,6 +193,12 @@ berr naga_adp(hytag_t *hytag)
     {
         return E_SUCCESS;
     }    
+
+    /*check The First char*/
+	if(hytag->uri[0] == '/' && hytag->host_len > 0 && hytag->uri_len > 0)
+	{
+		hytag->url_len= snprintf(hytag->url, URL_MAX_LEN, "http://%s%s", hytag->host, hytag->uri);
+	}
 
 
     txm = hytag->m;
@@ -205,16 +231,8 @@ berr naga_adp(hytag_t *hytag)
 		CNT_INC(ADP_PUSH_MOBILE);
     }
 
-
-
-
-
-   
-
     if(hytag->eth_tx == ENABLE)
     {
-
-
 		memcpy(buffer, hytag->pbuf.ptr, hytag->pbuf.len);
 		rv = ads_response_head_generator(buffer, hytag);
 		if(rv != E_SUCCESS) {
@@ -222,8 +240,7 @@ berr naga_adp(hytag_t *hytag)
 			return rv;
 		}
 
-   
-        //printf("prepare to Send packet\n");
+ 
         rv = ift_raw_send_packet(hytag->fp, buffer, hytag->data_len);
         if(rv != E_SUCCESS)
         {

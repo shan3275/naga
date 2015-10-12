@@ -71,7 +71,7 @@ static int cmd_show_stat(struct vty *vty, const char *str)
 	
     if (E_SUCCESS != cnt_get(0, CNT_MAX, cnt_array, &total))
     {
-    	vty_out(vty, "%Fail To Get cnt_get %s", VTY_NEWLINE);
+    	vty_out(vty, "Fail To Get cnt_get %s", VTY_NEWLINE);
         return CMD_WARNING;
     }
 
