@@ -251,7 +251,7 @@ berr libpcap_rx_loop_unset(char * ifname __attribute__((unused)))
 			list_del(&handle->node);
 			if(pthread_cancel(handle->recv_thread))
 			{
-                printf("cancel Thread-%s Failed\n", handle->ifname)
+                printf("cancel Thread-%s Failed\n", handle->ifname);
                 return E_FAIL;        
             }
             pthread_join(handle->recv_thread, NULL);
