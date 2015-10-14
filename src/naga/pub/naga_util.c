@@ -19,7 +19,8 @@ naga_action_parse(char *str, uint32_t *actions)
 
     *actions = 0;
 
-	act_str = strdup(str);
+	//act_str = strdup(str);
+	act_str = str;
 
     tokp = strtok(act_str, ",");
 
