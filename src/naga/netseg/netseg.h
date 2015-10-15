@@ -46,6 +46,6 @@ berr api_net_clear_statistics(uint32_t index);
 
 /* dp use */
 berr api_net_dp_match(uint32_t index, uint32_t ip);
-berr netseg_init(void);
+void netseg_init(void);
 
 #endif /* end of __NET_H__ */

@@ -146,15 +146,15 @@ berr api_net_dp_match(uint32_t index, uint32_t ip)
     return rv;
 }
 
-berr netseg_init(void)
+void netseg_init(void)
 {
     int i;
-    int rv;
+	
     netseg = malloc(sizeof(netseg_t) * NETSEG_RULE_NUM_MAX);
     if ( NULL == netseg )
     {
         printf("%s %d setseg malloc failed\n", __func__, __LINE__);
-        BRET(E_NULL);
+        return;
     }
 
     memset(netseg, 0, sizeof(netseg_t) * NETSEG_RULE_NUM_MAX);
@@ -164,6 +164,6 @@ berr netseg_init(void)
         NETSEG_SPINLOCK_INIT(netseg[i].lock);
     }
 
-    return E_SUCCESS;
+    return;
 
 }

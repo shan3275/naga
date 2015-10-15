@@ -38,6 +38,7 @@
 #include "acr_cmd.h"
 #include "itf_cmd.h"
 #include "adt_cmd.h"
+#include "netseg_cmd.h"
 /* Zebra instance */
 struct zebra_t zebrad =
 {
@@ -248,6 +249,7 @@ int cmdline (int argc, char **argv)
     cmdline_adp_init();
     cmdline_itf_init();
     cmdline_adt_init();
+	cmdline_netseg_init();
     /* Zebra related initialize. */
     //access_list_init ();
 
