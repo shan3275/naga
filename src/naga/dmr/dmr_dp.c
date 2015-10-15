@@ -22,6 +22,13 @@ berr naga_dmr(hytag_t *tag)
         return E_SUCCESS;
     }
 
+	if (0 == (tag->acl.actions & ACT_PUSH))
+	{
+		return E_SUCCESS;
+	}
+
+	tag->acl.actions = tag->acl.actions & (~ACT_PUSH);
+	
 	CNT_INC(DMR_PKTS);
 
     rule = dmr_get((char *)tag->host);
