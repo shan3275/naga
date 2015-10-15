@@ -13,17 +13,43 @@ berr netseg_dp_match(uint32_t ip, int *index)
 {
     int i;
     int rv = E_SUCCESS;
+	netseg_t *seg = NULL;
+
+	seg = api_get_netseg_ptr();
+	if (NULL == seg)
+	{
+		return E_FAIL;
+	}
+	
     for ( i = 0; i < NETSEG_RULE_NUM_MAX; i++)
     {
         /* match success */
-        rv = api_net_dp_match(i,ip);
-        if(rv == E_SUCCESS)
-        {
-        	*index = i;
-            break;
-        }
+        //rv = api_net_dp_match(i,ip);
+        //if(rv == E_SUCCESS)
+        //{
+        //	*index = i;
+        //    break;
+        //}
+
+		if(seg[i].effective == NETSEG_RULE_UNEFFECTIVE)
+		{
+			continue;			
+		}
+		if ( ip & seg[i].net.mask != seg[i].net.ip & seg[i].net.mask )
+		{
+			continue;	
+		}
+		else
+		{
+			*index = i;
+			return E_SUCCESS;
+		}
+		
+		
+
+		
     }
-    return rv;
+    return E_NULL;
 }
 
 berr netseg_dp_process(hytag_t *hytag)

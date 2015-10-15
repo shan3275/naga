@@ -119,6 +119,21 @@ berr api_net_clear_statistics(uint32_t index)
 	return E_SUCCESS;
 }
 
+
+netseg_t *api_get_netseg_ptr(void)
+{
+	if (NULL == netseg)
+	{
+		printf("Netseg is NULL!!!!!!!!!!!!!\n");
+		return NULL;
+	}
+	return netseg;
+}
+
+
+
+
+
 /* dp use */
 berr api_net_dp_match(uint32_t index, uint32_t ip)
 {
@@ -131,7 +146,7 @@ berr api_net_dp_match(uint32_t index, uint32_t ip)
     {
         /* unlock */
         NETSEG_RULE_UNLOCK(index);
-        BRET(E_NULL);
+        return rv;
     }
 
     /* check ip */
@@ -139,7 +154,7 @@ berr api_net_dp_match(uint32_t index, uint32_t ip)
     {
         /* unlock */
         NETSEG_RULE_UNLOCK(index);
-        BRET(E_MATCH);
+        return rv;
     }
 
     /* unlock */

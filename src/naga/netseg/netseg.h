@@ -23,6 +23,7 @@
 #define NETSEG_RULE_EFFECTIVE   1
 #define NETSEG_RULE_UNEFFECTIVE 0
 
+
 typedef struct {
     uint32_t index;
 	uint32_t ip;
@@ -39,6 +40,9 @@ typedef struct {
 } netseg_t;
 
 
+//#define CHECK_NET_EFFECTTIV(_i)   ()
+
+
 berr api_net_add(net_t *net);
 berr api_net_del(uint32_t index);
 berr  api_net_get(uint32_t index, net_t *net);
@@ -46,6 +50,8 @@ berr api_net_clear_statistics(uint32_t index);
 
 /* dp use */
 berr api_net_dp_match(uint32_t index, uint32_t ip);
+netseg_t *api_get_netseg_ptr(void);
+
 void netseg_init(void);
 
 #endif /* end of __NET_H__ */
