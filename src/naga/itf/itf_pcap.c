@@ -85,7 +85,7 @@ void libpcap_packet_handler(u_char *param __attribute__((unused)),
 {
     hytag_t hytag;
     //char buffer[2048];	
-//    pthread_testcancel();
+    pthread_testcancel();
 
     memset(&hytag, 0x0, sizeof(hytag));
     //memcpy((void *)buffer, (void *)packet, header->len);	
@@ -107,8 +107,12 @@ void libpcap_packet_handler(u_char *param __attribute__((unused)),
 void* pcap_rx_loop(void *_param);
 void *pcap_rx_loop(void *_param)
 {
-    libpcap_param_t *param = (libpcap_param_t *)_param;
- #if  1 
+    libpcap_param_t rparam;
+    //when The create Thread exit , The pram will can't assert
+    memcpy(&rparam,  _param, sizeof(rparam)); 
+    free(_param);
+
+#if  1 
     if (pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL) != 0) {
             perror("pthread_setcancelstate err:");
             return NULL;
@@ -118,8 +122,8 @@ void *pcap_rx_loop(void *_param)
             return NULL;
     }
 #endif
-
-    pcap_loop(param->fp, 0, (pcap_handler)libpcap_packet_handler, (void*)_param);
+    
+    pcap_loop(rparam.fp, 0, (pcap_handler)libpcap_packet_handler, (void*)&rparam);
     return NULL;
 }
 
@@ -204,7 +208,15 @@ berr libpcap_rx_loop_setup(char * ifname)
             BRET(E_FAIL);
         }
 
-        int rv = pthread_create(&recv_thread, NULL,  pcap_rx_loop, (void *)&param);
+        libpcap_param_t *tparam = (libpcap_param_t * )malloc(sizeof(libpcap_param_t));
+
+        memcpy(tparam, &param, sizeof(libpcap_param_t));
+        if(NULL == tparam)
+        {
+            BRET(E_FAIL);
+        }
+        
+        int rv = pthread_create(&recv_thread, NULL,  pcap_rx_loop, (void *)tparam);
 		if(rv)
 		{
 			printf("Failed Create Thread for interface-%s\n", ifname);		
@@ -234,11 +246,16 @@ berr libpcap_rx_loop_unset(char * ifname __attribute__((unused)))
 		handle = (libpcap_handler_t *)list_entry(pos, libpcap_handler_t, node);
 		if(!strcmp(handle->ifname, ifname))
 		{
-			free(handle->ifname);
+		
 			pcap_close(handle->fp); 
 			list_del(&handle->node);
-			pthread_cancel(handle->recv_thread);
+			if(pthread_cancel(handle->recv_thread))
+			{
+                printf("cancel Thread-%s Failed\n", handle->ifname);
+                return E_FAIL;        
+            }
             pthread_join(handle->recv_thread, NULL);
+            free(handle->ifname);
 			free(handle);
 		}
 	}

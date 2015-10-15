@@ -26,12 +26,6 @@ typedef struct {
 #define ACL_DORP(_acl) \
     (_acl).actions |= ACT_DROP
 
-#define ACL_FWD(_acl, _port) \
-{ \
-    _acl.actions |= ACT_FORWARD; \
-    _acl.outport  = _port; \
-}
-
 #define ACL_LOG(_acl) \
     _acl.actions |= ACT_LOG
 
