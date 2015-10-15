@@ -98,6 +98,7 @@ berr  api_net_get(uint32_t index, net_t *net)
     DBG_INFO(MOD_NET, "netseg[%d].net.mask(0x%x)\n", index, netseg[index].net.mask);
     DBG_INFO(MOD_NET, "netseg[%d].net.acl.action(0x%x)\n", index, netseg[index].net.acl.actions);
     NETSEG_RULE_UNLOCK(index);
+	return E_SUCCESS;
 }
 
 berr api_net_clear_statistics(uint32_t index)
@@ -115,6 +116,7 @@ berr api_net_clear_statistics(uint32_t index)
     DBG_INFO(MOD_NET, "netseg[%d].net.mask(0x%x)\n", index, netseg[index].net.mask);
     DBG_INFO(MOD_NET, "netseg[%d].net.acl.action(0x%x)\n", index, netseg[index].net.acl.actions);
     NETSEG_RULE_UNLOCK(index);
+	return E_SUCCESS;
 }
 
 /* dp use */

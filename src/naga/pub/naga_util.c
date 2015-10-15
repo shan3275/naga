@@ -78,7 +78,7 @@ naga_action_string(uint32_t *action, char *str)
         cp += sprintf(cp, "log");
     }
 
-    else if (ACT_IS_VAILD(*action, ACT_TRACE))
+    if (ACT_IS_VAILD(*action, ACT_TRACE))
     {
         if (cp != str)
         {

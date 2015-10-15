@@ -9,7 +9,7 @@
 **************************************************************/
 #include "bts_cnt.h"
 #include "netseg.h"
-berr netseg_dp_match(uint32_t ip)
+berr netseg_dp_match(uint32_t ip, int *index)
 {
     int i;
     int rv = E_SUCCESS;
@@ -19,6 +19,7 @@ berr netseg_dp_match(uint32_t ip)
         rv = api_net_dp_match(i,ip);
         if(rv == E_SUCCESS)
         {
+        	*index = i;
             break;
         }
     }
@@ -28,6 +29,8 @@ berr netseg_dp_match(uint32_t ip)
 berr netseg_dp_process(hytag_t *hytag)
 {
     int rv;
+	net_t rule;
+	int index = 0;
 
     if ( NULL == hytag )
     {
@@ -49,7 +52,8 @@ berr netseg_dp_process(hytag_t *hytag)
     cnt_inc(NET_URLPKTS);
 
     /* IP_UDP_GTP_IP_URL packet process */
-    rv = net_dp_match(hytag->outer_srcip4);
+    rv = netseg_dp_match(hytag->outer_srcip4, &index);
+    
     if(rv)
     {
         /*add not match statistics */
@@ -61,6 +65,14 @@ berr netseg_dp_process(hytag_t *hytag)
         /* add match statistics */
         cnt_inc(NET_MATCHPKTS);
         hytag->match |= 1;
+		memset(&rule, 0, sizeof(net_t));
+		rv = api_net_get(index, &rule);
+		if (rv)
+		{
+			return E_FAIL;
+		}
+		ACL_HIT(rule.acl);
+        HYTAG_ACL_MERGE(hytag->acl, rule.acl);
     }
     return E_SUCCESS; 
 }

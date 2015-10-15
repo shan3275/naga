@@ -21,6 +21,7 @@
 #include "netseg.h"
 #include "naga_cmd.h"
 #include "naga_util.h"
+#include "bts_util.h"
 
 #define NET_STR                     "Net list\n"
 #define ADD_STR                     "ADD Operation\n"
@@ -169,7 +170,7 @@ DEFUN(net_del_all,
 
 static void net_dump(struct vty *vty, net_t *net)
 {
-    char action_str[NAGA_ACTION_STR_SZ];
+    char action_str[NAGA_ACTION_STR_SZ] = {0};
     struct in_addr netmask;
 
     if ((NULL == vty) || (NULL == net))
@@ -200,6 +201,8 @@ static int net_cmd_show(struct vty *vty, const char *index_str)
         debug("index:%d", index);
     }
 
+	memset(&net, 0, sizeof(net_t));
+
     ret = api_net_get(index, &net);
     if (ret)
     {
@@ -207,7 +210,7 @@ static int net_cmd_show(struct vty *vty, const char *index_str)
         return CMD_WARNING;
     }
 
-	vty_out(vty, "%-8s %-32s %-32s %-16s %s","index", "ip/mask","action", "cnt",VTY_NEWLINE);
+	vty_out(vty, "%-8s %-23s %-32s %-16s %s","index", "ip/mask","action", "cnt",VTY_NEWLINE);
     vty_out(vty, "------------------------------------------------%s", VTY_NEWLINE);
 
     net_dump(vty, &net);
@@ -222,17 +225,19 @@ static int net_cmd_show_all(struct vty *vty)
     int i;
     net_t net;
 
-	vty_out(vty, "%-32s %-32s %-16s %s","host","action", "cnt",VTY_NEWLINE);
+	memset(&net, 0, sizeof(net_t));
+	vty_out(vty, "%-8s %-23s %-32s %-16s %s","index", "ip/mask","action", "cnt",VTY_NEWLINE);
     vty_out(vty, "------------------------------------------------%s", VTY_NEWLINE);
     for ( i = 0; i < NETSEG_RULE_NUM_MAX; i++ )
     {
+ 
         ret = api_net_get(i, &net);
         if (ret)
         {
             vty_out(vty, "net dump fail, index(%d) ret(%d)%s", i, ret, VTY_NEWLINE);
             continue;
         }
-        net_dump(vty, &net);
+		net_dump(vty, &net);
     }
 
     return CMD_SUCCESS;
