@@ -84,7 +84,7 @@ static int net_cmd_add(struct vty *vty, const char *index_str, const char *ip_st
 
     net.index = index;
     net.ip    = ip;
-    net.mask  = mask.s_addr;
+    net.mask  = ntohl(mask.s_addr);
 
     if(naga_action_parse((char *)act_str, &net.acl.actions))
     {
