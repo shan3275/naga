@@ -9,7 +9,8 @@
     MOD_VSR, \
     MOD_DMR, \
     MOD_ACR, \
-    MOD_ADP
+    MOD_ADP, \
+    MOD_NET
 
 #define MOD_ARRAY_CUSTOM \
     {MOD_AMD, BAS, OFF, OFF, "AMD", "Admin Main Daemon"}, \
@@ -19,7 +20,8 @@
     {MOD_VSR, ON,  OFF, OFF, "VSR", "Visted recored module"}, \
     {MOD_DMR, ON,  OFF, OFF, "DMR", "Domain rule module"}, \
     {MOD_ACR, ON,  OFF, OFF, "ACR", "Account rule module"}, \
-    {MOD_ADP, ON,  OFF, OFF, "ADP", "Advertising push"}
+    {MOD_ADP, ON,  OFF, OFF, "ADP", "Advertising push"}, \
+    {MOD_NET, ON,  OFF, OFF, "NET", "Net Segment module"}
 
 #define DOPT_CUSTOM \
     DOPT_TAGMON, \
@@ -75,6 +77,12 @@
     ADP_PUSH_SUCCESS, \
     ADP_HAO123, \
     \
+    NET_PKTS, /* netseg module input packets*/ \
+    NET_UNURLPKTS, /* take no url packet number */ \
+    NET_URLPKTS, /* take url packet number */ \
+    NET_UNMATCHPKTS, /* not match packets */ \
+    NET_MATCHPKTS, /* match packets */ \
+    NET_RULE_MATCHPKTS, /* rule ip, url all match */ \
     NAGA_CNT_MAX
 
 #define CNT_DEF_CUSTOM \
