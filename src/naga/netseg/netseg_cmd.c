@@ -179,7 +179,7 @@ static void net_dump(struct vty *vty, net_t *net)
     }
 
     naga_action_string(&net->acl.actions, action_str);
-    netmask.s_addr = net->mask;
+    netmask.s_addr = htonl(net->mask);
     vty_out(vty, "%-8d %d.%d.%d.%d/%-15d %-32s %-16lu %s", net->index,
             (net->ip >> 24) & 0xff,
             (net->ip >> 16) & 0xff,
