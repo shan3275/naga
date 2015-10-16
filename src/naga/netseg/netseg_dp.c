@@ -93,7 +93,7 @@ berr netseg_dp_process(hytag_t *hytag)
         cnt_inc(NET_MATCHPKTS);
         hytag->match |= 1;
 		memset(&rule, 0, sizeof(net_t));
-		rv = api_net_get(index, &rule, effect);
+		rv = api_net_get(index, &rule, &effect);
 		if (E_SUCCESS != rv)
 		{
 			return E_FAIL;
