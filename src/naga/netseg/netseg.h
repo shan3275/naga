@@ -45,8 +45,11 @@ typedef struct {
 
 berr api_net_add(net_t *net);
 berr api_net_del(uint32_t index);
-berr  api_net_get(uint32_t index, net_t *net);
+berr  api_net_get(uint32_t index, net_t *net, uint8_t *effect);
 berr api_net_clear_statistics(uint32_t index);
+
+berr api_get_netseg_effect(uint32_t index, uint8_t *effect);
+
 
 /* dp use */
 berr api_net_dp_match(uint32_t index, uint32_t ip);

@@ -57,6 +57,7 @@ berr netseg_dp_process(hytag_t *hytag)
     int rv;
 	net_t rule;
 	int index = -1;
+	uint8_t effect;
 
     if ( NULL == hytag )
     {
@@ -92,13 +93,16 @@ berr netseg_dp_process(hytag_t *hytag)
         cnt_inc(NET_MATCHPKTS);
         hytag->match |= 1;
 		memset(&rule, 0, sizeof(net_t));
-		rv = api_net_get(index, &rule);
+		rv = api_net_get(index, &rule, effect);
 		if (E_SUCCESS != rv)
 		{
 			return E_FAIL;
 		}
-		ACL_HIT(rule.acl);
-        HYTAG_ACL_MERGE(hytag->acl, rule.acl);
+		if (NETSEG_RULE_EFFECTIVE == effect)
+		{
+			ACL_HIT(rule.acl);
+		    HYTAG_ACL_MERGE(hytag->acl, rule.acl);
+		}
     }
     return E_SUCCESS; 
 }

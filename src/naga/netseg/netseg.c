@@ -77,7 +77,7 @@ berr api_net_del(uint32_t index)
     return E_SUCCESS;
 }
 
-berr  api_net_get(uint32_t index, net_t *net)
+berr  api_net_get(uint32_t index, net_t *net, uint8_t *effect)
 {
     if (NULL == net)
     {
@@ -91,12 +91,14 @@ berr  api_net_get(uint32_t index, net_t *net)
 
     NETSEG_RULE_LOCK(index);
     memcpy(net, &netseg[index].net, sizeof(net_t));
+	*effect = netseg[index].effective;
 
     DBG_INFO(MOD_NET, "netseg[%d].effective(%d)\n", index, netseg[index].effective);
     DBG_INFO(MOD_NET, "netseg[%d].net.index(0x%x)\n", index, netseg[index].net.index);
     DBG_INFO(MOD_NET, "netseg[%d].net.ip(0x%x)\n", index, netseg[index].net.ip);
     DBG_INFO(MOD_NET, "netseg[%d].net.mask(0x%x)\n", index, netseg[index].net.mask);
     DBG_INFO(MOD_NET, "netseg[%d].net.acl.action(0x%x)\n", index, netseg[index].net.acl.actions);
+	DBG_INFO(MOD_NET, "netseg[%d].effective(%d)\n", index, netseg[index].effective);
     NETSEG_RULE_UNLOCK(index);
 	return E_SUCCESS;
 }
@@ -119,6 +121,16 @@ berr api_net_clear_statistics(uint32_t index)
 	return E_SUCCESS;
 }
 
+
+berr api_get_netseg_effect(uint32_t index, uint8_t *effect)
+{
+	if (index >= NETSEG_RULE_NUM_MAX)
+    {
+        return E_PARAM;
+    }
+
+	*effect = netseg[index].effective;
+}
 
 netseg_t *api_get_netseg_ptr(void)
 {

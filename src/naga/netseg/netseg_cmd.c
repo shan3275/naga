@@ -194,7 +194,8 @@ static int net_cmd_show(struct vty *vty, const char *index_str)
     int ret = 0;
     uint32_t index = 0;
     net_t net;
-
+	uint8_t effect;
+	
     if (index_str)
     {
         index = atoi(index_str);
@@ -203,7 +204,7 @@ static int net_cmd_show(struct vty *vty, const char *index_str)
 
 	memset(&net, 0, sizeof(net_t));
 
-    ret = api_net_get(index, &net);
+    ret = api_net_get(index, &net, &effect);
     if (ret)
     {
         vty_out(vty, "net dump fail, index(%d) ret(%d)%s", index, ret, VTY_NEWLINE);
@@ -213,8 +214,14 @@ static int net_cmd_show(struct vty *vty, const char *index_str)
 	vty_out(vty, "%-8s %-23s %-32s %-16s %s","index", "ip/mask","action", "cnt",VTY_NEWLINE);
     vty_out(vty, "------------------------------------------------%s", VTY_NEWLINE);
 
-    net_dump(vty, &net);
-
+	if (NETSEG_RULE_EFFECTIVE == effect)
+	{
+    	net_dump(vty, &net);
+	}
+	else
+	{
+		vty_out(vty, "Net %d does not exist!%s", index, VTY_NEWLINE);
+	}
     return CMD_SUCCESS;
 }
 
@@ -224,6 +231,7 @@ static int net_cmd_show_all(struct vty *vty)
     int ret = 0;
     int i;
     net_t net;
+	uint8_t effect;
 
 	memset(&net, 0, sizeof(net_t));
 	vty_out(vty, "%-8s %-23s %-32s %-16s %s","index", "ip/mask","action", "cnt",VTY_NEWLINE);
@@ -231,14 +239,17 @@ static int net_cmd_show_all(struct vty *vty)
     for ( i = 0; i < NETSEG_RULE_NUM_MAX; i++ )
     {
  
-        ret = api_net_get(i, &net);
+        ret = api_net_get(i, &net, &effect);
         if (ret)
         {
             vty_out(vty, "net dump fail, index(%d) ret(%d)%s", i, ret, VTY_NEWLINE);
             continue;
         }
-		net_dump(vty, &net);
-    }
+		if (NETSEG_RULE_EFFECTIVE == effect)
+		{
+			net_dump(vty, &net);
+		}
+	}
 
     return CMD_SUCCESS;
 }
@@ -321,14 +332,15 @@ DEFUN(net_clear_statistics_all,
 void netseg_cmd_config_write(struct vty *vty)
 {
     int ret = 0;
-    char action_str[NAGA_ACTION_STR_SZ];
+    char action_str[NAGA_ACTION_STR_SZ] = {0};
     struct in_addr netmask;
     net_t net;
+	uint8_t effect = 0;
     int i;
     for ( i = 0; i < NETSEG_RULE_NUM_MAX; i++ )
     {
 
-        ret = api_net_get(i, &net);
+        ret = api_net_get(i, &net, &effect);
         if (ret)
         {
             vty_out(vty, "net dump fail, index(%d) ret(%d)%s", i, ret, VTY_NEWLINE);
@@ -338,15 +350,18 @@ void netseg_cmd_config_write(struct vty *vty)
         {
             naga_action_string(&net.acl.actions, action_str);
             netmask.s_addr = net.mask;
-            vty_out(vty, "net add %d %d.%d.%d.%d/%d %s %s", i, 
-                    (net.ip >> 24) & 0xff,
-                    (net.ip >> 16) & 0xff,
-                    (net.ip >>  8) & 0xff,
-                    (net.ip >>  0) & 0xff,
-                    ip_masklen (netmask), action_str,
-                    VTY_NEWLINE);
-        }
-        net_dump(vty, &net);
+			
+			if (NETSEG_RULE_EFFECTIVE == effect)
+			{
+	            vty_out(vty, "net add %d %d.%d.%d.%d/%d %s %s", i, 
+	                    (net.ip >> 24) & 0xff,
+	                    (net.ip >> 16) & 0xff,
+	                    (net.ip >>  8) & 0xff,
+	                    (net.ip >>  0) & 0xff,
+	                    ip_masklen (netmask), action_str,
+	                    VTY_NEWLINE);
+			}
+		}
 
     }
 }
