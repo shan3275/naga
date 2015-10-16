@@ -36,7 +36,6 @@ DIRS-y += boots
 DIRS-y += libzebra
 DIRS-y += cmdline
 DIRS-y += vsr
-DIRS-y += netseg
 DIRS-y += pid
 DIRS-y += itf
 DIRS-y += dmr
