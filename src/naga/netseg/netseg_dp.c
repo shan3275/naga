@@ -9,27 +9,20 @@
 **************************************************************/
 #include "bts_cnt.h"
 #include "netseg.h"
-berr netseg_dp_match(uint32_t ip, int *index)
+berr netseg_dp_match(uint32_t ip, net_t **rule)
 {
     int i;
     int rv = E_SUCCESS;
 	netseg_t *seg = NULL;
 
 	seg = api_get_netseg_ptr();
-	if (NULL == seg)
+	if ((NULL == seg)||(NULL == rule))
 	{
 		return E_FAIL;
 	}
 	
     for ( i = 0; i < NETSEG_RULE_NUM_MAX; i++)
     {
-        /* match success */
-        //rv = api_net_dp_match(i,ip);
-        //if(rv == E_SUCCESS)
-        //{
-        //	*index = i;
-        //    break;
-        //}
 
 		if(seg[i].effective == NETSEG_RULE_UNEFFECTIVE)
 		{
@@ -37,16 +30,13 @@ berr netseg_dp_match(uint32_t ip, int *index)
 		}
 		if ( (ip & seg[i].net.mask) == (seg[i].net.ip & seg[i].net.mask) )
 		{
-			*index = i;
-			return E_SUCCESS;	
+			*rule = &seg[i].net;
+			return E_SUCCESS;
 		}
 		else
 		{
 			continue;
 		}
-		
-		
-
 		
     }
     return E_NULL;
@@ -55,9 +45,7 @@ berr netseg_dp_match(uint32_t ip, int *index)
 berr netseg_dp_process(hytag_t *hytag)
 {
     int rv;
-	net_t rule;
-	int index = -1;
-	uint8_t effect;
+	net_t *rule = NULL;
 
     if ( NULL == hytag )
     {
@@ -79,9 +67,9 @@ berr netseg_dp_process(hytag_t *hytag)
     cnt_inc(NET_URLPKTS);
 
     /* IP_UDP_GTP_IP_URL packet process */
-    rv = netseg_dp_match(hytag->outer_srcip4, &index);
+    rv = netseg_dp_match(hytag->outer_srcip4, &rule);
     
-    if((E_SUCCESS != rv)|| (-1 == index))
+    if((E_SUCCESS != rv)|| (NULL == rule))
     {
         /*add not match statistics */
         cnt_inc(NET_UNMATCHPKTS);
@@ -92,17 +80,10 @@ berr netseg_dp_process(hytag_t *hytag)
         /* add match statistics */
         cnt_inc(NET_MATCHPKTS);
         hytag->match |= 1;
-		memset(&rule, 0, sizeof(net_t));
-		rv = api_net_get(index, &rule, &effect);
-		if (E_SUCCESS != rv)
-		{
-			return E_FAIL;
-		}
-		if (NETSEG_RULE_EFFECTIVE == effect)
-		{
-			ACL_HIT(rule.acl);
-		    HYTAG_ACL_MERGE(hytag->acl, rule.acl);
-		}
+
+
+		ACL_HIT(rule->acl);
+		HYTAG_ACL_MERGE(hytag->acl, rule->acl);
     }
     return E_SUCCESS; 
 }

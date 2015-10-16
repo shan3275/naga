@@ -349,7 +349,7 @@ void netseg_cmd_config_write(struct vty *vty)
         else
         {
             naga_action_string(&net.acl.actions, action_str);
-            netmask.s_addr = net.mask;
+            netmask.s_addr = htonl(net.mask);
 			
 			if (NETSEG_RULE_EFFECTIVE == effect)
 			{
