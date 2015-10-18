@@ -567,6 +567,10 @@ DEFUN(clear_domain_stat,
     return cmd_dmr_clear_stat(vty, argv[0]);
 }
 
+
+
+
+
 DEFUN(clear_domain_stat_all,
       clear_domain_stat_all_cmd,
       "clear domain stat all",
@@ -578,10 +582,53 @@ DEFUN(clear_domain_stat_all,
     return cmd_dmr_clear_stat_all(vty);
 }
 
+
+static int cmd_dmr_domain_default_act_set(struct vty *vty, const char *act_str)
+{
+	int ret = 0;
+	uint32_t action = 0;
+	
+	if(naga_action_parse((char *)act_str, &action))
+    {
+        return CMD_ERR_NO_MATCH;
+    }
+	ret = api_dmr_domain_default_act_set(action);
+	if (ret)
+    {
+        vty_out(vty, "domain set default action fail:(%s)%s", berr_msg(ret), VTY_NEWLINE);
+        return CMD_WARNING;
+    }
+
+    return CMD_SUCCESS;
+}
+
+
+
+DEFUN(domain_default_act_set,
+      domain_default_act_set_cmd,
+      "domain default ACT",
+      DOMAIN_STR
+      DEFAULT_STR
+      ACTION_STR)
+{
+    return cmd_dmr_domain_default_act_set(vty, argv[0]);
+}
+
+
+
+
+
+
+
+
 /*
  * dmr module cmdline register and init
  *
  * */
+
+
+
+
 
 
 
@@ -626,6 +673,7 @@ void cmdline_dmr_init(void)
 	install_element(CMD_NODE, &clear_domain_stat_all_cmd);
 	install_element(CMD_NODE, &show_domain_cmd);
 	install_element(CMD_NODE, &show_domain_all_cmd);
+	install_element(CMD_NODE, &domain_default_act_set_cmd);	
 
     return ;
 }

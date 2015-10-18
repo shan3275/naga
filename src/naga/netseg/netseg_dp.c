@@ -9,6 +9,8 @@
 **************************************************************/
 #include "bts_cnt.h"
 #include "netseg.h"
+
+extern uint32_t netseg_default_action;
 berr netseg_dp_match(uint32_t ip, net_t **rule)
 {
     int i;
@@ -74,6 +76,7 @@ berr netseg_dp_process(hytag_t *hytag)
         /*add not match statistics */
         cnt_inc(NET_UNMATCHPKTS);
         hytag->match &= 0xfffe;
+		HYTAG_ACL_SET(hytag->acl, netseg_default_action);
     }
     else
     {

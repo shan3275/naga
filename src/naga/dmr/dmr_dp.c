@@ -8,6 +8,8 @@
 
 #define MAX_HOST_RULE_NUM 10000
 
+extern uint32_t domin_default_action;
+
 berr naga_dmr(hytag_t *tag)
 {
     dmr_t* rule = NULL;
@@ -21,14 +23,14 @@ berr naga_dmr(hytag_t *tag)
     {
         return E_SUCCESS;
     }
-
+#if 0
 	if (0 == (tag->acl.actions & ACT_PUSH))
 	{
 		return E_SUCCESS;
 	}
 
 	tag->acl.actions = tag->acl.actions & (~ACT_PUSH);
-	
+#endif	
 	CNT_INC(DMR_PKTS);
 
     rule = dmr_get((char *)tag->host);
@@ -36,6 +38,7 @@ berr naga_dmr(hytag_t *tag)
     if (NULL == rule)
     {
         CNT_INC(DMR_RULE_UNMATCH);
+		HYTAG_ACL_SET(tag->acl, domin_default_action);
     }
     else
     {

@@ -6,6 +6,8 @@
 
 #include "dmr.h"
 
+uint32_t domin_default_action = ACT_DROP;
+
 bts_hashtable_t dmr_table;
 
 uint32_t 
@@ -181,5 +183,13 @@ dmr_iter(bts_iter_func func, void *param)
 
     return E_SUCCESS;
 }
+
+
+berr dmr_domain_default_act_set(uint32_t action)
+{
+	domin_default_action = action;
+	return E_SUCCESS;
+}
+
 
 /* End of file */

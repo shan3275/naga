@@ -15,6 +15,9 @@
 #include "bts_debug.h"
 
 netseg_t *netseg = NULL;
+uint32_t netseg_default_action = ACT_DROP;
+
+
 #define __DPDK
 #ifdef  __DPDK
 #define NETSEG_STAT_INC(_index)         rte_atomic64_inc(&(netseg[_index].net.acl.cnt))
@@ -174,6 +177,17 @@ berr api_net_dp_match(uint32_t index, uint32_t ip)
 
     return rv;
 }
+
+
+
+berr api_netseg_default_act_set(uint32_t action)
+{
+	netseg_default_action = action;
+	return E_SUCCESS;
+}
+
+
+
 
 void netseg_init(void)
 {

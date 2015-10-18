@@ -19,7 +19,7 @@
 #ifndef  __NETSEG_H__
 #define  __NETSEG_H__
 
-#define NETSEG_RULE_NUM_MAX  100
+#define NETSEG_RULE_NUM_MAX  256
 #define NETSEG_RULE_EFFECTIVE   1
 #define NETSEG_RULE_UNEFFECTIVE 0
 
@@ -50,6 +50,7 @@ berr api_net_clear_statistics(uint32_t index);
 
 berr api_get_netseg_effect(uint32_t index, uint8_t *effect);
 
+berr api_netseg_default_act_set(uint32_t action);
 
 /* dp use */
 berr api_net_dp_match(uint32_t index, uint32_t ip);
