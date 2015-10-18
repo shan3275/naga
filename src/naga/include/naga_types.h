@@ -170,7 +170,7 @@ typedef struct
 
 
 
-#define HYTAG_ACL_SET(_acl, _val)   _acl.actions |= _val;
+#define HYTAG_ACL_SET(_acl, _val)   _acl.actions |= _val
 
 #define USE_D_PACKET 1
 
