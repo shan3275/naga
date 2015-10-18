@@ -32,7 +32,7 @@
 #define DOPT_ARRAY_CUSTOM \
     {DOPT_TAGMON, OFF,  "tagmon", "Hytag monitor"}, \
     {DOPT_FAILPKT,OFF, "failpkt", "Process fail packet record"},\
-    {DOPT_LOG, OFF, "log", "log record"}
+    {DOPT_LOG, ON, "log", "log record"}
 
 #define CNT_CUSTOM \
     /* VSR Module counters */ \
@@ -56,7 +56,9 @@
     VSR_RULE_NEW_URL, \
     VSR_RULE_LEN_OVERFLOW, /* url len overflow */ \
     VSR_RULE_URL_OVERFLOW,    /* url overflow */ \
-    \
+	\
+	URL_HOMEPAGE, \
+	\
     ADP_IPKTS, \
     ADP_DROP_PARAM, \
     ADP_DROP_GET_OR_POST, \
@@ -109,6 +111,7 @@
     CNT_DEF(VSR_RULE_LEN_OVERFLOW), \
     CNT_DEF(VSR_RULE_URL_OVERFLOW), \
     \
+    CNT_DEF(URL_HOMEPAGE);\
     CNT_DEF(ADP_IPKTS), \
     CNT_DEF(ADP_DROP_PARAM), \
     CNT_DEF(ADP_DROP_GET_OR_POST), \

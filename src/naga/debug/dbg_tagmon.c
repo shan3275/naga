@@ -56,38 +56,60 @@ void hytag_print(hytag_t *tag)
 
 void hytag_log(hytag_t *tag)
 {
-    if(APP_TYPE_HTTP_GET_OR_POST == tag->app_type)
-    {
-        bts_zlog(LOG_ALERT, "{%d.%d.%d.%d %d.%d.%d.%d %d %d %d}\t|%-64s|AD<%s>", 
-                                (tag->outer_srcip4 >>24) &0xff,
-                                (tag->outer_srcip4 >>16) &0xff,
-                                (tag->outer_srcip4 >>8) &0xff,
-                                (tag->outer_srcip4) &0xff,
-                                (tag->outer_dstip4 >>24) &0xff,
-                                (tag->outer_dstip4 >>16) &0xff,
-                                (tag->outer_dstip4 >>8) &0xff,
-                                (tag->outer_dstip4) &0xff,
-                                tag->outer_srcport,
-                                tag->outer_dstport,
-                                tag->outer_protocol,
-                                tag->url, tag->ad_act == AD_SUCCESS ? "Y":"N");
-    }
-    
-    else
-    {
-        bts_zlog(LOG_INFO, "{%d.%d.%d.%d %d.%d.%d.%d %d %d %d}",
-                                (tag->outer_srcip4 >>24) &0xff,
-                                (tag->outer_srcip4 >>16) &0xff,
-                                (tag->outer_srcip4 >>8) &0xff,
-                                (tag->outer_srcip4) &0xff,
-                                (tag->outer_dstip4 >>24) &0xff,
-                                (tag->outer_dstip4 >>16) &0xff,
-                                (tag->outer_dstip4 >>8) &0xff,
-                                (tag->outer_dstip4) &0xff,             
-                                tag->outer_srcport,
-                                tag->outer_dstport,
-                                tag->outer_protocol);
-    }
+	if(0)
+	{
+		if(APP_TYPE_HTTP_GET_OR_POST == tag->app_type)
+		{
+			bts_zlog(LOG_ALERT, "{%d.%d.%d.%d %d.%d.%d.%d %d %d %d}\t|%-64s|AD<%s>", 
+		                    (tag->outer_srcip4 >>24) &0xff,
+		                    (tag->outer_srcip4 >>16) &0xff,
+		                    (tag->outer_srcip4 >>8) &0xff,
+		                    (tag->outer_srcip4) &0xff,
+		                    (tag->outer_dstip4 >>24) &0xff,
+		                    (tag->outer_dstip4 >>16) &0xff,
+		                    (tag->outer_dstip4 >>8) &0xff,
+		                    (tag->outer_dstip4) &0xff,
+		                    tag->outer_srcport,
+		                    tag->outer_dstport,
+		                    tag->outer_protocol,
+		                    tag->url, tag->ad_act == AD_SUCCESS ? "Y":"N");
+		}
+
+		else
+		{
+			bts_zlog(LOG_INFO, "{%d.%d.%d.%d %d.%d.%d.%d %d %d %d}",
+		                    (tag->outer_srcip4 >>24) &0xff,
+		                    (tag->outer_srcip4 >>16) &0xff,
+		                    (tag->outer_srcip4 >>8) &0xff,
+		                    (tag->outer_srcip4) &0xff,
+		                    (tag->outer_dstip4 >>24) &0xff,
+		                    (tag->outer_dstip4 >>16) &0xff,
+		                    (tag->outer_dstip4 >>8) &0xff,
+		                    (tag->outer_dstip4) &0xff,             
+		                    tag->outer_srcport,
+		                    tag->outer_dstport,
+		                    tag->outer_protocol);
+		}
+	}
+	else
+	{
+		if(ACT_LOG == (tag->acl.actions & ACT_LOG))
+		{
+			bts_zlog(LOG_ALERT, "{%d.%d.%d.%d %d.%d.%d.%d %d %d %d}\t|%-64s|AD<%s>", 
+		                    (tag->outer_srcip4 >>24) &0xff,
+		                    (tag->outer_srcip4 >>16) &0xff,
+		                    (tag->outer_srcip4 >>8) &0xff,
+		                    (tag->outer_srcip4) &0xff,
+		                    (tag->outer_dstip4 >>24) &0xff,
+		                    (tag->outer_dstip4 >>16) &0xff,
+		                    (tag->outer_dstip4 >>8) &0xff,
+		                    (tag->outer_dstip4) &0xff,
+		                    tag->outer_srcport,
+		                    tag->outer_dstport,
+		                    tag->outer_protocol,
+		                    tag->url, tag->ad_act == AD_SUCCESS ? "Y":"N");        	
+		}    		
+	}	
 }
 
 /* End of file */

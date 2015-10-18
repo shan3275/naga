@@ -115,15 +115,6 @@ berr naga_adp(hytag_t *hytag)
 
 
 
-    if(hytag->uri_len == 1 && !strcmp(hytag->uri, "/"))
-    {
-        
-    }
-    else
-    {
-        CNT_INC(ADP_DROP_BACKSLASH_SUFFIX);
-        return E_SUCCESS;           
-    }
 
 #if 0
     if(NULL != strstr(hytag->uri, "?_t=t"))
