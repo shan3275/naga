@@ -9,6 +9,9 @@
 #include "bts_cnt.h"
 
 
+extern uint32_t account_default_action;
+
+
 #define MAX_ACCOUNT_RULE_NUM 10000
 
 
@@ -71,12 +74,13 @@ naga_acr(hytag_t *tag)
 	
     CNT_INC(ACR_PKTS);
 
-   	bts_ip_string(tag->inner_srcip4, tag->account);
+   	bts_ip_string(tag->outer_srcip4, tag->account);
     rule = acr_get(tag->account);
 
     if (NULL == rule)
     {
         CNT_INC(ACR_RULE_UNMATCH);
+		HYTAG_ACL_SET(tag->acl, account_default_action);
     }
     else
     {

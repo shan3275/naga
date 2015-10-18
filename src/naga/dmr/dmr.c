@@ -6,7 +6,7 @@
 
 #include "dmr.h"
 
-uint32_t domin_default_action = ACT_DROP;
+uint32_t domin_default_action = 0;
 
 bts_hashtable_t dmr_table;
 

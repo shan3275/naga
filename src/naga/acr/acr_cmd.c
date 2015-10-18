@@ -204,7 +204,7 @@ DEFUN(remove_account_all,
 static int cmd_acr_add(struct vty *vty, const char *account, const char *action_str)
 {
     berr ret = 0;
-
+	char action_arry[NAGA_ACTION_STR_SZ]= {0};
 	acr_t *entry = NULL;
 		
 	if ((NULL == account) || (NULL == action_str))
@@ -217,8 +217,8 @@ static int cmd_acr_add(struct vty *vty, const char *account, const char *action_
 	{
         return CMD_ERR_NO_MATCH;
 	}
-
-	if(naga_action_parse((char *)action_str, &entry->acl.actions))
+	sprintf(action_arry, "%s", action_str);
+	if(naga_action_parse((char *)action_arry, &entry->acl.actions))
     {
         return CMD_ERR_NO_MATCH;
     }
@@ -248,7 +248,7 @@ DEFUN(account,
     return cmd_acr_add(vty, argv[0], argv[1]);
 }
 
-static int cmd_acr_load(struct vty *vty, const char *file_name)
+static int cmd_acr_load(struct vty *vty, const char *file_name, const char *action_str)
 {
 	FILE *fp = NULL;
 	char account_line[MAX_ACCOUNT_LEN] = {0};
@@ -274,7 +274,7 @@ static int cmd_acr_load(struct vty *vty, const char *file_name)
             *p = '\0';
 		}	
 
-		rv = cmd_acr_add(vty, account_line, "push");
+		rv = cmd_acr_add(vty, account_line, action_str);
 		if (CMD_SUCCESS != rv)
 		{
 			acr_debug("Add account %s rule failed!\n", account_line);
@@ -295,7 +295,7 @@ DEFUN(load_account,
       ACCOUNT_STR
       FILE_STR)
 {
-    return cmd_acr_load(vty, argv[0]);
+    return cmd_acr_load(vty, argv[0], argv[1]);
 }
 
 static int cmd_acr_clear_stat(struct vty *vty, const char *account)
@@ -354,6 +354,44 @@ DEFUN(clear_account_stat_all,
 {
     return cmd_acr_clear_stat_all(vty);
 }
+
+
+static int cmd_acr_account_default_act_set(struct vty *vty, const char *act_str)
+{
+	int ret = 0;
+	uint32_t action = 0;
+	
+	if(naga_action_parse((char *)act_str, &action))
+    {
+        return CMD_ERR_NO_MATCH;
+    }
+	ret = api_acr_account_default_act_set(action);
+	if (ret)
+    {
+        vty_out(vty, "account set default action fail:(%s)%s", berr_msg(ret), VTY_NEWLINE);
+        return CMD_WARNING;
+    }
+
+    return CMD_SUCCESS;
+}
+
+
+
+DEFUN(account_default_act_set,
+      account_default_act_set_cmd,
+      "account default ACT",
+      ACCOUNT_STR
+      DEFAULT_STR
+      ACTION_STR)
+{
+    return cmd_acr_account_default_act_set(vty, argv[0]);
+}
+
+
+
+
+
+
 
 void
 acr_write_config_vty(void *data, void *param)

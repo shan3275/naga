@@ -22,6 +22,8 @@ acr_t *acr_get(char *account);
 berr acr_add(acr_t *entry);
 berr acr_del(char *account);
 berr acr_clear(void);
+berr acr_account_default_act_set(uint32_t action);
+
 
 #define api_acr_get acr_get
 #define api_acr_add acr_add
@@ -29,6 +31,7 @@ berr acr_clear(void);
 #define api_acr_clear acr_clear
 #define api_acr_stat_clear acr_stat_clear
 #define api_acr_stat_clear_all  acr_stat_clear_all
+#define api_acr_account_default_act_set acr_account_default_act_set
 
 
 

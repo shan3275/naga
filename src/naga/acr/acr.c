@@ -7,6 +7,8 @@
 #include "acr.h"
 
 bts_hashtable_t acr_table;
+uint32_t account_default_action = 0;
+
 
 uint32_t 
 acr_hash_func(void *data)
@@ -156,5 +158,12 @@ acr_iter(bts_iter_func func, void *param)
 
     return E_SUCCESS;
 }
+
+berr acr_account_default_act_set(uint32_t action)
+{
+	account_default_action = action;
+	return E_SUCCESS;
+}
+
 
 /* End of file */

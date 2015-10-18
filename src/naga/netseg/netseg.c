@@ -15,7 +15,7 @@
 #include "bts_debug.h"
 
 netseg_t *netseg = NULL;
-uint32_t netseg_default_action = ACT_DROP;
+uint32_t netseg_default_action = 0;
 
 
 #define __DPDK
