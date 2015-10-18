@@ -93,7 +93,8 @@ void hytag_log(hytag_t *tag)
 	}
 	else
 	{
-		if(ACT_LOG == (tag->acl.actions & ACT_LOG))
+		if(APP_TYPE_HTTP_GET_OR_POST == tag->app_type 
+		&&	(ACT_LOG == (tag->acl.actions & ACT_LOG)))
 		{
 			bts_zlog(LOG_ALERT, "{%d.%d.%d.%d %d.%d.%d.%d %d %d %d}\t|%-64s|AD<%s>", 
 		                    (tag->outer_srcip4 >>24) &0xff,
