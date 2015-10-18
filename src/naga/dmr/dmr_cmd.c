@@ -427,7 +427,7 @@ DEFUN(remove_domain_all,
 static int cmd_dmr_add(struct vty *vty, const char *host, const char *action_str)
 {
     berr ret = 0;
-
+	char action_arry[NAGA_ACTION_STR_SZ]= {0};
 	dmr_t *entry = NULL;
 		
 	if ((NULL == host) || (NULL == action_str))
@@ -441,7 +441,8 @@ static int cmd_dmr_add(struct vty *vty, const char *host, const char *action_str
         return CMD_ERR_NO_MATCH;
 	}
 
-	if(naga_action_parse((char *)action_str, &entry->acl.actions))
+    sprintf(action_arry, "%s", action_str);
+	if(naga_action_parse(action_arry, &entry->acl.actions))
     {
         return CMD_ERR_NO_MATCH;
     }
@@ -471,7 +472,7 @@ DEFUN(domain,
     return cmd_dmr_add(vty, argv[0], argv[1]);
 }
 
-static int cmd_dmr_load(struct vty *vty, const char *file_name)
+static int cmd_dmr_load(struct vty *vty, const char *file_name, const char *action_str)
 {
 	FILE *fp = NULL;
 	char host_line[MAX_HOST_LEN] = {0};
@@ -497,7 +498,7 @@ static int cmd_dmr_load(struct vty *vty, const char *file_name)
             *p = '\0';
 		}	
 
-		rv = cmd_dmr_add(vty, host_line, "push");
+		rv = cmd_dmr_add(vty, host_line, action_str);
 		if (CMD_SUCCESS != rv)
 		{
 			dmr_debug("Add host %s rule failed!\n", host_line);
@@ -513,12 +514,13 @@ static int cmd_dmr_load(struct vty *vty, const char *file_name)
 
 DEFUN(load_domain,
       load_domain_cmd,
-      "load domain FILE",
+      "load domain FILE ACT",
       LOAD_STR
       DOMAIN_STR
-      FILE_STR)
+      FILE_STR
+      ACTION_STR)
 {
-    return cmd_dmr_load(vty, argv[0]);
+    return cmd_dmr_load(vty, argv[0], argv[1]);
 }
 
 static int cmd_dmr_clear_stat(struct vty *vty, const char *host)
