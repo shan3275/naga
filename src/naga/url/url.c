@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include "boots.h"
 #include "bts_debug.h"
 #include "bts_cnt.h"

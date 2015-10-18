@@ -34,13 +34,13 @@ include $(RTE_SDK)/mk/rte.vars.mk
 #
 # library name
 #
-LIB = liburi.a
+LIB = liburl.a
 
 CFLAGS +=  -I .  -I ../include -I ../libzebra
 
 #CFLAGS += $(WERROR_FLAGS)
 
-EXPORT_MAP := lib_uri.map
+EXPORT_MAP := lib_url.map
 
 LIBABIVER := 1
 
