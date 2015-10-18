@@ -168,6 +168,10 @@ typedef struct
     ACL_HIT(_tagacl);\
 }
 
+
+
+#define HYTAG_ACL_SET(_acl, _val)   _acl.actions |= _val;
+
 #define USE_D_PACKET 1
 
 #endif /* !__NAGA_TYPES_H__ */

@@ -329,6 +329,44 @@ DEFUN(net_clear_statistics_all,
     return net_cmd_clear_statistics_all(vty);
 }
 
+
+static int cmd_netseg_default_act_set(struct vty *vty, const char *act_str)
+{
+	int ret = 0;
+	uint32_t action = 0;
+	
+	if(naga_action_parse((char *)act_str, &action))
+    {
+        return CMD_ERR_NO_MATCH;
+    }
+	ret = api_netseg_default_act_set(action);
+	if (ret)
+    {
+        vty_out(vty, "netseg set default action fail:(%s)%s", berr_msg(ret), VTY_NEWLINE);
+        return CMD_WARNING;
+    }
+
+    return CMD_SUCCESS;
+}
+
+
+
+DEFUN(netseg_default_act_set,
+      netseg_default_act_set_cmd,
+      "net default ACT",
+      NET_STR
+      DEFAULT_STR
+      ACTION_STR)
+{
+    return cmd_netseg_default_act_set(vty, argv[0]);
+}
+
+
+
+
+
+
+
 void netseg_cmd_config_write(struct vty *vty)
 {
     int ret = 0;
@@ -380,6 +418,7 @@ void cmdline_netseg_init(void)
     install_element(CMD_NODE, &net_show_all_cmd);
     install_element(CMD_NODE, &net_clear_statistics_cmd);
     install_element(CMD_NODE, &net_clear_statistics_all_cmd);
+	install_element(CMD_NODE, &netseg_default_act_set_cmd);
 
     return ;
 }
