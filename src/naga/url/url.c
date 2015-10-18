@@ -14,7 +14,7 @@ berr  naga_uri(hytag_t *hytag)
 {
 	
     if(hytag->uri_len == 1 && !strcmp(hytag->uri, "/"))
-    {
+    {    
     	hytag->acl.actions |=  ACT_LOG;
         CNT_INC(URL_HOMEPAGE);		
     }
