@@ -736,8 +736,8 @@ config_write_host (struct vty *vty)
   adt_cmd_config_write(vty);
   dmr_cmd_config_write(vty);
   acr_cmd_config_write(vty);
-  adp_cmd_config_write(vty);
   netseg_cmd_config_write(vty);
+  adp_cmd_config_write(vty);
 
   return 1;
 }

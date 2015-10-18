@@ -192,12 +192,6 @@ void adp_cmd_config_write(struct vty *vty)
 						mac[0],mac[1],mac[2],mac[3],mac[4],mac[5],
 					VTY_NEWLINE); 	
 	}
-	int on ;
-
-	adp_switch_get(&on);
-	vty_out(vty, "adp switch %s%s",
-						on? "on":"off",
-					VTY_NEWLINE); 		
 
 	int interval = 0;
 	uint64_t adp_count , adp_sucess;
@@ -205,7 +199,17 @@ void adp_cmd_config_write(struct vty *vty)
 
 	vty_out(vty, "adp interval %d%s",
 						interval,
+					VTY_NEWLINE); 
+
+	
+	int on ;
+
+	adp_switch_get(&on);
+	vty_out(vty, "adp switch %s%s",
+						on? "on":"off",
 					VTY_NEWLINE); 		
+
+		
 	
 }
 
