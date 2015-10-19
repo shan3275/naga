@@ -303,7 +303,7 @@ dmr_dump_vty(void *data, void *param)
     naga_action_string(&entry->acl.actions, action_str);
 
     vty_out(vty, "%-32s %-32s %-16ld %-16ld %s", entry->host, action_str, 
-            (uint64_t) entry->acl.cnt.cnt,uint64_t) entry->acl.vcnt.cnt, VTY_NEWLINE);
+            (uint64_t) entry->acl.cnt.cnt,(uint64_t)entry->acl.vcnt.cnt, VTY_NEWLINE);
 }
 
 static int cmd_dmr_show(struct vty *vty, const char *host)
@@ -323,7 +323,7 @@ static int cmd_dmr_show(struct vty *vty, const char *host)
         vty_out(vty, "dmr host<%s> empty%s", host, VTY_NEWLINE);
         return CMD_WARNING;
     }
-	vty_out(vty, "%-32s %-32s %-16s %-16s %s","host","action", "cnt", "vcnt"VTY_NEWLINE);
+	vty_out(vty, "%-32s %-32s %-16s %-16s %s","host","action", "cnt", "vcnt",VTY_NEWLINE);
     vty_out(vty, "------------------------------------------------%s", VTY_NEWLINE);
 
     dmr_dump_vty((void *)entry, (void *)vty);
