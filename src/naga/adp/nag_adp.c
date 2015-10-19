@@ -23,7 +23,7 @@ uint64_t  g_adp_success=0;
 int  g_adp_push_switch = 1;
 
 int  g_adp_push_temp_pc_switch = 1;
-int  g_adp_push_temp_mobile_switch = 1;
+int  g_adp_push_temp_mobile_switch = 0;
 
 berr adp_switch_set(int on)
 {
