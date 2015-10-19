@@ -114,7 +114,8 @@ berr api_net_clear_statistics(uint32_t index)
     }
 
     NETSEG_RULE_LOCK(index);
-    NETSEG_STAT_SET(index, 0);
+    bts_atomic64_set(&(netseg[index].net.acl.cnt), 0); 
+	bts_atomic64_set(&(netseg[index].net.acl.vcnt), 0);
     DBG_INFO(MOD_NET, "netseg[%d].effective(%d)\n", index, netseg[index].effective);
     DBG_INFO(MOD_NET, "netseg[%d].net.index(0x%x)\n", index, netseg[index].net.index);
     DBG_INFO(MOD_NET, "netseg[%d].net.ip(0x%x)\n", index, netseg[index].net.ip);

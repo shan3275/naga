@@ -144,6 +144,7 @@ dmr_stat_clear_func(void *data, void *param)
     dmr = (dmr_t *) data;
 
     bts_atomic64_set(&dmr->acl.cnt, 0); 
+	bts_atomic64_set(&dmr->acl.vcnt, 0);
 }
 
 berr
