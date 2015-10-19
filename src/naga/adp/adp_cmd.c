@@ -253,13 +253,13 @@ void adp_cmd_config_write(struct vty *vty)
 
     int type = AD_TEMPLATE_PC;
     adp_switch_template_get(type, &on);
-	vty_out(vty, "adp switch template pc %s",
+	vty_out(vty, "adp switch template pc %s%s",
 						on? "on":"off",
 					VTY_NEWLINE); 	
     
     type = AD_TEMPLATE_MOBILE;
     adp_switch_template_get(type, &on);
-	vty_out(vty, "adp switch template mobile %s",
+	vty_out(vty, "adp switch template mobile %s%s",
 						on? "on":"off",
 					VTY_NEWLINE); 	
 	

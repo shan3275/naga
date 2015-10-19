@@ -169,7 +169,7 @@ berr libpcap_rx_loop_setup(char * ifname)
 		}
         
         memset(packet_filter, 0, 128);
-        snprintf(packet_filter, 128, "%s", NAGA_CONTROL_FILTER);
+        //snprintf(packet_filter, 128, "%s", NAGA_CONTROL_FILTER);
 
         char errbuf[PCAP_ERRBUF_SIZE];
 
