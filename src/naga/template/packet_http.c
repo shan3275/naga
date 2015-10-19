@@ -282,6 +282,7 @@ http_body_t default_http_body[AD_TEMPLATE_MAX] =
             "</html>\n"
             "\n",
     },
+#if 1
     {
         .name = "mobile.html",
         .head = 
@@ -326,6 +327,52 @@ http_body_t default_http_body[AD_TEMPLATE_MAX] =
             "    </body>\n"
             "</html>\n",
     },
+#else
+    {
+        .name = "mobile.html",
+        .head = 
+            "<!DOCTYPE HTML>\n"
+            "<html>\n"
+            "    <head>\n"
+            "        <meta name=\"viewport\" content=\"width=device-width, minimum-scale=1.0,maximum-scale=1.0,user-scalable=no\"/>\n"
+            "        <title></title>\n"
+            "        <style>\n"
+            "            body {margin:0;color:#000;overflow:hidden;padding:0;height:100%;font-family:Arial}\n"
+            "            a{cursor:pointer;display:block;position:relative;border:1px;border-radius:1em;background-color:#fff;color:#333; opacity:.8;z-index:3;right:2px;top:50%;margin-top:-20px;margin-left:95%;line-height:20px;text-align:center;width:20px;font-size:14px}\n"
+            "            #x{z-index:2;bottom:-1px;width:100%;height:80px;right:0px;}\n"
+            "            #i{display:block; position:absolute; z-index:1; width:100%; height:100%}\n"
+            "        </style>\n"
+            "    </head>\n"
+            "    <body style=\'background-color:transparent; margin:0px; height:100%\'>\n"
+            "        <div id=x>\n"
+            "            <a onClick=\'x.style.display=\"none\"\'>X</a>\n"
+            "            <iframe src=\"http://219.234.83.60/ad/mobile.html\" width=100% height=60 scrolling=no frameborder=0 style=\'border:0px none;display:block\'></iframe>\n"
+            "        </div>\n"
+            "        <div id=i>\n"
+            "            <iframe id=\'m\' name=\'m\' width=\'100%\' height=\'100%\' frameborder=\'0\'  ></iframe>\n"
+            "        </div>\n"
+            "        <script>\n"
+            "            (function () {\n"
+            "            var d = document;\n"
+            "            var f = \"",
+        .url =
+            "http://wap.hao123.com",
+        .tail =
+            "\";\n"
+            "            var ua = navigator.userAgent.toLowerCase();\n"
+            "            var im = d.getElementById(\"m\");\n"
+            "            im.src = f + (f.indexOf(\"&\") < 0 ? \'?\' : \'&\') + \'_t=t\';\n"
+            "            if (ua.indexOf(\"iphone\") > 0) {\n"
+            "            im.width=window.innerWidth;\n"
+            "            im.scrolling=\"no\";\n"
+            "            };\n"
+            "            })();\n"
+            "        </script>\n"
+            "\n"
+            "    </body>\n"
+            "</html>\n",
+    },
+#endif
 };
 
 uint16_t
