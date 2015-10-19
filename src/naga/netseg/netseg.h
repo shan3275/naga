@@ -52,6 +52,8 @@ berr api_get_netseg_effect(uint32_t index, uint8_t *effect);
 
 berr api_netseg_default_act_set(uint32_t action);
 
+berr api_netseg_default_act_get(uint32_t *action);
+
 /* dp use */
 berr api_net_dp_match(uint32_t index, uint32_t ip);
 netseg_t *api_get_netseg_ptr(void);

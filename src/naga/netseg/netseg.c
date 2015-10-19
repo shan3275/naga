@@ -186,6 +186,11 @@ berr api_netseg_default_act_set(uint32_t action)
 	return E_SUCCESS;
 }
 
+berr api_netseg_default_act_get(uint32_t *action)
+{
+	*action = netseg_default_action;
+	return E_SUCCESS;
+}
 
 
 

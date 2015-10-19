@@ -375,6 +375,20 @@ void netseg_cmd_config_write(struct vty *vty)
     net_t net;
 	uint8_t effect = 0;
     int i;
+	uint32_t action = 0;
+
+	ret = api_netseg_default_act_get(&action);
+	if (ret)
+    {
+        vty_out(vty, "netseg get default action fail:(%s)%s", berr_msg(ret), VTY_NEWLINE);
+        return;
+    }
+
+	if (0 != action)
+	{
+		naga_action_string(&action, action_str);
+		vty_out(vty, "net default %s%s", action_str, VTY_NEWLINE);
+	}
     for ( i = 0; i < NETSEG_RULE_NUM_MAX; i++ )
     {
 

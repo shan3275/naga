@@ -25,6 +25,7 @@ berr dmr_clear(void);
 
 berr dmr_domain_default_act_set(uint32_t action);
 
+berr dmr_domain_default_act_get(uint32_t *action);
 
 #define api_dmr_get dmr_get
 #define api_dmr_add dmr_add
