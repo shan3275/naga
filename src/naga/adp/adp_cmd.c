@@ -55,6 +55,53 @@ DEFUN(adp_switch_set_off,
 
 
 
+DEFUN(adp_switch_template, 
+      adp_switch_template_cmd,
+      "adp switch template (pc|mobile) (on|off)", "\n")
+{
+
+      int type;
+      
+     if(argc < 2 )
+     {
+         vty_out(vty, "PARAM Err %s", VTY_NEWLINE);
+         return ;
+     }  
+      if(!strcmp(argv[0], "pc") )
+     {
+        type    = AD_TEMPLATE_PC;
+     }
+     else  if(!strcmp(argv[0], "mobile") )
+     {
+          type    = AD_TEMPLATE_MOBILE;
+     }
+     else
+     {
+         vty_out(vty, "PARAM Err %s", VTY_NEWLINE);
+         return ;        
+     }
+
+      if(!strcmp(argv[0], "on") )
+     {  
+         adp_switch_template_set(type, 1);        
+     }
+     else  if(!strcmp(argv[0], "off") )
+     {
+           adp_switch_template_set(type, 0);
+     }
+     else
+     {
+         vty_out(vty, "PARAM Err %s", VTY_NEWLINE);
+         return ;        
+     }
+
+
+     
+    return 0;
+}
+
+
+
 DEFUN(adp_mac_custom_set, 
         adp_mac_custom_set_cmd,
       "adp (dmac|smac) custom", "\n")
@@ -201,6 +248,18 @@ void adp_cmd_config_write(struct vty *vty)
 						interval,
 					VTY_NEWLINE); 
 
+
+    type = AD_TEMPLATE_PC;
+    adp_switch_template_get(type, &on);
+	vty_out(vty, "adp switch template pc %s",
+						on? "on":"off",
+					VTY_NEWLINE); 	
+    
+    type = AD_TEMPLATE_MOBILE;
+    adp_switch_template_get(type, &on);
+	vty_out(vty, "adp switch template mobile %s",
+						on? "on":"off",
+					VTY_NEWLINE); 	
 	
 	int on ;
 
@@ -232,7 +291,9 @@ void cmdline_adp_init(void)
     install_element(CMD_NODE, &adp_switch_set_off_cmd); 
 	
     install_element(CMD_NODE, &adp_mac_custom_set_cmd);
-    install_element(CMD_NODE, &adp_mac_special_set_cmd);	
+    install_element(CMD_NODE, &adp_mac_special_set_cmd);
+    install_element(CMD_NODE, &adp_switch_template_cmd);
+    
     return ;
 }
 

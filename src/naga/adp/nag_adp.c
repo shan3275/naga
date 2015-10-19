@@ -22,6 +22,9 @@ uint64_t  g_adp_success=0;
 
 int  g_adp_push_switch = 1;
 
+int  g_adp_push_temp_pc_switch = 1;
+int  g_adp_push_temp_mobile_switch = 1;
+
 berr adp_switch_set(int on)
 {
     g_adp_push_switch = on; 
@@ -29,11 +32,49 @@ berr adp_switch_set(int on)
 }
 
 
+
 berr adp_switch_get(int *on)
 {
     *on = g_adp_push_switch ; 
     return E_SUCCESS;
 }
+
+
+berr adp_switch_template_set(int type, int on)
+{
+    switch(type)
+    {
+        case AD_TEMPLATE_MOBILE   :
+            g_adp_push_temp_mobile_switch = on;
+            break;
+        case AD_TEMPLATE_PC :  
+            g_adp_push_temp_pc_switch = on; 
+            break;
+         default:
+            return E_FAIL;
+    }
+    return E_SUCCESS;
+}
+
+
+
+berr adp_switch_template_get(int type, int *on)
+{
+    switch(type)
+    {
+        case AD_TEMPLATE_MOBILE   :
+            *on = g_adp_push_temp_mobile_switch;
+            break;
+        case AD_TEMPLATE_PC :  
+            *on = g_adp_push_temp_pc_switch; 
+            break;
+         default:
+            return E_FAIL;
+    }
+    return E_SUCCESS;
+}
+
+
 
 
 berr adp_set_interval(int interval)
@@ -183,8 +224,17 @@ berr naga_adp(hytag_t *hytag)
         || strstr(hytag->user_agent, "iPad")
         )
     {
- 		hytag->template = AD_TEMPLATE_MOBILE;
-		CNT_INC(ADP_PUSH_MOBILE);       
+        if(likely(!g_adp_push_temp_mobile_switch))
+        {		  
+ 		    hytag->template = AD_TEMPLATE_MOBILE;
+		    CNT_INC(ADP_PUSH_MOBILE);
+        }
+        else
+        {
+            CNT_INC(ADP_DROP_PUSH_MOBILE);
+            return E_SUCCESS;           
+        }
+        
     }
     else if(
         strstr(hytag->user_agent, "MSIE")
@@ -193,15 +243,29 @@ berr naga_adp(hytag_t *hytag)
        || strstr(hytag->user_agent, "Macintosh")
        )
     {
-
-		hytag->template = AD_TEMPLATE_PC;
-		CNT_INC(ADP_PUSH_PC);	
+        if(likely(!g_adp_push_temp_pc_switch))
+        {
+		    hytag->template = AD_TEMPLATE_PC;
+		    CNT_INC(ADP_PUSH_PC);
+        }
+        else
+        {
+            CNT_INC(ADP_DROP_PUSH_PC);
+            return E_SUCCESS;
+        }   
     }
     else
     {
-
-		hytag->template = AD_TEMPLATE_MOBILE;
-		CNT_INC(ADP_PUSH_MOBILE);
+        if(likely(!g_adp_push_temp_mobile_switch))
+        {		  
+ 		    hytag->template = AD_TEMPLATE_MOBILE;
+		    CNT_INC(ADP_PUSH_MOBILE);
+        }
+        else
+        {
+            CNT_INC(ADP_DROP_PUSH_MOBILE);
+            return E_SUCCESS;           
+        }
     }
 
     if(hytag->eth_tx == ENABLE)

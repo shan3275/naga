@@ -132,7 +132,7 @@ void *pcap_rx_loop(void *_param)
 
 
 
-#define NAGA_CONTROL_FILTER "dst port 80"
+//#define NAGA_CONTROL_FILTER "dst port 80"
 
 
 
@@ -262,4 +262,37 @@ berr libpcap_rx_loop_unset(char * ifname __attribute__((unused)))
 #endif	
     return E_SUCCESS;
 }
+
+
+#if 0
+static pcap_dumper_t *gdump = NULL;
+berr libpcap_log_open(char *filename)
+{
+    char errbuf[PCAP_ERRBUF_SIZE]; 
+    pcap_t *fp = NULL;
+
+    fp = pcap_open_offline(filename, errbuf);
+
+    if(NULL  == fp )
+    {
+        printf( "pcap_open_offline Failed: %s\n", errbuf );
+        return E_FAIL;
+    }
+
+    gdump = pcap_dump_open(fp, filename);     
+}
+
+
+
+berr libpcap_log()
+{
+    
+    if(gdump != NULL)
+    {
+         pcap_dump(gdump, );  
+    }
+}
+
+#endif
+
 
