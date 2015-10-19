@@ -44,6 +44,12 @@ berr naga_dmr(hytag_t *tag)
     {
         CNT_INC(DMR_RULE_MATCH);
         ACL_HIT(rule->acl);
+
+		if (0 == (tag->acl.actions & ACT_DROP))
+	
+		{
+			ACL_PRE_NOT_DROP_HIT(rule->acl);
+		}
         HYTAG_ACL_MERGE(tag->acl, rule->acl);
     }
 

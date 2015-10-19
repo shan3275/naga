@@ -21,6 +21,7 @@ typedef struct {
     uint32_t actions;
     uint32_t outport;
     bts_atomic64_t cnt;
+    bts_atomic64_t vcnt;/*pre drop*/	
 } naga_acl_t;
 
 #define ACL_DORP(_acl) \
@@ -34,6 +35,10 @@ typedef struct {
 
 #define ACL_HIT(_acl) \
     bts_atomic64_inc(&(_acl.cnt))
+
+#define ACL_PRE_NOT_DROP_HIT(_acl) \
+    bts_atomic64_inc(&(_acl.vcnt))
+
 
 #define ACL_CNT_CLEAR(_acl) \
 	bts_atomic64_set(&(_acl.cnt), 0)
