@@ -660,7 +660,21 @@ dmr_write_config_vty(void *data, void *param)
 
 void dmr_cmd_config_write(struct vty *vty)
 {
-	 dmr_iter(dmr_write_config_vty, vty);
+	int ret = 0;
+	uint32_t action = 0;
+	char action_str[NAGA_ACTION_STR_SZ] = {0};
+	dmr_iter(dmr_write_config_vty, vty);
+	
+	ret = api_dmr_domain_default_act_get(&action);
+	if (ret)
+    {
+        vty_out(vty, "domain get default action fail:(%s)%s", berr_msg(ret), VTY_NEWLINE);
+        return;
+    }
+	naga_action_string(&action, action_str);
+	vty_out(vty, "domain default %s%s", action_str, VTY_NEWLINE);
+	
+	 
 }
 
 

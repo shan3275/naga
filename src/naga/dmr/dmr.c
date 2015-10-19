@@ -191,5 +191,12 @@ berr dmr_domain_default_act_set(uint32_t action)
 	return E_SUCCESS;
 }
 
+berr dmr_domain_default_act_get(uint32_t *action)
+{
+	*action = domin_default_action;
+	return E_SUCCESS;
+}
+
+
 
 /* End of file */

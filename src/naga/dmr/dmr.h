@@ -33,6 +33,7 @@ berr dmr_domain_default_act_set(uint32_t action);
 #define api_dmr_stat_clear dmr_stat_clear
 #define api_dmr_stat_clear_all  dmr_stat_clear_all
 #define api_dmr_domain_default_act_set   dmr_domain_default_act_set
+#define api_dmr_domain_default_act_get dmr_domain_default_act_get
 
 #define DOMAIN_TMP_FILE  "domain_tmp.txt"
 
