@@ -335,7 +335,7 @@ static int cmd_dmr_show(struct vty *vty, const char *host)
 static int cmd_dmr_show_all(struct vty *vty)
 {
 	vty_out(vty, "%-32s %-32s %-16s %-16s %s","host","action", "cnt","vcnt",VTY_NEWLINE);
-    vty_out(vty, "------------------------------------------------%s", VTY_NEWLINE);
+    vty_out(vty, "------------------------------------------------------------------------%s", VTY_NEWLINE);
 	
     dmr_iter(dmr_dump_vty, vty);
 
