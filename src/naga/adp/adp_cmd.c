@@ -81,11 +81,11 @@ DEFUN(adp_switch_template,
          return 0;      
      }
 
-      if(!strcmp(argv[0], "on") )
+      if(!strcmp(argv[1], "on") )
      {  
          adp_switch_template_set(type, 1);        
      }
-     else  if(!strcmp(argv[0], "off") )
+     else  if(!strcmp(argv[1], "off") )
      {
            adp_switch_template_set(type, 0);
      }
