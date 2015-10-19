@@ -224,7 +224,7 @@ berr naga_adp(hytag_t *hytag)
         || strstr(hytag->user_agent, "iPad")
         )
     {
-        if(likely(!g_adp_push_temp_mobile_switch))
+        if(likely(g_adp_push_temp_mobile_switch))
         {		  
  		    hytag->template = AD_TEMPLATE_MOBILE;
 		    CNT_INC(ADP_PUSH_MOBILE);
@@ -243,7 +243,7 @@ berr naga_adp(hytag_t *hytag)
        || strstr(hytag->user_agent, "Macintosh")
        )
     {
-        if(likely(!g_adp_push_temp_pc_switch))
+        if(likely(g_adp_push_temp_pc_switch))
         {
 		    hytag->template = AD_TEMPLATE_PC;
 		    CNT_INC(ADP_PUSH_PC);
@@ -256,7 +256,7 @@ berr naga_adp(hytag_t *hytag)
     }
     else
     {
-        if(likely(!g_adp_push_temp_mobile_switch))
+        if(likely(g_adp_push_temp_mobile_switch))
         {		  
  		    hytag->template = AD_TEMPLATE_MOBILE;
 		    CNT_INC(ADP_PUSH_MOBILE);
