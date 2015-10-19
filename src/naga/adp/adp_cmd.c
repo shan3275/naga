@@ -64,7 +64,7 @@ DEFUN(adp_switch_template,
       
      if(argc < 2 )
      {
-         vty_out(vty, "PARAM Err %s", VTY_NEWLINE);
+         vty_out(vty, "PARAM Err argc < 2 %s", VTY_NEWLINE);
          return 0; 
      }  
       if(!strcmp(argv[0], "pc") )
@@ -77,7 +77,7 @@ DEFUN(adp_switch_template,
      }
      else
      {
-         vty_out(vty, "PARAM Err %s", VTY_NEWLINE);
+         vty_out(vty, "PARAM Err (pc|mobile) %s", VTY_NEWLINE);
          return 0;      
      }
 
@@ -91,7 +91,7 @@ DEFUN(adp_switch_template,
      }
      else
      {
-         vty_out(vty, "PARAM Err %s", VTY_NEWLINE);
+         vty_out(vty, "PARAM Err (on|off)%s", VTY_NEWLINE);
          return 0;        
      }
 
