@@ -65,7 +65,7 @@ DEFUN(adp_switch_template,
      if(argc < 2 )
      {
          vty_out(vty, "PARAM Err %s", VTY_NEWLINE);
-         return ;
+         return 0; 
      }  
       if(!strcmp(argv[0], "pc") )
      {
@@ -78,7 +78,7 @@ DEFUN(adp_switch_template,
      else
      {
          vty_out(vty, "PARAM Err %s", VTY_NEWLINE);
-         return ;        
+         return 0;      
      }
 
       if(!strcmp(argv[0], "on") )
@@ -92,7 +92,7 @@ DEFUN(adp_switch_template,
      else
      {
          vty_out(vty, "PARAM Err %s", VTY_NEWLINE);
-         return ;        
+         return 0;        
      }
 
 
@@ -241,6 +241,8 @@ void adp_cmd_config_write(struct vty *vty)
 	}
 
 	int interval = 0;
+    int on ;
+
 	uint64_t adp_count , adp_sucess;
 	adp_get_interval(&interval, &adp_count, &adp_sucess);  
 
@@ -249,7 +251,7 @@ void adp_cmd_config_write(struct vty *vty)
 					VTY_NEWLINE); 
 
 
-    type = AD_TEMPLATE_PC;
+    int type = AD_TEMPLATE_PC;
     adp_switch_template_get(type, &on);
 	vty_out(vty, "adp switch template pc %s",
 						on? "on":"off",
@@ -261,7 +263,6 @@ void adp_cmd_config_write(struct vty *vty)
 						on? "on":"off",
 					VTY_NEWLINE); 	
 	
-	int on ;
 
 	adp_switch_get(&on);
 	vty_out(vty, "adp switch %s%s",
