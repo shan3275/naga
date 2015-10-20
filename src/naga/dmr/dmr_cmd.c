@@ -389,17 +389,13 @@ DEFUN(show_domain,
 
 DEFUN(show_domain_all,
       show_domain_all_cmd,
-      "show domain all [pushed|failed]",
+      "show domain (all|pushed|failed)",
       SHOW_STR
       DOMAIN_STR
       DOMAIN_ALL_STR)
 {
     int flag;
-    if(argc == 0)
-    {
-        flag = FLAG_SHOW_ALL;
-    }
-    else
+    
     {
         if(!strcmp(argv[1], "pushed"))
         {
@@ -408,6 +404,10 @@ DEFUN(show_domain_all,
         else if(!strcmp(argv[1], "failed"))
         {
             flag = FLAG_SHOW_FAILED;
+        }
+        else if(!strcmp(argv[1], "all"))
+        {
+            flag = FLAG_SHOW_ALL;
         }
     }
     return cmd_dmr_show_all(vty, flag);
