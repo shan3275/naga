@@ -50,6 +50,10 @@ berr naga_dmr(hytag_t *tag)
 		{
 			ACL_PRE_NOT_DROP_HIT(rule->acl);
 		}
+        if(tag->pushed_second_assert)
+        {
+            ACL_PUSHED_ASSERT_HIT(rule->acl);
+        }
         HYTAG_ACL_MERGE(tag->acl, rule->acl);
     }
 

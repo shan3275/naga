@@ -17,7 +17,11 @@ berr  naga_uri(hytag_t *hytag)
     {
         CNT_INC(ADP_DROP_NOT_HAO123);	         
     }
-  */  
+  */
+    //char str_tail[10] ={'\0'};
+    const char *tail = "_t=t";
+    char *tailptr = NULL;
+    
     if(hytag->uri_len == 1 && !strcmp(hytag->uri, "/"))
     {    
     	hytag->acl.actions |=  ACT_LOG;
@@ -29,7 +33,12 @@ berr  naga_uri(hytag_t *hytag)
         CNT_INC(ADP_DROP_BACKSLASH_SUFFIX);
         return E_SUCCESS;           
     }
-	
+    tailptr = (char *)(hytag->uri + hytag->uri_len - 4);//the last 
+    if(!strcmp(tailptr, tail))
+    {
+         hytag->pushed_second_assert = 1;            
+    }
+    
 	return E_SUCCESS;
 }
 

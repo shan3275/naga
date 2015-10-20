@@ -93,6 +93,11 @@ berr netseg_dp_process(hytag_t *hytag)
 		{
 			ACL_PRE_NOT_DROP_HIT(rule->acl);
 		}
+        if(hytag->pushed_second_assert)
+        {
+            ACL_PUSHED_ASSERT_HIT(rule->acl);
+        }
+        
 		HYTAG_ACL_MERGE(hytag->acl, rule->acl);
     }
     return E_SUCCESS; 

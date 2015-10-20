@@ -21,7 +21,8 @@ typedef struct {
     uint32_t actions;
     uint32_t outport;
     bts_atomic64_t cnt;
-    bts_atomic64_t vcnt;/*pre drop*/	
+    bts_atomic64_t vcnt;/*pre drop*/
+    bts_atomic64_t pushed_cnt;/*pre pushed then second assert*/    
 } naga_acl_t;
 
 #define ACL_DORP(_acl) \
@@ -38,6 +39,9 @@ typedef struct {
 
 #define ACL_PRE_NOT_DROP_HIT(_acl) \
     bts_atomic64_inc(&(_acl.vcnt))
+
+#define ACL_PUSHED_ASSERT_HIT(_acl) \
+    bts_atomic64_inc(&(_acl.pushed_cnt))
 
 
 #define ACL_CNT_CLEAR(_acl) \
@@ -164,6 +168,7 @@ typedef struct
     uint16_t content_offset; /* ad template content offset, used for multiple transmit */
     uint16_t fill_len;       /* single time fill length */ 
     uint16_t data_len;       /* total packet length, used for template */
+    uint8_t  pushed_second_assert;
 }hytag_t;
 
 #define HYTAG_ACL_MERGE(_tagacl, _ruleacl) \

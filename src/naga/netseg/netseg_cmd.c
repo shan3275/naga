@@ -180,13 +180,14 @@ static void net_dump(struct vty *vty, net_t *net)
 
     naga_action_string(&net->acl.actions, action_str);
     netmask.s_addr = htonl(net->mask);
-    vty_out(vty, "%-8d %d.%d.%d.%d/%-15d	%-16s %-16lu %-16lu %s", net->index,
+    vty_out(vty, "%-8d %d.%d.%d.%d/%-15d	%-16s %-16lu %-16lu %-16lu%s", net->index,
             (net->ip >> 24) & 0xff,
             (net->ip >> 16) & 0xff,
             (net->ip >>  8) & 0xff,
             (net->ip >>  0) & 0xff,
             ip_masklen (netmask), action_str,
-            (uint64_t) net->acl.cnt.cnt, (uint64_t) net->acl.vcnt.cnt, VTY_NEWLINE);
+            (uint64_t) net->acl.cnt.cnt, (uint64_t) net->acl.vcnt.cnt,
+            (uint64_t) net->acl.pushed_cnt.cnt, VTY_NEWLINE);
 }
 
 static int net_cmd_show(struct vty *vty, const char *index_str)
@@ -211,7 +212,7 @@ static int net_cmd_show(struct vty *vty, const char *index_str)
         return CMD_WARNING;
     }
 
-	vty_out(vty, "%-8s %-23s 	%-16s %-16s %s","index", "ip/mask","action", "cnt",VTY_NEWLINE);
+	vty_out(vty, "%-8s %-23s 	%-16s %-16s %-20s, %-20s%s","index", "ip/mask","action", "cnt", "none-drop", "pushed",VTY_NEWLINE);
     vty_out(vty, "------------------------------------------------------------%s", VTY_NEWLINE);
 
 	if (NETSEG_RULE_EFFECTIVE == effect)
@@ -234,7 +235,7 @@ static int net_cmd_show_all(struct vty *vty)
 	uint8_t effect;
 
 	memset(&net, 0, sizeof(net_t));
-	vty_out(vty, "%-8s %-23s	%-16s %-16s %-20s, %-20s","index", "ip/mask","action", "cnt", "vcnt",VTY_NEWLINE);
+	vty_out(vty, "%-8s %-23s	%-16s %-16s %-20s, %-20s %s","index", "ip/mask","action", "cnt", "none-drop", "pushed",VTY_NEWLINE);
     vty_out(vty, "----------------------------------------------------------------%s", VTY_NEWLINE);
     for ( i = 0; i < NETSEG_RULE_NUM_MAX; i++ )
     {
