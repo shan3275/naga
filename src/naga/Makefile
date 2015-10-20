@@ -41,6 +41,7 @@ DIRS-y += itf
 DIRS-y += dmr
 DIRS-y += acr
 DIRS-y += netseg
+DIRS-y += dnet
 DIRS-y += template
 DIRS-y += adp
 DIRS-y += pub 

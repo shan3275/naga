@@ -56,6 +56,7 @@
 #include "nag_adp.h"
 #include "bts_log.h"
 #include "netseg.h"
+#include "dnet.h"
 
 #define RTE_LOGTYPE_L2FWD RTE_LOGTYPE_USER1
 
@@ -340,6 +341,7 @@ l2fwd_launch_one_lcore(__attribute__((unused)) void *dummy)
 		acr_dp_init();
 		netseg_init();
         adp_dp_init();
+        dnetseg_init();
         rv = ads_template_init();
         if (rv )
         {
