@@ -389,7 +389,7 @@ DEFUN(show_domain,
 
 DEFUN(show_domain_all,
       show_domain_all_cmd,
-      "show domain (all|pushed|failed)",
+      "show domain all (pushed|failed)",
       SHOW_STR
       DOMAIN_STR
       DOMAIN_ALL_STR)
