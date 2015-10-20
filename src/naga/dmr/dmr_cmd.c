@@ -29,7 +29,7 @@
 #include "filter.h"
 #include "prefix.h"
 #include "privs.h"
-
+#include "dmr_cmd.h"
 #define DOMAIN_STR					"Domain rule\n"
 #define DOMAIN_NAME_STR             "Name of domain\n" 
 #define DOMAIN_ALL_STR             "All the domain\n"
@@ -289,7 +289,8 @@ dmr_dump_vty(void *data, void *param)
 {
     dmr_t *entry = NULL;
     struct vty *vty = NULL;
-
+    dmr_param_t *dmr_pram ;
+    
     char action_str[NAGA_ACTION_STR_SZ];
 
     if ((NULL == param) || (NULL == data))
@@ -297,14 +298,38 @@ dmr_dump_vty(void *data, void *param)
         return;
     }
 
+    dmr_pram= (dmr_param_t *)param;
+
     entry = (dmr_t *) data;
-    vty   = (struct vty *) param;
+    vty   = (struct vty *) dmr_pram->vty;
 
     naga_action_string(&entry->acl.actions, action_str);
 
-    vty_out(vty, "%-32s %-32s %-16ld %-16ld %-16ld %s", entry->host, action_str, 
-            (uint64_t) entry->acl.cnt.cnt,(uint64_t)entry->acl.vcnt.cnt,
-            (uint64_t)entry->acl.pushed_cnt.cnt, VTY_NEWLINE);
+    if(dmr_pram->flag == FLAG_SHOW_PUSHED_NONZERO)
+    {  
+        if( 0 != (uint64_t)entry->acl.pushed_cnt.cnt )
+        {
+            vty_out(vty, "%-32s %-32s %-16ld %-16ld %-16ld %s", entry->host, action_str, 
+                    (uint64_t) entry->acl.cnt.cnt,(uint64_t)entry->acl.vcnt.cnt,
+                        (uint64_t)entry->acl.pushed_cnt.cnt, VTY_NEWLINE);
+        }
+    }
+    else if(dmr_pram->flag == FLAG_SHOW_FAILED)
+    {
+        if((uint64_t)entry->acl.pushed_cnt.cnt  < (uint64_t)entry->acl.vcnt.cnt )
+        {
+            vty_out(vty, "%-32s %-32s %-16ld %-16ld %-16ld %s", entry->host, action_str, 
+                    (uint64_t) entry->acl.cnt.cnt,(uint64_t)entry->acl.vcnt.cnt,
+                        (uint64_t)entry->acl.pushed_cnt.cnt, VTY_NEWLINE);
+        }        
+    }
+    else
+    {
+        vty_out(vty, "%-32s %-32s %-16ld %-16ld %-16ld %s", entry->host, action_str, 
+                (uint64_t) entry->acl.cnt.cnt,(uint64_t)entry->acl.vcnt.cnt,
+                    (uint64_t)entry->acl.pushed_cnt.cnt, VTY_NEWLINE);
+    }
+     
 }
 
 static int cmd_dmr_show(struct vty *vty, const char *host)
@@ -333,12 +358,17 @@ static int cmd_dmr_show(struct vty *vty, const char *host)
 }
 
 
-static int cmd_dmr_show_all(struct vty *vty)
+
+static int cmd_dmr_show_all(struct vty *vty, int flag)
 {
+
+    dmr_param_t pram;
 	vty_out(vty, "%-32s %-32s %-16s %-16s %-16s %s","host","action", "cnt","none-drop", "pushed",VTY_NEWLINE);
     vty_out(vty, "------------------------------------------------------------------------%s", VTY_NEWLINE);
-	
-    dmr_iter(dmr_dump_vty, vty);
+
+    pram.vty = vty;
+    pram.flag = flag;
+    dmr_iter(dmr_dump_vty, (void*)&pram);
 
     return CMD_SUCCESS;
 }
@@ -359,12 +389,28 @@ DEFUN(show_domain,
 
 DEFUN(show_domain_all,
       show_domain_all_cmd,
-      "show domain all",
+      "show domain all [pushed|failed]",
       SHOW_STR
       DOMAIN_STR
       DOMAIN_ALL_STR)
 {
-    return cmd_dmr_show_all(vty);
+    int flag;
+    if(argc == 0)
+    {
+        flag = FLAG_SHOW_ALL;
+    }
+    else
+    {
+        if(!strcmp(argv[1], "pushed"))
+        {
+            flag = FLAG_SHOW_PUSHED_NONZERO;
+        }
+        else if(!strcmp(argv[1], "failed"))
+        {
+            flag = FLAG_SHOW_FAILED;
+        }
+    }
+    return cmd_dmr_show_all(vty, flag);
 }
 
 
