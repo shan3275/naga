@@ -376,7 +376,7 @@ static int cmd_dmr_show_all(struct vty *vty, int flag)
 {
 
     dmr_param_t pram;
-    memset(&pram, 0 sizeof(dmr_param_t));
+    memset(&pram, 0, sizeof(dmr_param_t));
 	vty_out(vty, "%-32s %-32s %-16s %-16s %-16s %s","host","action", "cnt","none-drop", "pushed",VTY_NEWLINE);
     vty_out(vty, "------------------------------------------------------------------------%s", VTY_NEWLINE);
 
