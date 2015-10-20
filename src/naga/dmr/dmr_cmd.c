@@ -406,7 +406,20 @@ DEFUN(show_domain,
 
 DEFUN(show_domain_all,
       show_domain_all_cmd,
-      "show domain (all|pushed|failed)",
+      "show domain all",
+      SHOW_STR
+      DOMAIN_STR
+      DOMAIN_ALL_STR)
+{
+    int flag;
+    flag = FLAG_SHOW_ALL;
+    return cmd_dmr_show_all(vty, flag);
+}
+
+
+DEFUN(show_domain_all_check,
+      show_domain_all_check_cmd,
+      "show domain check (pushed|failed)",
       SHOW_STR
       DOMAIN_STR
       DOMAIN_ALL_STR)
@@ -434,7 +447,6 @@ DEFUN(show_domain_all,
     }
     return cmd_dmr_show_all(vty, flag);
 }
-
 
 
 static int cmd_dmr_del(struct vty *vty, const char *host)
@@ -763,7 +775,8 @@ void cmdline_dmr_init(void)
 	install_element(CMD_NODE, &clear_domain_stat_all_cmd);
 	install_element(CMD_NODE, &show_domain_cmd);
 	install_element(CMD_NODE, &show_domain_all_cmd);
-	install_element(CMD_NODE, &domain_default_act_set_cmd);	
+	install_element(CMD_NODE, &domain_default_act_set_cmd);
+    install_element(CMD_NODE, &show_domain_all_check_cmd);
 
     return ;
 }
