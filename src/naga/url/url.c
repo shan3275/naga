@@ -20,7 +20,7 @@ berr  naga_uri(hytag_t *hytag)
   */
     //char str_tail[10] ={'\0'};
     const char *tail = "_t=t";
-    char *tailptr = NULL;
+    //char *tailptr = NULL;
     
     if(hytag->uri_len == 1 && !strcmp(hytag->uri, "/"))
     {    
@@ -33,8 +33,10 @@ berr  naga_uri(hytag_t *hytag)
         CNT_INC(ADP_DROP_BACKSLASH_SUFFIX);
         return E_SUCCESS;           
     }
-    tailptr = (char *)(hytag->uri + hytag->uri_len - 4);//the last 
-    if(!strcmp(tailptr, tail))
+    if(strstr( (const char *)hytag->uri, tail))
+        
+    //tailptr = (char *)(hytag->uri + hytag->uri_len - 4);//the last 
+    //if(!strcmp(tailptr, tail))
     {
          hytag->pushed_second_assert = 1;            
     }

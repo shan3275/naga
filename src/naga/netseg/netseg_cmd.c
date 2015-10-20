@@ -212,7 +212,7 @@ static int net_cmd_show(struct vty *vty, const char *index_str)
         return CMD_WARNING;
     }
 
-	vty_out(vty, "%-8s %-23s 	%-16s %-16s %-20s, %-20s%s","index", "ip/mask","action", "cnt", "none-drop", "pushed",VTY_NEWLINE);
+	vty_out(vty, "%-8s %-23s 	%-16s %-16s %-20s %-20s %s","index", "ip/mask","action", "cnt", "none-drop", "pushed",VTY_NEWLINE);
     vty_out(vty, "------------------------------------------------------------%s", VTY_NEWLINE);
 
 	if (NETSEG_RULE_EFFECTIVE == effect)
@@ -235,7 +235,7 @@ static int net_cmd_show_all(struct vty *vty)
 	uint8_t effect;
 
 	memset(&net, 0, sizeof(net_t));
-	vty_out(vty, "%-8s %-23s	%-16s %-16s %-20s, %-20s %s","index", "ip/mask","action", "cnt", "none-drop", "pushed",VTY_NEWLINE);
+	vty_out(vty, "%-8s %-23s	%-16s %-16s %-20s %-20s %s","index", "ip/mask","action", "cnt", "none-drop", "pushed",VTY_NEWLINE);
     vty_out(vty, "----------------------------------------------------------------%s", VTY_NEWLINE);
     for ( i = 0; i < NETSEG_RULE_NUM_MAX; i++ )
     {
