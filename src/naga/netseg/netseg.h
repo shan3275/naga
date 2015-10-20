@@ -19,7 +19,7 @@
 #ifndef  __NETSEG_H__
 #define  __NETSEG_H__
 
-#define NETSEG_RULE_NUM_MAX  256
+#define NETSEG_RULE_NUM_MAX     150
 #define NETSEG_RULE_EFFECTIVE   1
 #define NETSEG_RULE_UNEFFECTIVE 0
 

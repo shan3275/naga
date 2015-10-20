@@ -13,11 +13,11 @@
 berr  naga_uri(hytag_t *hytag)
 {
 
-    if(!strcmp((char *)hytag->host, "180.96.27.113"))
+/*    if(!strcmp((char *)hytag->host, "180.96.27.113"))
     {
         CNT_INC(ADP_DROP_NOT_HAO123);	         
     }
-    
+  */  
     if(hytag->uri_len == 1 && !strcmp(hytag->uri, "/"))
     {    
     	hytag->acl.actions |=  ACT_LOG;
