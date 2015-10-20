@@ -348,14 +348,17 @@ dmr_dump_vty(void *data, void *param)
 static int cmd_dmr_show(struct vty *vty, const char *host)
 {
 	int ret = 0;
-
+    dmr_param_t pram;
 	dmr_t *entry = NULL;
-
+   
+    
 	if (NULL == host)
 	{
         return CMD_ERR_NOTHING_TODO;
 	}
 
+    pram.vty = vty;
+    pram.flag = FLAG_SHOW_ALL;
     entry = api_dmr_get((char *)host);
     if (NULL == entry)
     {
@@ -365,7 +368,7 @@ static int cmd_dmr_show(struct vty *vty, const char *host)
 	vty_out(vty, "%-32s %-32s %-16s %-16s %-16s %s","host","action", "cnt", "none-drop", "pushed",VTY_NEWLINE);
     vty_out(vty, "------------------------------------------------%s", VTY_NEWLINE);
 
-    dmr_dump_vty((void *)entry, (void *)vty);
+    dmr_dump_vty((void *)entry, (void *)&pram);
    
     return CMD_SUCCESS;
 }
