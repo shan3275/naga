@@ -389,23 +389,28 @@ DEFUN(show_domain,
 
 DEFUN(show_domain_all,
       show_domain_all_cmd,
-      "show domain all (pushed|failed)",
+      "show domain (all|pushed|failed)",
       SHOW_STR
       DOMAIN_STR
       DOMAIN_ALL_STR)
 {
     int flag;
-    
+
+    if(argc == 0)
     {
-        if(!strcmp(argv[1], "pushed"))
+        flag = FLAG_SHOW_ALL;
+    }    
+    else    
+    {
+        if(!strcmp(argv[0], "pushed"))
         {
             flag = FLAG_SHOW_PUSHED_NONZERO;
         }
-        else if(!strcmp(argv[1], "failed"))
+        else if(!strcmp(argv[0], "failed"))
         {
             flag = FLAG_SHOW_FAILED;
         }
-        else if(!strcmp(argv[1], "all"))
+        else if(!strcmp(argv[0], "all"))
         {
             flag = FLAG_SHOW_ALL;
         }
