@@ -34,13 +34,12 @@ berr  naga_uri(hytag_t *hytag)
         return E_SUCCESS;           
     }
 
-    if(hytag->uri_len >= 8 )    
-        tailptr = (char *)(hytag->uri + hytag->uri_len - 6);//the last 
-    else
+    //if(hytag->uri_len >= 8 )    
+    //    tailptr = (char *)(&(hytag->uri[hytag->uri_len - 6]));//the last 
+    //else
         tailptr = (char *)(hytag->uri);
     
     if(strstr(tailptr,  tail))
-
     //if(!strcmp(tailptr, tail))
     {
          hytag->pushed_second_assert = 1;            
