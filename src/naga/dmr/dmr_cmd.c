@@ -313,9 +313,9 @@ dmr_dump_vty(void *data, void *param)
                     (uint64_t) entry->acl.cnt.cnt,(uint64_t)entry->acl.vcnt.cnt,
                         (uint64_t)entry->acl.pushed_cnt.cnt, VTY_NEWLINE);
 
-            dmr_pram.cnt_total +=  (uint64_t) entry->acl.cnt.cnt;
-            dmr_pram.non_drop  +=  (uint64_t)entry->acl.vcnt.cnt;
-            dmr_pram.pushed    += (uint64_t)entry->acl.pushed_cnt.cnt;
+            dmr_pram->cnt_total +=  (uint64_t) entry->acl.cnt.cnt;
+            dmr_pram->non_drop  +=  (uint64_t)entry->acl.vcnt.cnt;
+            dmr_pram->pushed    += (uint64_t)entry->acl.pushed_cnt.cnt;
             
         }
     }
@@ -326,10 +326,10 @@ dmr_dump_vty(void *data, void *param)
             vty_out(vty, "%-32s %-32s %-16ld %-16ld %-16ld %s", entry->host, action_str, 
                     (uint64_t) entry->acl.cnt.cnt,(uint64_t)entry->acl.vcnt.cnt,
                         (uint64_t)entry->acl.pushed_cnt.cnt, VTY_NEWLINE);
-            dmr_pram.cnt_total +=  (uint64_t) entry->acl.cnt.cnt;
-            dmr_pram.non_drop  +=  (uint64_t)entry->acl.vcnt.cnt;
-            dmr_pram.pushed  += (uint64_t)entry->acl.pushed_cnt.cnt;
-            
+
+            dmr_pram->cnt_total +=  (uint64_t) entry->acl.cnt.cnt;
+            dmr_pram->non_drop  +=  (uint64_t)entry->acl.vcnt.cnt;
+            dmr_pram->pushed    += (uint64_t)entry->acl.pushed_cnt.cnt;
         }        
     }
     else
@@ -337,9 +337,10 @@ dmr_dump_vty(void *data, void *param)
         vty_out(vty, "%-32s %-32s %-16ld %-16ld %-16ld %s", entry->host, action_str, 
                 (uint64_t) entry->acl.cnt.cnt,(uint64_t)entry->acl.vcnt.cnt,
                     (uint64_t)entry->acl.pushed_cnt.cnt, VTY_NEWLINE);
-        dmr_pram.cnt_total +=  (uint64_t) entry->acl.cnt.cnt;
-        dmr_pram.non_drop  +=  (uint64_t)entry->acl.vcnt.cnt;
-        dmr_pram.pushed  += (uint64_t)entry->acl.pushed_cnt.cnt ;       
+
+            dmr_pram->cnt_total +=  (uint64_t) entry->acl.cnt.cnt;
+            dmr_pram->non_drop  +=  (uint64_t)entry->acl.vcnt.cnt;
+            dmr_pram->pushed    += (uint64_t)entry->acl.pushed_cnt.cnt;     
     }
      
 }
