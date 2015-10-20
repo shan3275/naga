@@ -10,9 +10,10 @@ typedef uint32_t ipaddr_t;
 
 #define ACT_LOG         1
 #define ACT_TRACE       2
-#define ACT_DROP        4   
+#define ACT_DROP        4
 #define ACT_PUSH        8
 #define ACT_REDIR       16
+#define ACT_TAGDUMP      32
 
 #define ACT_IS_VAILD(_val, _act) \
     (((_val) & (_act)) == (_act))

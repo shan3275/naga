@@ -10,7 +10,8 @@
     MOD_DMR, \
     MOD_ACR, \
     MOD_ADP, \
-    MOD_NET
+    MOD_NET, \
+    MOD_DNET
 
 #define MOD_ARRAY_CUSTOM \
     {MOD_AMD, BAS, OFF, OFF, "AMD", "Admin Main Daemon"}, \
@@ -21,7 +22,8 @@
     {MOD_DMR, ON,  OFF, OFF, "DMR", "Domain rule module"}, \
     {MOD_ACR, ON,  OFF, OFF, "ACR", "Account rule module"}, \
     {MOD_ADP, ON,  OFF, OFF, "ADP", "Advertising push"}, \
-    {MOD_NET, ON,  OFF, OFF, "NET", "Net Segment module"}
+    {MOD_NET, ON,  OFF, OFF, "NET", "Net Segment module"}, \
+    {MOD_DNET, ON,  OFF, OFF, "DNET", "Dnet Segment module"}
 
 #define DOPT_CUSTOM \
     DOPT_TAGMON, \
@@ -88,6 +90,12 @@
     NET_UNMATCHPKTS, /* not match packets */ \
     NET_MATCHPKTS, /* match packets */ \
     NET_RULE_MATCHPKTS, /* rule ip, url all match */ \
+    DNET_PKTS, /* dnetseg module input packets*/ \
+    DNET_UNURLPKTS, /* take no url packet number */ \
+    DNET_URLPKTS, /* take url packet number */ \
+    DNET_UNMATCHPKTS, /* not match packets */ \
+    DNET_MATCHPKTS, /* match packets */ \
+    DNET_RULE_MATCHPKTS, /* rule ip, url all match */ \
     NAGA_CNT_MAX
 
 #define CNT_DEF_CUSTOM \
@@ -143,6 +151,12 @@
     CNT_DEF(NET_UNMATCHPKTS), \
     CNT_DEF(NET_MATCHPKTS), \
     CNT_DEF(NET_RULE_MATCHPKTS), \
+    CNT_DEF(DNET_PKTS), \
+    CNT_DEF(DNET_UNURLPKTS), \
+    CNT_DEF(DNET_URLPKTS), \
+    CNT_DEF(DNET_UNMATCHPKTS), \
+    CNT_DEF(DNET_MATCHPKTS), \
+    CNT_DEF(DNET_RULE_MATCHPKTS), \
     CNT_DEF(NAGA_CNT_MAX)
 
 /* Custom spinlock */

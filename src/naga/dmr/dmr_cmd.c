@@ -348,14 +348,17 @@ dmr_dump_vty(void *data, void *param)
 static int cmd_dmr_show(struct vty *vty, const char *host)
 {
 	int ret = 0;
-
+    dmr_param_t pram;
 	dmr_t *entry = NULL;
-
+   
+    
 	if (NULL == host)
 	{
         return CMD_ERR_NOTHING_TODO;
 	}
 
+    pram.vty = vty;
+    pram.flag = FLAG_SHOW_ALL;
     entry = api_dmr_get((char *)host);
     if (NULL == entry)
     {
@@ -365,7 +368,7 @@ static int cmd_dmr_show(struct vty *vty, const char *host)
 	vty_out(vty, "%-32s %-32s %-16s %-16s %-16s %s","host","action", "cnt", "none-drop", "pushed",VTY_NEWLINE);
     vty_out(vty, "------------------------------------------------%s", VTY_NEWLINE);
 
-    dmr_dump_vty((void *)entry, (void *)vty);
+    dmr_dump_vty((void *)entry, (void *)&pram);
    
     return CMD_SUCCESS;
 }
@@ -744,21 +747,21 @@ void dmr_cmd_config_write(struct vty *vty)
 	int ret = 0;
 	uint32_t action = 0;
 	char action_str[NAGA_ACTION_STR_SZ] = {0};
-	
+
 	ret = api_dmr_domain_default_act_get(&action);
 	if (ret)
     {
         vty_out(vty, "domain get default action fail:(%s)%s", berr_msg(ret), VTY_NEWLINE);
         return;
     }
-
 	if (0 != action)
 	{
 		naga_action_string(&action, action_str);
 		vty_out(vty, "domain default %s%s", action_str, VTY_NEWLINE);
 	}
+ #if 0
 	dmr_iter(dmr_write_config_vty, vty);
-	
+#endif
 	
 	 
 }

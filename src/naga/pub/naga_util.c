@@ -46,6 +46,10 @@ naga_action_parse(char *str, uint32_t *actions)
         {
             *actions |= ACT_REDIR;
         }
+        else if (!strcmp("tagdump", tokp))
+        {
+            *actions |= ACT_TAGDUMP;
+        }
         else
         {
             BRET(E_FOUND);
@@ -106,6 +110,16 @@ naga_action_string(uint32_t *action, char *str)
         }
 
         cp += sprintf(cp, "push");
+    }
+
+    if (ACT_IS_VAILD(*action, ACT_TAGDUMP))
+    {
+        if (cp != str)
+        {
+            cp += sprintf(cp, ",");
+        }
+
+        cp += sprintf(cp, "tagdump");
     }
 }
 
