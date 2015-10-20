@@ -382,7 +382,8 @@ static int cmd_dmr_show_all(struct vty *vty, int flag)
     pram.vty = vty;
     pram.flag = flag;
     dmr_iter(dmr_dump_vty, (void*)&pram);
-    vty_out(vty, "%-32s %-32s %-16ld %-16ld %-16ld %s", "Total", "NULL", 
+    vty_out(vty, "================================================================================%s", VTY_NEWLINE);
+    vty_out(vty, "%-32s %-32s %-16ld %-16ld %-16ld %s", "Total", "NONE", 
                 pram.cnt_total, pram.non_drop, pram.pushed, VTY_NEWLINE);
     
     return CMD_SUCCESS;
