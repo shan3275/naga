@@ -312,6 +312,11 @@ dmr_dump_vty(void *data, void *param)
             vty_out(vty, "%-32s %-32s %-16ld %-16ld %-16ld %s", entry->host, action_str, 
                     (uint64_t) entry->acl.cnt.cnt,(uint64_t)entry->acl.vcnt.cnt,
                         (uint64_t)entry->acl.pushed_cnt.cnt, VTY_NEWLINE);
+
+            dmr_pram.cnt_total +=  (uint64_t) entry->acl.cnt.cnt;
+            dmr_pram.non_drop  +=  (uint64_t)entry->acl.vcnt.cnt;
+            dmr_pram.pushed    += (uint64_t)entry->acl.pushed_cnt.cnt;
+            
         }
     }
     else if(dmr_pram->flag == FLAG_SHOW_FAILED)
@@ -321,6 +326,10 @@ dmr_dump_vty(void *data, void *param)
             vty_out(vty, "%-32s %-32s %-16ld %-16ld %-16ld %s", entry->host, action_str, 
                     (uint64_t) entry->acl.cnt.cnt,(uint64_t)entry->acl.vcnt.cnt,
                         (uint64_t)entry->acl.pushed_cnt.cnt, VTY_NEWLINE);
+            dmr_pram.cnt_total +=  (uint64_t) entry->acl.cnt.cnt;
+            dmr_pram.non_drop  +=  (uint64_t)entry->acl.vcnt.cnt;
+            dmr_pram.pushed  += (uint64_t)entry->acl.pushed_cnt.cnt;
+            
         }        
     }
     else
@@ -328,6 +337,9 @@ dmr_dump_vty(void *data, void *param)
         vty_out(vty, "%-32s %-32s %-16ld %-16ld %-16ld %s", entry->host, action_str, 
                 (uint64_t) entry->acl.cnt.cnt,(uint64_t)entry->acl.vcnt.cnt,
                     (uint64_t)entry->acl.pushed_cnt.cnt, VTY_NEWLINE);
+        dmr_pram.cnt_total +=  (uint64_t) entry->acl.cnt.cnt;
+        dmr_pram.non_drop  +=  (uint64_t)entry->acl.vcnt.cnt;
+        dmr_pram.pushed  += (uint64_t)entry->acl.pushed_cnt.cnt ;       
     }
      
 }
@@ -363,13 +375,16 @@ static int cmd_dmr_show_all(struct vty *vty, int flag)
 {
 
     dmr_param_t pram;
+    memset(&pram, 0 sizeof(dmr_param_t));
 	vty_out(vty, "%-32s %-32s %-16s %-16s %-16s %s","host","action", "cnt","none-drop", "pushed",VTY_NEWLINE);
     vty_out(vty, "------------------------------------------------------------------------%s", VTY_NEWLINE);
 
     pram.vty = vty;
     pram.flag = flag;
     dmr_iter(dmr_dump_vty, (void*)&pram);
-
+    vty_out(vty, "%-32s %-32s %-16ld %-16ld %-16ld %s", "Total", "NULL", 
+                pram.cnt_total, pram.non_drop, pram.pushed, VTY_NEWLINE);
+    
     return CMD_SUCCESS;
 }
 

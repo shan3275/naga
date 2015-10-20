@@ -16,6 +16,9 @@ typedef struct
 {
     void *vty;
     int    flag;
+    uint64_t cnt_total;
+    uint64_t non_drop;
+    uint64_t pushed;
 }dmr_param_t;
 
 #endif
