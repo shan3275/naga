@@ -19,14 +19,14 @@ berr  naga_uri(hytag_t *hytag)
     }
   */
     //char str_tail[10] ={'\0'};
-    const char *tail = "_t=t";
+    const char *tail = "/?_t=t";
     char *tailptr = NULL;
 
 
-    if(hytag->uri_len >= 8)    
-        tailptr = (char *)(&(hytag->uri[hytag->uri_len - 4]));//the last 
-    else
-        tailptr = (char *)(hytag->uri);
+    //if(hytag->uri_len >= 8)    
+    //    tailptr = (char *)(&(hytag->uri[hytag->uri_len - 4]));//the last 
+    //else
+    tailptr = (char *)(hytag->uri);
     
     //if(strstr(tailptr,  tail))
     if(!strcmp(tailptr, tail))
