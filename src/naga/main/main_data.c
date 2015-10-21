@@ -130,7 +130,7 @@ berr naga_data_process_module(hytag_t * hytag)
     gettimeofday(&start,NULL);
     DPF_NODE(MOD_ADP, hytag, naga_adp);
     gettimeofday(&end,NULL);
-    if(print_t < 200 && hytag->tx)
+    if(print_t < 200 && hytag->ad_act == AD_SUCCESS)
     {
         printf("ADP: %lu" , (end.tv_sec * 1000*1000 + end.tv_usec)
             - (start.tv_sec * 1000*1000 + start.tv_usec));
