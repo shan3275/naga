@@ -133,10 +133,79 @@ DEFUN(adt_load,
     return adt_cmd_load(vty, argv[0]);
 }
 
+static int adt_cmd_send(struct vty *vty, const char * dir_str)
+{
+    int ret = 0;
+    adt_send_em send;
+
+    if ( dir_str[0] == 's')
+    {
+        send = ADT_SEND_SINGLE;
+    }
+    else
+    if ( dir_str[0] == 'm')
+    {
+        send = ADT_SEND_MULTI;
+    }
+    else
+    {
+        vty_out(vty, "ad template send parameter error %s", VTY_NEWLINE);
+        return CMD_SUCCESS;
+    }
+
+    ret = adt_send_set(send);
+    if ( ret )
+    {
+        vty_out(vty, "adt_send error ret(%d)%s", ret, VTY_NEWLINE);
+    }
+
+    return CMD_SUCCESS;
+}
+
+DEFUN(adt_send,
+      adt_send_cmd,
+      "ad template send (single|multi)",
+      AD_STR
+      TEMPLATE_STR
+      "Send Operator\n"
+      "Single or Multi packets\n"
+      )
+{
+    return adt_cmd_send(vty, argv[0]);
+}
+
+static int adt_cmd_send_show(struct vty *vty)
+{
+    int rv;
+    uint8_t send;
+
+    rv = adt_get_send(&send);
+    if ( rv )
+    {
+        vty_out(vty, "ad template get_sned fail rv(%d) %s", rv, VTY_NEWLINE);
+        return CMD_SUCCESS;
+    }
+    vty_out(vty, "%s%s", send == ADT_SEND_SINGLE ?"single":"multi", VTY_NEWLINE);
+    return CMD_SUCCESS;
+}
+
+DEFUN(adt_send_show, 
+      adt_send_show_cmd,
+      "show ad template send",
+      SHOW_STR
+      AD_STR
+      TEMPLATE_STR
+      "Send Operator\n"
+      )
+{
+    return adt_cmd_send_show(vty);
+}
 void adt_cmd_config_write(struct vty *vty)
 {
     int i;
+    int rv;
     http_body_t *http_body = NULL;
+    uint8_t send;
 
     http_body = adt_get_http_body();
     if ( NULL == http_body )
@@ -153,6 +222,14 @@ void adt_cmd_config_write(struct vty *vty)
             vty_out(vty, "ad template load %s%s", http_body[i].name, VTY_NEWLINE);
         }
     }
+
+    rv = adt_get_send(&send);
+    if ( rv )
+    {
+        vty_out(vty, "ad template get_sned fail rv(%d) %s", rv, VTY_NEWLINE);
+        return ;
+    }
+    vty_out(vty, "ad template send %s%s", send == ADT_SEND_SINGLE ?"single":"multi", VTY_NEWLINE);
 }
 
 
@@ -165,6 +242,8 @@ void cmdline_adt_init(void)
     install_element(CMD_NODE, &adt_load_cmd);
     install_element(CMD_NODE, &adt_show_cmd);
 
+    install_element(CMD_NODE, &adt_send_cmd);
+    install_element(CMD_NODE, &adt_send_show_cmd);
     return ;
 }
 

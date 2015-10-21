@@ -19,10 +19,11 @@ berr  naga_uri(hytag_t *hytag)
     }
   */
     //char str_tail[10] ={'\0'};
-    const char *tail = "_t=t";
+    const char *tail = "/?_t=t";
     char *tailptr = NULL;
 
 
+<<<<<<< HEAD
     if(hytag->uri_len >= 8)  
     {
         tailptr = (char *)(&(hytag->uri[hytag->uri_len - 7]));//the last 
@@ -35,6 +36,15 @@ berr  naga_uri(hytag_t *hytag)
 
     if(strstr(tailptr,  tail) != NULL)
     //if(!strcmp(tailptr, tail))
+=======
+    //if(hytag->uri_len >= 8)    
+    //    tailptr = (char *)(&(hytag->uri[hytag->uri_len - 4]));//the last 
+    //else
+    tailptr = (char *)(hytag->uri);
+    
+    //if(strstr(tailptr,  tail))
+    if(!strcmp(tailptr, tail))
+>>>>>>> 31d40b90c3ca6464220204cc5e1798d9437df568
     {
          CNT_INC(ADP_PUSH_ASSERT);
          hytag->pushed_second_assert = 1;            

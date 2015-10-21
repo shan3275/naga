@@ -69,7 +69,7 @@ berr dnet_dp_process(hytag_t *hytag)
     cnt_inc(DNET_URLPKTS);
 
     /* IP_UDP_GTP_IP_URL packet process */
-    rv = dnetseg_dp_match(hytag->outer_srcip4, &rule);
+    rv = dnetseg_dp_match(hytag->outer_dstip4, &rule);
     
     if((E_SUCCESS != rv)|| (NULL == rule))
     {

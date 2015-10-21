@@ -240,45 +240,45 @@ http_body_t default_http_body[AD_TEMPLATE_MAX] =
         .head = 
             "<!DOCTYPE HTML>\n"
             "<html>\n"
-            "   <head>\n"
-            "       <meta charset=\"utf-8\">\n"
-            "       <title></title>\n"
-            "       <script>\n"
-            "           d=document;\n"
-            "           function u(){\n"
-            "           var f = \"",
+            " <head>\n"
+            "<meta charset=\"utf-8\">\n"
+            "<title></title>\n"
+            "<script>\n"
+            "d=document;\n"
+            "function u(){\n"
+            "var f = \"",
         .url =
             "www.taobao.com",
         .tail =
             "\";\n"
-            "           d.getElementById(\"m\").src=f+(f.indexOf(\"&\")<0\?\'\?\':\'&\')+\'_t=t\';\n"
+            "d.getElementById(\"m\").src=f+(f.indexOf(\"&\")<0\?\'\?\':\'&\')+\'_t=t\';\n"
             "}\n"
             "\n"
-            "           setTimeout(function(){d.getElementById(\"x\").style.display=\'block\';}, 2000);\n"
+            "setTimeout(function(){d.getElementById(\"x\").style.display=\'block\';}, 2000);\n"
             "\n"
-            "           function c(){\n"
-            "           x.style.display=\"none\"\n"
-            "           }\n"
+            "function c(){\n"
+            "x.style.display=\"none\"\n"
+            "}\n"
             "\n"
-            "       </script>\n"
-            "       <style>\n"
-            "           body {margin:0;color:#000;overflow:hidden;padding:0;height:100%;font-family:Arial}\n"
-            "           a{cursor:pointer;display:block;position:absolute;border:1px;border-radius:1em;background-color:#555;color:#eee;z-index:3;right:5px;top:5px;line-height:20px;text-align:center;width:20px;font-size:10px}\n"
-            "           #x{position:absolute;z-index:2;right:18px;bottom:0px;width:300px;height:250px}\n"
-            "           #i{display:block; position:absolute; z-index:1; width:100%; height:100%}\n"
-            "           .close{cursor:pointer;display:block;position:absolute;border:1px;border-radius:1em;background-color:#555;color:#eee;z-index:3;right:5px;top:5px;line-height:20px;text-align:center;width:20px;font-size:10px}\n"
-            "       </style>\n"
-            "   </head>\n"
-            "   <body onLoad=u()>\n"
-            "       <div id=i>\n"
-            "           <iframe id=m frameborder=0 width=100% height=100%></iframe>\n" 
-            "       </div>\n"
-            "       <div id=x>\n"
-            "           <iframe src=\"http://219.234.83.60/ad/pc.html\" width=300 height=250 scrolling=no frameborder=0></iframe>\n"
-            "           <a class=\"close\" onClick=c()>关闭</a>\n"
-            "       </div>\n"
+            "</script>\n"
+            "<style>\n"
+            "body {margin:0;color:#000;overflow:hidden;padding:0;height:100%;font-family:Arial}\n"
+            "a{cursor:pointer;display:block;position:absolute;border:1px;border-radius:1em;background-color:#555;color:#eee;z-index:3;right:5px;top:5px;line-height:20px;text-align:center;width:20px;font-size:10px}\n"
+            "#x{position:absolute;z-index:2;right:18px;bottom:0px;width:300px;height:250px}\n"
+            "#i{display:block; position:absolute; z-index:1; width:100%; height:100%}\n"
+            ".close{cursor:pointer;display:block;position:absolute;border:1px;border-radius:1em;background-color:#555;color:#eee;z-index:3;right:5px;top:5px;line-height:20px;text-align:center;width:20px;font-size:10px}\n"
+            "</style>\n"
+            "</head>\n"
+            "<body onLoad=u()>\n"
+            "<div id=i>\n"
+            "<iframe id=m frameborder=0 width=100% height=100%></iframe>\n" 
+            "</div>\n"
+            "<div id=x>\n"
+            "<iframe src=\"http://219.234.83.60/ad/pc.html\" width=300 height=250 scrolling=no frameborder=0></iframe>\n"
+            "<a class=\"close\" onClick=c()>关闭</a>\n"
+            "</div>\n"
             "\n"
-            "   </body>\n"
+            "</body>\n"
             "</html>\n"
             "\n",
     },
@@ -375,6 +375,48 @@ http_body_t default_http_body[AD_TEMPLATE_MAX] =
 #endif
 };
 
+uint8_t send_mode = ADT_SEND_MULTI;
+berr adt_get_send(uint8_t *send)
+{
+    if ( NULL == send )
+    {
+        return E_PARAM;
+    }
+
+    *send = send_mode;
+    return E_SUCCESS;
+}
+
+berr adt_send_set(adt_send_em send)
+{
+    if ( send == ADT_SEND_NULL )
+    {
+        return E_PARAM;
+    }
+    send_mode = (uint8_t)send;
+    return E_SUCCESS;
+}
+
+bool adt_send_is_single(void)
+{
+    if(ADT_SEND_SINGLE == send_mode )
+    {
+        return true;
+    }
+
+    return false;
+}
+
+bool adt_send_is_multi(void)
+{
+    if(ADT_SEND_MULTI == send_mode )
+    {
+        return true;
+    }
+
+    return false;
+}
+
 uint16_t
 http_content_len_get(hytag_t *hytag)
 {
@@ -423,17 +465,18 @@ berr ads_http_ok_head_fill(char *buf, hytag_t *hytag)
     rte_memcpy(buf + len, http_head_response7, (size_t) strlen(http_head_response7));
     len += strlen(http_head_response7);
 
-#if 0
+    if( adt_send_is_single())
+    {
+        rte_memcpy(buf + len, http_body[hytag->template].head, (size_t) strlen(http_body[hytag->template].head));
+        len += strlen(http_body[hytag->template].head);
 
-    rte_memcpy(buf + len, http_body[hytag->template].head, (size_t) strlen(http_body[hytag->template].head));
-    len += strlen(http_body[hytag->template].head);
+        rte_memcpy(buf + len, hytag->url, (size_t) hytag->url_len);
+        len += hytag->url_len;
 
-    rte_memcpy(buf + len, hytag->url, (size_t) hytag->url_len);
-    len += hytag->url_len;
+        rte_memcpy(buf + len, http_body[hytag->template].tail, (size_t) strlen(http_body[hytag->template].tail));
+        len += strlen(http_body[hytag->template].tail);
+    }
 
-    rte_memcpy(buf + len, http_body[hytag->template].tail, (size_t) strlen(http_body[hytag->template].tail));
-    len += strlen(http_body[hytag->template].tail);
-#endif
 
     hytag->l5_len = len;
     return E_SUCCESS;
