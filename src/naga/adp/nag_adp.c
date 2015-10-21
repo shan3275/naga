@@ -271,27 +271,26 @@ berr naga_adp(hytag_t *hytag)
 
 
 
-    if(hytag->eth_tx == ENABLE)
-    {
-		memcpy(buffer, hytag->pbuf.ptr, hytag->pbuf.len);
-		#if 0	
+if(hytag->eth_tx == ENABLE)
+{
+	memcpy(buffer, hytag->pbuf.ptr, hytag->pbuf.len);
 		rv = ads_response_head_generator(buffer, hytag);
+		
 		if(rv != E_SUCCESS) {
 			CNT_INC(ADP_DROP_HEAD_GEN1);
-			return rv;
+				return rv;
 		}
- 		#endif
-        rv = ift_raw_send_packet(hytag->fp, buffer, hytag->data_len);
-        if(rv != E_SUCCESS)
-        {
-            printf("Send packet Failed\n");
-            CNT_INC(ADP_DROP_SEND_PACKET1);
-            return rv;
-        }
-    }  
-    else
-    {
-		rv = ads_response_head_generator(hytag->pbuf.ptr, hytag);
+	rv = ift_raw_send_packet(hytag->fp, buffer, hytag->data_len);
+		if(rv != E_SUCCESS)
+		{
+			printf("Send packet Failed\n");
+				CNT_INC(ADP_DROP_SEND_PACKET1);
+				return rv;
+		}
+}  
+else
+{
+	rv = ads_response_head_generator(hytag->pbuf.ptr, hytag);
 		if(rv != E_SUCCESS) {
 			CNT_INC(ADP_DROP_HEAD_GEN1);
 			return rv;
