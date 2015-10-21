@@ -332,7 +332,7 @@ static int
 l2fwd_launch_one_lcore(__attribute__((unused)) void *dummy)
 {
     printf("core(%d)\n", rte_lcore_id());
-    if (rte_lcore_id() == 1 )
+    if (rte_lcore_id() == 0 )
     {
     	berr rv;
         printf("cmd core %d\n", rte_lcore_id());
