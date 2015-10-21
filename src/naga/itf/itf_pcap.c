@@ -14,10 +14,11 @@
 #include "bts_list.h"
 #include <net/if.h>
 #include <sys/ioctl.h>
-#include <linux/ether.h>
+#include <linux/if_ether.h>
 
 pcap_t *gpcap_desc = NULL;
-#if 0
+static int send_socket = 0;
+#if 1
 berr itf_raw_socket_init(char *ifname)
 {
     char errbuf[PCAP_ERRBUF_SIZE];
@@ -65,7 +66,6 @@ berr ift_raw_send_packet(void* fp, uint8_t * buff, int len)
 
 
 #else
-static int send_socket = 0;
 berr itf_raw_socket_init(char *ifname)
 
 {
@@ -114,7 +114,7 @@ berr ift_raw_send_packet(void* fp, uint8_t * buff, int len)
 {
 	if(send_socket != 0)
 	{
-		if(write(send_socket, buff, len)!= len)
+		if(send(send_socket, buff, len, MSG_CONFIRM)!= len)
 		{
 			perror("The Err is:");
 			return E_FAIL;		
