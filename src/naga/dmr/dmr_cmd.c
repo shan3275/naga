@@ -365,7 +365,7 @@ static int cmd_dmr_show(struct vty *vty, const char *host)
         vty_out(vty, "dmr host<%s> empty%s", host, VTY_NEWLINE);
         return CMD_WARNING;
     }
-	vty_out(vty, "%-32s %-32s %-16s %-16s %-16s %s","host","action", "cnt", "none-drop", "pushed",VTY_NEWLINE);
+	vty_out(vty, "%-32s %-32s %-16s %-16s %-16s %s","host","action", "get_cnt","adp_push_cnt", "push_success",VTY_NEWLINE);
     vty_out(vty, "------------------------------------------------%s", VTY_NEWLINE);
 
     dmr_dump_vty((void *)entry, (void *)&pram);
@@ -380,7 +380,7 @@ static int cmd_dmr_show_all(struct vty *vty, int flag)
 
     dmr_param_t pram;
     memset(&pram, 0, sizeof(dmr_param_t));
-	vty_out(vty, "%-32s %-32s %-16s %-16s %-16s %s","host","action", "cnt","none-drop", "pushed",VTY_NEWLINE);
+	vty_out(vty, "%-32s %-32s %-16s %-16s %-16s %s","host","action", "get_cnt","adp_push_cnt", "push_success",VTY_NEWLINE);
     vty_out(vty, "------------------------------------------------------------------------%s", VTY_NEWLINE);
 
     pram.vty = vty;
@@ -771,11 +771,10 @@ static int cmd_write_domain_file(struct vty *vty, const char *file_name)
 	}
 
 	memset(&pram, 0, sizeof(dmr_param_t));
-	fprintf(fp, "%-32s %-32s %-16s %-16s %-16s %s","host","action", "cnt","none-drop", "pushed",VTY_NEWLINE);
-    fprintf(fp, "------------------------------------------------------------------------%s", VTY_NEWLINE);
+	fprintf(fp, "%-32s %-32s %-16s %-16s %-16s\n","host","action", "get_cnt","adp_push_cnt", "push_success");
 
     pram.vty = (void *)fp;
-    dmr_iter(dmr_dump_vty, (void*)&pram);
+    dmr_iter(dmr_write_file, (void*)&pram);
 
 	fclose(fp);
 
