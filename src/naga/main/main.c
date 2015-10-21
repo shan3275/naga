@@ -604,7 +604,7 @@ main(int argc, char **argv)
 		nb_ports = RTE_MAX_ETHPORTS;
 
 
-    printf(" Driver Init %d ports\n", nb_ports); 
+    printf(" Driver Init %d ports l2fwd_rx_queue_per_lcore= u%\n", nb_ports, l2fwd_rx_queue_per_lcore); 
 #if 1
 	/* reset l2fwd_dst_ports */
 	for (portid = 0; portid < RTE_MAX_ETHPORTS; portid++)
@@ -652,7 +652,7 @@ main(int argc, char **argv)
 			if (rx_lcore_id >= RTE_MAX_LCORE)
 				rte_exit(EXIT_FAILURE, "Not enough cores\n");
 		}
-
+        
 		if (qconf != &lcore_queue_conf[rx_lcore_id])
 			/* Assigned a new logical core in the loop above. */
 			qconf = &lcore_queue_conf[rx_lcore_id];
