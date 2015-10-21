@@ -406,7 +406,7 @@ void netseg_cmd_config_write(struct vty *vty)
 			
 			if (NETSEG_RULE_EFFECTIVE == effect)
 			{
-	            vty_out(vty, "net add %d %d.%d.%d.%d/%d %s %s", i, 
+	            vty_out(vty, "snet add %d %d.%d.%d.%d/%d %s %s", i, 
 	                    (net.ip >> 24) & 0xff,
 	                    (net.ip >> 16) & 0xff,
 	                    (net.ip >>  8) & 0xff,
