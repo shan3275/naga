@@ -114,6 +114,7 @@ berr ift_raw_send_packet(void* fp, uint8_t * buff, int len)
 	{
 		if(write(send_socket, buff, len)!= len)
 		{
+			perror("The Err is:")
 			return E_FAIL;		
 		}
 	}
