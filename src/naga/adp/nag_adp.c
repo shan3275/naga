@@ -273,129 +273,141 @@ berr naga_adp(hytag_t *hytag)
 
     if(hytag->eth_tx == ENABLE)
     {
-		
-		memcpy(buffer, hytag->pbuf.ptr, hytag->pbuf.len);
-        #if 0
-        rv = ads_response_head_generator(buffer, hytag);
-		if(rv != E_SUCCESS) {
-			CNT_INC(ADP_DROP_HEAD_GEN1);
-			return rv;
-		}
-        #endif
- 
-        rv = ift_raw_send_packet(hytag->fp, buffer, hytag->data_len);
-        if(rv != E_SUCCESS)
+        
+    	    memcpy(buffer, hytag->pbuf.ptr, hytag->pbuf.len);
+    		rv = ads_response_head_generator(buffer, hytag);
+    		
+    		if(rv != E_SUCCESS) {
+    			CNT_INC(ADP_DROP_HEAD_GEN1);
+    				return rv;
+    		}
+
+     
+            rv = ift_raw_send_packet(hytag->fp, buffer, hytag->data_len);
+            if(rv != E_SUCCESS)
+            {
+                printf("Send packet Failed\n");
+                CNT_INC(ADP_DROP_SEND_PACKET1);
+                return rv;
+            }
+        }  
+        else
         {
-            printf("Send packet Failed\n");
-            CNT_INC(ADP_DROP_SEND_PACKET1);
-            return rv;
-        }
+    	    rv = ads_response_head_generator(hytag->pbuf.ptr, hytag);
+
+    	    rv = ift_raw_send_packet(hytag->fp, buffer, hytag->data_len);
+    		if(rv != E_SUCCESS)
+    		{
+    			printf("Send packet Failed\n");
+    				CNT_INC(ADP_DROP_SEND_PACKET1);
+    				return rv;
+    		}
     }  
     else
     {
-		rv = ads_response_head_generator(hytag->pbuf.ptr, hytag);
-		if(rv != E_SUCCESS) {
-			CNT_INC(ADP_DROP_HEAD_GEN1);
-			return rv;
-		}
+    	    rv = ads_response_head_generator(hytag->pbuf.ptr, hytag);
+    		if(rv != E_SUCCESS) {
+    			CNT_INC(ADP_DROP_HEAD_GEN1);
+    			return rv;
+    		}
 
-	
-     	txm->data_len = txm->pkt_len = hytag->data_len;
-        itf_send_packet_imm(txm, txm->port);
-    }
-    
-     
-    if( adt_send_is_multi())
-    {
+    	
+         	txm->data_len = txm->pkt_len = hytag->data_len;
+            itf_send_packet_imm(txm, txm->port);
+        }
+        
+         
+        if( adt_send_is_multi())
+        {
 #if USE_D_PACKET
 #define CONTENT_FILL_LEN_MAX 1400
-        hytag->content_offset = 0;
-        /*
-           debug("hytag->content_len(%d), hytag->content_offset(%d), hytag->fill_len(%d)", 
-           hytag->content_len, hytag->content_offset, hytag->fill_len);
-           */
-        //usleep(10);
+            hytag->content_offset = 0;
+            /*
+               debug("hytag->content_len(%d), hytag->content_offset(%d), hytag->fill_len(%d)", 
+               hytag->content_len, hytag->content_offset, hytag->fill_len);
+               */
+            //usleep(10);
 
-        if(hytag->eth_tx == ENABLE)
-        {
-            while ( hytag->content_offset < hytag->content_len)
+            if(hytag->eth_tx == ENABLE)
             {
-
-                if ( hytag->content_len - hytag->content_offset >= CONTENT_FILL_LEN_MAX)
+                while ( hytag->content_offset < hytag->content_len)
                 {
-                    hytag->fill_len = CONTENT_FILL_LEN_MAX;
+
+                    if ( hytag->content_len - hytag->content_offset >= CONTENT_FILL_LEN_MAX)
+                    {
+                        hytag->fill_len = CONTENT_FILL_LEN_MAX;
+                    }
+                    else
+                    {
+                        hytag->fill_len = hytag->content_len - hytag->content_offset;
+                    }
+
+                    rv = ads_response_content_generator(buffer, hytag);
+                    if(rv != E_SUCCESS){
+
+                        CNT_INC(ADP_DROP_HEAD_GEN2);
+                        return rv;
+                    }
+
+                    hytag->content_offset += hytag->fill_len;
+                    rv = ift_raw_send_packet(hytag->fp, buffer, hytag->data_len);
+
+                    if(rv != E_SUCCESS)
+                    {
+                        CNT_INC(ADP_DROP_SEND_PACKET2);
+                        printf("Send packet Failed\n");
+                        return rv;
+                    }			
+
                 }
-                else
+            }
+            else
+            {
+                while ( hytag->content_offset < hytag->content_len)
                 {
-                    hytag->fill_len = hytag->content_len - hytag->content_offset;
+                    m = txm;
+                    txm =rte_pktmbuf_real_clone(txm, txm->pool);
+                    if ( NULL == txm )
+                    {
+                        printf("Requse packet buffer  Failed\n");
+                        return E_SUCCESS;
+                    }
+
+                    if ( hytag->content_offset)
+                    {
+                        rte_pktmbuf_free(m);
+                    }
+
+                    if ( hytag->content_len - hytag->content_offset >= CONTENT_FILL_LEN_MAX)
+                    {
+                        hytag->fill_len = CONTENT_FILL_LEN_MAX;
+                    }
+                    else
+                    {
+                        hytag->fill_len = hytag->content_len - hytag->content_offset;
+                    }
+
+                    rv = ads_response_content_generator(rte_pktmbuf_mtod(txm, void *), hytag);
+                    if(rv != E_SUCCESS){
+
+                        CNT_INC(ADP_DROP_HEAD_GEN2);
+                        return rv;
+                    }
+
+                    txm->data_len = txm->pkt_len = hytag->data_len;
+
+                    hytag->content_offset += hytag->fill_len;
+
+                    itf_send_packet_imm(txm, txm->port);
                 }
 
-                rv = ads_response_content_generator(buffer, hytag);
-                if(rv != E_SUCCESS){
-
-                    CNT_INC(ADP_DROP_HEAD_GEN2);
-                    return rv;
-                }
-
-                hytag->content_offset += hytag->fill_len;
-                rv = ift_raw_send_packet(hytag->fp, buffer, hytag->data_len);
-
-                if(rv != E_SUCCESS)
-                {
-                    CNT_INC(ADP_DROP_SEND_PACKET2);
-                    printf("Send packet Failed\n");
-                    return rv;
-                }			
+                rte_pktmbuf_free(txm);
 
             }
+    #endif
         }
-        else
-        {
-            while ( hytag->content_offset < hytag->content_len)
-            {
-                m = txm;
-                txm =rte_pktmbuf_real_clone(txm, txm->pool);
-                if ( NULL == txm )
-                {
-                    printf("Requse packet buffer  Failed\n");
-                    return E_SUCCESS;
-                }
-
-                if ( hytag->content_offset)
-                {
-                    rte_pktmbuf_free(m);
-                }
-
-                if ( hytag->content_len - hytag->content_offset >= CONTENT_FILL_LEN_MAX)
-                {
-                    hytag->fill_len = CONTENT_FILL_LEN_MAX;
-                }
-                else
-                {
-                    hytag->fill_len = hytag->content_len - hytag->content_offset;
-                }
-
-                rv = ads_response_content_generator(rte_pktmbuf_mtod(txm, void *), hytag);
-                if(rv != E_SUCCESS){
-
-                    CNT_INC(ADP_DROP_HEAD_GEN2);
-                    return rv;
-                }
-
-                txm->data_len = txm->pkt_len = hytag->data_len;
-
-                hytag->content_offset += hytag->fill_len;
-
-                itf_send_packet_imm(txm, txm->port);
-            }
-
-            rte_pktmbuf_free(txm);
-
-        }
-#endif
-    }
-   g_adp_success++;
-   hytag->ad_act = AD_SUCCESS;
+       g_adp_success++;
+       hytag->ad_act = AD_SUCCESS;
 
 
    CNT_INC(ADP_PUSH_SUCCESS);
