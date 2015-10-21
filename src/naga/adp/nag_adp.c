@@ -281,7 +281,7 @@ berr naga_adp(hytag_t *hytag)
 			CNT_INC(ADP_DROP_HEAD_GEN1);
 			return rv;
 		}
-		#endif
+        #endif
  
         rv = ift_raw_send_packet(hytag->fp, buffer, hytag->data_len);
         if(rv != E_SUCCESS)

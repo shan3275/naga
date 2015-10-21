@@ -54,7 +54,6 @@
 /*
  * data plane main process flow, not include rx & tx
 */
-int print_t = 0;
 berr naga_data_process_module(hytag_t * hytag)
 {
 
@@ -68,76 +67,26 @@ berr naga_data_process_module(hytag_t * hytag)
 
     uint64_t pre, cur;
     //HYTAG_DUMP(hytag);
-    pre = rte_rdtsc();
+
     DPF_NODE(MOD_PID, hytag, naga_pid);
-	cur = rte_rdtsc();
-
-
-    if(print_t < 400)
-    {
-        printf("%d-PID: %lu\n" , print_t, cur-pre);
-    }
-
-    pre = rte_rdtsc();
 	DPF_NODE(MOD_ADP, hytag, naga_uri);
-    cur = rte_rdtsc();
-    
-    if(print_t < 200)
-    {
-        printf("%d-URL: %lu\n" , print_t, cur-pre);
-    }
-
-
-    pre = rte_rdtsc();
+  
 	DPF_NODE(MOD_NET, hytag, netseg_dp_process);
-    cur = rte_rdtsc();
-    
-    if(print_t < 200)
-    {
-        printf("%d-SNET: %lu\n" , print_t,  cur-pre);
-    }
 
-    pre = rte_rdtsc();
 	DPF_NODE(MOD_NET, hytag, dnet_dp_process);
-    cur = rte_rdtsc();
-    
-    if(print_t < 200)
-    {
-        printf("%d-DNET: %lu\n" ,print_t,  cur-pre);
-    }
 
     //DPF_NODE(MOD_VSR, &hytag, naga_vsr);
 
-    pre = rte_rdtsc();
     DPF_NODE(MOD_DMR, hytag, naga_dmr);
-    cur = rte_rdtsc();
-    if(print_t < 200)
-    {   
-        printf("%d-DMR: %lu\n" , print_t,   cur-pre);
-    }
 
-    pre = rte_rdtsc();
     DPF_NODE(MOD_ACR, hytag, naga_acr);
-    cur = rte_rdtsc();
-    
 
-    if(print_t < 200)
-    {
-         
-        printf("%d-DMR: %lu\n" ,print_t,   cur-pre);
-    }
-    
-
-    pre = rte_rdtsc();
     DPF_NODE(MOD_ADP, hytag, naga_adp);
-    cur = rte_rdtsc();
-    
+
     if(hytag->ad_act == AD_SUCCESS)
     {
-        printf("%d-ADP: %lu\n" ,print_t ,   cur-pre);
+        printf("ADP: %lu\n"  ,   cur-pre);
     }
-    print_t++;
-    
     HYTAG_LOG(hytag);  
     return E_SUCCESS;
 }
