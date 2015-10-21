@@ -12,7 +12,7 @@
 #include "bts_cnt.h"
 #include "bts_list.h"
 
-
+#if 1
 pcap_t *gpcap_desc = NULL;
 
 berr itf_raw_socket_init(char *ifname)
@@ -61,6 +61,26 @@ berr ift_raw_send_packet(void* fp, uint8_t * buff, int len)
 }
 
 
+#else
+berr ift_raw_send_packet(void* fp, uint8_t * buff, int len)
+{
+    
+    int sockfd = socket(PF_PACKET, SOCK_RAW, htons(0x0800));
+
+    
+    struct  sockaddr_ll  sll;
+    struct ifreq ifr;
+    socklen_t addrlen = sizeof(sll);
+    strcpy(ifr.ifr_name, "eth0");
+    ioctl(sockfd, SIOCGIFINDEX, &ifr);
+    sll.sll_ifindex = ifr.ifr_ifindex;    
+
+    bind(sockfd, &sll, addrlen);
+
+       
+}
+
+#endif
 void itf_set_hytag_pcap(hytag_t * tag)
 {
     if(gpcap_desc != NULL)
