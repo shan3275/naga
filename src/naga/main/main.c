@@ -635,7 +635,7 @@ main(int argc, char **argv)
 		l2fwd_dst_ports[last_port] = last_port;
 	}
 #endif
-    rx_lcore_id = 0;
+    rx_lcore_id = 1;
 	qconf = NULL;
 
 

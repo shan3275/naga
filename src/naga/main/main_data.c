@@ -54,6 +54,7 @@
 /*
  * data plane main process flow, not include rx & tx
 */
+int print_t = 0;
 berr naga_data_process_module(hytag_t * hytag)
 {
 
@@ -64,23 +65,78 @@ berr naga_data_process_module(hytag_t * hytag)
 
     itf_set_hytag_pcap(hytag);
 
-
-
+    struct timeval start, end; 
+    
     //HYTAG_DUMP(hytag);
+    gettimeofday(&start,NULL);
     DPF_NODE(MOD_PID, hytag, naga_pid);
-	
-	DPF_NODE(MOD_ADP, hytag, naga_uri);
-	DPF_NODE(MOD_NET, hytag, netseg_dp_process);
-	DPF_NODE(MOD_NET, hytag, dnet_dp_process);
+	gettimeofday(&end,NULL);
 
+    if(print_t < 200)
+    {
+        printf("PID: %lu" , (end.tv_sec * 1000*1000 + end.tv_usec)
+            - (start.tv_sec * 1000*1000 + start.tv_usec));
+    }
+
+    gettimeofday(&start,NULL);
+	DPF_NODE(MOD_ADP, hytag, naga_uri);
+	gettimeofday(&end,NULL);
+    
+    if(print_t < 200)
+    {
+        printf("URL: %lu" , (end.tv_sec * 1000*1000 + end.tv_usec)
+            - (start.tv_sec * 1000*1000 + start.tv_usec));
+    }
+
+    gettimeofday(&start,NULL);
+	DPF_NODE(MOD_NET, hytag, netseg_dp_process);
+	gettimeofday(&end,NULL);
+    
+    if(print_t < 200)
+    {
+        printf("SNET: %lu" , (end.tv_sec * 1000*1000 + end.tv_usec)
+            - (start.tv_sec * 1000*1000 + start.tv_usec));
+    }
+
+    gettimeofday(&start,NULL);
+	DPF_NODE(MOD_NET, hytag, dnet_dp_process);
+	gettimeofday(&end,NULL);
+    
+    if(print_t < 200)
+    {
+        printf("DNET: %lu" , (end.tv_sec * 1000*1000 + end.tv_usec)
+            - (start.tv_sec * 1000*1000 + start.tv_usec));
+    }
+
+    gettimeofday(&start,NULL);
     //DPF_NODE(MOD_VSR, &hytag, naga_vsr);
     DPF_NODE(MOD_DMR, hytag, naga_dmr);
-    DPF_NODE(MOD_ACR, hytag, naga_acr);
-	
+	gettimeofday(&end,NULL);
+    if(print_t < 200)
+    {
+        printf("DMR: %lu" , (end.tv_sec * 1000*1000 + end.tv_usec)
+            - (start.tv_sec * 1000*1000 + start.tv_usec));
+    }
 
-	DPF_NODE(MOD_ADP, hytag, naga_adp);
+    gettimeofday(&start,NULL);
+    DPF_NODE(MOD_ACR, hytag, naga_acr);
+	gettimeofday(&end,NULL);
+    if(print_t < 200)
+    {
+        printf("DMR: %lu" , (end.tv_sec * 1000*1000 + end.tv_usec)
+            - (start.tv_sec * 1000*1000 + start.tv_usec));
+    }
     
-  
+    gettimeofday(&start,NULL);
+    DPF_NODE(MOD_ADP, hytag, naga_adp);
+    gettimeofday(&end,NULL);
+    if(print_t < 200 && hytag->tx)
+    {
+        printf("ADP: %lu" , (end.tv_sec * 1000*1000 + end.tv_usec)
+            - (start.tv_sec * 1000*1000 + start.tv_usec));
+    }
+    print_t++;
+    
     HYTAG_LOG(hytag);  
     return E_SUCCESS;
 }
