@@ -69,7 +69,7 @@ berr itf_raw_socket_init(char *ifname)
 
 {
     
-    int sockfd = socket(PF_PACKET, SOCK_RAW, htons(0x0800));
+    int sockfd = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
 	
     if(sockfd < 0 )
     {
@@ -95,7 +95,8 @@ berr itf_raw_socket_init(char *ifname)
 #else
 	struct ifreq ifr;
 	memset(&ifr, 0x0, sizeof(ifr));	
-    	strcpy(ifr.ifr_name, ifname);//, IFNAMSIZE);
+    strcpy(ifr.ifr_name, ifname);//, IFNAMSIZE);
+    
 	if(setsockopt(sockfd,SOL_SOCKET,SO_BINDTODEVICE, (char*)&ifr,sizeof(ifr))< 0)
 	{
 		printf("set socket Failed\n");
@@ -114,7 +115,7 @@ berr ift_raw_send_packet(void* fp, uint8_t * buff, int len)
 	{
 		if(write(send_socket, buff, len)!= len)
 		{
-			perror("The Err is:")
+			perror("The Err is:");
 			return E_FAIL;		
 		}
 	}
