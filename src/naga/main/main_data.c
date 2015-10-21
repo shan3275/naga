@@ -65,87 +65,76 @@ berr naga_data_process_module(hytag_t * hytag)
 
     itf_set_hytag_pcap(hytag);
 
-    struct timeval start, end; 
-    
+
+    uint64_t pre, cur;
     //HYTAG_DUMP(hytag);
-    gettimeofday(&start,NULL);
+    pre = rte_rdtsc();
     DPF_NODE(MOD_PID, hytag, naga_pid);
-	gettimeofday(&end,NULL);
+	cur = rte_rdtsc();
 
-    uint64_t times;
 
-    if(print_t < 200)
+    if(print_t < 400)
     {
-      times = (end.tv_sec * 1000*1000 + end.tv_usec)
-                - (start.tv_sec * 1000*1000 + start.tv_usec);
-        printf("%d-PID: %lu\n" , print_t, times);
+        printf("%d-PID: %lu\n" , print_t, cur-pre);
     }
 
-    gettimeofday(&start,NULL);
+    pre = rte_rdtsc();
 	DPF_NODE(MOD_ADP, hytag, naga_uri);
-	gettimeofday(&end,NULL);
+    cur = rte_rdtsc();
     
     if(print_t < 200)
     {
-         times = (end.tv_sec * 1000*1000 + end.tv_usec)
-        - (start.tv_sec * 1000*1000 + start.tv_usec);
-        printf("%d-URL: %lu\n" , print_t, times);
+        printf("%d-URL: %lu\n" , print_t, cur-pre);
     }
 
-    gettimeofday(&start,NULL);
+
+    pre = rte_rdtsc();
 	DPF_NODE(MOD_NET, hytag, netseg_dp_process);
-	gettimeofday(&end,NULL);
+    cur = rte_rdtsc();
     
     if(print_t < 200)
     {
-         times = (end.tv_sec * 1000*1000 + end.tv_usec)
-        - (start.tv_sec * 1000*1000 + start.tv_usec);
-        
-        printf("%d-SNET: %lu\n" , print_t, times);
+        printf("%d-SNET: %lu\n" , print_t,  cur-pre);
     }
 
-    gettimeofday(&start,NULL);
+    pre = rte_rdtsc();
 	DPF_NODE(MOD_NET, hytag, dnet_dp_process);
-	gettimeofday(&end,NULL);
+    cur = rte_rdtsc();
     
     if(print_t < 200)
     {
-        times = (end.tv_sec * 1000*1000 + end.tv_usec)
-        - (start.tv_sec * 1000*1000 + start.tv_usec);        
-        printf("%d-DNET: %lu\n" ,print_t, times);
+        printf("%d-DNET: %lu\n" ,print_t,  cur-pre);
     }
 
-    gettimeofday(&start,NULL);
     //DPF_NODE(MOD_VSR, &hytag, naga_vsr);
+
+    pre = rte_rdtsc();
     DPF_NODE(MOD_DMR, hytag, naga_dmr);
-	gettimeofday(&end,NULL);
+    cur = rte_rdtsc();
     if(print_t < 200)
-    {
-        times = (end.tv_sec * 1000*1000 + end.tv_usec)
-        - (start.tv_sec * 1000*1000 + start.tv_usec);     
-        printf("%d-DMR: %lu\n" , print_t,  times);
+    {   
+        printf("%d-DMR: %lu\n" , print_t,   cur-pre);
     }
 
-    gettimeofday(&start,NULL);
+    pre = rte_rdtsc();
     DPF_NODE(MOD_ACR, hytag, naga_acr);
-	gettimeofday(&end,NULL);
+    cur = rte_rdtsc();
+    
+
     if(print_t < 200)
     {
-        times = (end.tv_sec * 1000*1000 + end.tv_usec)
-        - (start.tv_sec * 1000*1000 + start.tv_usec);          
-        printf("%d-DMR: %lu\n" ,print_t,  times);
+         
+        printf("%d-DMR: %lu\n" ,print_t,   cur-pre);
     }
     
-    gettimeofday(&start,NULL);
-    DPF_NODE(MOD_ADP, hytag, naga_adp);
-    gettimeofday(&end,NULL);
 
+    pre = rte_rdtsc();
+    DPF_NODE(MOD_ADP, hytag, naga_adp);
+    cur = rte_rdtsc();
+    
     if(hytag->ad_act == AD_SUCCESS)
     {
-        times = (end.tv_sec * 1000*1000 + end.tv_usec)
-        - (start.tv_sec * 1000*1000 + start.tv_usec);  
-        
-        printf("%d-ADP: %lu\n" ,print_t ,  times);
+        printf("%d-ADP: %lu\n" ,print_t ,   cur-pre);
     }
     print_t++;
     
