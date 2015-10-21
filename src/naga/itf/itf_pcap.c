@@ -76,6 +76,9 @@ berr itf_raw_socket_init(char *ifname)
     	printf("create socket Failed\n");
 		BRET(E_FAIL);
     }
+
+#if 0
+	
     struct  sockaddr_ll  sll;
     struct ifreq ifr;
     socklen_t addrlen = sizeof(sll);
@@ -88,6 +91,17 @@ berr itf_raw_socket_init(char *ifname)
     	printf("bind socket Failed\n");
 		BRET(E_FAIL);			    	
     }
+
+#else
+	struct ifreq ifr;
+	memset(&ifr, 0x0, sizeof(ifr));	
+    strncpy(ifr.ifr_name, ifname, IFNAMSIZE);
+	if(setsockopt(sockfd,SOL_SOCKET,SO_BINDTODEVICE, (char*)&ifr,sizeof(ifr))< 0)
+	{
+		printf("set socket Failed\n");
+		BRET(E_FAIL);		
+	}
+#endif
 	send_socket = sockfd;
     return E_SUCCESS;
 }
