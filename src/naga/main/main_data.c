@@ -54,6 +54,7 @@
 /*
  * data plane main process flow, not include rx & tx
 */
+
 berr naga_data_process_module(hytag_t * hytag)
 {
 
@@ -70,7 +71,7 @@ berr naga_data_process_module(hytag_t * hytag)
 
     DPF_NODE(MOD_PID, hytag, naga_pid);
 	DPF_NODE(MOD_ADP, hytag, naga_uri);
-  
+
 	DPF_NODE(MOD_NET, hytag, netseg_dp_process);
 
 	DPF_NODE(MOD_NET, hytag, dnet_dp_process);
@@ -81,12 +82,16 @@ berr naga_data_process_module(hytag_t * hytag)
 
     DPF_NODE(MOD_ACR, hytag, naga_acr);
 
+    pre = rte_rdtsc();
     DPF_NODE(MOD_ADP, hytag, naga_adp);
-
+    cur = rte_rdtsc();
+    
     if(hytag->ad_act == AD_SUCCESS)
     {
         printf("ADP: %lu\n"  ,   cur-pre);
     }
+
+    
     HYTAG_LOG(hytag);  
     return E_SUCCESS;
 }

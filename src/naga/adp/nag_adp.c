@@ -305,8 +305,8 @@ berr naga_adp(hytag_t *hytag)
     }
         
          
-        if( adt_send_is_multi())
-        {
+    if( adt_send_is_multi())
+    {
 #if USE_D_PACKET
 #define CONTENT_FILL_LEN_MAX 1400
             hytag->content_offset = 0;
@@ -401,8 +401,8 @@ berr naga_adp(hytag_t *hytag)
    CNT_INC(ADP_PUSH_SUCCESS);
    return E_SUCCESS;
 
-
 }
+
 berr adp_dp_init(void)
 {   
    //berr rv; 
