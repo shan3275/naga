@@ -604,7 +604,7 @@ main(int argc, char **argv)
 		nb_ports = RTE_MAX_ETHPORTS;
 
 
-    printf(" Driver Init %d ports l2fwd_rx_queue_per_lcore= u%\n", nb_ports, l2fwd_rx_queue_per_lcore); 
+    printf(" Driver Init %d ports l2fwd_rx_queue_per_lcore= %u\n", nb_ports, l2fwd_rx_queue_per_lcore); 
 #if 1
 	/* reset l2fwd_dst_ports */
 	for (portid = 0; portid < RTE_MAX_ETHPORTS; portid++)
