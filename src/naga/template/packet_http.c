@@ -427,6 +427,10 @@ http_content_len_get(hytag_t *hytag)
     return len;
 }
 
+
+
+#if 0
+
 berr ads_http_ok_head_fill(char *buf, hytag_t *hytag)
 {
     uint16_t len = 0;
@@ -481,6 +485,46 @@ berr ads_http_ok_head_fill(char *buf, hytag_t *hytag)
     hytag->l5_len = len;
     return E_SUCCESS;
 }
+#else
+
+berr ads_http_ok_head_fill(char *buf, hytag_t *hytag)
+{
+    uint16_t len = 0;
+    uint16_t content_len = 0;
+    char content_buff[10] = {0};
+    int  clen =0 ;
+    
+    if ( NULL == buf || NULL == hytag )
+    {
+        BRET(E_PARAM);
+    }
+
+
+    /* get content length */
+    content_len = http_content_len_get(hytag);
+    hytag->content_len = content_len;
+
+    len += snprintf(buf+len, 2048-len, "%s%s%s%d%s%s%s", 
+        http_head_response1, http_head_response2, 
+        http_head_response3, content_len, http_head_response5,
+        http_head_response6, http_head_response7);
+    
+
+    if( adt_send_is_single())
+    {
+
+        len += snprintf(buf+len, 2048-len, "%s%s%s", 
+        http_body[hytag->template].head, hytag->url, http_body[hytag->template].tail);                
+    }
+    hytag->l5_len = len;
+    return E_SUCCESS;
+}
+
+
+
+
+#endif
+
 
 berr ads_http_content_fill(char *buf, hytag_t *hytag)
 {
