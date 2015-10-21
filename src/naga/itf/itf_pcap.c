@@ -74,7 +74,7 @@ berr itf_raw_socket_init(char *ifname)
     if(sockfd < 0 )
     {
     	printf("create socket Failed\n");
-		BERT(E_FAIL);
+		BRET(E_FAIL);
     }
     struct  sockaddr_ll  sll;
     struct ifreq ifr;
@@ -86,7 +86,7 @@ berr itf_raw_socket_init(char *ifname)
     if(bind(sockfd, (struct sockaddr*)&sll, addrlen) < 0)
     {
     	printf("bind socket Failed\n");
-		BERT(E_FAIL);			    	
+		BRET(E_FAIL);			    	
     }
 	send_socket = sockfd;
     return E_SUCCESS;
