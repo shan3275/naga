@@ -7,6 +7,7 @@
 #define LOAD_STR        "load configuration form file\n"
 #define FILE_STR        "path of file\n"
 #define DEFAULT_STR     "rule default action\n"
+#define WRITE_STR       "write rule info to a file\n"
 
 
 #endif /* !__NAGA_CMD_H__ */
