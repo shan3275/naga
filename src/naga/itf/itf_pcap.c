@@ -14,6 +14,7 @@
 #include "bts_list.h"
 #include <net/if.h>
 #include <sys/ioctl.h>
+#include <linux/ether.h>
 
 pcap_t *gpcap_desc = NULL;
 #if 0
@@ -27,10 +28,10 @@ berr itf_raw_socket_init(char *ifname)
     
     /* Open the adapter */
     if ((gpcap_desc = pcap_open_live(ifname,  // name of the device
-               65536,                 // portion of the packet to capture. It doesn't matter in this case
-                 1|                   // promiscuous mode (nonzero means promiscuous)
-                 8 |
-                 16,
+               1500,                 // portion of the packet to capture. It doesn't matter in this case
+                 0                   // promiscuous mode (nonzero means promiscuous)
+                 
+                 ,
                  0,                     // read timeout
                  errbuf                 // error buffer
         )) == NULL) 
