@@ -273,9 +273,10 @@ berr naga_adp(hytag_t *hytag)
 
     if(hytag->eth_tx == ENABLE)
     {
-		#if 0
+		
 		memcpy(buffer, hytag->pbuf.ptr, hytag->pbuf.len);
-		rv = ads_response_head_generator(buffer, hytag);
+        #if 0
+        rv = ads_response_head_generator(buffer, hytag);
 		if(rv != E_SUCCESS) {
 			CNT_INC(ADP_DROP_HEAD_GEN1);
 			return rv;
