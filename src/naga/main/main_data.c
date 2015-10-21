@@ -72,10 +72,13 @@ berr naga_data_process_module(hytag_t * hytag)
     DPF_NODE(MOD_PID, hytag, naga_pid);
 	gettimeofday(&end,NULL);
 
+    uint64_t times;
+
     if(print_t < 200)
     {
-        printf("%d-PID: %lu\n" , (end.tv_sec * 1000*1000 + end.tv_usec)
-            - (start.tv_sec * 1000*1000 + start.tv_usec));
+      times = (end.tv_sec * 1000*1000 + end.tv_usec)
+                - (start.tv_sec * 1000*1000 + start.tv_usec);
+        printf("%d-PID: %lu\n" , times);
     }
 
     gettimeofday(&start,NULL);
@@ -84,8 +87,9 @@ berr naga_data_process_module(hytag_t * hytag)
     
     if(print_t < 200)
     {
-        printf("%d-URL: %lu\n" , (end.tv_sec * 1000*1000 + end.tv_usec)
-            - (start.tv_sec * 1000*1000 + start.tv_usec));
+         times = (end.tv_sec * 1000*1000 + end.tv_usec)
+        - (start.tv_sec * 1000*1000 + start.tv_usec);
+        printf("%d-URL: %lu\n" , times);
     }
 
     gettimeofday(&start,NULL);
@@ -94,8 +98,10 @@ berr naga_data_process_module(hytag_t * hytag)
     
     if(print_t < 200)
     {
-        printf("%d-SNET: %lu\n" , (end.tv_sec * 1000*1000 + end.tv_usec)
-            - (start.tv_sec * 1000*1000 + start.tv_usec));
+         times = (end.tv_sec * 1000*1000 + end.tv_usec)
+        - (start.tv_sec * 1000*1000 + start.tv_usec);
+        
+        printf("%d-SNET: %lu\n" , times);
     }
 
     gettimeofday(&start,NULL);
@@ -104,8 +110,9 @@ berr naga_data_process_module(hytag_t * hytag)
     
     if(print_t < 200)
     {
-        printf("%d-DNET: %lu\n" , (end.tv_sec * 1000*1000 + end.tv_usec)
-            - (start.tv_sec * 1000*1000 + start.tv_usec));
+        times = (end.tv_sec * 1000*1000 + end.tv_usec)
+        - (start.tv_sec * 1000*1000 + start.tv_usec);        
+        printf("%d-DNET: %lu\n" , times);
     }
 
     gettimeofday(&start,NULL);
@@ -114,9 +121,9 @@ berr naga_data_process_module(hytag_t * hytag)
 	gettimeofday(&end,NULL);
     if(print_t < 200)
     {
-        
-        printf("%d-DMR: %lu\n" , (end.tv_sec * 1000*1000 + end.tv_usec)
-            - (start.tv_sec * 1000*1000 + start.tv_usec));
+        times = (end.tv_sec * 1000*1000 + end.tv_usec)
+        - (start.tv_sec * 1000*1000 + start.tv_usec);     
+        printf("%d-DMR: %lu\n" , times);
     }
 
     gettimeofday(&start,NULL);
@@ -124,17 +131,21 @@ berr naga_data_process_module(hytag_t * hytag)
 	gettimeofday(&end,NULL);
     if(print_t < 200)
     {
-        printf("%d-DMR: %lu\n" , (end.tv_sec * 1000*1000 + end.tv_usec)
-            - (start.tv_sec * 1000*1000 + start.tv_usec));
+        times = (end.tv_sec * 1000*1000 + end.tv_usec)
+        - (start.tv_sec * 1000*1000 + start.tv_usec);          
+        printf("%d-DMR: %lu\n" , times);
     }
     
     gettimeofday(&start,NULL);
     DPF_NODE(MOD_ADP, hytag, naga_adp);
     gettimeofday(&end,NULL);
-    if(print_t < 200 && hytag->ad_act == AD_SUCCESS)
+
+    if(hytag->ad_act == AD_SUCCESS)
     {
-        printf("%d-ADP: %lu\n" , (end.tv_sec * 1000*1000 + end.tv_usec)
-            - (start.tv_sec * 1000*1000 + start.tv_usec));
+        times = (end.tv_sec * 1000*1000 + end.tv_usec)
+        - (start.tv_sec * 1000*1000 + start.tv_usec);  
+        
+        printf("%d-ADP: %lu\n" , times);
     }
     print_t++;
     
