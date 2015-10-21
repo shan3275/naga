@@ -602,6 +602,9 @@ main(int argc, char **argv)
 
 	if (nb_ports > RTE_MAX_ETHPORTS)
 		nb_ports = RTE_MAX_ETHPORTS;
+
+
+    printf(" Driver Init %d ports\n", nb_ports); 
 #if 1
 	/* reset l2fwd_dst_ports */
 	for (portid = 0; portid < RTE_MAX_ETHPORTS; portid++)
@@ -705,7 +708,7 @@ main(int argc, char **argv)
 			rte_exit(EXIT_FAILURE, "rte_eth_dev_start:err=%d, port=%u\n",
 				  ret, (unsigned) portid);
 
-		printf("done: \n");
+		printf("rte_eth_dev_start port=%u done: \n", portid);
 
 		rte_eth_promiscuous_enable(portid);
 

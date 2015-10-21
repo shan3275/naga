@@ -23,13 +23,18 @@ berr  naga_uri(hytag_t *hytag)
     char *tailptr = NULL;
 
 
-    if(hytag->uri_len >= 8)    
-        tailptr = (char *)(&(hytag->uri[hytag->uri_len - 4]));//the last 
+    if(hytag->uri_len >= 8)  
+    {
+        tailptr = (char *)(&(hytag->uri[hytag->uri_len - 7]));//the last 
+    }   
     else
+    {
         tailptr = (char *)(hytag->uri);
-    
-    //if(strstr(tailptr,  tail))
-    if(!strcmp(tailptr, tail))
+    }
+
+
+    if(strstr(tailptr,  tail) != NULL)
+    //if(!strcmp(tailptr, tail))
     {
          CNT_INC(ADP_PUSH_ASSERT);
          hytag->pushed_second_assert = 1;            
