@@ -78,7 +78,7 @@ berr naga_data_process_module(hytag_t * hytag)
     {
       times = (end.tv_sec * 1000*1000 + end.tv_usec)
                 - (start.tv_sec * 1000*1000 + start.tv_usec);
-        printf("%d-PID: %lu\n" , times);
+        printf("%d-PID: %lu\n" , print_t, times);
     }
 
     gettimeofday(&start,NULL);
@@ -89,7 +89,7 @@ berr naga_data_process_module(hytag_t * hytag)
     {
          times = (end.tv_sec * 1000*1000 + end.tv_usec)
         - (start.tv_sec * 1000*1000 + start.tv_usec);
-        printf("%d-URL: %lu\n" , times);
+        printf("%d-URL: %lu\n" , print_t, times);
     }
 
     gettimeofday(&start,NULL);
@@ -101,7 +101,7 @@ berr naga_data_process_module(hytag_t * hytag)
          times = (end.tv_sec * 1000*1000 + end.tv_usec)
         - (start.tv_sec * 1000*1000 + start.tv_usec);
         
-        printf("%d-SNET: %lu\n" , times);
+        printf("%d-SNET: %lu\n" , print_t, times);
     }
 
     gettimeofday(&start,NULL);
@@ -112,7 +112,7 @@ berr naga_data_process_module(hytag_t * hytag)
     {
         times = (end.tv_sec * 1000*1000 + end.tv_usec)
         - (start.tv_sec * 1000*1000 + start.tv_usec);        
-        printf("%d-DNET: %lu\n" , times);
+        printf("%d-DNET: %lu\n" ,print_t, times);
     }
 
     gettimeofday(&start,NULL);
@@ -123,7 +123,7 @@ berr naga_data_process_module(hytag_t * hytag)
     {
         times = (end.tv_sec * 1000*1000 + end.tv_usec)
         - (start.tv_sec * 1000*1000 + start.tv_usec);     
-        printf("%d-DMR: %lu\n" , times);
+        printf("%d-DMR: %lu\n" , print_t,  times);
     }
 
     gettimeofday(&start,NULL);
@@ -133,7 +133,7 @@ berr naga_data_process_module(hytag_t * hytag)
     {
         times = (end.tv_sec * 1000*1000 + end.tv_usec)
         - (start.tv_sec * 1000*1000 + start.tv_usec);          
-        printf("%d-DMR: %lu\n" , times);
+        printf("%d-DMR: %lu\n" ,print_t,  times);
     }
     
     gettimeofday(&start,NULL);
@@ -145,7 +145,7 @@ berr naga_data_process_module(hytag_t * hytag)
         times = (end.tv_sec * 1000*1000 + end.tv_usec)
         - (start.tv_sec * 1000*1000 + start.tv_usec);  
         
-        printf("%d-ADP: %lu\n" , times);
+        printf("%d-ADP: %lu\n" ,print_t ,  times);
     }
     print_t++;
     
