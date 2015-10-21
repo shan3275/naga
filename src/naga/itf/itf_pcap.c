@@ -95,7 +95,7 @@ berr itf_raw_socket_init(char *ifname)
 #else
 	struct ifreq ifr;
 	memset(&ifr, 0x0, sizeof(ifr));	
-    strncpy(ifr.ifr_name, ifname, IFNAMSIZE);
+    	strcpy(ifr.ifr_name, ifname);//, IFNAMSIZE);
 	if(setsockopt(sockfd,SOL_SOCKET,SO_BINDTODEVICE, (char*)&ifr,sizeof(ifr))< 0)
 	{
 		printf("set socket Failed\n");
