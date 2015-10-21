@@ -274,7 +274,7 @@ berr naga_adp(hytag_t *hytag)
     if(hytag->eth_tx == ENABLE)
     {
         
-	    memcpy(buffer, hytag->pbuf.ptr, hytag->pbuf.len);
+	    memcpy(buffer, hytag->pbuf.ptr, hytag->l5_offset);//copy l2-l4 len
 		rv = ads_response_head_generator(buffer, hytag);
 		
 		if(rv != E_SUCCESS) {
