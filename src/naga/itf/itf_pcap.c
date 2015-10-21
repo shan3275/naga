@@ -130,7 +130,12 @@ void itf_set_hytag_pcap(hytag_t * tag)
     {
         tag->fp = gpcap_desc;
         tag->eth_tx = ENABLE;
-    }        
+    }
+
+	if(send_socket != 0)
+	{
+        tag->eth_tx = ENABLE;	
+	}
     return ;
 }
 
