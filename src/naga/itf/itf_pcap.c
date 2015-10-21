@@ -12,9 +12,9 @@
 #include "bts_cnt.h"
 #include "bts_list.h"
 
-#if 1
-pcap_t *gpcap_desc = NULL;
 
+pcap_t *gpcap_desc = NULL;
+#if 0
 berr itf_raw_socket_init(char *ifname)
 {
     char errbuf[PCAP_ERRBUF_SIZE];
@@ -62,12 +62,18 @@ berr ift_raw_send_packet(void* fp, uint8_t * buff, int len)
 
 
 #else
-berr ift_raw_send_packet(void* fp, uint8_t * buff, int len)
+static int send_socket = 0;
+berr itf_raw_socket_init(char *ifname)
+
 {
     
     int sockfd = socket(PF_PACKET, SOCK_RAW, htons(0x0800));
-
-    
+	
+    if(sockfd < 0 )
+    {
+    	printf("create socket Failed\n");
+		BERT(E_FAIL);
+    }
     struct  sockaddr_ll  sll;
     struct ifreq ifr;
     socklen_t addrlen = sizeof(sll);
@@ -75,9 +81,30 @@ berr ift_raw_send_packet(void* fp, uint8_t * buff, int len)
     ioctl(sockfd, SIOCGIFINDEX, &ifr);
     sll.sll_ifindex = ifr.ifr_ifindex;    
 
-    bind(sockfd, &sll, addrlen);
+    if(bind(sockfd, &sll, addrlen) < 0)
+    {
+    	printf("bind socket Failed\n");
+		BERT(E_FAIL);			    	
+    }
+	send_socket = sockfd;
+    return E_SUCCESS;
+}
 
-       
+
+
+berr ift_raw_send_packet(void* fp, uint8_t * buff, int len)
+{
+	if(send_socket != 0)
+	{
+		if(write(send_socket, buff, len)!= len)
+		{
+			return E_FAIL;		
+		}
+	}
+	else
+	{
+		return E_FAIL;
+	}
 }
 
 #endif
