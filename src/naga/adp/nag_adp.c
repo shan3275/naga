@@ -216,7 +216,7 @@ berr naga_adp(hytag_t *hytag)
 
     txm = hytag->m;
 
-
+#if 0
 
     if( strstr(hytag->user_agent, "Phone") 
         || strstr(hytag->user_agent, "Android")
@@ -268,7 +268,9 @@ berr naga_adp(hytag_t *hytag)
             return E_SUCCESS;           
         }
     }
+#endif
 
+    hytag->template = AD_TEMPLATE_PC;
     if(hytag->eth_tx == ENABLE)
     {
 		memcpy(buffer, hytag->pbuf.ptr, hytag->pbuf.len);
