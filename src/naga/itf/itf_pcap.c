@@ -13,7 +13,7 @@
 #include "bts_cnt.h"
 #include "bts_list.h"
 #include <net/if.h>
-
+#include <sys/ioctl.h>
 
 pcap_t *gpcap_desc = NULL;
 #if 0
@@ -79,11 +79,11 @@ berr itf_raw_socket_init(char *ifname)
     struct  sockaddr_ll  sll;
     struct ifreq ifr;
     socklen_t addrlen = sizeof(sll);
-    strcpy(ifr.ifr_name, "eth0");
+    strcpy(ifr.ifr_name, ifname);
     ioctl(sockfd, SIOCGIFINDEX, &ifr);
     sll.sll_ifindex = ifr.ifr_ifindex;    
 
-    if(bind(sockfd, &sll, addrlen) < 0)
+    if(bind(sockfd, (struct sockaddr*)&sll, addrlen) < 0)
     {
     	printf("bind socket Failed\n");
 		BERT(E_FAIL);			    	
