@@ -675,7 +675,7 @@ main(int argc, char **argv)
 			qconf = &lcore_queue_conf[rx_lcore_id];
 
 		qconf->rx_port_list[qconf->n_rx_port] = portid;
-		qconf->n_rx_port++;
+		qconf->n_rx_port = 1;
    
 		printf("Lcore %u: RX port %u\n", rx_lcore_id, (unsigned) portid);
 
@@ -688,7 +688,7 @@ main(int argc, char **argv)
 			qconf = &lcore_queue_conf[rx_lcore_id];
 
 		qconf->rx_port_list[qconf->n_rx_port] = portid;
-		qconf->n_rx_port++;
+		qconf->n_rx_port = 1;
    
 		printf("Lcore %u: RX port %u\n", rx_lcore_id, (unsigned) portid);
 
@@ -700,7 +700,7 @@ main(int argc, char **argv)
 			qconf = &lcore_queue_conf[rx_lcore_id];
 
 		qconf->rx_port_list[qconf->n_rx_port] = portid;
-		qconf->n_rx_port++;
+		qconf->n_rx_port = 1;
    
 		printf("Lcore %u: RX port %u\n", rx_lcore_id, (unsigned) portid); 
 
@@ -713,7 +713,7 @@ main(int argc, char **argv)
 			qconf = &lcore_queue_conf[rx_lcore_id];
 
 		qconf->rx_port_list[qconf->n_rx_port] = portid;
-		qconf->n_rx_port++;
+		qconf->n_rx_port = 1;
    
 		printf("Lcore %u: RX port %u\n", rx_lcore_id, (unsigned) portid); 
 
@@ -725,7 +725,7 @@ main(int argc, char **argv)
 			qconf = &lcore_queue_conf[rx_lcore_id];
 
 		qconf->rx_port_list[qconf->n_rx_port] = portid;
-		qconf->n_rx_port++;
+		qconf->n_rx_port = 1;
    
 		printf("Lcore %u: RX port %u\n", rx_lcore_id, (unsigned) portid); 
 
@@ -738,7 +738,7 @@ main(int argc, char **argv)
 			qconf = &lcore_queue_conf[rx_lcore_id];
 
 		qconf->rx_port_list[qconf->n_rx_port] = portid;
-		qconf->n_rx_port++;
+		qconf->n_rx_port = 1;
    
 		printf("Lcore %u: RX port %u\n", rx_lcore_id, (unsigned) portid);    
 #endif
