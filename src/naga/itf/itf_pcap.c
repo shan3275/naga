@@ -4,7 +4,7 @@
 #include <pthread.h>
 #include "boots.h"
 #include "bts_debug.h"
-
+#include <sys/socket.h>
 #include "itf.h"
 #include "boots_custom.h"
 #include "dbg_tagmon.h"
