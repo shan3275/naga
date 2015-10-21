@@ -5,12 +5,14 @@
 #include "boots.h"
 #include "bts_debug.h"
 #include <sys/socket.h>
+#include <netpacket/packet.h>
 #include "itf.h"
 #include "boots_custom.h"
 #include "dbg_tagmon.h"
 #include "itf_stat.h"
 #include "bts_cnt.h"
 #include "bts_list.h"
+#include <net/if.h>
 
 
 pcap_t *gpcap_desc = NULL;
