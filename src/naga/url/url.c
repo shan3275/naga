@@ -19,7 +19,7 @@ berr  naga_uri(hytag_t *hytag)
     }
   */
     //char str_tail[10] ={'\0'};
-    const char *tail = "/?_t=t";
+    const char *tail = "/?_tT=tT";
     char  *tailptr = NULL;
 
 

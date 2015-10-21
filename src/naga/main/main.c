@@ -639,7 +639,7 @@ main(int argc, char **argv)
 	qconf = NULL;
 
 
-#if 0
+#if 1
 	/* Initialize the port/queue configuration of each logical core */
 	for (portid = 0; portid < nb_ports; portid++) {
 		/* skip ports that are not enabled */

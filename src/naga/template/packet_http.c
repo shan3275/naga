@@ -251,7 +251,7 @@ http_body_t default_http_body[AD_TEMPLATE_MAX] =
             "www.taobao.com",
         .tail =
             "\";\n"
-            "d.getElementById(\"m\").src=f+(f.indexOf(\"&\")<0\?\'\?\':\'&\')+\'_t=t\';\n"
+            "d.getElementById(\"m\").src=f+(f.indexOf(\"&\")<0\?\'\?\':\'&\')+\'_tT=tT\';\n"
             "}\n"
             "\n"
             "setTimeout(function(){d.getElementById(\"x\").style.display=\'block\';}, 2000);\n"
