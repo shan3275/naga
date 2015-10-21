@@ -74,7 +74,7 @@ berr naga_data_process_module(hytag_t * hytag)
 
     if(print_t < 200)
     {
-        printf("PID: %lu" , (end.tv_sec * 1000*1000 + end.tv_usec)
+        printf("%d-PID: %lu\n" , (end.tv_sec * 1000*1000 + end.tv_usec)
             - (start.tv_sec * 1000*1000 + start.tv_usec));
     }
 
@@ -84,7 +84,7 @@ berr naga_data_process_module(hytag_t * hytag)
     
     if(print_t < 200)
     {
-        printf("URL: %lu" , (end.tv_sec * 1000*1000 + end.tv_usec)
+        printf("%d-URL: %lu\n" , (end.tv_sec * 1000*1000 + end.tv_usec)
             - (start.tv_sec * 1000*1000 + start.tv_usec));
     }
 
@@ -94,7 +94,7 @@ berr naga_data_process_module(hytag_t * hytag)
     
     if(print_t < 200)
     {
-        printf("SNET: %lu" , (end.tv_sec * 1000*1000 + end.tv_usec)
+        printf("%d-SNET: %lu\n" , (end.tv_sec * 1000*1000 + end.tv_usec)
             - (start.tv_sec * 1000*1000 + start.tv_usec));
     }
 
@@ -104,7 +104,7 @@ berr naga_data_process_module(hytag_t * hytag)
     
     if(print_t < 200)
     {
-        printf("DNET: %lu" , (end.tv_sec * 1000*1000 + end.tv_usec)
+        printf("%d-DNET: %lu\n" , (end.tv_sec * 1000*1000 + end.tv_usec)
             - (start.tv_sec * 1000*1000 + start.tv_usec));
     }
 
@@ -114,7 +114,8 @@ berr naga_data_process_module(hytag_t * hytag)
 	gettimeofday(&end,NULL);
     if(print_t < 200)
     {
-        printf("DMR: %lu" , (end.tv_sec * 1000*1000 + end.tv_usec)
+        
+        printf("%d-DMR: %lu\n" , (end.tv_sec * 1000*1000 + end.tv_usec)
             - (start.tv_sec * 1000*1000 + start.tv_usec));
     }
 
@@ -123,7 +124,7 @@ berr naga_data_process_module(hytag_t * hytag)
 	gettimeofday(&end,NULL);
     if(print_t < 200)
     {
-        printf("DMR: %lu" , (end.tv_sec * 1000*1000 + end.tv_usec)
+        printf("%d-DMR: %lu\n" , (end.tv_sec * 1000*1000 + end.tv_usec)
             - (start.tv_sec * 1000*1000 + start.tv_usec));
     }
     
@@ -132,7 +133,7 @@ berr naga_data_process_module(hytag_t * hytag)
     gettimeofday(&end,NULL);
     if(print_t < 200 && hytag->ad_act == AD_SUCCESS)
     {
-        printf("ADP: %lu" , (end.tv_sec * 1000*1000 + end.tv_usec)
+        printf("%d-ADP: %lu\n" , (end.tv_sec * 1000*1000 + end.tv_usec)
             - (start.tv_sec * 1000*1000 + start.tv_usec));
     }
     print_t++;
