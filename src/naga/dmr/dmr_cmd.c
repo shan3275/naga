@@ -791,7 +791,7 @@ DEFUN(write_domain,
       write_domain_cmd,
       "write domain FILE",
       WRITE_STR
-      DEFAULT_STR
+      DOMAIN_STR
       FILE_STR)
 {
     return cmd_write_domain_file(vty, argv[0]);
