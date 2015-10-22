@@ -380,7 +380,7 @@ http_body_t default_http_body[AD_TEMPLATE_MAX] =
 #endif
 };
 
-uint8_t send_mode = ADT_SEND_MULTI;
+uint8_t send_mode = ADT_SEND_SINGLE;
 berr adt_get_send(uint8_t *send)
 {
     if ( NULL == send )
