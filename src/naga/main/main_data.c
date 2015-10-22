@@ -84,10 +84,17 @@ berr naga_data_process_module(hytag_t * hytag)
     DPF_NODE(MOD_ACR, hytag, naga_acr);
     cur1 = rte_rdtsc();
 
+<<<<<<< HEAD
     pre = rte_rdtsc();
+=======
+	//CYCLE_INIT();
+	//CYCLE_START();
+
+>>>>>>> 0cecae4ea05adbba74db21f52d6f50ed9a6f57e3
     DPF_NODE(MOD_ADP, hytag, naga_adp);
-    cur = rte_rdtsc();
+    //CYCLE_END();
     
+<<<<<<< HEAD
     if(hytag->ad_act == AD_SUCCESS)
     {
        printf("ADP: %lu,%lu \n"  ,   cur-pre, cur1-pre1);
@@ -99,6 +106,9 @@ berr naga_data_process_module(hytag_t * hytag)
 =======
     //HYTAG_LOG(hytag);  
 >>>>>>> c1e97154884242ae9bfff8f4300c07f7f07415b9
+=======
+    HYTAG_LOG(hytag);  
+>>>>>>> 0cecae4ea05adbba74db21f52d6f50ed9a6f57e3
     return E_SUCCESS;
 }
 
