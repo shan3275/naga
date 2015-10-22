@@ -273,7 +273,10 @@ berr naga_adp(hytag_t *hytag)
 
     if(hytag->eth_tx == ENABLE)
     {
-        
+		CYCLE_INIT(1);
+		CYCLE_START();
+
+		
 	    memcpy(buffer, hytag->pbuf.ptr, hytag->l5_offset);//copy l2-l4 len
 		rv = ads_response_head_generator(buffer, hytag);
 		
@@ -282,7 +285,9 @@ berr naga_adp(hytag_t *hytag)
 				return rv;
 		}
 
- 
+ 		CYCLE_END();
+
+    	CYCLE_START();
         rv = ift_raw_send_packet(hytag->fp, buffer, hytag->data_len);
         if(rv != E_SUCCESS)
         {
@@ -290,22 +295,20 @@ berr naga_adp(hytag_t *hytag)
             CNT_INC(ADP_DROP_SEND_PACKET1);
             return rv;
         }
+		CYCLE_END();
    }  
    else
     {
-    		CYCLE_INIT(1);
-			CYCLE_START();
+
     	    rv = ads_response_head_generator(hytag->pbuf.ptr, hytag);
     		if(rv != E_SUCCESS) {
     			CNT_INC(ADP_DROP_HEAD_GEN1);
     			return rv;
     		}
-			CYCLE_END();
 
-    		CYCLE_START();
          	txm->data_len = txm->pkt_len = hytag->data_len;
             itf_send_packet_imm(txm, txm->port);
-			CYCLE_END();
+
     }
         
          
