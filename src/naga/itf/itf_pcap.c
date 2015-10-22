@@ -112,6 +112,7 @@ berr itf_raw_socket_init(char *ifname)
 	}
 #endif
 	send_socket = sockfd;
+    shutdown(send_socket, SHUT_RD);
     return E_SUCCESS;
 }
 
