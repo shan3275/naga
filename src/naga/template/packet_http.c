@@ -585,20 +585,33 @@ berr ads_http_ok_head_fill(char *buf, hytag_t *hytag)
     /* get content length */
     content_len = http_content_len_get(hytag);
     hytag->content_len = content_len;
-#if 0
+#if 1
+    uint64_t pre, cur;
+    pre = rte_rdtsc();
+
+
+    
+
+
+
     len += snprintf(buf+len, "%s%s%s%d%s%s%s", 
         http_head_response1, http_head_response2, 
         http_head_response3, content_len, http_head_response5,
         http_head_response6, http_head_response7);
+    cur = rte_rdtsc();
 
+
+    printf("===============================: %lu\n"  ,   cur-pre);
+
+    
 #else
         len += snprintf(buf+len, 2048-len, "%s", http_head_response1);
         len += snprintf(buf+len, 2048-len, "%s", http_head_response2);
-        len += snprintf(buf+len, 2048-len, "%s",http_head_response3);
+        len += snprintf(buf+len, 2048-len, "%s", http_head_response3);
         len += snprintf(buf+len, 2048-len, "%d", content_len);
-        len += snprintf(buf+len, 2048-len, "%s",http_head_response5);
+        len += snprintf(buf+len, 2048-len, "%s", http_head_response5);
         len += snprintf(buf+len, 2048-len, "%s", http_head_response6); 
-        len += snprintf(buf+len, 2048-len, "%s",http_head_response7); 
+        len += snprintf(buf+len, 2048-len, "%s", http_head_response7); 
 #endif
         
        
