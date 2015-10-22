@@ -126,6 +126,10 @@ berr ift_raw_send_packet(void* fp, uint8_t * buff, int len)
 			perror("The Err is:");
 			return E_FAIL;		
 		}
+        else
+        {
+            return E_SUCCESS;   
+        }
 	}
 	else
 	{
