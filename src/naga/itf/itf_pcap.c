@@ -4,17 +4,22 @@
 #include <pthread.h>
 #include "boots.h"
 #include "bts_debug.h"
-
+#include <sys/socket.h>
+#include <netpacket/packet.h>
 #include "itf.h"
 #include "boots_custom.h"
 #include "dbg_tagmon.h"
 #include "itf_stat.h"
 #include "bts_cnt.h"
 #include "bts_list.h"
-
+#include <net/if.h>
+#include <sys/ioctl.h>
+#include <linux/if_ether.h>
 
 pcap_t *gpcap_desc = NULL;
-
+static int send_socket = 0;
+static struct  sockaddr_ll  sll;
+#if 0
 berr itf_raw_socket_init(char *ifname)
 {
     char errbuf[PCAP_ERRBUF_SIZE];
@@ -25,10 +30,10 @@ berr itf_raw_socket_init(char *ifname)
     
     /* Open the adapter */
     if ((gpcap_desc = pcap_open_live(ifname,  // name of the device
-               65536,                 // portion of the packet to capture. It doesn't matter in this case
-                 1|                   // promiscuous mode (nonzero means promiscuous)
-                 8 |
-                 16,
+               1500,                 // portion of the packet to capture. It doesn't matter in this case
+                 0                   // promiscuous mode (nonzero means promiscuous)
+                 
+                 ,
                  0,                     // read timeout
                  errbuf                 // error buffer
         )) == NULL) 
@@ -61,13 +66,92 @@ berr ift_raw_send_packet(void* fp, uint8_t * buff, int len)
 }
 
 
+#else
+berr itf_raw_socket_init(char *ifname)
+
+{
+    
+    int sockfd = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
+	
+    if(sockfd < 0 )
+    {
+    	printf("create socket Failed\n");
+		BRET(E_FAIL);
+    }
+
+#if 1
+	
+   
+    struct ifreq ifr;
+    socklen_t addrlen = sizeof(sll);
+    strcpy(ifr.ifr_name, ifname);
+    ioctl(sockfd, SIOCGIFINDEX, &ifr);
+    sll.sll_ifindex = ifr.ifr_ifindex; 
+    
+    sll.sll_family    = AF_PACKET;
+    sll.sll_protocol  = htons(ETH_P_ALL);
+    sll.sll_pkttype   = PACKET_OUTGOING;
+    sll.sll_halen     = 6;
+    
+    
+    if(bind(sockfd, (struct sockaddr*)&sll, addrlen) < 0)
+    {
+    	printf("bind socket Failed\n");
+		BRET(E_FAIL);			    	
+    }
+
+#else
+	struct ifreq ifr;
+	memset(&ifr, 0x0, sizeof(ifr));	
+    strcpy(ifr.ifr_name, ifname);//, IFNAMSIZE);
+    
+	if(setsockopt(sockfd,SOL_SOCKET,SO_BINDTODEVICE, (char*)&ifr,sizeof(ifr))< 0)
+	{
+		printf("set socket Failed\n");
+		BRET(E_FAIL);		
+	}
+#endif
+	send_socket = sockfd;
+    shutdown(send_socket, SHUT_RD);
+    return E_SUCCESS;
+}
+
+
+
+berr ift_raw_send_packet(void* fp, uint8_t * buff, int len)
+{
+	if(send_socket > 0)
+	{
+		if(sendto(send_socket, buff, len, 0, (const struct sockaddr *)&sll, sizeof(sll))!= len)
+		{
+			perror("The Err is:");
+			return E_FAIL;		
+		}
+        else
+        {
+            return E_SUCCESS;   
+        }
+	}
+	else
+	{
+        printf("Socket is %d\n", send_socket);
+		return E_FAIL;
+	}
+}
+
+#endif
 void itf_set_hytag_pcap(hytag_t * tag)
 {
     if(gpcap_desc != NULL)
     {
         tag->fp = gpcap_desc;
         tag->eth_tx = ENABLE;
-    }        
+    }
+
+	if(send_socket != 0)
+	{
+        tag->eth_tx = ENABLE;	
+	}
     return ;
 }
 

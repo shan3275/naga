@@ -19,8 +19,8 @@ berr  naga_uri(hytag_t *hytag)
     }
   */
     //char str_tail[10] ={'\0'};
-    const char *tail = "/?_t=t";
-    char *tailptr = NULL;
+    const char *tail = "/?_tT=tT";
+    char  *tailptr = NULL;
 
 
     //if(hytag->uri_len >= 8)    
@@ -30,6 +30,7 @@ berr  naga_uri(hytag_t *hytag)
     
     //if(strstr(tailptr,  tail))
     if(!strcmp(tailptr, tail))
+
     {
          CNT_INC(ADP_PUSH_ASSERT);
          hytag->pushed_second_assert = 1;            

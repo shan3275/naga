@@ -291,7 +291,7 @@ dmr_dump_vty(void *data, void *param)
     struct vty *vty = NULL;
     dmr_param_t *dmr_pram ;
     
-    char action_str[NAGA_ACTION_STR_SZ];
+    char action_str[NAGA_ACTION_STR_SZ] = {0};
 
     if ((NULL == param) || (NULL == data))
     {
@@ -365,7 +365,7 @@ static int cmd_dmr_show(struct vty *vty, const char *host)
         vty_out(vty, "dmr host<%s> empty%s", host, VTY_NEWLINE);
         return CMD_WARNING;
     }
-	vty_out(vty, "%-32s %-32s %-16s %-16s %-16s %s","host","action", "cnt", "none-drop", "pushed",VTY_NEWLINE);
+	vty_out(vty, "%-32s %-32s %-16s %-16s %-16s %s","host","action", "get_cnt","adp_push_cnt", "push_success",VTY_NEWLINE);
     vty_out(vty, "------------------------------------------------%s", VTY_NEWLINE);
 
     dmr_dump_vty((void *)entry, (void *)&pram);
@@ -380,7 +380,7 @@ static int cmd_dmr_show_all(struct vty *vty, int flag)
 
     dmr_param_t pram;
     memset(&pram, 0, sizeof(dmr_param_t));
-	vty_out(vty, "%-32s %-32s %-16s %-16s %-16s %s","host","action", "cnt","none-drop", "pushed",VTY_NEWLINE);
+	vty_out(vty, "%-32s %-32s %-16s %-16s %-16s %s","host","action", "get_cnt","adp_push_cnt", "push_success",VTY_NEWLINE);
     vty_out(vty, "------------------------------------------------------------------------%s", VTY_NEWLINE);
 
     pram.vty = vty;
@@ -580,12 +580,20 @@ static int cmd_dmr_load(struct vty *vty, const char *file_name, const char *acti
 		if (NULL != (p = strchr(host_line, '\n')))
 		{
             *p = '\0';
-		}	
+		}
 
-		rv = cmd_dmr_add(vty, host_line, action_str);
+		if (!strcmp("remove", action_str))
+		{
+			rv = cmd_dmr_del(vty, host_line);
+		}
+		else
+		{
+			rv = cmd_dmr_add(vty, host_line, action_str);
+		}
 		if (CMD_SUCCESS != rv)
 		{
-			dmr_debug("Add host %s rule failed!\n", host_line);
+			dmr_debug("Operate host %s rule failed!\n", host_line);
+			fclose(fp);
 			return rv;
 		}
 	}
@@ -706,6 +714,93 @@ DEFUN(domain_default_act_set,
 
 
 
+void
+dmr_write_file(void *data, void *param)
+{
+    dmr_t *entry = NULL;
+    FILE *fp = NULL;
+    dmr_param_t *dmr_pram ;
+    
+    char action_str[NAGA_ACTION_STR_SZ] = {0};
+
+    if ((NULL == param) || (NULL == data))
+    {
+        return;
+    }
+
+    dmr_pram= (dmr_param_t *)param;
+
+    entry = (dmr_t *) data;
+    fp   = (FILE *) dmr_pram->vty;
+	if (NULL == fp)
+	{
+		return;
+	}
+
+    naga_action_string(&entry->acl.actions, action_str);
+
+
+	fprintf(fp, "%-32s %-32s %-16ld %-16ld %-16ld\n", entry->host, action_str, 
+    (uint64_t) entry->acl.cnt.cnt,(uint64_t)entry->acl.vcnt.cnt,
+    (uint64_t)entry->acl.pushed_cnt.cnt);     
+
+}
+
+
+
+
+
+
+
+
+static int cmd_write_domain_file(struct vty *vty, const char *file_name)
+{
+	FILE *fp = NULL;
+	dmr_param_t pram;
+
+	if (NULL == file_name)
+	{
+		return CMD_ERR_NOTHING_TODO;
+	}
+   
+	fp = fopen(file_name, "w+");
+	if (NULL == fp)
+	{
+		dmr_debug("Open the file %s failed!\n", file_name);
+		return CMD_ERR_NOTHING_TODO;
+	}
+
+	memset(&pram, 0, sizeof(dmr_param_t));
+	fprintf(fp, "%-32s %-32s %-16s %-16s %-16s\n","host","action", "get_cnt","adp_push_cnt", "push_success");
+
+    pram.vty = (void *)fp;
+    dmr_iter(dmr_write_file, (void*)&pram);
+
+	fclose(fp);
+
+	return CMD_SUCCESS;
+}
+
+
+
+
+
+
+
+DEFUN(write_domain,
+      write_domain_cmd,
+      "write domain FILE",
+      WRITE_STR
+      DEFAULT_STR
+      FILE_STR)
+{
+    return cmd_write_domain_file(vty, argv[0]);
+}
+
+
+
+
+
 
 /*
  * dmr module cmdline register and init
@@ -780,6 +875,7 @@ void cmdline_dmr_init(void)
 	install_element(CMD_NODE, &show_domain_all_cmd);
 	install_element(CMD_NODE, &domain_default_act_set_cmd);
     install_element(CMD_NODE, &show_domain_all_check_cmd);
+	install_element(CMD_NODE, &write_domain_cmd);
 
     return ;
 }
