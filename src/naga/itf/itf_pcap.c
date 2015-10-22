@@ -71,7 +71,7 @@ berr itf_raw_socket_init(char *ifname)
 
 {
     
-    int sockfd = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
+    int sockfd = socket(PF_PACKET, SOCK_RAW, 0);
 	
     if(sockfd < 0 )
     {
@@ -90,7 +90,7 @@ berr itf_raw_socket_init(char *ifname)
     
     sll.sll_family    = AF_PACKET;
     sll.sll_protocol  = htons(ETH_P_ALL);
-    sll.sll_pkttype   = PACKET_OUTGOING;
+    sll.sll_pkttype   = PACKET_HOST;
     sll.sll_halen     = 6;
     
     
