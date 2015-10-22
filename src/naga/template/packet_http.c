@@ -36,6 +36,7 @@
 #include "packet_http.h"
 #include "rte_memcpy.h"
 #include "bts_debug.h"
+#include  "gzip.h"
 
 //#define DEBUG
 #ifdef  DEBUG   
@@ -62,6 +63,8 @@ http_body_t *http_body = NULL;
 
 #define HTTP_RESPONSE_OK            "200 OK"
 #define HTTP_KEEP_ALIVE             "Keep-Alive: timeout=60,max=199"
+#define HTTP_VARY                   "Vary: Accept-Encoding"
+#define HTTP_CONTENT_ENCODING       "Content-Encoding: gzip"
 #define HTTP_CONTENT_TYPE           "Content-Type: text/html"
 #define HTTP_SERVER                 "Server: Embedthis-http"
 #define HTTP_DATA_HEAD              "Date: "
@@ -158,6 +161,8 @@ char *http_head_response1=
     HTTP_VERSION HTTP_ONE_SPACE HTTP_RESPONSE_OK HTTP_CRLF
     HTTP_SERVER HTTP_CRLF
     HTTP_KEEP_ALIVE HTTP_CRLF
+    HTTP_VARY HTTP_CRLF
+    HTTP_CONTENT_ENCODING HTTP_CRLF
     HTTP_CONTENT_TYPE HTTP_CRLF
     HTTP_DATA_HEAD;
 
@@ -375,7 +380,7 @@ http_body_t default_http_body[AD_TEMPLATE_MAX] =
 #endif
 };
 
-uint8_t send_mode = ADT_SEND_MULTI;
+uint8_t send_mode = ADT_SEND_SINGLE;
 berr adt_get_send(uint8_t *send)
 {
     if ( NULL == send )
@@ -427,6 +432,52 @@ http_content_len_get(hytag_t *hytag)
     return len;
 }
 
+berr ads_gzip_and_fill_content( char *buf, uint16_t *out_len, hytag_t *hytag)
+{
+    size_t len = 0;
+    char * in = NULL;
+    unsigned long outlen = 0;
+    char *out = NULL;
+    int rv = 0;
+
+    if ( NULL == buf || NULL == hytag )
+    {
+        BRET(E_PARAM);
+    }
+
+    len = strlen(http_body[hytag->template].head);
+    len += hytag->url_len;
+    len += strlen(http_body[hytag->template].tail);
+    in = (char *)malloc(len);
+    if ( NULL == in)
+    {
+        BRET(E_MEMORY);
+    }
+    memset(in, 0, len);
+
+    len = 0;
+    rte_memcpy(in + len, http_body[hytag->template].head, (size_t) strlen(http_body[hytag->template].head));
+    len += strlen(http_body[hytag->template].head);
+
+    rte_memcpy(in + len, hytag->url, (size_t) hytag->url_len);
+    len += hytag->url_len;
+
+    rte_memcpy(in + len, http_body[hytag->template].tail, (size_t) strlen(http_body[hytag->template].tail));
+    len += strlen(http_body[hytag->template].tail);
+
+    out = buf;
+    outlen = len;
+    /* gzip */
+    rv  = gzcompress(in, (uLong)len, out, &outlen);
+    if (rv < 0)
+    {
+        free(in);
+        BRET(E_FAIL);
+    }
+    free(in);
+    *out_len = (uint16_t) outlen;
+    return E_SUCCESS;
+}
 
 
 #if 1
@@ -442,47 +493,77 @@ berr ads_http_ok_head_fill(char *buf, hytag_t *hytag)
         BRET(E_PARAM);
     }
 
-    rte_memcpy(buf + len, http_head_response1, (size_t) strlen(http_head_response1));
-    len += strlen(http_head_response1);
-
-    rte_memcpy(buf + len, http_head_response2, (size_t) strlen(http_head_response2));
-    len += strlen(http_head_response2);
-
-    rte_memcpy(buf + len, http_head_response3, (size_t) strlen(http_head_response3));
-    len += strlen(http_head_response3);
-
-    /* get content length */
-    content_len = http_content_len_get(hytag);
-    hytag->content_len = content_len;
-    debug("hytag->content_len(%d)", hytag->content_len);
-    sprintf(content_buff, "%d", content_len);
-    rte_memcpy(buf + len, content_buff, (size_t) strlen(content_buff));
-    len += strlen(content_buff);
-
-
-    rte_memcpy(buf + len, http_head_response5, (size_t) strlen(http_head_response5));
-    len += strlen(http_head_response5);
-
-    rte_memcpy(buf + len, http_head_response6, (size_t) strlen(http_head_response6));
-    len += strlen(http_head_response6);
-
-    rte_memcpy(buf + len, http_head_response7, (size_t) strlen(http_head_response7));
-    len += strlen(http_head_response7);
-
-    if( adt_send_is_single())
+    if( adt_send_is_multi())
     {
-        rte_memcpy(buf + len, http_body[hytag->template].head, (size_t) strlen(http_body[hytag->template].head));
-        len += strlen(http_body[hytag->template].head);
+        rte_memcpy(buf + len, http_head_response1, (size_t) strlen(http_head_response1));
+        len += strlen(http_head_response1);
 
-        rte_memcpy(buf + len, hytag->url, (size_t) hytag->url_len);
-        len += hytag->url_len;
+        rte_memcpy(buf + len, http_head_response2, (size_t) strlen(http_head_response2));
+        len += strlen(http_head_response2);
 
-        rte_memcpy(buf + len, http_body[hytag->template].tail, (size_t) strlen(http_body[hytag->template].tail));
-        len += strlen(http_body[hytag->template].tail);
+        rte_memcpy(buf + len, http_head_response3, (size_t) strlen(http_head_response3));
+        len += strlen(http_head_response3);
+
+        /* get content length */
+        content_len = http_content_len_get(hytag);
+        hytag->content_len = content_len;
+        debug("hytag->content_len(%d)", hytag->content_len);
+        sprintf(content_buff, "%d", content_len);
+        rte_memcpy(buf + len, content_buff, (size_t) strlen(content_buff));
+        len += strlen(content_buff);
+
+
+        rte_memcpy(buf + len, http_head_response5, (size_t) strlen(http_head_response5));
+        len += strlen(http_head_response5);
+
+        rte_memcpy(buf + len, http_head_response6, (size_t) strlen(http_head_response6));
+        len += strlen(http_head_response6);
+
+        rte_memcpy(buf + len, http_head_response7, (size_t) strlen(http_head_response7));
+        len += strlen(http_head_response7);
+
+        hytag->l5_len = len;
+    }
+    else
+    {
+        char gzip_buff[2048] = {0};
+        uint16_t gzip_len = 0;
+        if (ads_gzip_and_fill_content(gzip_buff, &gzip_len, hytag))
+        {
+            BRET(E_FAIL);
+        }
+        rte_memcpy(buf + len, http_head_response1, (size_t) strlen(http_head_response1));
+        len += strlen(http_head_response1);
+
+        rte_memcpy(buf + len, http_head_response2, (size_t) strlen(http_head_response2));
+        len += strlen(http_head_response2);
+
+        rte_memcpy(buf + len, http_head_response3, (size_t) strlen(http_head_response3));
+        len += strlen(http_head_response3);
+
+        /* get content length */
+        hytag->content_len = gzip_len;
+        debug("hytag->content_len(%d)", hytag->content_len);
+        sprintf(content_buff, "%d", hytag->content_len);
+        rte_memcpy(buf + len, content_buff, (size_t) strlen(content_buff));
+        len += strlen(content_buff);
+
+
+        rte_memcpy(buf + len, http_head_response5, (size_t) strlen(http_head_response5));
+        len += strlen(http_head_response5);
+
+        rte_memcpy(buf + len, http_head_response6, (size_t) strlen(http_head_response6));
+        len += strlen(http_head_response6);
+
+        rte_memcpy(buf + len, http_head_response7, (size_t) strlen(http_head_response7));
+        len += strlen(http_head_response7);
+
+        rte_memcpy(buf + len, gzip_buff, (size_t)gzip_len);
+        len += gzip_len;
+
+        hytag->l5_len = len;
     }
 
-
-    hytag->l5_len = len;
     return E_SUCCESS;
 }
 #else
