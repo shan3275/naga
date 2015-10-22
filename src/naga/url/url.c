@@ -29,7 +29,7 @@ berr  naga_uri(hytag_t *hytag)
     tailptr = (char *)(hytag->uri);
     
     //if(strstr(tailptr,  tail))
-    if(!strcmp(tailptr, tail))
+    if(!strncmp(tailptr, tail, 8))
 
     {
          CNT_INC(ADP_PUSH_ASSERT);

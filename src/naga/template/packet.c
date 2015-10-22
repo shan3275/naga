@@ -413,8 +413,11 @@ ads_response_content_generator(void *ptr, hytag_t *hytag)
         BRET(E_PARAM);
     }
 
+
+	CYCLE_INIT(1);
     /* l4 first than l5, because update l4 need use l5 old len */
     /* l4 switch */
+	CYCLE_START();
     tcp_hdr = (struct tcp_hdr *)(((char *)ptr) + hytag->l4_offset);
     rv = ads_tcp_head_modify(tcp_hdr, hytag, direction);
     if (rv)
@@ -422,10 +425,12 @@ ads_response_content_generator(void *ptr, hytag_t *hytag)
         printf("%s,%d, rv(%d)\n", __func__, __LINE__, rv);
         return rv;
     }
+	CYCLE_END();
 
     /* l5 fill */
     debug("old l5_len(%d)", hytag->l5_len);
     http_head = ((char *)ptr) + hytag->l5_offset;
+	CYCLE_START();	
     rv = ads_http_content_fill(http_head, hytag);
     if (rv)
     {
@@ -435,9 +440,11 @@ ads_response_content_generator(void *ptr, hytag_t *hytag)
 
     debug("new l5_len(%d)", hytag->l5_len);
 
+	CYCLE_END();
 
     /* l3 switch */
     ip_hdr = (struct ipv4_hdr *)(((char *)ptr) + hytag->l3_offset);
+	CYCLE_START();
 
     rv = ads_ip_head_modify(ip_hdr, hytag, direction);
     if (rv)
@@ -445,11 +452,18 @@ ads_response_content_generator(void *ptr, hytag_t *hytag)
         printf("%s,%d, rv(%d)\n", __func__, __LINE__, rv);
         return rv;
     }
+	CYCLE_END();
+
+	CYCLE_START();
 
     /* tcp checksum update*/
     tcp_hdr->cksum = 0;
     tcp_hdr->cksum =  ads_tcpudp_cksum(ip_hdr, (void *)tcp_hdr);
     debug("tcp chsum(0x%x)", ntohl(tcp_hdr->cksum));
+	CYCLE_END();
+
+
+	CYCLE_START();
 
     /* ip checksum update */ 
     rv = ads_ipv4_cksum_update( ip_hdr);
@@ -458,6 +472,9 @@ ads_response_content_generator(void *ptr, hytag_t *hytag)
         printf("%s,%d, rv(%d)\n", __func__, __LINE__, rv);
         return rv;
     }
+	CYCLE_END();
+	
+	CYCLE_START();
 
     /* l2 switch */
     eth_hdr = (struct ether_hdr *)(((char *)ptr) + hytag->l2_offset);
@@ -467,6 +484,7 @@ ads_response_content_generator(void *ptr, hytag_t *hytag)
         printf("%s,%d, rv(%d)\n", __func__, __LINE__, rv);
         return rv;
     }
+	CYCLE_END();
 
     hytag->data_len = hytag->l5_offset - hytag->l2_offset + hytag->l5_len;
     return E_SUCCESS;
