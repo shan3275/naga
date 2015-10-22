@@ -129,6 +129,7 @@ berr ift_raw_send_packet(void* fp, uint8_t * buff, int len)
 	}
 	else
 	{
+        printf("Socket is %d\n", send_socket);
 		return E_FAIL;
 	}
 }
