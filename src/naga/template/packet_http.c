@@ -161,10 +161,11 @@ char *http_head_response1=
     HTTP_VERSION HTTP_ONE_SPACE HTTP_RESPONSE_OK HTTP_CRLF
     HTTP_SERVER HTTP_CRLF
     HTTP_KEEP_ALIVE HTTP_CRLF
-    HTTP_VARY HTTP_CRLF
-    HTTP_CONTENT_ENCODING HTTP_CRLF
     HTTP_CONTENT_TYPE HTTP_CRLF
     HTTP_DATA_HEAD;
+
+//    HTTP_VARY HTTP_CRLF
+//    HTTP_CONTENT_ENCODING HTTP_CRLF
 
 char *http_head_response2= "Mon, 14 Sep 2015 15:02:34 GMT";
 char *http_head_response3=  \
@@ -380,7 +381,7 @@ http_body_t default_http_body[AD_TEMPLATE_MAX] =
 #endif
 };
 
-uint8_t send_mode = ADT_SEND_SINGLE;
+uint8_t send_mode = ADT_SEND_MULTI;
 berr adt_get_send(uint8_t *send)
 {
     if ( NULL == send )
@@ -480,7 +481,7 @@ berr ads_gzip_and_fill_content( char *buf, uint16_t *out_len, hytag_t *hytag)
 }
 
 
-#if 1
+#if 0
 
 berr ads_http_ok_head_fill(char *buf, hytag_t *hytag)
 {
