@@ -18,7 +18,8 @@
 
 pcap_t *gpcap_desc = NULL;
 static int send_socket = 0;
-#if 1
+static struct  sockaddr_ll  sll;
+#if 0
 berr itf_raw_socket_init(char *ifname)
 {
     char errbuf[PCAP_ERRBUF_SIZE];
@@ -78,15 +79,21 @@ berr itf_raw_socket_init(char *ifname)
 		BRET(E_FAIL);
     }
 
-#if 0
+#if 1
 	
-    struct  sockaddr_ll  sll;
+   
     struct ifreq ifr;
     socklen_t addrlen = sizeof(sll);
     strcpy(ifr.ifr_name, ifname);
     ioctl(sockfd, SIOCGIFINDEX, &ifr);
-    sll.sll_ifindex = ifr.ifr_ifindex;    
-
+    sll.sll_ifindex = ifr.ifr_ifindex; 
+    
+    sll.sll_family    = AF_PACKET;
+    sll.sll_protocol  = htons(ETH_P_ALL);
+    sll.sll_pkttype   = PACKET_OUTGOING;
+    sll.sll_halen     = 6;
+    
+    
     if(bind(sockfd, (struct sockaddr*)&sll, addrlen) < 0)
     {
     	printf("bind socket Failed\n");
@@ -112,9 +119,9 @@ berr itf_raw_socket_init(char *ifname)
 
 berr ift_raw_send_packet(void* fp, uint8_t * buff, int len)
 {
-	if(send_socket != 0)
+	if(send_socket > 0)
 	{
-		if(send(send_socket, buff, len, MSG_CONFIRM)!= len)
+		if(sendto(send_socket, buff, len, 0, (const struct sockaddr *)&sll, sizeof(sll))!= len)
 		{
 			perror("The Err is:");
 			return E_FAIL;		
