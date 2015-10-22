@@ -65,8 +65,6 @@ berr naga_data_process_module(hytag_t * hytag)
 
     itf_set_hytag_pcap(hytag);
 
-
-
     //HYTAG_DUMP(hytag);
 
     DPF_NODE(MOD_PID, hytag, naga_pid);
