@@ -83,6 +83,8 @@ berr naga_data_process_module(hytag_t * hytag)
     DPF_NODE(MOD_ADP, hytag, naga_adp);
     
     HYTAG_LOG(hytag);  
+
+
     return E_SUCCESS;
 }
 

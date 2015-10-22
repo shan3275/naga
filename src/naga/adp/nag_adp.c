@@ -293,15 +293,19 @@ berr naga_adp(hytag_t *hytag)
    }  
    else
     {
+    		CYCLE_INIT(1);
+			CYCLE_START();
     	    rv = ads_response_head_generator(hytag->pbuf.ptr, hytag);
     		if(rv != E_SUCCESS) {
     			CNT_INC(ADP_DROP_HEAD_GEN1);
     			return rv;
     		}
+			CYCLE_END();
 
-    	
+    		CYCLE_START();
          	txm->data_len = txm->pkt_len = hytag->data_len;
             itf_send_packet_imm(txm, txm->port);
+			CYCLE_END();
     }
         
          

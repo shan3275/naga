@@ -187,11 +187,12 @@ typedef struct
 
 #define DEBUG_USE_CYCLE 1
 #if DEBUG_USE_CYCLE
-#define CYCLE_INIT()  uint64_t start, end 
-#define CYCLE_START() start = rte_rdtsc()  
-#define CYCLE_END()   end = rte_rdtsc();printf("<%s +%d> Take times: %lu\n", __FUNCTION__, __LINE__, end- start);
+
+#define CYCLE_INIT(__v) uint64_t start, end;int _cycle_off = __v;
+#define CYCLE_START()   if(_cycle_off) start = rte_rdtsc()  
+#define CYCLE_END()     if(_cycle_off) {end = rte_rdtsc();printf("<%s +%d> Take times: %lu\n", __FUNCTION__, __LINE__, end- start)}
 #else
-#define CYCLE_INIT()
+#define CYCLE_INIT(__v)
 #define CYCLE_START()
 #define CYCLE_END()
 #endif

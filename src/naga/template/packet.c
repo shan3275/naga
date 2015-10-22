@@ -317,7 +317,7 @@ ads_response_head_generator(void *ptr, hytag_t *hytag)
     struct ether_hdr *eth_hdr = NULL;
     uint8_t direction = DIRECTION_DIFFERENT;
 
-	CYCLE_INIT();
+	CYCLE_INIT(0);
     if ( NULL == ptr || NULL == hytag )
     {
         BRET(E_PARAM);
