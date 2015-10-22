@@ -28,7 +28,9 @@ typedef struct
 {
     char name[TEMPLATE_NAME_LEN_MAX];
     char head[TEMPLATE_HEAD_LEN_MAX];
+    int  head_len;
     char url[TEMPLATE_URL_LEN_MAX];
+    int tail_len;
     char tail[TEMPLATE_TAIL_LEN_MAX];
 }http_body_t;
 

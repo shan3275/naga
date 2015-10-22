@@ -427,9 +427,9 @@ uint16_t
 http_content_len_get(hytag_t *hytag)
 {
     uint16_t len = 0;
-    len += strlen(http_body[hytag->template].head);    
+    len += http_body[hytag->template].head_len;//strlen(http_body[hytag->template].head);    
     len += hytag->url_len;
-    len += strlen(http_body[hytag->template].tail);
+    len += http_body[hytag->template].tail_len;//strlen(http_body[hytag->template].tail);
     return len;
 }
 
@@ -739,6 +739,9 @@ berr ads_template_fill(http_body_t *http_to, http_body_t *http_from)
     rte_memcpy(http_to->head, http_from->head, (size_t)strlen(http_from->head));
     rte_memcpy(http_to->url,  http_from->url,  (size_t)strlen(http_from->url));
     rte_memcpy(http_to->tail, http_from->tail, (size_t)strlen(http_from->tail));
+    http_to.head_len = (size_t)strlen(http_from->head);
+    http_to.tail_len = (size_t)strlen(http_from->tail);
+    
     return E_SUCCESS;
 }
 
