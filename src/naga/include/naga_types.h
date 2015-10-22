@@ -190,7 +190,7 @@ typedef struct
 
 #define CYCLE_INIT(__v) uint64_t start, end;int _cycle_off = __v;
 #define CYCLE_START()   if(_cycle_off) start = rte_rdtsc()  
-#define CYCLE_END()     if(_cycle_off) {end = rte_rdtsc();printf("<%s +%d> Take times: %lu\n", __FUNCTION__, __LINE__, end- start)}
+#define CYCLE_END()     if(_cycle_off) {end = rte_rdtsc();printf("<%s +%d> Take times: %lu\n", __FUNCTION__, __LINE__, end- start);}
 #else
 #define CYCLE_INIT(__v)
 #define CYCLE_START()
