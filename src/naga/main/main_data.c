@@ -92,7 +92,7 @@ berr naga_data_process_module(hytag_t * hytag)
        printf("ADP: %lu\n"  ,   cur-pre);
     }
 
-    
+
     //HYTAG_LOG(hytag);  
     return E_SUCCESS;
 }
