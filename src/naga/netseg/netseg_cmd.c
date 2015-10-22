@@ -368,6 +368,79 @@ DEFUN(netseg_default_act_set,
 
 
 
+static int cmd_write_snet_file(struct vty *vty, const char *file_name)
+{
+	FILE *fp = NULL;
+	int ret = 0;
+	int i;
+	net_t net;
+	uint8_t effect = 0;
+	char action_str[NAGA_ACTION_STR_SZ] = {0};
+    struct in_addr netmask;
+
+	if (NULL == file_name)
+	{
+		return CMD_ERR_NOTHING_TODO;
+	}
+   
+	fp = fopen(file_name, "w+");
+	if (NULL == fp)
+	{
+		vty_out(vty, "Open the file %s failed!%s\n", file_name, VTY_NEWLINE);
+		return CMD_ERR_NOTHING_TODO;
+	}
+	
+	memset(&net, 0, sizeof(net_t));
+	fprintf(fp, "%-8s %-23s	%-16s %-16s %-20s %-20s\n","index", "ip/mask","action", "cnt", "none-drop", "pushed");
+	
+	for ( i = 0; i < NETSEG_RULE_NUM_MAX; i++ )
+	{
+	
+		ret = api_net_get(i, &net, &effect);
+		if (ret)
+		{
+			vty_out(vty, "net dump fail, index(%d) ret(%d)%s", i, ret, VTY_NEWLINE);
+			continue;
+		}
+		if (NETSEG_RULE_EFFECTIVE == effect)
+		{
+    		naga_action_string(&net.acl.actions, action_str);
+    		netmask.s_addr = htonl(net.mask);
+   			fprintf(fp, "%-8d %d.%d.%d.%d/%-15d	%-16s %-16lu %-16lu %-16lu\n", net.index,
+            (net.ip >> 24) & 0xff,
+            (net.ip >> 16) & 0xff,
+            (net.ip >>  8) & 0xff,
+            (net.ip >>  0) & 0xff,
+            ip_masklen (netmask), action_str,
+            (uint64_t) net.acl.cnt.cnt, (uint64_t) net.acl.vcnt.cnt,
+            (uint64_t) net.acl.pushed_cnt.cnt);
+		}
+	}
+
+	fclose(fp);
+
+	return CMD_SUCCESS;
+}
+
+
+
+
+DEFUN(write_snet,
+      write_snet_cmd,
+      "write snet FILE",
+      WRITE_STR
+      NET_STR
+      FILE_STR)
+{
+    return cmd_write_snet_file(vty, argv[0]);
+}
+
+
+
+
+
+
+
 void netseg_cmd_config_write(struct vty *vty)
 {
     int ret = 0;
@@ -434,6 +507,7 @@ void cmdline_netseg_init(void)
     install_element(CMD_NODE, &net_clear_statistics_cmd);
     install_element(CMD_NODE, &net_clear_statistics_all_cmd);
 	install_element(CMD_NODE, &netseg_default_act_set_cmd);
+	install_element(CMD_NODE, &write_snet_cmd);
 
     return ;
 }
