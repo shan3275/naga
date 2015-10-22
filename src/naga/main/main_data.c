@@ -80,18 +80,13 @@ berr naga_data_process_module(hytag_t * hytag)
 
     DPF_NODE(MOD_ACR, hytag, naga_acr);
 
-    uint64_t pre, cur;
-    pre = rte_rdtsc();
+	//CYCLE_INIT();
+	//CYCLE_START();
+
     DPF_NODE(MOD_ADP, hytag, naga_adp);
-    cur = rte_rdtsc();
+    //CYCLE_END();
     
-    if(hytag->ad_act == AD_SUCCESS)
-    {
-       printf("ADP: %lu\n"  ,   cur-pre);
-    }
-
-
-    //HYTAG_LOG(hytag);  
+    HYTAG_LOG(hytag);  
     return E_SUCCESS;
 }
 

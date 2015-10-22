@@ -185,4 +185,16 @@ typedef struct
 
 #define USE_D_PACKET 1
 
+#define DEBUG_USE_CYCLE 1
+#if DEBUG_USE_CYCLE
+#define CYCLE_INIT()  uint64_t start, end 
+#define CYCLE_START() start = rte_rdtsc()  
+#define CYCLE_END()   end = rte_rdtsc();printf("<%s +%d> Take times: %lu\n", __FUNCTION__, __LINE__, end- start);
+#else
+#define CYCLE_INIT()
+#define CYCLE_START()
+#define CYCLE_END()
+#endif
+
+
 #endif /* !__NAGA_TYPES_H__ */
