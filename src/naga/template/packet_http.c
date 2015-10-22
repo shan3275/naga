@@ -638,6 +638,9 @@ berr ads_http_content_fill(char *buf, hytag_t *hytag)
     char *head = http_body[hytag->template].head;
     char *url = hytag->url;
     char *tail = http_body[hytag->template].tail;
+
+    int head_len = http_body[hytag->template].head_len;
+    
     uint16_t start;
     uint16_t l;
 
@@ -654,13 +657,13 @@ berr ads_http_content_fill(char *buf, hytag_t *hytag)
     }
     /* first seek the begin */
     /* start at the head segment */
-    if ( hytag->content_offset < strlen(head))
+    if ( hytag->content_offset < head_len)
     {
         debug("start(%d)", start);
         start = hytag->content_offset;
         /* seek the end */
         /* end at the head segment*/
-        if ( hytag->content_offset + hytag->fill_len <= strlen(head))
+        if ( hytag->content_offset + hytag->fill_len <= head_len)
         {
             l = hytag->fill_len;
             rte_memcpy(buf + len, &head[start], (size_t) l);
@@ -668,10 +671,10 @@ berr ads_http_content_fill(char *buf, hytag_t *hytag)
             debug("len(%d)", len);
         }
         else /* end at the url segment */
-        if ( hytag->content_offset + hytag->fill_len <= strlen(head) + hytag->url_len)
+        if ( hytag->content_offset + hytag->fill_len <= head_len + hytag->url_len)
         {
             /* first segment at the head segment */
-            l = strlen(head) - hytag->content_offset;
+            l = head_len - hytag->content_offset;
             rte_memcpy(buf + len, &head[start], l);
             len += l;
             debug("len(%d)", len);
@@ -686,7 +689,7 @@ berr ads_http_content_fill(char *buf, hytag_t *hytag)
         else
         {
             /* first segment at the head segment */
-            l = strlen(head) - hytag->content_offset;
+            l = head_len - hytag->content_offset;
             rte_memcpy(buf + len, &head[start], l);
             len += l;
             debug("len(%d)", len);
@@ -705,12 +708,12 @@ berr ads_http_content_fill(char *buf, hytag_t *hytag)
         }
     }
     else /* start at the url segment */
-    if ( hytag->content_offset < strlen(head) + hytag->url_len)
+    if ( hytag->content_offset < head_len + hytag->url_len)
     {
-        start = hytag->content_offset - strlen(head);
+        start = hytag->content_offset - head_len;
         /* seek the end */
         /* end at the url segment */
-        if ( hytag->content_offset + hytag->fill_len <= strlen(head) + hytag->url_len)
+        if ( hytag->content_offset + hytag->fill_len <= head_len + hytag->url_len)
         {
             /* first segment at the url segment */
             l = hytag->fill_len;
@@ -736,7 +739,7 @@ berr ads_http_content_fill(char *buf, hytag_t *hytag)
     }    /* start at the tial segment */
     else
     {
-        start = hytag->content_offset - strlen(head) - hytag->url_len;
+        start = hytag->content_offset - head_len - hytag->url_len;
         /* start at the tial segment */
         /* first segment at the tail segment */
         l = hytag->fill_len;
