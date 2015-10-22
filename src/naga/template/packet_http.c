@@ -37,7 +37,7 @@
 #include "rte_memcpy.h"
 #include "bts_debug.h"
 #include  "gzip.h"
-
+#include  "rte_cycles.h"
 //#define DEBUG
 #ifdef  DEBUG   
 #define debug(fmt,args...)  printf ("func(%s), line(%d)"fmt"\n" ,__FUNCTION__, __LINE__, ##args)
@@ -590,11 +590,8 @@ berr ads_http_ok_head_fill(char *buf, hytag_t *hytag)
     pre = rte_rdtsc();
 
 
-    
-
-
-
-    len += snprintf(buf+len, "%s%s%s%d%s%s%s", 
+   
+    len += snprintf(buf+len, 2048-len, "%s%s%s%d%s%s%s", 
         http_head_response1, http_head_response2, 
         http_head_response3, content_len, http_head_response5,
         http_head_response6, http_head_response7);
