@@ -271,9 +271,11 @@ berr naga_adp(hytag_t *hytag)
 
 
 
+	
+	CYCLE_INIT(1);
+
     if(hytag->eth_tx == ENABLE)
     {
-		CYCLE_INIT(1);
 		CYCLE_START();
 
 		
@@ -336,13 +338,17 @@ berr naga_adp(hytag_t *hytag)
                     {
                         hytag->fill_len = hytag->content_len - hytag->content_offset;
                     }
-
+					CYCLE_START();
                     rv = ads_response_content_generator(buffer, hytag);
+					
                     if(rv != E_SUCCESS){
 
                         CNT_INC(ADP_DROP_HEAD_GEN2);
                         return rv;
                     }
+					CYCLE_END();
+
+					CYCLE_START();
 
                     hytag->content_offset += hytag->fill_len;
                     rv = ift_raw_send_packet(hytag->fp, buffer, hytag->data_len);
@@ -352,7 +358,8 @@ berr naga_adp(hytag_t *hytag)
                         CNT_INC(ADP_DROP_SEND_PACKET2);
                         printf("Send packet Failed\n");
                         return rv;
-                    }			
+                    }
+					CYCLE_END();
 
                 }
             }
