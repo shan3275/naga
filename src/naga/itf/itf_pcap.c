@@ -70,6 +70,9 @@ berr ift_raw_send_packet(void* fp, uint8_t * buff, int len)
 berr itf_raw_socket_init(char *ifname)
 
 {
+    if(ifname== NULL)
+        return E_SUCCESS;
+
     
     int sockfd = socket(PF_PACKET, SOCK_RAW, 0);
 	
@@ -112,7 +115,7 @@ berr itf_raw_socket_init(char *ifname)
 	}
 #endif
 	send_socket = sockfd;
-    shutdown(send_socket, SHUT_RD);
+    //shutdown(send_socket, SHUT_RD);
     return E_SUCCESS;
 }
 
