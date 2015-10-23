@@ -117,10 +117,10 @@ void naga_data_main_loop()
         return;
     }
 	unsigned int lcore_id;
-	uint16_t queue;    
+	uint16_t queue = 0;    
 	lcore_id = rte_lcore_id();
 
-
+#if USE_M_QUEUE
 	switch(lcore_id)
 	{
 		case 1:
@@ -130,17 +130,24 @@ void naga_data_main_loop()
 			queue = 1;
 			break;
 		case 3:
-			queue = 0;
+			queue = 2;
 			break;
 			
 		case 4:
-			queue = 1;
+			queue = 0;
 			break;
+		case 5:
+				queue = 1;
+				break;
+		case 6:
+				queue = 2;
+				break;
+			
 		default:
 			printf("Err core ID\n");
 			return ;
 	}
-
+#endif
 	printf("Enter Thread lcore-<%d>, queue<%d>\n", lcore_id, queue);
 	while (1)
 	{
