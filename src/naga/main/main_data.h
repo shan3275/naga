@@ -2,6 +2,7 @@
 #define __MAIN_DATA_H__
 
 
+#define USE_M_QUEUE 1
 
 
 
