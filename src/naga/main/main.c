@@ -690,19 +690,6 @@ main(int argc, char **argv)
 
             
 
-        rx_lcore_id = 0; 
-        portid =    0;
-        
-		if (qconf != &lcore_queue_conf[rx_lcore_id])
-			/* Assigned a new logical core in the loop above. */
-			qconf = &lcore_queue_conf[rx_lcore_id];
-
-		qconf->rx_port_list[qconf->n_rx_port] = portid;
-		qconf->n_rx_port = 1;
-   
-		printf("Lcore %u: RX port %u\n", rx_lcore_id, (unsigned) portid);
-
-
         rx_lcore_id = 1; 
         portid =    0;
         
@@ -715,7 +702,20 @@ main(int argc, char **argv)
    
 		printf("Lcore %u: RX port %u\n", rx_lcore_id, (unsigned) portid);
 
-       rx_lcore_id = 2; 
+
+        rx_lcore_id = 2; 
+        portid =    0;
+        
+		if (qconf != &lcore_queue_conf[rx_lcore_id])
+			/* Assigned a new logical core in the loop above. */
+			qconf = &lcore_queue_conf[rx_lcore_id];
+
+		qconf->rx_port_list[qconf->n_rx_port] = portid;
+		qconf->n_rx_port = 1;
+   
+		printf("Lcore %u: RX port %u\n", rx_lcore_id, (unsigned) portid);
+
+       rx_lcore_id = 3; 
         portid =    0;
         
 		if (qconf != &lcore_queue_conf[rx_lcore_id])
@@ -727,18 +727,6 @@ main(int argc, char **argv)
    
 		printf("Lcore %u: RX port %u\n", rx_lcore_id, (unsigned) portid); 
 
-
-        rx_lcore_id = 3; 
-        portid =    1;
-        
-		if (qconf != &lcore_queue_conf[rx_lcore_id])
-			/* Assigned a new logical core in the loop above. */
-			qconf = &lcore_queue_conf[rx_lcore_id];
-
-		qconf->rx_port_list[qconf->n_rx_port] = portid;
-		qconf->n_rx_port = 1;
-   
-		printf("Lcore %u: RX port %u\n", rx_lcore_id, (unsigned) portid); 
 
         rx_lcore_id = 4; 
         portid =    1;
@@ -752,8 +740,20 @@ main(int argc, char **argv)
    
 		printf("Lcore %u: RX port %u\n", rx_lcore_id, (unsigned) portid); 
 
-     
         rx_lcore_id = 5; 
+        portid =    1;
+        
+		if (qconf != &lcore_queue_conf[rx_lcore_id])
+			/* Assigned a new logical core in the loop above. */
+			qconf = &lcore_queue_conf[rx_lcore_id];
+
+		qconf->rx_port_list[qconf->n_rx_port] = portid;
+		qconf->n_rx_port = 1;
+   
+		printf("Lcore %u: RX port %u\n", rx_lcore_id, (unsigned) portid); 
+
+     
+        rx_lcore_id = 6; 
         portid =    1;
         
 		if (qconf != &lcore_queue_conf[rx_lcore_id])
