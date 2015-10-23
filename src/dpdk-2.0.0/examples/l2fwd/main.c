@@ -646,7 +646,7 @@ main(int argc, char **argv)
 		/* init port */
 		printf("Initializing port %u... ", (unsigned) portid);
 		fflush(stdout);
-		ret = rte_eth_dev_configure(portid, 1, 1, &port_conf);
+		ret = rte_eth_dev_configure(portid, 2, 1, &port_conf);
 		if (ret < 0)
 			rte_exit(EXIT_FAILURE, "Cannot configure device: err=%d, port=%u\n",
 				  ret, (unsigned) portid);
