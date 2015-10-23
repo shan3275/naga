@@ -185,7 +185,7 @@ typedef struct
 
 #define USE_D_PACKET 1
 
-#define DEBUG_USE_CYCLE 1
+#define DEBUG_USE_CYCLE 0
 #if DEBUG_USE_CYCLE
 
 #define CYCLE_INIT(__v) uint64_t start, end;int _cycle_off = __v;
