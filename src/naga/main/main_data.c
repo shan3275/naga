@@ -140,6 +140,8 @@ void naga_data_main_loop()
 			printf("Err core ID\n");
 			return E_SUCCESS;
 	}
+
+	printf("Enter Thread lcore-<%d>, queue<%d>\n", lcore_id, queue);
 	while (1)
 	{
         #if 0
