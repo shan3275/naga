@@ -630,31 +630,6 @@ if (l2fwd_pktmbuf_pool == NULL)
 
 
 
-/* create the mbuf pool */
-l2fwd_pktmbuf_pool1 =
-	rte_mempool_create("mbuf_pool", NB_MBUF,
-			   MBUF_SIZE, 32,
-			   sizeof(struct rte_pktmbuf_pool_private),
-			   rte_pktmbuf_pool_init, NULL,
-			   rte_pktmbuf_init, NULL,
-			   rte_socket_id(), 0);
-if (l2fwd_pktmbuf_pool1 == NULL)
-	rte_exit(EXIT_FAILURE, "Cannot init mbuf pool\n");
-
-
-
-
-/* create the mbuf pool */
-l2fwd_pktmbuf_pool2 =
-	rte_mempool_create("mbuf_pool", NB_MBUF,
-			   MBUF_SIZE, 32,
-			   sizeof(struct rte_pktmbuf_pool_private),
-			   rte_pktmbuf_pool_init, NULL,
-			   rte_pktmbuf_init, NULL,
-			   rte_socket_id(), 0);
-if (l2fwd_pktmbuf_pool2 == NULL)
-	rte_exit(EXIT_FAILURE, "Cannot init mbuf pool\n");
-
 
 #else
 	/* create the mbuf pool */
@@ -871,7 +846,7 @@ if (l2fwd_pktmbuf_pool2 == NULL)
 		ret = rte_eth_rx_queue_setup(portid, 1, nb_rxd,
 					     rte_eth_dev_socket_id(portid),
 					     NULL,
-					     l2fwd_pktmbuf_pool1);
+					     l2fwd_pktmbuf_pool);
 		if (ret < 0)
 			rte_exit(EXIT_FAILURE, "rte_eth_rx_queue_setup(1):err=%d, port=%u\n",
 				  ret, (unsigned) portid);
@@ -882,7 +857,7 @@ if (l2fwd_pktmbuf_pool2 == NULL)
 	ret = rte_eth_rx_queue_setup(portid, 2, nb_rxd,
 				 rte_eth_dev_socket_id(portid),
 				 NULL,
-				 l2fwd_pktmbuf_pool2);
+				 l2fwd_pktmbuf_pool);
 	if (ret < 0)
 		rte_exit(EXIT_FAILURE, "rte_eth_rx_queue_setup(1):err=%d, port=%u\n",
 		  ret, (unsigned) portid);
