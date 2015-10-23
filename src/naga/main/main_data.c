@@ -31,6 +31,7 @@
 #include "itf.h"
 #include "nag_adp.h"
 #include "bts_cnt.h"
+#include "main_data.h"
 
 
 #define MOD_IS_TURN_ON(mod)  (mod_is_enable(mod) == ON)
