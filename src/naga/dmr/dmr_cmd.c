@@ -499,7 +499,7 @@ DEFUN(remove_domain,
 
 DEFUN(remove_domain_all, 
       remove_domain_all_cmd,
-      "remove domain all",
+      "no domain all",
       REMOVE_STR
       DOMAIN_STR
       DOMAIN_ALL_STR)
