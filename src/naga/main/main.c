@@ -613,7 +613,7 @@ main(int argc, char **argv)
 	if (ret < 0)
 		rte_exit(EXIT_FAILURE, "Invalid L2FWD arguments\n");
 
-#define USE_M_QUEUE 1
+
 
 #if USE_M_QUEUE
 
