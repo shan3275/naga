@@ -82,7 +82,7 @@ typedef berr (*rx_process_func)(struct rte_mbuf *m);
 berr itf_port_check(void);
 
 //void itf_rx_burst(rx_process_func process_func);
-void itf_rx_burst(rx_process_func process_func);
+void itf_rx_burst(rx_process_func process_func, unsigned , uint16_t);
 
 int itf_send_packet(struct rte_mbuf *m, uint8_t port);
 

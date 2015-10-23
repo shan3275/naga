@@ -116,7 +116,30 @@ void naga_data_main_loop()
 	{
         return;
     }
+	unsigned int lcore_id;
+	uint16_t queue;    
+	lcore_id = rte_lcore_id();
 
+
+	switch(lcore_id)
+	{
+		case 1:
+			queue = 0;
+			break;
+		case 2:	
+			queue = 1;
+			break;
+		case 3:
+			queue = 0;
+			break;
+			
+		case 4:
+			queue = 1;
+			break;
+		default:
+			printf("Err core ID\n");
+			return E_SUCCESS;
+	}
 	while (1)
 	{
         #if 0
@@ -137,7 +160,7 @@ void naga_data_main_loop()
 		 * Read packet from RX queues
 		 */
 
-        itf_rx_burst(naga_data_process_flow);
+        itf_rx_burst(naga_data_process_flow, lcore_id, queue);
 
 	}
 }

@@ -1434,7 +1434,7 @@ int
 rte_eth_rx_queue_setup(uint8_t port_id, uint16_t rx_queue_id,
 		       uint16_t nb_rx_desc, unsigned int socket_id,
 		       const struct rte_eth_rxconf *rx_conf,
-		       struct rte_mempool *mp)
+	       struct rte_mempool *mp)
 {
 	int ret;
 	uint32_t mbp_buf_size;

@@ -30,24 +30,24 @@ berr itf_port_check(void)
     BRET(E_SUCCESS);
 }
 
-void itf_rx_burst(rx_process_func process_func)
+void itf_rx_burst(rx_process_func process_func, unsigned int lcore_id, uint16_t queue)
 {
     struct rte_mbuf *pkts_burst[MAX_PKT_BURST];
 	struct rte_mbuf *m;
-    unsigned int lcore_id;
+    //unsigned int lcore_id;
     struct lcore_queue_conf *qconf = NULL;
 
     unsigned i, j, portid, nb_rx;
 
     berr ec = E_SUCCESS;
 
-    lcore_id = rte_lcore_id();
+
     qconf = &lcore_queue_conf[lcore_id];
 
     for (i = 0; i < qconf->n_rx_port; i++) {
 
         portid = qconf->rx_port_list[i];
-        nb_rx = rte_eth_rx_burst((uint8_t) portid, 0,
+        nb_rx = rte_eth_rx_burst((uint8_t) portid, queue,
                      pkts_burst, MAX_PKT_BURST);
 
         port_statistics[portid].rx += nb_rx;
