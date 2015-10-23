@@ -715,8 +715,8 @@ main(int argc, char **argv)
    
 		printf("Lcore %u: RX port %u\n", rx_lcore_id, (unsigned) portid);
 
-       rx_lcore_id = 3; 
-        portid =    0;
+        rx_lcore_id = 3; 
+        portid =    1;
         
 		if (qconf != &lcore_queue_conf[rx_lcore_id])
 			/* Assigned a new logical core in the loop above. */
