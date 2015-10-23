@@ -783,7 +783,11 @@ main(int argc, char **argv)
 		/* init port */
 		printf("Initializing port %u... ", (unsigned) portid);
 		fflush(stdout);
-		ret = rte_eth_dev_configure(portid, 1, 1, &port_conf);
+
+
+
+#if 1		
+		ret = rte_eth_dev_configure(portid, 2, 1, &port_conf);
 		if (ret < 0)
 			rte_exit(EXIT_FAILURE, "Cannot configure device: err=%d, port=%u\n",
 				  ret, (unsigned) portid);
@@ -819,10 +823,38 @@ main(int argc, char **argv)
 			rte_exit(EXIT_FAILURE, "rte_eth_rx_queue_setup(1):err=%d, port=%u\n",
 				  ret, (unsigned) portid);
 
+#else
+	ret = rte_eth_dev_configure(portid, 1, 1, &port_conf);
+	if (ret < 0)
+		rte_exit(EXIT_FAILURE, "Cannot configure device: err=%d, port=%u\n",
+			  ret, (unsigned) portid);
+
+	rte_eth_macaddr_get(portid,&l2fwd_ports_eth_addr[portid]);
+
+	/* init one RX queue */
+	fflush(stdout);
+	ret = rte_eth_rx_queue_setup(portid, 0, nb_rxd,
+					 rte_eth_dev_socket_id(portid),
+					 NULL,
+					 l2fwd_pktmbuf_pool);
+	if (ret < 0)
+		rte_exit(EXIT_FAILURE, "rte_eth_rx_queue_setup:err=%d, port=%u\n",
+			  ret, (unsigned) portid);
+
+	/* init one TX queue on each port */
+	fflush(stdout);
+	ret = rte_eth_tx_queue_setup(portid, 0, nb_txd,
+			rte_eth_dev_socket_id(portid),
+			NULL);
+	if (ret < 0)
+		rte_exit(EXIT_FAILURE, "rte_eth_tx_queue_setup:err=%d, port=%u\n",
+			ret, (unsigned) portid);
 
 
 
 
+
+#endif
 		/* Start device */
 		ret = rte_eth_dev_start(portid);
 		if (ret < 0)
