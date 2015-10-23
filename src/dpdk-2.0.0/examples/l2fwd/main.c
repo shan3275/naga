@@ -661,7 +661,7 @@ main(int argc, char **argv)
 					     NULL,
 					     l2fwd_pktmbuf_pool);
 		if (ret < 0)
-			rte_exit(EXIT_FAILURE, "rte_eth_rx_queue_setup:err=%d, port=%u\n",
+			rte_exit(EXIT_FAILURE, "rte_eth_rx_queue_setup(0):err=%d, port=%u\n",
 				  ret, (unsigned) portid);
 
 		/* init one TX queue on each port */
@@ -682,7 +682,7 @@ main(int argc, char **argv)
 					     NULL,
 					     l2fwd_pktmbuf_pool);
 		if (ret < 0)
-			rte_exit(EXIT_FAILURE, "rte_eth_rx_queue_setup:err=%d, port=%u\n",
+			rte_exit(EXIT_FAILURE, "rte_eth_rx_queue_setup(1):err=%d, port=%u\n",
 				  ret, (unsigned) portid);
 
 
@@ -695,7 +695,7 @@ main(int argc, char **argv)
 					     NULL,
 					     l2fwd_pktmbuf_pool);
 		if (ret < 0)
-			rte_exit(EXIT_FAILURE, "rte_eth_rx_queue_setup:err=%d, port=%u\n",
+			rte_exit(EXIT_FAILURE, "rte_eth_rx_queue_setup(2):err=%d, port=%u\n",
 				  ret, (unsigned) portid);
 
 
