@@ -740,6 +740,7 @@ main(int argc, char **argv)
    
 		printf("Lcore %u: RX port %u\n", rx_lcore_id, (unsigned) portid); 
 
+#if 0
         rx_lcore_id = 5; 
         portid =    1;
         
@@ -763,7 +764,8 @@ main(int argc, char **argv)
 		qconf->rx_port_list[qconf->n_rx_port] = portid;
 		qconf->n_rx_port = 1;
    
-		printf("Lcore %u: RX port %u\n", rx_lcore_id, (unsigned) portid);    
+		printf("Lcore %u: RX port %u\n", rx_lcore_id, (unsigned) portid);
+#endif		
 #endif
 
 
@@ -806,6 +808,20 @@ main(int argc, char **argv)
 		if (ret < 0)
 			rte_exit(EXIT_FAILURE, "rte_eth_tx_queue_setup:err=%d, port=%u\n",
 				ret, (unsigned) portid);
+
+		/* init one RX queue */
+		fflush(stdout);
+		ret = rte_eth_rx_queue_setup(portid, 1, nb_rxd,
+					     rte_eth_dev_socket_id(portid),
+					     NULL,
+					     l2fwd_pktmbuf_pool);
+		if (ret < 0)
+			rte_exit(EXIT_FAILURE, "rte_eth_rx_queue_setup(1):err=%d, port=%u\n",
+				  ret, (unsigned) portid);
+
+
+
+
 
 		/* Start device */
 		ret = rte_eth_dev_start(portid);
