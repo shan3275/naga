@@ -19,7 +19,7 @@
 pcap_t *gpcap_desc = NULL;
 static int send_socket = 0;
 static struct  sockaddr_ll  sll;
-#if 1
+#if 0
 berr itf_raw_socket_init(char *ifname)
 {
     char errbuf[PCAP_ERRBUF_SIZE];
@@ -115,6 +115,9 @@ berr itf_raw_socket_init(char *ifname)
 	}
 #endif
 	send_socket = sockfd;
+	int flag = fcntl(sockfd, F_GETFL,0);
+	printf("flag is %x, %x\n", flag, O_NONBLOCK);
+	fcntl(sockfd, F_SETFL, flag & ~O_NONBLOCK);	
     //shutdown(send_socket, SHUT_RD);
     return E_SUCCESS;
 }
@@ -123,23 +126,29 @@ berr itf_raw_socket_init(char *ifname)
 
 berr ift_raw_send_packet(void* fp, uint8_t * buff, int len)
 {
-	if(send_socket > 0)
+
+
+	if (itf_tx_is_enable())
 	{
-		if(sendto(send_socket, buff, len, 0, (const struct sockaddr *)&sll, sizeof(sll))!= len)
+		if(send_socket > 0)
 		{
-			perror("The Err is:");
-			return E_FAIL;		
+			if(sendto(send_socket, buff, len, 0, (const struct sockaddr *)&sll, sizeof(sll))!= len)
+			{
+				perror("The Err is:");
+				return E_FAIL;		
+			}
+		    else
+		    {
+		        return E_SUCCESS;   
+		    }
 		}
-        else
-        {
-            return E_SUCCESS;   
-        }
+		else
+		{
+		    printf("Socket is %d\n", send_socket);
+			return E_FAIL;
+		}
 	}
-	else
-	{
-        printf("Socket is %d\n", send_socket);
-		return E_FAIL;
-	}
+	return E_SUCCESS; 
 }
 
 #endif
