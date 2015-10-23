@@ -61,7 +61,7 @@
 #define RTE_LOGTYPE_L2FWD RTE_LOGTYPE_USER1
 
 #define MBUF_SIZE (2048 + sizeof(struct rte_mbuf) + RTE_PKTMBUF_HEADROOM)
-#define NB_MBUF   8192
+#define NB_MBUF   18192
 
 
 /*
@@ -101,6 +101,11 @@ static const struct rte_eth_conf port_conf = {
 };
 
 struct rte_mempool * l2fwd_pktmbuf_pool = NULL;
+struct rte_mempool * l2fwd_pktmbuf_pool1 = NULL;
+struct rte_mempool * l2fwd_pktmbuf_pool2 = NULL;
+
+
+
 
 struct l2fwd_port_statistics port_statistics[RTE_MAX_ETHPORTS];
 
@@ -608,6 +613,50 @@ main(int argc, char **argv)
 	if (ret < 0)
 		rte_exit(EXIT_FAILURE, "Invalid L2FWD arguments\n");
 
+#define USE_M_QUEUE 1
+
+#if USE_M_QUEUE
+
+/* create the mbuf pool */
+l2fwd_pktmbuf_pool =
+	rte_mempool_create("mbuf_pool", NB_MBUF,
+			   MBUF_SIZE, 32,
+			   sizeof(struct rte_pktmbuf_pool_private),
+			   rte_pktmbuf_pool_init, NULL,
+			   rte_pktmbuf_init, NULL,
+			   rte_socket_id(), 0);
+if (l2fwd_pktmbuf_pool == NULL)
+	rte_exit(EXIT_FAILURE, "Cannot init mbuf pool\n");
+
+
+
+/* create the mbuf pool */
+l2fwd_pktmbuf_pool1 =
+	rte_mempool_create("mbuf_pool", NB_MBUF,
+			   MBUF_SIZE, 32,
+			   sizeof(struct rte_pktmbuf_pool_private),
+			   rte_pktmbuf_pool_init, NULL,
+			   rte_pktmbuf_init, NULL,
+			   rte_socket_id(), 0);
+if (l2fwd_pktmbuf_pool1 == NULL)
+	rte_exit(EXIT_FAILURE, "Cannot init mbuf pool\n");
+
+
+
+
+/* create the mbuf pool */
+l2fwd_pktmbuf_pool2 =
+	rte_mempool_create("mbuf_pool", NB_MBUF,
+			   MBUF_SIZE, 32,
+			   sizeof(struct rte_pktmbuf_pool_private),
+			   rte_pktmbuf_pool_init, NULL,
+			   rte_pktmbuf_init, NULL,
+			   rte_socket_id(), 0);
+if (l2fwd_pktmbuf_pool2 == NULL)
+	rte_exit(EXIT_FAILURE, "Cannot init mbuf pool\n");
+
+
+#else
 	/* create the mbuf pool */
 	l2fwd_pktmbuf_pool =
 		rte_mempool_create("mbuf_pool", NB_MBUF,
@@ -618,6 +667,9 @@ main(int argc, char **argv)
 				   rte_socket_id(), 0);
 	if (l2fwd_pktmbuf_pool == NULL)
 		rte_exit(EXIT_FAILURE, "Cannot init mbuf pool\n");
+
+#endif
+
 
 	nb_ports = rte_eth_dev_count();
 	if (nb_ports == 0)
@@ -658,11 +710,12 @@ main(int argc, char **argv)
 		l2fwd_dst_ports[last_port] = last_port;
 	}
 #endif
+#if !USE_M_QUEUE
     rx_lcore_id = 1;
 	qconf = NULL;
 
 
-#if 0
+
 	/* Initialize the port/queue configuration of each logical core */
 	for (portid = 0; portid < nb_ports; portid++) {
 		/* skip ports that are not enabled */
@@ -716,7 +769,7 @@ main(int argc, char **argv)
 		printf("Lcore %u: RX port %u\n", rx_lcore_id, (unsigned) portid);
 
         rx_lcore_id = 3; 
-        portid =    1;
+        portid =    0;
         
 		if (qconf != &lcore_queue_conf[rx_lcore_id])
 			/* Assigned a new logical core in the loop above. */
@@ -740,7 +793,7 @@ main(int argc, char **argv)
    
 		printf("Lcore %u: RX port %u\n", rx_lcore_id, (unsigned) portid); 
 
-#if 0
+#if 1
         rx_lcore_id = 5; 
         portid =    1;
         
@@ -786,8 +839,8 @@ main(int argc, char **argv)
 
 
 
-#if 1		
-		ret = rte_eth_dev_configure(portid, 2, 1, &port_conf);
+#if USE_M_QUEUE		
+		ret = rte_eth_dev_configure(portid, 3, 1, &port_conf);
 		if (ret < 0)
 			rte_exit(EXIT_FAILURE, "Cannot configure device: err=%d, port=%u\n",
 				  ret, (unsigned) portid);
@@ -818,10 +871,21 @@ main(int argc, char **argv)
 		ret = rte_eth_rx_queue_setup(portid, 1, nb_rxd,
 					     rte_eth_dev_socket_id(portid),
 					     NULL,
-					     l2fwd_pktmbuf_pool);
+					     l2fwd_pktmbuf_pool1);
 		if (ret < 0)
 			rte_exit(EXIT_FAILURE, "rte_eth_rx_queue_setup(1):err=%d, port=%u\n",
 				  ret, (unsigned) portid);
+
+
+	/* init one RX queue */
+	fflush(stdout);
+	ret = rte_eth_rx_queue_setup(portid, 2, nb_rxd,
+				 rte_eth_dev_socket_id(portid),
+				 NULL,
+				 l2fwd_pktmbuf_pool2);
+	if (ret < 0)
+		rte_exit(EXIT_FAILURE, "rte_eth_rx_queue_setup(1):err=%d, port=%u\n",
+		  ret, (unsigned) portid);
 
 #else
 	ret = rte_eth_dev_configure(portid, 1, 1, &port_conf);
