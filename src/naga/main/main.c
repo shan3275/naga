@@ -653,7 +653,7 @@ if (l2fwd_pktmbuf_pool == NULL)
 		rte_exit(EXIT_FAILURE, "No Ethernet ports - bye\n");
 
 	if (nb_ports > RTE_MAX_ETHPORTS)
-		nb_ports = RTE_MAX_ETHPORTS;
+			nb_ports = RTE_MAX_ETHPORTS;
 
 
     printf(" Driver Init %d ports l2fwd_rx_queue_per_lcore= %u\n", nb_ports, l2fwd_rx_queue_per_lcore); 
@@ -692,7 +692,6 @@ if (l2fwd_pktmbuf_pool == NULL)
 	qconf = NULL;
 
 
-
 	/* Initialize the port/queue configuration of each logical core */
 	for (portid = 0; portid < nb_ports; portid++) {
 		/* skip ports that are not enabled */
@@ -718,8 +717,12 @@ if (l2fwd_pktmbuf_pool == NULL)
 	}
 #else
 
-            
+       //FIRST check corenum;
+	   //int corenum;
+	   //for(corenum=0; corenum)
 
+		
+		
         rx_lcore_id = 1; 
         portid =    0;
         
@@ -734,7 +737,7 @@ if (l2fwd_pktmbuf_pool == NULL)
 
 
         rx_lcore_id = 2; 
-        portid =    0;
+        portid      =    0;
         
 		if (qconf != &lcore_queue_conf[rx_lcore_id])
 			/* Assigned a new logical core in the loop above. */

@@ -49,6 +49,8 @@ struct lcore_queue_conf {
     unsigned int n_rx_port;
     unsigned int rx_port_list[MAX_RX_QUEUE_PER_LCORE];
     struct mbuf_table tx_mbufs[RTE_MAX_ETHPORTS];
+	uint64_t  rx_packet;
+	uint16_t  queue;
 } __rte_cache_aligned;
 /* Per-port statistics struct */
 struct itf_port_statistics {
