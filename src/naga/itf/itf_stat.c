@@ -13,6 +13,51 @@
 
 uint8_t itf_tx_enable =  ITF_ENABLE;
 uint8_t itf_rx_enable =  ITF_ENABLE;
+uint8_t if_enable[INTERFACE_NUM_MAX] = {ITF_ENABLE, ITF_ENABLE};
+
+berr interface_stat_set( port_stat *stat)
+{
+    if ( NULL == stat)
+    {
+        return E_PARAM;
+    }
+
+    if ( stat->port_id >= INTERFACE_NUM_MAX )
+    {
+        return E_EFFECTIVE;
+    }
+
+    if_enable[stat->port_id] = stat->enable;
+
+    return E_SUCCESS;
+}
+
+berr interface_stat_get( port_stat *stat)
+{
+    if ( NULL == stat)
+    {
+        return E_PARAM;
+    }
+
+    if ( stat->port_id >= INTERFACE_NUM_MAX )
+    {
+        return E_EFFECTIVE;
+    }
+
+    stat->enable = if_enable[stat->port_id];
+
+    return E_SUCCESS;
+}
+
+bool interface_is_enable(uint8_t port_id)
+{
+    if(ITF_ENABLE == if_enable[port_id] )
+    {
+        return true;
+    }
+
+    return false;
+}
 
 berr itf_stat_set( itf_stat *stat)
 {

@@ -45,6 +45,10 @@ void itf_rx_burst(rx_process_func process_func, unsigned int lcore_id, uint16_t 
     qconf = &lcore_queue_conf[lcore_id];
 
     for (i = 0; i < qconf->n_rx_port; i++) {
+        if (!interface_is_enable(i))
+        {
+            continue;
+        }
 
         portid = qconf->rx_port_list[i];
         nb_rx = rte_eth_rx_burst((uint8_t) portid, queue,

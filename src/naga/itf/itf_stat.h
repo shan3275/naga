@@ -15,6 +15,7 @@
 #define ITF_RX   (1 << 1)
 #define ITF_ENABLE  1
 #define ITF_DISABLE 0
+#define INTERFACE_NUM_MAX 2
 
 typedef struct
 {
@@ -22,9 +23,18 @@ typedef struct
     uint8_t enable;
 }itf_stat;
 
+typedef struct
+{
+    uint8_t port_id;
+    uint8_t enable;
+}port_stat;
+
+berr interface_stat_set( port_stat *stat);
+berr interface_stat_get( port_stat *stat);
+bool interface_is_enable(uint8_t port_id);
+
 berr itf_stat_set( itf_stat *stat);
 berr itf_stat_get( itf_stat *stat);
-
 bool itf_tx_is_enable(void);
 bool itf_rx_is_enable(void);
 
