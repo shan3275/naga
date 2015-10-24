@@ -40,6 +40,10 @@
 #define DPF_NODE(_mod, _tag, _func) { \
     if(MOD_IS_TURN_ON(_mod)) \
     { \
+		if(ACT_DROP == (_tag->acl.actions & ACT_DROP)) \
+		{\
+        	return E_SUCCESS;\
+		}\
         berr _ec = _func(_tag); \
         if (_ec == E_SUCCESS) \
         { \
