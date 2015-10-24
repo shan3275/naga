@@ -5,6 +5,8 @@
 #include "boots_custom.h"
 
 typedef enum {
+      ITF0_IPKTS,
+      ITF1_IPKTS,
       ITF_IPKTS,
       ITF_IBYTS,
       ITF_OPKTS,

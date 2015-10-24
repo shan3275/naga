@@ -190,6 +190,81 @@ DEFUN(itf_set,
     return itf_cmd_set(vty, argv[0], argv[1]);
 }
 
+static int interface_cmd_set(struct vty *vty, const char *if_str, const char *en_str)
+{
+    int ret = 0;
+    port_stat stat;
+
+    stat.port_id = atoi(if_str);
+    if ('e' == en_str[0])
+    {
+        stat.enable = ITF_ENABLE;
+    }
+    else
+    if ('d' == en_str[0])
+    {
+        stat.enable = ITF_DISABLE;
+    }
+    else
+    {
+        vty_out(vty, "parameter err %s %s", en_str, VTY_NEWLINE);
+        return CMD_WARNING;
+    }
+
+    ret = interface_stat_set(&stat);
+    if (ret)
+    {
+        vty_out(vty, "interface stat set fail ret(%d)%s", ret, VTY_NEWLINE);
+        return CMD_WARNING;
+    }
+
+    return CMD_SUCCESS;
+}
+
+DEFUN(interface_set,
+      interface_set_cmd,
+      "interface <0-1> (enable|disable)",
+      INTERFACE_STR
+      "Interface Number\n"
+      "En or Disable operation\n" 
+      )
+{
+    return interface_cmd_set(vty, argv[0], argv[1]);
+}
+
+static int interface_cmd_show_status(struct vty *vty)
+{
+    int rv;
+    int i;
+    port_stat stat;
+    for ( i = 0; i < INTERFACE_NUM_MAX; i++ )
+    {
+        stat.port_id = i;
+        rv = interface_stat_get( &stat);
+        if (rv)
+        {
+            vty_out(vty, "get tx status fail rv(%d)%s", rv, VTY_NEWLINE);
+        }
+        else
+        {
+            vty_out(vty, "Port(%d) :%s%s", i, stat.enable == ITF_ENABLE ?"Enable":"Disable", VTY_NEWLINE);
+        }
+    }
+
+    return CMD_SUCCESS;
+}
+
+DEFUN(interface_show_stat, 
+      interface_show_stat_cmd,
+      "show interface status",
+      SHOW_STR
+      INTERFACE_STR
+      "Status information\n" 
+      )
+{
+    return interface_cmd_show_status(vty);
+}
+
 void itf_cmd_config_write(struct vty *vty)
 {
     int rv;
@@ -208,19 +283,29 @@ void itf_cmd_config_write(struct vty *vty)
         vty_out(vty, "itf rx %s%s", stat.enable == ITF_ENABLE ?"enable":"disable", VTY_NEWLINE);
     }
 
-	
+    {
+        int i;
+        port_stat stat;
+        for ( i = 0; i < INTERFACE_NUM_MAX; i++ )
+        {
+            stat.port_id = i;
+            rv = interface_stat_get( &stat);
+            if ( E_SUCCESS == rv)
+            {
+                vty_out(vty, "interface %d %s%s", i, stat.enable == ITF_ENABLE ?"enable":"disable", VTY_NEWLINE);
+            }
+        }
+    }
 
 extern struct list_head	handle_head;
 	struct list_head *pos = NULL, *next = NULL;
 	libpcap_handler_t *handle = NULL;
 	list_for_each_safe(pos, next,&handle_head)
-
 	{
 		handle = (libpcap_handler_t *)list_entry(pos, libpcap_handler_t, node);
 		vty_out(vty, "interface bussiness add %s%s", handle->ifname, VTY_NEWLINE);			
 	}
 
-   
 
 }
 
@@ -238,6 +323,8 @@ void cmdline_itf_init(void)
     install_element(CMD_NODE, &itf_rxtx_cmd);
     install_element(CMD_NODE, &itf_show_stat_cmd);
     install_element(CMD_NODE, &itf_set_cmd);
+    install_element(CMD_NODE, &interface_set_cmd);
+    install_element(CMD_NODE, &interface_show_stat_cmd);
 
     return ;
 }
