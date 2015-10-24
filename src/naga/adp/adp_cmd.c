@@ -11,6 +11,7 @@
 #include "naga_types.h"
 #include "nag_adp.h"
 #include "adp_cmd.h"
+#include "bts_cnt.h"
 
 DEFUN(adp_interval, 
       adp_interval_cmd,
@@ -28,16 +29,15 @@ DEFUN(adp_interval_get,
     uint64_t adp_count;
     uint64_t adp_pushed;
 	uint64_t push_success;
-    adp_get_interval(&interval, &adp_count, &adp_success);  
+    adp_get_interval(&interval, &adp_count, &push_success);  
     vty_out(vty, "Interval  : %d%s", interval, VTY_NEWLINE);
     vty_out(vty, "Ad-Total  : %ld%s", adp_count, VTY_NEWLINE);    
-    vty_out(vty, "Ad-Pushed: %ld%s",  adp_pushed, VTY_NEWLINE);
+    vty_out(vty, "Ad-Pushed	: %ld%s",  adp_pushed, VTY_NEWLINE);
 	push_success = CNT_GET(ADP_PUSHED_ASSERT);
 	float fpushed = adp_pushed;
 	float fsuccess = push_success;
 	
     vty_out(vty, "Ad-Success: %ld (%f%)%s", push_success,fpushed/fsuccess, VTY_NEWLINE);
-
 
     return 0;
 }
