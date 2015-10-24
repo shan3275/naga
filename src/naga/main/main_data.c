@@ -76,13 +76,14 @@ berr naga_data_process_module(hytag_t * hytag)
     DPF_NODE(MOD_PID, hytag, naga_pid);
 	DPF_NODE(MOD_ADP, hytag, naga_uri);
 
-	DPF_NODE(MOD_NET, hytag, netseg_dp_process);
 
 	DPF_NODE(MOD_NET, hytag, dnet_dp_process);
 
     //DPF_NODE(MOD_VSR, &hytag, naga_vsr);
 
     DPF_NODE(MOD_DMR, hytag, naga_dmr);
+
+	DPF_NODE(MOD_NET, hytag, netseg_dp_process);
 
     DPF_NODE(MOD_ACR, hytag, naga_acr);
 
