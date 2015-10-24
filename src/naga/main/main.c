@@ -88,7 +88,7 @@ struct lcore_queue_conf lcore_queue_conf[RTE_MAX_LCORE];
 
 static const struct rte_eth_conf port_conf = {
 	.rxmode = {
-		.mp_mode = ETH_MQ_RX_DCB;
+		.mq_mode = ETH_MQ_RX_DCB;
 		.split_hdr_size = 0,
 		.header_split   = 0, /**< Header Split disabled */
 		.hw_ip_checksum = 0, /**< IP checksum offload disabled */
