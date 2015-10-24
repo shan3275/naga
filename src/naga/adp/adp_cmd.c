@@ -29,7 +29,7 @@ DEFUN(adp_interval_get,
     uint64_t adp_count;
     uint64_t adp_pushed;
 	uint64_t push_success;
-    adp_get_interval(&interval, &adp_count, &push_success);  
+    adp_get_interval(&interval, &adp_count, &adp_pushed);  
     vty_out(vty, "Interval  : %d%s", interval, VTY_NEWLINE);
     vty_out(vty, "Ad-Total  : %ld%s", adp_count, VTY_NEWLINE);    
     vty_out(vty, "Ad-Pushed	: %ld%s",  adp_pushed, VTY_NEWLINE);
