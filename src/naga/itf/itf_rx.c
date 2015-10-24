@@ -51,7 +51,7 @@ void itf_rx_burst(rx_process_func process_func, unsigned int lcore_id, uint16_t 
                      pkts_burst, MAX_PKT_BURST);
 
         port_statistics[portid].rx += nb_rx;
-
+		printf("core Id %d, queue %d recv %d\n", lcore_id,queue, nb_rx );
         for (j = 0; j < nb_rx; j++) {
             m = pkts_burst[j];
             rte_prefetch0(rte_pktmbuf_mtod(m, void *));
