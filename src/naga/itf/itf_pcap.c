@@ -20,7 +20,7 @@
 pcap_t *gpcap_desc = NULL;
 static int send_socket = 0;
 static struct  sockaddr_ll  sll;
-#if 0
+#if 1
 berr itf_raw_socket_init(char *ifname)
 {
     char errbuf[PCAP_ERRBUF_SIZE];
