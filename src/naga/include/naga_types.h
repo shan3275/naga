@@ -6,6 +6,10 @@
 typedef uint32_t ipaddr_t;
 
 
+#define USE_M_QUEUE 1
+
+
+
 #define PACKET_MTU    1500
 
 #define ACT_LOG         1
