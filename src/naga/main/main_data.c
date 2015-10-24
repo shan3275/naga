@@ -59,7 +59,7 @@
 /*
  * data plane main process flow, not include rx & tx
 */
-#define CHECK_PACK_TIME 1
+#define CHECK_PACK_TIME 0
 berr naga_data_process_module(hytag_t * hytag)
 {
 
