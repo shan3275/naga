@@ -63,6 +63,15 @@ void itf_rx_burst(rx_process_func process_func, unsigned int lcore_id, uint16_t 
         for (j = 0; j < nb_rx; j++) {
             m = pkts_burst[j];
             rte_prefetch0(rte_pktmbuf_mtod(m, void *));
+            if (0 == i)
+            {
+                cnt_inc(ITF0_IPKTS);
+            }
+            else
+            {
+                cnt_inc(ITF1_IPKTS);
+            }
+
             cnt_inc(ITF_IPKTS);
             cnt_add(ITF_IBYTS, m->data_len);
 
