@@ -198,11 +198,7 @@ berr naga_adp(hytag_t *hytag)
         return E_SUCCESS;
     }    
 
-    if(g_adp_cnt++ % g_adp_interval != 0)
-    {
-        CNT_INC(ADP_DROP_ADP_INTERVAL);
-        return E_SUCCESS;
-    }
+
 
 
 
@@ -267,6 +263,13 @@ berr naga_adp(hytag_t *hytag)
             CNT_INC(ADP_DROP_PUSH_MOBILE);
             return E_SUCCESS;           
         }
+    }
+
+
+    if(g_adp_cnt++ % g_adp_interval != 0)
+    {
+        CNT_INC(ADP_DROP_ADP_INTERVAL);
+        return E_SUCCESS;
     }
 
 
