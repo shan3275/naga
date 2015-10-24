@@ -15,6 +15,7 @@
 #include <net/if.h>
 #include <sys/ioctl.h>
 #include <linux/if_ether.h>
+#include <fcntl.h>
 
 pcap_t *gpcap_desc = NULL;
 static int send_socket = 0;
