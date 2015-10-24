@@ -88,6 +88,7 @@ struct lcore_queue_conf lcore_queue_conf[RTE_MAX_LCORE];
 
 static const struct rte_eth_conf port_conf = {
 	.rxmode = {
+		
 		//.mq_mode = ETH_MQ_RX_DCB,
 		.split_hdr_size = 0,
 		.header_split   = 0, /**< Header Split disabled */
@@ -816,6 +817,10 @@ if (l2fwd_pktmbuf_pool == NULL)
 
 
 #if USE_M_QUEUE		
+		port_conf.rxmode.mq_mode = ETH_MQ_RX_RSS;
+		port_conf.rx_adv_conf.rss_conf.rss_hf = ETH_RSS_IPV4;
+		port_conf.rx_adv_conf.rss_conf.rss_key = NULL;
+
 		ret = rte_eth_dev_configure(portid, 3, 1, &port_conf);
 		if (ret < 0)
 			rte_exit(EXIT_FAILURE, "Cannot configure device: err=%d, port=%u\n",
