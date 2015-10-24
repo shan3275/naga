@@ -22,15 +22,23 @@ DEFUN(adp_interval,
 
 DEFUN(adp_interval_get, 
       adp_interval_get_cmd,
-      "adp interval get", "Adp module\ninterval\nget interval http-get packet <1-100000> url will\n")
+      "show adp interval", "Adp module\ninterval\nget interval http-get packet <1-100000> url will\n")
 {
     int interval;
     uint64_t adp_count;
-    uint64_t adp_success;
+    uint64_t adp_pushed;
+	uint64_t push_success;
     adp_get_interval(&interval, &adp_count, &adp_success);  
     vty_out(vty, "Interval  : %d%s", interval, VTY_NEWLINE);
     vty_out(vty, "Ad-Total  : %ld%s", adp_count, VTY_NEWLINE);    
-    vty_out(vty, "Ad-Success: %ld%s", adp_success, VTY_NEWLINE);  
+    vty_out(vty, "Ad-Pushed: %ld%s",  adp_pushed, VTY_NEWLINE);
+	push_success = CNT_GET(ADP_PUSHED_ASSERT);
+	float fpushed = adp_pushed;
+	float fsuccess = push_success;
+	
+    vty_out(vty, "Ad-Success: %ld (%f%)%s", push_success,fpushed/fsuccess, VTY_NEWLINE);
+
+
     return 0;
 }
 
