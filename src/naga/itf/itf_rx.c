@@ -53,8 +53,8 @@ void itf_rx_burst(rx_process_func process_func, unsigned int lcore_id, uint16_t 
         port_statistics[portid].rx += nb_rx;
 #if USE_M_QUEUE
 		
-		if(nb_rx)
-			printf("core Id %d, queue %d recv %d\n", lcore_id,queue, nb_rx );
+//		if(nb_rx)
+//			printf("core Id %d, queue %d recv %d\n", lcore_id,queue, nb_rx );
 #endif		
         for (j = 0; j < nb_rx; j++) {
             m = pkts_burst[j];
