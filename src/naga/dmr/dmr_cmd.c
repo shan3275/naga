@@ -489,7 +489,7 @@ static int cmd_dmr_del_all(struct vty *vty)
 
 DEFUN(remove_domain, 
       remove_domain_cmd,
-      "remove domain NAME",
+      "no domain NAME",
       REMOVE_STR
       DOMAIN_STR
       DOMAIN_NAME_STR)
