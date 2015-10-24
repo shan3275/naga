@@ -47,17 +47,24 @@ void itf_rx_burst(rx_process_func process_func, unsigned int lcore_id, uint16_t 
     qconf = &lcore_queue_conf[lcore_id];
 
     for (i = 0; i < qconf->n_rx_port; i++) {
-        if (!interface_is_enable(i))
-        {
-            continue;
-        }
-
         portid = qconf->rx_port_list[i];
         nb_rx = rte_eth_rx_burst((uint8_t) portid, queue,
                      pkts_burst, MAX_PKT_BURST);
 
+<<<<<<< HEAD
 		qconf->rx_packet += nb_rx;
         port_statistics[portid].rx += nb_rx;
+=======
+            port_statistics[portid].rx += nb_rx;
+            if (0 == portid)
+            {
+                cnt_add(ITF0_IPKTS, nb_rx);
+            }
+            else
+            {
+                cnt_add(ITF1_IPKTS, nb_rx);
+            }
+>>>>>>> 2d43a7bbc5b1b06ed37eb67153106c482cfb41ba
 #if USE_M_QUEUE
 		
 //		if(nb_rx)
@@ -66,9 +73,12 @@ void itf_rx_burst(rx_process_func process_func, unsigned int lcore_id, uint16_t 
         for (j = 0; j < nb_rx; j++) {
             m = pkts_burst[j];
             rte_prefetch0(rte_pktmbuf_mtod(m, void *));
+
             cnt_inc(ITF_IPKTS);
             cnt_add(ITF_IBYTS, m->data_len);
 
+        if (interface_is_enable(portid))
+        {
             ec = process_func(m);
             if(ec != E_SUCCESS) {
                 port_statistics[portid].fail += 1;
@@ -76,8 +86,8 @@ void itf_rx_burst(rx_process_func process_func, unsigned int lcore_id, uint16_t 
 
                 //DOPT_SELECT(DOPT_FPR, );
             }
-
-            rte_pktmbuf_free(m);
+        }
+        rte_pktmbuf_free(m);
         }
     }
 }

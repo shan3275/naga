@@ -92,6 +92,14 @@ berr adp_get_interval(int *interval, uint64_t *adp_cnt, uint64_t *success)
     return E_SUCCESS;
 }
 
+berr adp_clear_interval()
+{
+    g_adp_cnt = 0;
+    g_adp_success = 0;
+    return E_SUCCESS;
+}
+
+
 extern struct rte_mempool * l2fwd_pktmbuf_pool;
 
 static inline struct rte_mbuf *rte_pktmbuf_real_clone(struct rte_mbuf *md,

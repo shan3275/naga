@@ -4,6 +4,8 @@
 
 cnt_t cnt_array[CNT_MAX] =
 {
+    CNT_DEF(ITF0_IPKTS),
+    CNT_DEF(ITF1_IPKTS),
     CNT_DEF(ITF_IPKTS),
     CNT_DEF(ITF_IBYTS),
     CNT_DEF(ITF_OPKTS),
