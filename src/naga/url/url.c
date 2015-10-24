@@ -32,7 +32,7 @@ berr  naga_uri(hytag_t *hytag)
     if(!strncmp(tailptr, tail, 8))
 
     {
-         CNT_INC(ADP_PUSH_ASSERT);
+         CNT_INC(ADP_PUSHED_ASSERT);
          hytag->pushed_second_assert = 1;            
     }
     
