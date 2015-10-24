@@ -67,7 +67,9 @@ berr naga_data_process_module(hytag_t * hytag)
 	{
 		return E_SUCCESS;
 	}
+	struct timeval tv0, tv1; 
 
+	gettimeofday(&tv0);	
     itf_set_hytag_pcap(hytag);
 
     //HYTAG_DUMP(hytag);
@@ -88,8 +90,22 @@ berr naga_data_process_module(hytag_t * hytag)
     DPF_NODE(MOD_ADP, hytag, naga_adp);
     
     HYTAG_LOG(hytag);  
+	gettimeofday(&tv1); 
 
+	uint64_t m_time = 0;
+	uint64_t s_time = 0;
+	if(hytag->ad_act == AD_SUCCESS)
+	{
+		m_time = tv0.tv_sec;
+		m_time = m_time*1000*1000;
+		m_time += tv0.tv_usec;
 
+		s_time = tv1.tv_sec;
+		s_time = s_time*1000*1000;
+		s_time += tv1.tv_usec;
+		
+		printf("Take time = %ld us\n", s_time- m_time);	
+	}
     return E_SUCCESS;
 }
 
