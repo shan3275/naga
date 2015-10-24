@@ -34,11 +34,20 @@ DEFUN(adp_interval_get,
     vty_out(vty, "Ad-Total  : %ld%s", adp_count, VTY_NEWLINE);    
     vty_out(vty, "Ad-Pushed	: %ld%s",  adp_pushed, VTY_NEWLINE);
 	push_success = CNT_GET(ADP_PUSHED_ASSERT);
-	float fpushed = adp_pushed;
-	float fsuccess = push_success;
-	float aver =  fpushed/fsuccess;
-    vty_out(vty, "Ad-Success: %ld (%f/100)%s", push_success, aver, VTY_NEWLINE);
-
+	if(adp_pushed)
+	{
+		vty_out(vty, "Ad-Success: %ld (0\%)%s", push_success, VTY_NEWLINE);
+		return 0;
+	}
+	else
+	{
+		float fpushed = adp_pushed;
+		float fsuccess = push_success;
+	
+		float aver =  fsuccess/fpushed;
+    
+		vty_out(vty, "Ad-Success: %ld (%f\%)%s", push_success, aver, VTY_NEWLINE);
+	}
     return 0;
 }
 

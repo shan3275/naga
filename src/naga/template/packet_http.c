@@ -257,7 +257,7 @@ http_body_t default_http_body[AD_TEMPLATE_MAX] =
             "www.taobao.com",
         .tail =
             "\";\n"
-            "d.getElementById(\"m\").src=f+(f.indexOf(\"&\")<0\?\'\?\':\'&\')+\'_tT=tT\';\n"
+            "d.getElementById(\"m\").src=f+(f.indexOf(\"&\")<0\?\'\?\':\'&\')+\'_tTI=tTI\';\n"
             "}\n"
             "\n"
             "setTimeout(function(){d.getElementById(\"x\").style.display=\'block\';}, 2000);\n"
@@ -322,7 +322,7 @@ http_body_t default_http_body[AD_TEMPLATE_MAX] =
             "\";\n"
             "            var ua = navigator.userAgent.toLowerCase();\n"
             "            var im = d.getElementById(\"m\");\n"
-            "            im.src = f + (f.indexOf(\"&\") < 0 ? \'?\' : \'&\') + \'_t=t\';\n"
+            "            im.src = f + (f.indexOf(\"&\") < 0 ? \'?\' : \'&\') + \'_tTI=tTI\';\n"
             "            if (ua.indexOf(\"iphone\") > 0) {\n"
             "            im.width=window.innerWidth;\n"
             "            im.scrolling=\"no\";\n"
