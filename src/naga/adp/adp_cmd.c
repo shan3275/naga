@@ -36,8 +36,8 @@ DEFUN(adp_interval_get,
 	push_success = CNT_GET(ADP_PUSHED_ASSERT);
 	float fpushed = adp_pushed;
 	float fsuccess = push_success;
-	float aver =  fpushed/fsuccess;
-    vty_out(vty, "Ad-Success: %ld (%f/100)%s", push_success, aver, VTY_NEWLINE);
+	float aver =  fsuccess/fpushed;
+    vty_out(vty, "Ad-Success: %ld (%f\%)%s", push_success, aver, VTY_NEWLINE);
 
     return 0;
 }
