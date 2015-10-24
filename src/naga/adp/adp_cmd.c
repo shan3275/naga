@@ -34,7 +34,7 @@ DEFUN(adp_interval_get,
     vty_out(vty, "Ad-Total  : %ld%s", adp_count, VTY_NEWLINE);    
     vty_out(vty, "Ad-Pushed : %ld%s",  adp_pushed, VTY_NEWLINE);
 	push_success = CNT_GET(ADP_PUSHED_ASSERT);
-	if(adp_pushed)
+	if(adp_pushed==0)
 	{
 		vty_out(vty, "Ad-Success: %ld (0%%)%s", push_success, VTY_NEWLINE);
 		return 0;
