@@ -86,7 +86,7 @@ char *interface_str = NULL; /*for eth name*/
 
 struct lcore_queue_conf lcore_queue_conf[RTE_MAX_LCORE];
 
-static const struct rte_eth_conf port_conf = {
+static  struct rte_eth_conf port_conf = {
 	.rxmode = {
 		
 		//.mq_mode = ETH_MQ_RX_DCB,
