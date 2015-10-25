@@ -129,7 +129,6 @@ void hytag_log(hytag_t *tag)
 		                    tag->outer_protocol,
 		                    tag->host,tag->uri);        	
 		}					
-	}
 		
 	}	
 }
