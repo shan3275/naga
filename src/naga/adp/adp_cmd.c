@@ -333,7 +333,7 @@ void cmdline_adp_init(void)
     install_element(CMD_NODE, &adp_mac_special_set_cmd);
     install_element(CMD_NODE, &adp_switch_template_cmd);
 
-	install_element(CMD_NODE, &adp_interval_clean);
+	install_element(CMD_NODE, &adp_interval_clean_cmd);
     
     return ;
 }
