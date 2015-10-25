@@ -96,11 +96,12 @@ void hytag_log(hytag_t *tag)
 		if(APP_TYPE_HTTP_GET_OR_POST == tag->app_type 
 		&&	(ACT_LOG == (tag->acl.actions & ACT_LOG)))
 		{
-			bts_zlog(LOG_ALERT, "{%d.%d.%d.%d %d.%d.%d.%d %d %d %d}\t|%-32s|%-64s|AD<%s>", 
+			bts_zlog(LOG_ALERT, "%d.%d.%d.%d|%d|%d.%d.%d.%d|%d|%d|%d|%-32s|%-64s|AD<%s>", 
 		                    (tag->outer_srcip4 >>24) &0xff,
 		                    (tag->outer_srcip4 >>16) &0xff,
 		                    (tag->outer_srcip4 >>8) &0xff,
 		                    (tag->outer_srcip4) &0xff,
+		                    (tag->snet_hit_id),
 		                    (tag->outer_dstip4 >>24) &0xff,
 		                    (tag->outer_dstip4 >>16) &0xff,
 		                    (tag->outer_dstip4 >>8) &0xff,
@@ -110,7 +111,25 @@ void hytag_log(hytag_t *tag)
 		                    tag->outer_protocol,
 		                    tag->host,tag->uri, tag->ad_act == AD_SUCCESS ? "P":"N");        	
 		}
-		i
+		if(tag->pushed_second_assert)
+		{
+
+			bts_zlog(LOG_ALERT, "%d.%d.%d.%d|%d|%d.%d.%d.%d|%d|%d|%d|%-32s|%-64s|AD<S>", 
+		                    (tag->outer_srcip4 >>24) &0xff,
+		                    (tag->outer_srcip4 >>16) &0xff,
+		                    (tag->outer_srcip4 >>8) &0xff,
+		                    (tag->outer_srcip4) &0xff,
+		                    (tag->snet_hit_id),
+		                    (tag->outer_dstip4 >>24) &0xff,
+		                    (tag->outer_dstip4 >>16) &0xff,
+		                    (tag->outer_dstip4 >>8) &0xff,
+		                    (tag->outer_dstip4) &0xff,
+		                    tag->outer_srcport,
+		                    tag->outer_dstport,
+		                    tag->outer_protocol,
+		                    tag->host,tag->uri);        	
+		}					
+		}
 		
 	}	
 }

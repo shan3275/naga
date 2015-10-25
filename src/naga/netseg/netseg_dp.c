@@ -83,7 +83,7 @@ berr netseg_dp_process(hytag_t *hytag)
         /* add match statistics */
         cnt_inc(NET_MATCHPKTS);
         hytag->match |= 1;
-
+		hytag->snet_hit_id = rule->index;
 
 		ACL_HIT(rule->acl);
 
