@@ -76,6 +76,7 @@ berr netseg_dp_process(hytag_t *hytag)
         /*add not match statistics */
         cnt_inc(NET_UNMATCHPKTS);
         hytag->match &= 0xfffe;
+		hytag->snet_hit_id = 255;
 		HYTAG_ACL_SET(hytag->acl, netseg_default_action);
     }
     else
