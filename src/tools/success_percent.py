@@ -31,6 +31,7 @@ LOG_FILE=open(ARGV1)
 for LINE in LOG_FILE.readlines():
     LINE=LINE.strip('\n')
     FIELD  = LINE.split('|')
+    print FIELD[5]
     SNET   = FIELD[5]
     DOMAIN = FIELD[6]
     PUSH   = FIELD[7]
