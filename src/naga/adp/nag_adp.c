@@ -17,9 +17,9 @@
 #define debug(fmt,args...)   
 #endif  /* DEBUG */ 
 
-uint64_t  g_adp_cnt = 0;
+//uint64_t  g_adp_cnt = 0;
 uint64_t  g_adp_interval = 1;
-uint64_t  g_adp_success=0;
+//uint64_t  g_adp_success=0;
 
 int  g_adp_push_switch = 1;
 
@@ -96,7 +96,7 @@ berr adp_clear_interval()
 {
 	CNT_SET(ADP_ALL_CAN_PUSH, 0);
 	CNT_SET(ADP_PUSH_TX_SUCCESS, 0);
-	CNT_SET(ADP_PUSH_TX_SUCCESS, 0);	
+	CNT_SET(ADP_PUSH_ACK_SUCCESS, 0);	
     return E_SUCCESS;
 }
 
