@@ -51,11 +51,8 @@ void itf_rx_burst(rx_process_func process_func, unsigned int lcore_id, uint16_t 
         nb_rx = rte_eth_rx_burst((uint8_t) portid, queue,
                      pkts_burst, MAX_PKT_BURST);
 
-<<<<<<< HEAD
-		qconf->rx_packet += nb_rx;
-        port_statistics[portid].rx += nb_rx;
-=======
-            port_statistics[portid].rx += nb_rx;
+			qconf->rx_packet += nb_rx;
+        	//port_statistics[portid].rx += nb_rx;
             if (0 == portid)
             {
                 cnt_add(ITF0_IPKTS, nb_rx);
@@ -64,7 +61,7 @@ void itf_rx_burst(rx_process_func process_func, unsigned int lcore_id, uint16_t 
             {
                 cnt_add(ITF1_IPKTS, nb_rx);
             }
->>>>>>> 2d43a7bbc5b1b06ed37eb67153106c482cfb41ba
+
 #if USE_M_QUEUE
 		
 //		if(nb_rx)
