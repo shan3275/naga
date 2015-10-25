@@ -281,8 +281,8 @@ void adp_cmd_config_write(struct vty *vty)
 	int interval = 0;
     int on ;
 
-	uint64_t adp_count , adp_sucess;
-	adp_get_interval(&interval, &adp_count, &adp_sucess);  
+
+	adp_get_interval(&interval);  
 
 	vty_out(vty, "adp interval %d%s",
 						interval,
