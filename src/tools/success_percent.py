@@ -31,9 +31,14 @@ LOG_FILE=open(ARGV1)
 for LINE in LOG_FILE.readlines():
     LINE=LINE.strip('\n')
     FIELD  = LINE.split('|')
+<<<<<<< HEAD
     TT   = FIELD[0]
     F1 = TT.split(' ');
     SNET   = F1[3]
+=======
+    print FIELD[5]
+    SNET   = FIELD[5]
+>>>>>>> fcfbda9bcccc1af643e525d5e94e8509066c7247
     DOMAIN = FIELD[6]
     PUSH   = FIELD[7][3]
 
