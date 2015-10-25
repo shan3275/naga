@@ -54,7 +54,7 @@ DEFUN(adp_interval_get,
 	
 		float aver =  (fsuccess/fpushed)*100;
     
-		vty_out(vty, "Pushed(ack success): %ld (%f%%)%s", push_success, aver, VTY_NEWLINE);
+		vty_out(vty, "Pushed(ack success): %ld (%f%%)%s", adp_push_ack_success, aver, VTY_NEWLINE);
 	}
     return 0;
 }
