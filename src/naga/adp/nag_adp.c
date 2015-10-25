@@ -92,7 +92,7 @@ berr adp_get_interval(int *interval)
     return E_SUCCESS;
 }
 
-berr adp_clear_interval()
+berr adp_clear_interval(void)
 {
 	CNT_SET(ADP_ALL_CAN_PUSH, 0);
 	CNT_SET(ADP_PUSH_TX_SUCCESS, 0);
