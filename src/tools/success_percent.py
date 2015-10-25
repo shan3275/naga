@@ -31,9 +31,11 @@ LOG_FILE=open(ARGV1)
 for LINE in LOG_FILE.readlines():
     LINE=LINE.strip('\n')
     FIELD  = LINE.split('|')
-    SNET   = FIELD[5]
+    TT   = FIELD[0]
+    F1 = TT.split(' ');
+    SNET   = F1[3]
     DOMAIN = FIELD[6]
-    PUSH   = FIELD[7]
+    PUSH   = FIELD[7][3]
 
     #if cmp(PUSH, 'P')==0:
     if PUSH.find("P") != -1:
