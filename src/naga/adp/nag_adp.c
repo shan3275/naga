@@ -84,18 +84,19 @@ berr adp_set_interval(int interval)
     return E_SUCCESS;
 }
 
-berr adp_get_interval(int *interval, uint64_t *adp_cnt, uint64_t *success)
+berr adp_get_interval(int *interval)
 {
     *interval = g_adp_interval ;
-    *adp_cnt = g_adp_cnt;
-    *success = g_adp_success;
+    //*adp_cnt =  CNT_GET(ADP_ALL_CAN_PUSH);
+    //*success = CNT_GET(ADP_PUSH_TX_SUCCESS);
     return E_SUCCESS;
 }
 
 berr adp_clear_interval()
 {
-    g_adp_cnt = 0;
-    g_adp_success = 0;
+	CNT_SET(ADP_ALL_CAN_PUSH, 0);
+	CNT_SET(ADP_PUSH_TX_SUCCESS, 0);
+	CNT_SET(ADP_PUSH_TX_SUCCESS, 0);	
     return E_SUCCESS;
 }
 
@@ -273,8 +274,8 @@ berr naga_adp(hytag_t *hytag)
         }
     }
 
-
-    if(g_adp_cnt++ % g_adp_interval != 0)
+	CNT_INC(ADP_ALL_CAN_PUSH);
+    if( CNT_GET(ADP_ALL_CAN_PUSH)% g_adp_interval != 0)
     {
         CNT_INC(ADP_DROP_ADP_INTERVAL);
         return E_SUCCESS;
@@ -419,11 +420,11 @@ berr naga_adp(hytag_t *hytag)
             }
     #endif
         }
-       g_adp_success++;
-       hytag->ad_act = AD_SUCCESS;
+       //g_adp_success++;
+   hytag->ad_act = AD_SUCCESS;
 
 
-   CNT_INC(ADP_PUSH_SUCCESS);
+   CNT_INC(ADP_PUSH_TX_SUCCESS);
    return E_SUCCESS;
 
 }
