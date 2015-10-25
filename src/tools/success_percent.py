@@ -33,7 +33,7 @@ for LINE in LOG_FILE.readlines():
     FIELD  = LINE.split('|')
     SNET   = FIELD[5]
     DOMAIN = FIELD[6]
-    PUSH   = FIELD[8]
+    PUSH   = FIELD[7]
 
     #if cmp(PUSH, 'P')==0:
     if PUSH.find("P") != -1:
