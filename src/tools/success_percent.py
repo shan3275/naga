@@ -35,11 +35,13 @@ for LINE in LOG_FILE.readlines():
     DOMAIN = FIELD[6]
     PUSH   = FIELD[8]
 
-    if cmp(PUSH, 'P')==0:
+    #if cmp(PUSH, 'P')==0:
+    if PUSH.find("P") != -1:
         snet_push_hit(SNET)
         domain_push_hit(DOMAIN)
 
-    if cmp(PUSH, 'S')==0:
+    #if cmp(PUSH, 'S')==0:
+    if PUSH.find("S") != -1:
         snet_success_hit(SNET)
         domain_success_hit(DOMAIN)
 
