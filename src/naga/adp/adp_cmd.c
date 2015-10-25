@@ -52,6 +52,24 @@ DEFUN(adp_interval_get,
 }
 
 
+DEFUN(adp_interval_clean, 
+      adp_interval_clean_cmd,
+      "clear adp interval", "Adp module\ninterval\nget interval http-get packet <1-100000> url will\n")
+{
+    int interval;
+    uint64_t adp_count;
+    uint64_t adp_pushed;
+	uint64_t push_success;
+	
+    adp_clear_interval();
+
+	CNT_SET(ADP_PUSHED_ASSERT, 0);
+
+    return 0;
+}
+
+
+
 
 DEFUN(adp_switch_set_on, 
       adp_switch_set_on_cmd,
@@ -311,6 +329,8 @@ void cmdline_adp_init(void)
     install_element(CMD_NODE, &adp_mac_custom_set_cmd);
     install_element(CMD_NODE, &adp_mac_special_set_cmd);
     install_element(CMD_NODE, &adp_switch_template_cmd);
+
+	install_element(CMD_NODE, &adp_interval_clean);
     
     return ;
 }
