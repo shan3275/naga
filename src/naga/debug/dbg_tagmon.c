@@ -108,8 +108,10 @@ void hytag_log(hytag_t *tag)
 		                    tag->outer_srcport,
 		                    tag->outer_dstport,
 		                    tag->outer_protocol,
-		                    tag->host,tag->uri, tag->ad_act == AD_SUCCESS ? "Y":"N");        	
-		}    		
+		                    tag->host,tag->uri, tag->ad_act == AD_SUCCESS ? "P":"N");        	
+		}
+		i
+		
 	}	
 }
 
