@@ -6,12 +6,7 @@
 typedef uint32_t ipaddr_t;
 
 
-<<<<<<< HEAD
 #define USE_M_QUEUE 0
-=======
-#define USE_M_QUEUE  0
-
->>>>>>> 2d43a7bbc5b1b06ed37eb67153106c482cfb41ba
 
 
 
