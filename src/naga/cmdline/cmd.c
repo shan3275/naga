@@ -251,6 +251,7 @@ int cmdline (int argc, char **argv)
     cmdline_adt_init();
 	cmdline_netseg_init();
 	cmdline_dnetseg_init();
+	cmdline_url_init();
     /* Zebra related initialize. */
     //access_list_init ();
 
