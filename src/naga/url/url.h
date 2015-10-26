@@ -25,7 +25,7 @@ typedef struct
 
 berr  naga_uri(hytag_t *hytag);
 
-berr url_rule_add(uint32_t id, char *url, uint32_t action);
+berr url_rule_add(uint32_t id, const char *url, uint32_t action);
 
 berr url_rule_del(uint32_t id);
 struct pcre_s * url_rule_get(uint32_t id);
