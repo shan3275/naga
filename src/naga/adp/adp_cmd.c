@@ -34,7 +34,7 @@ DEFUN(adp_interval_get,
 	adp_get_interval(&interval);
 
 	adp_can_push_count = CNT_GET(ADP_ALL_CAN_PUSH); 
-	adp_push_tx_success = CNT_GET(ADP_ALL_CAN_PUSH);
+	adp_push_tx_success = CNT_GET(ADP_PUSH_TX_SUCCESS);
 	adp_push_ack_success = CNT_GET(ADP_PUSH_ACK_SUCCESS);
 
     vty_out(vty, "Interval  : %d%s", interval, VTY_NEWLINE);

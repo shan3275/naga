@@ -48,7 +48,7 @@ SRCS-y += url.c
 
 CFLAGS += -O3
 CFLAGS += $(WERROR_FLAGS)
-CFLAGS += -I ../boots -I ../include  -I ../itf  -I ../template  
+CFLAGS += -I ../boots -I ../include  -I ../itf  -I ../template   -I ../pcre
 
 # this lib depends upon:
 #DEPDIRS-y += lib/librte_eal lib/librte_mempool lib/librte_ring lib/librte_mbuf
