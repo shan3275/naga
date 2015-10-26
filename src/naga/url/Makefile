@@ -44,7 +44,7 @@ EXPORT_MAP := lib_url.map
 
 LIBABIVER := 1
 
-SRCS-y += url.c
+SRCS-y += url.c url_cmd.c
 
 CFLAGS += -O3
 CFLAGS += $(WERROR_FLAGS)
