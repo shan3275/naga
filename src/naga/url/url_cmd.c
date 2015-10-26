@@ -80,7 +80,7 @@ DEFUN(show_url_all,
         if(!pcreptr)
             continue;
 
-        vty_out(vty, "%-32d %-32s %-20d %s", pcreptr->id, pcreptr->pattern,(uint64_t) pcreptr->acl.cnt.cnt,  VTY_NEWLINE);    
+        vty_out(vty, "%-32d %-32s %-20ld %s", pcreptr->id, pcreptr->pattern,(uint64_t) pcreptr->acl.cnt.cnt,  VTY_NEWLINE);    
         
     }
     return 0;
@@ -90,7 +90,7 @@ DEFUN(show_url_all,
 void cmdline_url_init(void)
 {
 	install_element(CMD_NODE, &url_add_cmd);
-	install_element(CMD_NODE, &rul_del_cmd);
+	install_element(CMD_NODE, &url_del_cmd);
 	install_element(CMD_NODE, &url_del_all_cmd);
     install_element(CMD_NODE, &show_url_all_cmd);
     return ;
