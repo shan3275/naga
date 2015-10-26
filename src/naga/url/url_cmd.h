@@ -12,7 +12,7 @@
 
 
 
-
+void cmdline_url_init(void);
 
 
 
