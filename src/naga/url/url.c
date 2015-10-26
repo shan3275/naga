@@ -144,8 +144,7 @@ berr  naga_uri(hytag_t *hytag)
                 {
                    	ACL_HIT(urlcre->acl);
                     HYTAG_ACL_MERGE(hytag->acl, urlcre->acl);
-				  	printf("action = 0x%x\n", urlcre->acl.actions);
-				   
+				  	//printf("action = 0x%x\n", urlcre->acl.actions);
                    	return E_SUCCESS;
                 }
                 
