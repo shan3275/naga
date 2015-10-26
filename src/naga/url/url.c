@@ -117,7 +117,8 @@ berr  naga_uri(hytag_t *hytag)
     if(hytag->uri_len == 1 && !strcmp(hytag->uri, "/"))
     {    
     	hytag->acl.actions |=  ACT_LOG;
-        CNT_INC(URL_HOMEPAGE);		
+        CNT_INC(URL_HOMEPAGE);
+		return E_SUCCESS;
     }
     else 
     {
@@ -136,7 +137,7 @@ berr  naga_uri(hytag_t *hytag)
                 {
                    ACL_HIT(urlcre->acl);
                    HYTAG_ACL_MERGE(hytag->acl, urlcre->acl);
-                   break;
+                   return E_SUCCESS;
                 }
                 
 
@@ -144,7 +145,10 @@ berr  naga_uri(hytag_t *hytag)
         }  
     }
 
-	return E_SUCCESS;
+	hytag->acl.actions |=  ACT_DROP;
+	CNT_INC(ADP_DROP_BACKSLASH_SUFFIX);
+	return E_SUCCESS;  
+
 }
 
 
