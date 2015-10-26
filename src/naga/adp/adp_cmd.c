@@ -26,30 +26,51 @@ DEFUN(adp_interval_get,
       "show adp interval", "Adp module\ninterval\nget interval http-get packet <1-100000> url will\n")
 {
     int interval;
-    uint64_t adp_count;
-    uint64_t adp_pushed;
-	uint64_t push_success;
-    adp_get_interval(&interval, &adp_count, &adp_pushed);  
+    uint64_t adp_can_push_count;
+    uint64_t adp_push_tx_success;
+	uint64_t adp_push_ack_success;
+
+
+	adp_get_interval(&interval);
+
+	adp_can_push_count = CNT_GET(ADP_ALL_CAN_PUSH); 
+	adp_push_tx_success = CNT_GET(ADP_ALL_CAN_PUSH);
+	adp_push_ack_success = CNT_GET(ADP_PUSH_ACK_SUCCESS);
+
     vty_out(vty, "Interval  : %d%s", interval, VTY_NEWLINE);
-    vty_out(vty, "Ad-Total  : %ld%s", adp_count, VTY_NEWLINE);    
-    vty_out(vty, "Ad-Pushed : %ld%s",  adp_pushed, VTY_NEWLINE);
-	push_success = CNT_GET(ADP_PUSHED_ASSERT);
-	if(adp_pushed==0)
+	
+    vty_out(vty, "All can push		: %ld%s",  adp_can_push_count, VTY_NEWLINE);    
+    vty_out(vty, "Pushed(tx success): %ld%s",  adp_push_tx_success, VTY_NEWLINE);
+	
+	if(adp_push_tx_success==0)
 	{
-		vty_out(vty, "Ad-Success : %ld (0%%)%s", push_success, VTY_NEWLINE);
+		vty_out(vty, "Pushed(ack success): %ld (0%%)%s", adp_push_ack_success, VTY_NEWLINE);
 		return 0;
 	}
 	else
 	{
-		float fpushed = adp_pushed;
-		float fsuccess = push_success;
+		float fpushed = adp_push_tx_success;
+		float fsuccess = adp_push_ack_success;
 	
 		float aver =  (fsuccess/fpushed)*100;
     
-		vty_out(vty, "Ad-Success : %ld (%f%%)%s", push_success, aver, VTY_NEWLINE);
+		vty_out(vty, "Pushed(ack success): %ld (%f%%)%s", adp_push_ack_success, aver, VTY_NEWLINE);
 	}
     return 0;
 }
+
+
+DEFUN(adp_interval_clean, 
+      adp_interval_clean_cmd,
+      "clear adp interval", "Adp module\ninterval\nget interval http-get packet <1-100000> url will\n")
+{
+
+	
+    adp_clear_interval();
+
+    return 0;
+}
+
 
 
 
@@ -260,8 +281,8 @@ void adp_cmd_config_write(struct vty *vty)
 	int interval = 0;
     int on ;
 
-	uint64_t adp_count , adp_sucess;
-	adp_get_interval(&interval, &adp_count, &adp_sucess);  
+
+	adp_get_interval(&interval);  
 
 	vty_out(vty, "adp interval %d%s",
 						interval,
@@ -311,6 +332,8 @@ void cmdline_adp_init(void)
     install_element(CMD_NODE, &adp_mac_custom_set_cmd);
     install_element(CMD_NODE, &adp_mac_special_set_cmd);
     install_element(CMD_NODE, &adp_switch_template_cmd);
+
+	install_element(CMD_NODE, &adp_interval_clean_cmd);
     
     return ;
 }
