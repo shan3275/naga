@@ -42,7 +42,7 @@ berr url_rule_add(uint32_t id, const char *url, uint32_t action)
 			return E_FAIL;
 		}
 		pcre_n->acl.actions = action;
-	
+		pcre_n->used =1;
 		
     }
     if(id > url_r.inuse)
