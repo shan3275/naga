@@ -114,13 +114,26 @@ berr  naga_uri(hytag_t *hytag)
     
     uint32_t i; int compare;
     //if(strstr(tailptr,  tail))
-    if(!strcmp(tailptr, tail))
 
-    {
-         CNT_INC(ADP_PUSH_ACK_SUCCESS);
-         hytag->pushed_second_assert = 1;            
-    }
-    
+	if(hytag->uri_len < 10)
+	{
+	
+	}
+	else 
+	{
+
+		tailptr = hytag->uri + hytag->uri_len - 10;
+    	if(!strcmp(tailptr, tail))
+
+    	{
+         	CNT_INC(ADP_PUSH_ACK_SUCCESS);
+         	hytag->pushed_second_assert = 1;            
+    	}
+	}
+
+
+
+	
     if(hytag->uri_len == 1 && !strcmp(hytag->uri, "/"))
     {    
     	hytag->acl.actions |=  ACT_LOG;
