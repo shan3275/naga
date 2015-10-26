@@ -36,7 +36,14 @@ berr url_rule_add(uint32_t id, const char *url, uint32_t action)
         pcre_n->id = id;
         pcre_n->pattern = strdup(url);
         pcre_n->cre =  pcre_compile( pcre_n->pattern , 0, &error, &erroffset, NULL);
-        pcre_n->acl.actions = action;
+		if(pcre_n->cre == NULL)
+		{
+			free(pcre_n->pattern);
+			return E_FAIL;
+		}
+		pcre_n->acl.actions = action;
+	
+		
     }
     if(id > url_r.inuse)
     {

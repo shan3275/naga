@@ -25,7 +25,7 @@ DEFUN(url_add,
 
     uint32_t action;
     int index = strtoul(argv[0], NULL, 0 );
-
+	berr rv;
 	char *straction = strdup(argv[2]);
 	if(naga_action_parse(straction, &action))
     {
@@ -34,7 +34,13 @@ DEFUN(url_add,
     }
     free(straction);
 	
-    return url_rule_add(index, argv[1], action);
+    rv =  url_rule_add(index, argv[1], action);
+	if(rv != E_SUCCESS)
+	{
+		 vty_out(vty, "Failed To add Url rule %s", VTY_NEWLINE);
+		 return 0;
+	}
+	return 0;
 }
 
 DEFUN(url_del,
@@ -81,9 +87,11 @@ DEFUN(show_url_all,
     {
         pcreptr = url_rule_get(i);
         if(!pcreptr)
+        {
             continue;
-
-        vty_out(vty, "%-32d %-32s %-20ld %s", pcreptr->id, pcreptr->pattern,(uint64_t) pcreptr->acl.cnt.cnt,  VTY_NEWLINE);    
+        }
+		if(pcreptr.used)
+        	vty_out(vty, "%-32d %-32s %-20ld %s", pcreptr->id, pcreptr->pattern,(uint64_t) pcreptr->acl.cnt.cnt,  VTY_NEWLINE);    
         
     }
     return 0;
