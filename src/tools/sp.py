@@ -33,6 +33,13 @@ for LINE in LOG_FILE.readlines():
     L+=1
     LINE=LINE.strip('\n')
     FIELD  = LINE.split('|')
+<<<<<<< HEAD
+=======
+
+    if len(FIELD) != 8 :
+        continue;
+
+>>>>>>> 7333d82c93b5219853d0590518e4d374e9571a69
     TT   = FIELD[0]
     F1 = TT.split(' ');
    
