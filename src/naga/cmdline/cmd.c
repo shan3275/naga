@@ -39,6 +39,7 @@
 #include "itf_cmd.h"
 #include "adt_cmd.h"
 #include "netseg_cmd.h"
+#include "url_cmd.h"
 /* Zebra instance */
 struct zebra_t zebrad =
 {
