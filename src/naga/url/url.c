@@ -47,7 +47,7 @@ berr url_rule_add(uint32_t id, const char *url, uint32_t action)
     }
     if(id > url_r.inuse)
     {
-        url_r.inuse = id;
+        url_r.inuse = id +1;
     }
     return E_SUCCESS;
 }
@@ -83,10 +83,11 @@ berr url_rule_del(uint32_t id)
    
     for(i=0; i< MAX_URL_RULE; i++)
     {
+    	pcre_n = &(url_r.url_pcre[i]);
         if(pcre_n->used)
             max_id = i;                                 
     }
-    url_r.inuse = max_id;
+    url_r.inuse = max_id +1;
     return E_SUCCESS;
 }
 
