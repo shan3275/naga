@@ -142,7 +142,7 @@ berr  naga_uri(hytag_t *hytag)
 
                 if(compare > 0)
                 {
-                   //ACL_HIT(urlcre->acl);
+                   	ACL_HIT(urlcre->acl);
                     HYTAG_ACL_MERGE(hytag->acl, urlcre->acl);
 				  	printf("action = 0x%x\n", urlcre->acl.actions);
 				   
