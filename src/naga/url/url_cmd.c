@@ -1,3 +1,19 @@
+#include <string.h>
+
+#include "zebra.h"
+#include "version.h"
+#include "getopt.h"
+#include "command.h"
+#include "filter.h"
+#include "prefix.h"
+#include "privs.h"
+#include "packet.h"
+#include "naga_types.h"
+
+#include "bts_cnt.h"
+
+
+
 #include "url_cmd.h"
 
 
