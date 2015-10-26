@@ -1,5 +1,5 @@
 #include <string.h>
-
+#include <stdio.h>
 #include "zebra.h"
 #include "version.h"
 #include "getopt.h"
@@ -13,7 +13,7 @@
 #include "bts_cnt.h"
 
 
-
+#include "url.h"
 #include "url_cmd.h"
 
 
