@@ -25,12 +25,14 @@ DEFUN(url_add,
 
     uint32_t action;
     int index = strtoul(argv[0], NULL, 0 );
-    
-	if(naga_action_parse((char *)argv[2], &action))
+
+	char *straction = strdup(argv[2])
+	if(naga_action_parse(straction, &action))
     {
+    	free(straction);
         return CMD_ERR_NO_MATCH;
     }
-    
+    free(straction);
     return url_rule_add(index, argv[1], action);
 }
 
