@@ -6,7 +6,31 @@
 
 #include "naga_types.h"
 #include "url.h"
+#include "pcre.h"
 
+#define MAX_URL_RULE   32
+
+
+struct pcre_s
+{
+    int id;
+    int used;
+    char *pattern;    
+    pcre *cre;
+};
+
+
+typedef struct
+{
+    int inuse;
+    struct pcre_s url_pcre[MAX_URL_RULE] ;  
+};
+
+
+int url_rule_add(int id, char *url)
+{
+                
+}
 
 
 
@@ -47,8 +71,6 @@ berr  naga_uri(hytag_t *hytag)
         CNT_INC(ADP_DROP_BACKSLASH_SUFFIX);
         return E_SUCCESS;           
     }
-
-
     
 	return E_SUCCESS;
 }
