@@ -9,33 +9,13 @@
 #include "privs.h"
 #include "packet.h"
 #include "naga_types.h"
+#include "naga_util.h"
 
 #include "bts_cnt.h"
 
 
 #include "url.h"
 #include "url_cmd.h"
-
-
-
-
-
-DEFUN(url_add,
-      url_add_cmd,
-      "url add <0-63> EXPR ACT",
-      URL_EXPR)
-{
-
-    uint32_t action;
-    int index = strtoul(argv[0], NULL, 0 );
-    
-	if(naga_action_parse((char *)argv[2], &action))
-    {
-        return CMD_ERR_NO_MATCH;
-    }
-    
-    return url_rule_add(index, argv[1], action);
-}
 
 DEFUN(url_add,
       url_add_cmd,
