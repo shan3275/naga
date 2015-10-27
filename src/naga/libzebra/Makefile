@@ -36,7 +36,7 @@ include $(RTE_SDK)/mk/rte.vars.mk
 #
 LIB = libzebra.a
 
-CFLAGS +=  -I . -I ../vsr -I ../include -I ../itf -I ../template -I ../dmr -I ../acr -I ../adp
+CFLAGS +=  -I . -I ../vsr -I ../include -I ../itf -I ../template -I ../dmr -I ../acr -I ../adp -I ../url
 
 #CFLAGS += $(WERROR_FLAGS)
 

@@ -104,7 +104,6 @@ DEFUN(show_url_all,
 
 void url_cmd_config_write(struct vty *vty)
 {
-    int ret = 0;
 
     struct pcre_s *pcreptr = NULL;
     int i;
@@ -116,10 +115,10 @@ void url_cmd_config_write(struct vty *vty)
         if(!pcreptr)
             continue;
 
-        vty_out(vty, "%-32d %-32s %-20s %s", pcreptr->id, pcreptr->pattern,(uint64_t) pcreptr->acl.cnt.cnt,  VTY_NEWLINE);    
+        vty_out(vty, "%-32d %-32s %-20ld %s", pcreptr->id, pcreptr->pattern,(uint64_t) pcreptr->acl.cnt.cnt,  VTY_NEWLINE);    
         
     }
-    return 0;
+    return ;
 }
 
 
