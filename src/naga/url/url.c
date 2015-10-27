@@ -105,7 +105,7 @@ berr  naga_uri(hytag_t *hytag)
 
 #define OVECCOUNT 30
 
-    const char *tail = "/?_tTI=tTI";
+    const char *tail = "_tTI=tTI";
     char  *tailptr = NULL;
     int ovector[OVECCOUNT];
     struct pcre_s * urlcre= NULL;
@@ -117,14 +117,14 @@ berr  naga_uri(hytag_t *hytag)
     uint32_t i; int compare;
     //if(strstr(tailptr,  tail))
 
-	if(hytag->uri_len < 10)
+	if(hytag->uri_len < 8)
 	{
 	
 	}
 	else 
 	{
 
-		tailptr = hytag->uri + hytag->uri_len - 10;
+		tailptr = hytag->uri + hytag->uri_len - 8;
     	if(!strcmp(tailptr, tail))
 
     	{
