@@ -10,7 +10,7 @@
 #include "naga_types.h"
 #include "boots.h"
 
-#define DOMAIN_INTERVAL 4
+#define DOMAIN_INTERVAL 2
 
 typedef struct {
     uint32_t index;

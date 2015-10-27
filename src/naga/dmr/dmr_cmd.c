@@ -918,5 +918,6 @@ void cmdline_dmr_init(void)
 	install_element(CMD_NODE, &domain_default_act_set_cmd);
     install_element(CMD_NODE, &show_domain_all_check_cmd);
 	install_element(CMD_NODE, &write_domain_cmd);
+    install_element(CMD_NODE, &domain_interval_set_cmd);
     return ;
 }
