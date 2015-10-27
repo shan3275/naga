@@ -711,7 +711,7 @@ DEFUN(domain_default_act_set,
 
 
 
-static int cmd_dmr_domain_interval_set(struct vty *vty, char *domain, uint16_t interval)
+static int cmd_dmr_domain_interval_set(struct vty *vty, const char *domain, uint16_t interval)
 {
 	int ret = 0;
     dmr_param_t pram;
@@ -741,12 +741,12 @@ static int cmd_dmr_domain_interval_set(struct vty *vty, char *domain, uint16_t i
 
 DEFUN(domain_interval_set,
       domain_interval_set_cmd,
-      "domain DOMAIN interval <1-65535>",
+      "domain interval DOMAIN  <1-65535>",
       DOMAIN_STR
       DEFAULT_STR
       ACTION_STR)
 {
-    uint16_t interval = (uint16_t )strtoul(argv[2], NULL, 0);
+    uint16_t interval = (uint16_t )strtoul(argv[1], NULL, 0);
     return cmd_dmr_domain_interval_set(vty, argv[0], interval);
 }
 

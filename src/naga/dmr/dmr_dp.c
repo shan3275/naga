@@ -55,7 +55,7 @@ berr naga_dmr(hytag_t *tag)
             ACL_PUSHED_ASSERT_HIT(rule->acl);
         }
         //control by interval 
-        if(rule->acl.cnt.cnt % rule->interval)
+        if(rule->acl.cnt.cnt % rule->interval == 0)
         {
             HYTAG_ACL_MERGE(tag->acl, rule->acl);
         }    
