@@ -111,7 +111,7 @@ DEFUN(show_url_all,
     int i;
     char action_str[NAGA_ACTION_STR_SZ];
     
-    vty_out(vty, "%-32s %-32s %-32s %-32s %-32s %s", "ID", "URI","URI-CLI","action" "cnt", VTY_NEWLINE);
+    vty_out(vty, "%-32s %-32s %-32s %-32s %-32s %s", "ID", "URI","URI-CLI","action", "cnt", VTY_NEWLINE);
     for(i=0; i < MAX_URL_RULE; i++)
     {
         pcreptr = url_rule_get(i);
