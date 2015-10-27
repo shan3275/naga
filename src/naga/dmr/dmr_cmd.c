@@ -607,7 +607,7 @@ static int cmd_dmr_load(struct vty *vty, const char *file_name, const char *acti
 
 DEFUN(load_domain,
       load_domain_cmd,
-      "load domain FILE ACT",
+      "load domain FILE ACT ",
       LOAD_STR
       DOMAIN_STR
       FILE_STR
