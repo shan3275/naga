@@ -29,7 +29,7 @@ DEFUN(adp_interval_get,
     uint64_t adp_can_push_count;
     uint64_t adp_push_tx_success;
 	uint64_t adp_push_ack_success;
-
+    time_t *boottime = NULL;
 
 	adp_get_interval(&interval);
 
@@ -37,7 +37,13 @@ DEFUN(adp_interval_get,
 	adp_push_tx_success = CNT_GET(ADP_PUSH_TX_SUCCESS);
 	adp_push_ack_success = CNT_GET(ADP_PUSH_ACK_SUCCESS);
 
-    vty_out(vty, "Interval          : %d%s", interval, VTY_NEWLINE);
+    boottime = adp_get_start_time();
+
+    if(boottime !=  NULL)
+    {
+        vty_out(vty, "Boot Time             : %s%s", ctime(boottime), VTY_NEWLINE);
+    }
+    vty_out(vty, "Interval              : %d%s", interval, VTY_NEWLINE);
 	
     vty_out(vty, "All can push          : %ld%s",  adp_can_push_count, VTY_NEWLINE);    
     vty_out(vty, "Pushed(tx success)    : %ld%s",  adp_push_tx_success, VTY_NEWLINE);
@@ -54,7 +60,7 @@ DEFUN(adp_interval_get,
 	
 		float aver =  (fsuccess/fpushed)*100;
     
-		vty_out(vty, "Pushed(ack success): %ld (%f%%)%s", adp_push_ack_success, aver, VTY_NEWLINE);
+		vty_out(vty, "Pushed(ack success)   : %ld (%f%%)%s", adp_push_ack_success, aver, VTY_NEWLINE);
 	}
     return 0;
 }

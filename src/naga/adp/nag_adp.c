@@ -429,10 +429,20 @@ berr naga_adp(hytag_t *hytag)
 
 }
 
+
+
+
+time_t   adp_timep; 
 berr adp_dp_init(void)
 {   
    //berr rv; 
-   cmdline_adp_init();
+   //cmdline_adp_init();
+   time(&adp_timep);    
    return E_SUCCESS;
+}
+
+time_t *adp_get_start_time(void)
+{
+    return   &adp_timep;
 }
 
