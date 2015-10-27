@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 #include "boots.h"
 #include "bts_debug.h"
 #include "bts_cnt.h"
@@ -26,6 +27,8 @@ berr url_rule_add(uint32_t id,  char *url,  char * cli_pattern, uint32_t action)
 
     if(pcre_n->used)
     {
+        pcre_n->used = 0;
+        usleep(300);
         free(pcre_n->pattern);
         pcre_free(pcre_n->cre);
         
@@ -75,11 +78,12 @@ berr url_rule_del(uint32_t id)
 
     if(pcre_n->used)
     {
+        pcre_n->used = 0; 
+        usleep(300);
         free(pcre_n->pattern); pcre_n->pattern = NULL;
         free(pcre_n->cli_pattern); pcre_n->cli_pattern = NULL;
         pcre_free(pcre_n->cre); pcre_n->cre = NULL;
-        
-        pcre_n->used = 0;     
+       
     }
     
 
@@ -131,7 +135,9 @@ berr  naga_uri(hytag_t *hytag)
 
     	{
          	CNT_INC(ADP_PUSH_ACK_SUCCESS);
-         	hytag->pushed_second_assert = 1;            
+         	hytag->pushed_second_assert = 1;
+            hytag->acl.actions |=  ACT_DROP;
+            return E_SUCCESS;
     	}
 	}
 

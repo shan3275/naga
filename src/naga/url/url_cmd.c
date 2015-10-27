@@ -23,7 +23,7 @@ DEFUN(url_add,
       URL_EXPR)
 {
 
-    char url_str[512];
+    char url_str[1024];
     int  url_chr_index = 0;
     uint32_t action;
     int index = strtoul(argv[0], NULL, 0 );
