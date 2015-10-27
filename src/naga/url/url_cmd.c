@@ -29,7 +29,7 @@ DEFUN(url_add,
     int index = strtoul(argv[0], NULL, 0 );
 	berr rv;
 	char *straction = strdup(argv[2]);
-    char * exprstr = argv[1];
+    char * exprstr =  strdup(argv[1]);
     char  lastchar = '\0';
     int i;
 
@@ -60,7 +60,8 @@ DEFUN(url_add,
     }
     url_str[url_chr_index]  = '\0';     
     
-    rv =  url_rule_add(index, url_str , argv[1], action);
+    rv =  url_rule_add(index, url_str , exprstr, action);
+    free(exprstr);
 	if(rv != E_SUCCESS)
 	{
 		 vty_out(vty, "Failed To add Url rule %s", VTY_NEWLINE);

@@ -13,7 +13,7 @@
 
 url_t url_r;
 
-berr url_rule_add(uint32_t id, const char *url, char * cli_pattern, uint32_t action)
+berr url_rule_add(uint32_t id,  char *url,  char * cli_pattern, uint32_t action)
 {
     if(id >= MAX_URL_RULE || url == NULL) 
     {
