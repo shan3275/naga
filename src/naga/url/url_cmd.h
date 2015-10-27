@@ -10,13 +10,11 @@
 
 
 
+void cmdline_url_init(void);
 
 
 
-
-
-
-
+void url_cmd_config_write(struct vty *vty);
 
 
 #endif

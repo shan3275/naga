@@ -32,6 +32,11 @@ for LINE in LOG_FILE.readlines():
     LINE=LINE.strip('\n')
     FIELD  = LINE.split('|')
 <<<<<<< HEAD
+    SNET = FIELD[5]
+    DOMAIN = FIELD[6]
+    PUSH = FIELD[7]
+=======
+<<<<<<< HEAD
     TT   = FIELD[0]
     F1 = TT.split(' ');
     SNET   = F1[3]
@@ -41,6 +46,7 @@ for LINE in LOG_FILE.readlines():
 >>>>>>> fcfbda9bcccc1af643e525d5e94e8509066c7247
     DOMAIN = FIELD[6]
     PUSH   = FIELD[7][3]
+>>>>>>> 7333d82c93b5219853d0590518e4d374e9571a69
 
     #if cmp(PUSH, 'P')==0:
     if PUSH.find("P") != -1:

@@ -59,7 +59,7 @@ sure both macros are undefined; an emulation function will then be used. */
 /* #undef HAVE_BITS_TYPE_TRAITS_H */
 
 /* Define to 1 if you have the <bzlib.h> header file. */
-/* #undef HAVE_BZLIB_H */
+#define HAVE_BZLIB_H 1
 
 /* Define to 1 if you have the <dirent.h> header file. */
 #define HAVE_DIRENT_H 1

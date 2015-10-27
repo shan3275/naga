@@ -13,7 +13,7 @@
 
 url_t url_r;
 
-berr url_rule_add(uint32_t id, char *url, uint32_t action)
+berr url_rule_add(uint32_t id, const char *url, uint32_t action)
 {
     if(id >= MAX_URL_RULE || url == NULL) 
     {
@@ -36,11 +36,18 @@ berr url_rule_add(uint32_t id, char *url, uint32_t action)
         pcre_n->id = id;
         pcre_n->pattern = strdup(url);
         pcre_n->cre =  pcre_compile( pcre_n->pattern , 0, &error, &erroffset, NULL);
-        pcre_n->acl.actions = action;
+		if(pcre_n->cre == NULL)
+		{
+			free(pcre_n->pattern);
+			return E_FAIL;
+		}
+		pcre_n->acl.actions = action;
+		pcre_n->used =1;
+		
     }
     if(id > url_r.inuse)
     {
-        url_r.inuse = id;
+        url_r.inuse = id +1;
     }
     return E_SUCCESS;
 }
@@ -76,10 +83,11 @@ berr url_rule_del(uint32_t id)
    
     for(i=0; i< MAX_URL_RULE; i++)
     {
+    	pcre_n = &(url_r.url_pcre[i]);
         if(pcre_n->used)
             max_id = i;                                 
     }
-    url_r.inuse = max_id;
+    url_r.inuse = max_id +1;
     return E_SUCCESS;
 }
 
@@ -107,17 +115,31 @@ berr  naga_uri(hytag_t *hytag)
     
     uint32_t i; int compare;
     //if(strstr(tailptr,  tail))
-    if(!strcmp(tailptr, tail))
 
-    {
-         CNT_INC(ADP_PUSH_ACK_SUCCESS);
-         hytag->pushed_second_assert = 1;            
-    }
-    
+	if(hytag->uri_len < 10)
+	{
+	
+	}
+	else 
+	{
+
+		tailptr = hytag->uri + hytag->uri_len - 10;
+    	if(!strcmp(tailptr, tail))
+
+    	{
+         	CNT_INC(ADP_PUSH_ACK_SUCCESS);
+         	hytag->pushed_second_assert = 1;            
+    	}
+	}
+
+
+
+	
     if(hytag->uri_len == 1 && !strcmp(hytag->uri, "/"))
     {    
     	hytag->acl.actions |=  ACT_LOG;
-        CNT_INC(URL_HOMEPAGE);		
+        CNT_INC(URL_HOMEPAGE);
+		return E_SUCCESS;
     }
     else 
     {
@@ -134,9 +156,10 @@ berr  naga_uri(hytag_t *hytag)
 
                 if(compare > 0)
                 {
-                   ACL_HIT(urlcre->acl);
-                   HYTAG_ACL_MERGE(hytag->acl, urlcre->acl);
-                   break;
+                   	ACL_HIT(urlcre->acl);
+                    HYTAG_ACL_MERGE(hytag->acl, urlcre->acl);
+				  	//printf("action = 0x%x\n", urlcre->acl.actions);
+                   	return E_SUCCESS;
                 }
                 
 
@@ -144,7 +167,10 @@ berr  naga_uri(hytag_t *hytag)
         }  
     }
 
-	return E_SUCCESS;
+	hytag->acl.actions |=  ACT_DROP;
+	CNT_INC(ADP_DROP_BACKSLASH_SUFFIX);
+	return E_SUCCESS;  
+
 }
 
 

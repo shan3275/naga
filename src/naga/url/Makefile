@@ -36,7 +36,7 @@ include $(RTE_SDK)/mk/rte.vars.mk
 #
 LIB = liburl.a
 
-CFLAGS +=  -I .  -I ../include -I ../libzebra
+CFLAGS +=  -I .  -I ../include -I ../libzebra -I ../pub
 
 #CFLAGS += $(WERROR_FLAGS)
 
@@ -44,7 +44,7 @@ EXPORT_MAP := lib_url.map
 
 LIBABIVER := 1
 
-SRCS-y += url.c
+SRCS-y += url.c url_cmd.c
 
 CFLAGS += -O3
 CFLAGS += $(WERROR_FLAGS)

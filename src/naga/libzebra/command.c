@@ -39,6 +39,7 @@ Boston, MA 02111-1307, USA.  */
 #include "dmr_cmd.h"
 #include "acr_cmd.h"
 #include "adp_cmd.h"
+#include "url_cmd.h"
 
 
 /* Command vector which includes some level of command lists. Normally
@@ -738,7 +739,7 @@ config_write_host (struct vty *vty)
   acr_cmd_config_write(vty);
   netseg_cmd_config_write(vty);
   adp_cmd_config_write(vty);
-
+  url_cmd_config_write(vty);
   return 1;
 }
 
