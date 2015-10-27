@@ -32,7 +32,7 @@ DEFUN(url_add,
     char * exprstr =  strdup(argv[1]);
     char  lastchar = '\0';
     int i;
-
+    int len = strlen(exprstr);
     
 	if(naga_action_parse(straction, &action))
     {
@@ -42,7 +42,7 @@ DEFUN(url_add,
     free(straction);
 
 
-    for(i=0; i<strlen(exprstr); i++)
+    for(i=0; i<len; i++)
     {
         
         switch(exprstr[i])
@@ -50,7 +50,7 @@ DEFUN(url_add,
             case 'Q':
                 if(lastchar == '\\')
                 {
-                   url_str[url_chr_index-1] = '?'                                                                                             
+                   url_str[url_chr_index-1] = '?' ;                                                                                            
                 }
                 break;
             default:
@@ -109,7 +109,7 @@ DEFUN(show_url_all,
     struct pcre_s *pcreptr = NULL;
     int i;
 
-    vty_out(vty, "%-32s %-32s %-32s %-32s %s", "ID", "URI","URI-CLI" "cnt", VTY_NEWLINE);
+    vty_out(vty, "%-32s %-32s %-32s %-32s %s", "ID", "URI","URI-CLI", "cnt", VTY_NEWLINE);
     for(i=0; i < MAX_URL_RULE; i++)
     {
         pcreptr = url_rule_get(i);
