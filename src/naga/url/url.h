@@ -10,7 +10,8 @@ struct pcre_s
 {
     int id;
     int used;
-    char *pattern;    
+    char *pattern; 
+    char *cli_pattern;
     pcre *cre;
     naga_acl_t acl;
 };

@@ -23,17 +23,39 @@ DEFUN(url_add,
       URL_EXPR)
 {
 
+    char url_str[512];
+    int  url_chr_index = 0;
     uint32_t action;
     int index = strtoul(argv[0], NULL, 0 );
 	berr rv;
 	char *straction = strdup(argv[2]);
+    char * exprstr = argv[1];
+    char  lastchar = '\0';
 	if(naga_action_parse(straction, &action))
     {
     	free(straction);
         return CMD_ERR_NO_MATCH;
     }
     free(straction);
-	
+
+
+    for(i=0; i<strlen(exprstr); i++)
+    {
+        
+        switch(exprstr[i])
+        {
+            case 'Q':
+                if(lastchar == '\\')
+                {
+                   url_str[url_chr_index-1] = '?'                                                                                             
+                }
+                break;
+            default:
+                url_str[url_chr_index++] = exprstr[i];
+                break;
+        }
+    }
+    
     rv =  url_rule_add(index, argv[1], action);
 	if(rv != E_SUCCESS)
 	{

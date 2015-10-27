@@ -13,7 +13,7 @@
 
 url_t url_r;
 
-berr url_rule_add(uint32_t id, const char *url, uint32_t action)
+berr url_rule_add(uint32_t id, const char *url, char * cli_pattern, uint32_t action)
 {
     if(id >= MAX_URL_RULE || url == NULL) 
     {
@@ -35,6 +35,7 @@ berr url_rule_add(uint32_t id, const char *url, uint32_t action)
     {
         pcre_n->id = id;
         pcre_n->pattern = strdup(url);
+        pcre_n->cli_pattern = strdup(cli_pattern);
         pcre_n->cre =  pcre_compile( pcre_n->pattern , 0, &error, &erroffset, NULL);
 		if(pcre_n->cre == NULL)
 		{
