@@ -141,11 +141,12 @@ void url_cmd_config_write(struct vty *vty)
         pcreptr = url_rule_get(i);
         if(!pcreptr)
             continue;
+        if(pcreptr->used)
+        {
+            naga_action_string(&(pcreptr->acl.actions), action_str);
 
-        naga_action_string(&(pcreptr->acl.actions), action_str);
-
-        vty_out(vty, "url add %d %s %s %s", pcreptr->id, pcreptr->cli_pattern, action_str,  VTY_NEWLINE);    
-        
+            vty_out(vty, "url add %d %s %s %s", pcreptr->id, pcreptr->cli_pattern, action_str,  VTY_NEWLINE);    
+        } 
     }
     return ;
 }
