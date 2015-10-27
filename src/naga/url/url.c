@@ -75,8 +75,10 @@ berr url_rule_del(uint32_t id)
 
     if(pcre_n->used)
     {
-        free(pcre_n->pattern);
-        pcre_free(pcre_n->cre);
+        free(pcre_n->pattern); pcre_n->pattern = NULL;
+        free(pcre_n->cli_pattern); pcre_n->cli_pattern = NULL;
+        pcre_free(pcre_n->cre); pcre_n->cre = NULL;
+        
         pcre_n->used = 0;     
     }
     
