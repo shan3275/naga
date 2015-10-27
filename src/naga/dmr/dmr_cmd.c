@@ -508,7 +508,7 @@ DEFUN(remove_domain_all,
 }
 
 
-static int cmd_dmr_add(struct vty *vty, const char *host, const char *action_str)
+static int cmd_dmr_add(struct vty *vty, const char *host, const char *action_str, uint16_t interval)
 {
     berr ret = 0;
 	char action_arry[NAGA_ACTION_STR_SZ]= {0};
@@ -531,8 +531,11 @@ static int cmd_dmr_add(struct vty *vty, const char *host, const char *action_str
         return CMD_ERR_NO_MATCH;
     }
 
-    entry->interval = DOMAIN_INTERVAL;
 	entry->host_len = strlen(host);
+    if( 0 == interval )
+        interval = DOMAIN_INTERVAL;
+    
+    entry->interval = interval;
 	memcpy(entry->host, host, entry->host_len);
 
     ret = api_dmr_add(entry);
@@ -554,10 +557,10 @@ DEFUN(domain,
       DOMAIN_NAME_STR
       ACTION_STR)
 {
-    return cmd_dmr_add(vty, argv[0], argv[1]);
+    return cmd_dmr_add(vty, argv[0], argv[1], 0);
 }
 
-static int cmd_dmr_load(struct vty *vty, const char *file_name, const char *action_str)
+static int cmd_dmr_load(struct vty *vty, const char *file_name, const char *action_str, uint16_t interval)
 {
 	FILE *fp = NULL;
 	char host_line[MAX_HOST_LEN] = {0};
@@ -589,7 +592,7 @@ static int cmd_dmr_load(struct vty *vty, const char *file_name, const char *acti
 		}
 		else
 		{
-			rv = cmd_dmr_add(vty, host_line, action_str);
+			rv = cmd_dmr_add(vty, host_line, action_str, interval);
 		}
 		if (CMD_SUCCESS != rv)
 		{
@@ -607,13 +610,14 @@ static int cmd_dmr_load(struct vty *vty, const char *file_name, const char *acti
 
 DEFUN(load_domain,
       load_domain_cmd,
-      "load domain FILE ACT ",
+      "load domain FILE ACT <1-65535>",
       LOAD_STR
       DOMAIN_STR
       FILE_STR
       ACTION_STR)
 {
-    return cmd_dmr_load(vty, argv[0], argv[1]);
+    uint16_t interval = strtoul(argv[2], NULL, 0);    
+    return cmd_dmr_load(vty, argv[0], argv[1], interval);
 }
 
 static int cmd_dmr_clear_stat(struct vty *vty, const char *host)
