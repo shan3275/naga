@@ -309,9 +309,9 @@ dmr_dump_vty(void *data, void *param)
     {  
         if( 0 != (uint64_t)entry->acl.pushed_cnt.cnt )
         {
-            vty_out(vty, "%-32s %-32s %-16ld %-16ld %-16ld %s", entry->host, action_str, 
+            vty_out(vty, "%-32s %-32s %-16ld %-16ld %-16ld %-8d %s", entry->host, action_str, 
                     (uint64_t) entry->acl.cnt.cnt,(uint64_t)entry->acl.vcnt.cnt,
-                        (uint64_t)entry->acl.pushed_cnt.cnt, VTY_NEWLINE);
+                        (uint64_t)entry->acl.pushed_cnt.cnt, entry->interval, VTY_NEWLINE);
 
             dmr_pram->cnt_total +=  (uint64_t) entry->acl.cnt.cnt;
             dmr_pram->non_drop  +=  (uint64_t)entry->acl.vcnt.cnt;
@@ -323,9 +323,9 @@ dmr_dump_vty(void *data, void *param)
     {
         if((uint64_t)entry->acl.pushed_cnt.cnt  < (uint64_t)entry->acl.vcnt.cnt )
         {
-            vty_out(vty, "%-32s %-32s %-16ld %-16ld %-16ld %s", entry->host, action_str, 
+            vty_out(vty, "%-32s %-32s %-16ld %-16ld %-16ld %-8d %s", entry->host, action_str, 
                     (uint64_t) entry->acl.cnt.cnt,(uint64_t)entry->acl.vcnt.cnt,
-                        (uint64_t)entry->acl.pushed_cnt.cnt, VTY_NEWLINE);
+                        (uint64_t)entry->acl.pushed_cnt.cnt, entry->interval, VTY_NEWLINE);
 
             dmr_pram->cnt_total +=  (uint64_t) entry->acl.cnt.cnt;
             dmr_pram->non_drop  +=  (uint64_t)entry->acl.vcnt.cnt;
@@ -334,9 +334,9 @@ dmr_dump_vty(void *data, void *param)
     }
     else
     {
-        vty_out(vty, "%-32s %-32s %-16ld %-16ld %-16ld %s", entry->host, action_str, 
+        vty_out(vty, "%-32s %-32s %-16ld %-16ld %-16ld %-8d %s", entry->host, action_str, 
                 (uint64_t) entry->acl.cnt.cnt,(uint64_t)entry->acl.vcnt.cnt,
-                    (uint64_t)entry->acl.pushed_cnt.cnt, VTY_NEWLINE);
+                    (uint64_t)entry->acl.pushed_cnt.cnt, entry->interval, VTY_NEWLINE);
 
             dmr_pram->cnt_total +=  (uint64_t) entry->acl.cnt.cnt;
             dmr_pram->non_drop  +=  (uint64_t)entry->acl.vcnt.cnt;
@@ -365,7 +365,7 @@ static int cmd_dmr_show(struct vty *vty, const char *host)
         vty_out(vty, "dmr host<%s> empty%s", host, VTY_NEWLINE);
         return CMD_WARNING;
     }
-	vty_out(vty, "%-32s %-32s %-16s %-16s %-16s %s","host","action", "get_cnt","adp_push_cnt", "push_success",VTY_NEWLINE);
+	vty_out(vty, "%-32s %-32s %-16s %-16s %-16s %-8s %s","host","action", "get_cnt","adp_push_cnt", "push_success","interval",VTY_NEWLINE);
     vty_out(vty, "------------------------------------------------%s", VTY_NEWLINE);
 
     dmr_dump_vty((void *)entry, (void *)&pram);
@@ -380,14 +380,14 @@ static int cmd_dmr_show_all(struct vty *vty, int flag)
 
     dmr_param_t pram;
     memset(&pram, 0, sizeof(dmr_param_t));
-	vty_out(vty, "%-32s %-32s %-16s %-16s %-16s %s","host","action", "get_cnt","adp_push_cnt", "push_success",VTY_NEWLINE);
+	vty_out(vty, "%-32s %-32s %-16s %-16s %-16s %-8s %s","host","action", "get_cnt","adp_push_cnt", "push_success", "interval",VTY_NEWLINE);
     vty_out(vty, "------------------------------------------------------------------------%s", VTY_NEWLINE);
 
     pram.vty = vty;
     pram.flag = flag;
     dmr_iter(dmr_dump_vty, (void*)&pram);
     vty_out(vty, "================================================================================%s", VTY_NEWLINE);
-    vty_out(vty, "%-32s %-32s %-16ld %-16ld %-16ld %s", "Total", "NONE", 
+    vty_out(vty, "%-32s %-32s %-16ld %-16ld %-16ld%s", "Total", "NONE", 
                 pram.cnt_total, pram.non_drop, pram.pushed, VTY_NEWLINE);
     
     return CMD_SUCCESS;
@@ -530,7 +530,8 @@ static int cmd_dmr_add(struct vty *vty, const char *host, const char *action_str
     {
         return CMD_ERR_NO_MATCH;
     }
-	
+
+    entry->interval = DOMAIN_INTERVAL;
 	entry->host_len = strlen(host);
 	memcpy(entry->host, host, entry->host_len);
 
@@ -710,6 +711,47 @@ DEFUN(domain_default_act_set,
 
 
 
+static int cmd_dmr_domain_interval_set(struct vty *vty, char *domain, uint16_t interval)
+{
+	int ret = 0;
+    dmr_param_t pram;
+	dmr_t *entry = NULL;
+   
+    
+	if (NULL == domain)
+	{
+        return CMD_ERR_NOTHING_TODO;
+	}
+
+    pram.vty = vty;
+    pram.flag = FLAG_SHOW_ALL;
+    entry = api_dmr_get((char *)domain);
+    if (NULL == entry)
+    {
+        vty_out(vty, "dmr host<%s> empty%s", domain, VTY_NEWLINE);
+        return CMD_WARNING;
+    }
+    
+    entry->interval = interval;
+    return CMD_SUCCESS;
+}
+
+
+
+
+DEFUN(domain_interval_set,
+      domain_interval_set_cmd,
+      "domain DOMAIN interval <1-65535>",
+      DOMAIN_STR
+      DEFAULT_STR
+      ACTION_STR)
+{
+    uint16_t interval = (uint16_t )strtoul(argv[2], NULL, 0);
+    return cmd_dmr_domain_interval_set(vty, argv[0], interval);
+}
+
+
+
 
 
 
@@ -740,9 +782,9 @@ dmr_write_file(void *data, void *param)
     naga_action_string(&entry->acl.actions, action_str);
 
 
-	fprintf(fp, "%-32s %-32s %-16ld %-16ld %-16ld\n", entry->host, action_str, 
+	fprintf(fp, "%-32s %-32s %-16ld %-16ld %-16ld %-8d\n", entry->host, action_str, 
     (uint64_t) entry->acl.cnt.cnt,(uint64_t)entry->acl.vcnt.cnt,
-    (uint64_t)entry->acl.pushed_cnt.cnt);     
+    (uint64_t)entry->acl.pushed_cnt.cnt, (uint64_t)entry->interval);     
 
 }
 
@@ -771,7 +813,7 @@ static int cmd_write_domain_file(struct vty *vty, const char *file_name)
 	}
 
 	memset(&pram, 0, sizeof(dmr_param_t));
-	fprintf(fp, "%-32s %-32s %-16s %-16s %-16s\n","host","action", "get_cnt","adp_push_cnt", "push_success");
+	fprintf(fp, "%-32s %-32s %-16s %-16s %-16s %-8s\n","host","action", "get_cnt","adp_push_cnt", "push_success", "interval");
 
     pram.vty = (void *)fp;
     dmr_iter(dmr_write_file, (void*)&pram);
@@ -876,6 +918,5 @@ void cmdline_dmr_init(void)
 	install_element(CMD_NODE, &domain_default_act_set_cmd);
     install_element(CMD_NODE, &show_domain_all_check_cmd);
 	install_element(CMD_NODE, &write_domain_cmd);
-
     return ;
 }

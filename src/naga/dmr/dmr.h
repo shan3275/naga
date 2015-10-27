@@ -10,10 +10,13 @@
 #include "naga_types.h"
 #include "boots.h"
 
+#define DOMAIN_INTERVAL 4
+
 typedef struct {
     uint32_t index;
 	uint32_t host_len;
     uint8_t host[MAX_HOST_LEN];
+    uint16_t interval;
     naga_acl_t acl;
 } dmr_t;
 
