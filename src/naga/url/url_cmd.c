@@ -57,6 +57,7 @@ DEFUN(url_add,
                 url_str[url_chr_index++] = exprstr[i];
                 break;
         }
+        lastchar = exprstr[i];
     }
     url_str[url_chr_index]  = '\0';     
     
