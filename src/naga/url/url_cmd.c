@@ -31,6 +31,9 @@ DEFUN(url_add,
 	char *straction = strdup(argv[2]);
     char * exprstr = argv[1];
     char  lastchar = '\0';
+    int i;
+
+    
 	if(naga_action_parse(straction, &action))
     {
     	free(straction);
@@ -55,8 +58,9 @@ DEFUN(url_add,
                 break;
         }
     }
+    url_str[url_chr_index]  = '\0';     
     
-    rv =  url_rule_add(index, argv[1], action);
+    rv =  url_rule_add(index, url_str , argv[1], action);
 	if(rv != E_SUCCESS)
 	{
 		 vty_out(vty, "Failed To add Url rule %s", VTY_NEWLINE);
@@ -104,7 +108,7 @@ DEFUN(show_url_all,
     struct pcre_s *pcreptr = NULL;
     int i;
 
-    vty_out(vty, "%-32s %-32s %-32s %s", "ID", "URI", "cnt", VTY_NEWLINE);
+    vty_out(vty, "%-32s %-32s %-32s %-32s %s", "ID", "URI","URI-CLI" "cnt", VTY_NEWLINE);
     for(i=0; i < MAX_URL_RULE; i++)
     {
         pcreptr = url_rule_get(i);
@@ -114,7 +118,7 @@ DEFUN(show_url_all,
 
         }
 		if(pcreptr->used)
-        	vty_out(vty, "%-32d %-32s %-20ld %s", pcreptr->id, pcreptr->pattern,(uint64_t) pcreptr->acl.cnt.cnt,  VTY_NEWLINE);    
+        	vty_out(vty, "%-32d %-32s %-32s %-20ld %s", pcreptr->id, pcreptr->pattern, pcreptr->cli_pattern,(uint64_t) pcreptr->acl.cnt.cnt,  VTY_NEWLINE);    
 
         
     }
@@ -130,14 +134,16 @@ void url_cmd_config_write(struct vty *vty)
     struct pcre_s *pcreptr = NULL;
     int i;
 
-
+    char action_str[NAGA_ACTION_STR_SZ];
     for(i=0; i < MAX_URL_RULE; i++)
     {
         pcreptr = url_rule_get(i);
         if(!pcreptr)
             continue;
 
-        vty_out(vty, "%-32d %-32s %-20ld %s", pcreptr->id, pcreptr->pattern,(uint64_t) pcreptr->acl.cnt.cnt,  VTY_NEWLINE);    
+        naga_action_string(&(pcreptr->acl.actions), action_str);
+
+        vty_out(vty, "url add %d %s %s", pcreptr->id, pcreptr->cli_pattern, action_str,  VTY_NEWLINE);    
         
     }
     return ;
