@@ -36,12 +36,13 @@ BASE_OUTPUT ?= $(O)
 CUR_SUBDIR ?= .
 
 .PHONY: all
-all: $(DIRS-y)
+all:  $(DIRS-U) $(DIRS-y)
 
 .PHONY: clean
 clean: $(DIRS-y)
 
 .PHONY: $(DIRS-y)
+
 $(DIRS-y):
 	@echo "== $@"
 	$(Q)$(MAKE) -C $(@) \
@@ -51,3 +52,4 @@ $(DIRS-y):
 		CUR_SUBDIR=$(CUR_SUBDIR)/$(@) \
 		S=$(CURDIR)/$(@) \
 		$(filter-out $(DIRS-y),$(MAKECMDGOALS))
+
