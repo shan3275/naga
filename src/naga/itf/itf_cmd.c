@@ -237,6 +237,8 @@ static int interface_cmd_show_status(struct vty *vty)
     int rv;
     int i;
     port_stat stat;
+    struct rte_eth_stats stats;
+    uint8_t port_id; 
     for ( i = 0; i < INTERFACE_NUM_MAX; i++ )
     {
         stat.port_id = i;
@@ -249,7 +251,38 @@ static int interface_cmd_show_status(struct vty *vty)
         {
             vty_out(vty, "Port(%d) :%s%s", i, stat.enable == ITF_ENABLE ?"Enable":"Disable", VTY_NEWLINE);
         }
+
+        port_id = (uint8_t)i;
+        rte_eth_stats_get(port_id, &stats);
+   
+    	vty_out(vty, "Rx Packet               :%lx %s", stats.ipackets, VTY_NEWLINE);  
+        vty_out(vty, "Rx bytes                :%lx%s", stats.ibytes, VTY_NEWLINE); 
+ 
+
+        vty_out(vty, "RX ERR(Total)          :%lx %s", stats.oerrors, VTY_NEWLINE);   
+
+        vty_out(vty, "RX Drop               :%lx %s", stats.imissed, VTY_NEWLINE);   
+    	vty_out(vty, "Rx CRC                :%lx %s", stats.ibadcrc, VTY_NEWLINE);   
+    	vty_out(vty, "Rx Badlen             :%lx %s", stats.ibadlen, VTY_NEWLINE);   
+    	vty_out(vty, "RX ERR(Total)         :%lx %s", stats.ierrors, VTY_NEWLINE);   
+     	vty_out(vty, "Rx Mcasts             :%lx %s", stats.imcasts, VTY_NEWLINE); 
+  
+    	vty_out(vty, "Rx No mbuf            :%lx %s", stats.rx_nombuf, VTY_NEWLINE); 
+        
+    	vty_out(vty, "Rx Filter match       :%lx %s", stats.fdirmatch, VTY_NEWLINE); 
+    	vty_out(vty, "Rx Filter nomatch     :%lx %s", stats.fdirmiss, VTY_NEWLINE);  
+        vty_out(vty, "Rx Pause_xoff         :%lx %s", stats.rx_pause_xoff), VTY_NEWLINE;         
+    	vty_out(vty, "Rx Pause_xon          :%lx %s", stats.rx_pause_xon, VTY_NEWLINE);  
+             
+
+        vty_out(vty, "Tx Packet             :%lx %s", stats.opackets, VTY_NEWLINE);  
+    	vty_out(vty, "Tx Byte               :%lx %s", stats.obytes, VTY_NEWLINE);  
+    	vty_out(vty, "Tx Pause_xon          :%lx %s", stats.tx_pause_xon, VTY_NEWLINE);  
+    	vty_out(vty, "Tx Pause_xoff         :%lx %s", stats.tx_pause_xoff, VTY_NEWLINE); 
+
+
     }
+
 
     return CMD_SUCCESS;
 }

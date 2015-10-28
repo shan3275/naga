@@ -6,7 +6,7 @@
 #include "boots.h"
 #include "bts_cnt.h"
 
-#define MAX_HOST_RULE_NUM 10000
+#define MAX_HOST_RULE_NUM 100000
 
 extern uint32_t domin_default_action;
 
@@ -45,26 +45,31 @@ berr naga_dmr(hytag_t *tag)
         CNT_INC(DMR_RULE_MATCH);
         ACL_HIT(rule->acl);
 
-		if (0 == (tag->acl.actions & ACT_DROP))
-	
-		{
-			ACL_PRE_NOT_DROP_HIT(rule->acl);
-		}
+
         if(tag->pushed_second_assert)
         {
             ACL_PUSHED_ASSERT_HIT(rule->acl);
         }
         //control by interval 
-        if(rule->acl.cnt.cnt % rule->interval == 0)
-        {
-            HYTAG_ACL_MERGE(tag->acl, rule->acl);
+
+		if (0 == (tag->acl.actions & ACT_DROP))
+	
+		{
+			 ACL_PRE_NOT_DROP_HIT(rule->acl);
+
+            if(rule->acl.cnt.cnt % rule->interval == 0 )
+            {
+       
+                HYTAG_ACL_MERGE(tag->acl, rule->acl);
+            }
+            else
+            {
+                HYTAG_ACL_SET(tag->acl,  ACT_DROP);                 
+            }
+                 
         }
-        else
-        {
-            HYTAG_ACL_SET(tag->acl,  ACT_DROP);                 
-        }
-        
-    }
+    
+  }
 
     BRET(E_SUCCESS);
 }
