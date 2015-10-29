@@ -258,8 +258,7 @@ static int interface_cmd_show_status(struct vty *vty)
     	vty_out(vty, "Rx Packet             :%-20ld %s", stats.ipackets, VTY_NEWLINE);  
         vty_out(vty, "Rx bytes              :%-20ld %s", stats.ibytes, VTY_NEWLINE); 
  
-
-        vty_out(vty, "RX ERR(Total)         :%-20ld %s", stats.oerrors, VTY_NEWLINE);   
+  
 
         vty_out(vty, "RX Drop               :%-20ld %s", stats.imissed, VTY_NEWLINE);   
     	vty_out(vty, "Rx CRC                :%-20ld %s", stats.ibadcrc, VTY_NEWLINE);   
@@ -276,7 +275,8 @@ static int interface_cmd_show_status(struct vty *vty)
              
 
         vty_out(vty, "Tx Packet             :%-20ld %s", stats.opackets, VTY_NEWLINE);  
-    	vty_out(vty, "Tx Byte               :%-20ld %s", stats.obytes, VTY_NEWLINE);  
+    	vty_out(vty, "Tx Byte               :%-20ld %s", stats.obytes, VTY_NEWLINE);     
+        vty_out(vty, "TX ERR(Total)         :%-20ld %s", stats.oerrors, VTY_NEWLINE); 
     	vty_out(vty, "Tx Pause_xon          :%-20ld %s", stats.tx_pause_xon, VTY_NEWLINE);  
     	vty_out(vty, "Tx Pause_xoff         :%-20ld %s", stats.tx_pause_xoff, VTY_NEWLINE); 
 
