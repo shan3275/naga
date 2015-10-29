@@ -256,7 +256,7 @@ static int interface_cmd_show_status(struct vty *vty)
         rte_eth_stats_get(port_id, &stats);
    
     	vty_out(vty, "Rx Packet               :%lx %s", stats.ipackets, VTY_NEWLINE);  
-        vty_out(vty, "Rx bytes                :%lx%s", stats.ibytes, VTY_NEWLINE); 
+        vty_out(vty, "Rx bytes                :%lx %s", stats.ibytes, VTY_NEWLINE); 
  
 
         vty_out(vty, "RX ERR(Total)          :%lx %s", stats.oerrors, VTY_NEWLINE);   
@@ -271,7 +271,7 @@ static int interface_cmd_show_status(struct vty *vty)
         
     	vty_out(vty, "Rx Filter match       :%lx %s", stats.fdirmatch, VTY_NEWLINE); 
     	vty_out(vty, "Rx Filter nomatch     :%lx %s", stats.fdirmiss, VTY_NEWLINE);  
-        vty_out(vty, "Rx Pause_xoff         :%lx %s", stats.rx_pause_xoff), VTY_NEWLINE;         
+        vty_out(vty, "Rx Pause_xoff         :%lx %s", stats.rx_pause_xoff, VTY_NEWLINE);         
     	vty_out(vty, "Rx Pause_xon          :%lx %s", stats.rx_pause_xon, VTY_NEWLINE);  
              
 
