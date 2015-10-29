@@ -256,7 +256,7 @@ static int net_cmd_show_all(struct vty *vty)
 			net_dump(vty, &net);
             cnt_t += net.acl.cnt.cnt;
             none_drop_t += net.acl.vcnt.cnt;
-            pushed_t += net.acl.vcnt.pushed_cnt;
+            pushed_t += net.acl.pushed_cnt.cnt;
 		}
 	}
     vty_out(vty, "===================================================================================%s", VTY_NEWLINE);
