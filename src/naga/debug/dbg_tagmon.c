@@ -96,7 +96,7 @@ void hytag_log(hytag_t *tag)
 		if(APP_TYPE_HTTP_GET_OR_POST == tag->app_type 
 		&&	(ACT_LOG == (tag->acl.actions & ACT_LOG)))
 		{
-			bts_zlog(LOG_ALERT, "%d.%d.%d.%d|%d|%d.%d.%d.%d|%d|%d|%d|%-32s|AD<%s>", 
+			bts_zlog(LOG_ALERT, "%d.%d.%d.%d|%d|%d.%d.%d.%d|%d|%d|%d|%s|AD<%s>", 
 		                    (tag->outer_srcip4 >>24) &0xff,
 		                    (tag->outer_srcip4 >>16) &0xff,
 		                    (tag->outer_srcip4 >>8) &0xff,
@@ -114,7 +114,7 @@ void hytag_log(hytag_t *tag)
 		if(tag->pushed_second_assert)
 		{
 
-			bts_zlog(LOG_ALERT, "%d.%d.%d.%d|%d|%d.%d.%d.%d|%d|%d|%d|%-32s|AD<S>", 
+			bts_zlog(LOG_ALERT, "%d.%d.%d.%d|%d|%d.%d.%d.%d|%d|%d|%d|%s|AD<S>", 
 		                    (tag->outer_srcip4 >>24) &0xff,
 		                    (tag->outer_srcip4 >>16) &0xff,
 		                    (tag->outer_srcip4 >>8) &0xff,
