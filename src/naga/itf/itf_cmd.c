@@ -255,30 +255,30 @@ static int interface_cmd_show_status(struct vty *vty)
         port_id = (uint8_t)i;
         rte_eth_stats_get(port_id, &stats);
    
-    	vty_out(vty, "Rx Packet               :%lx %s", stats.ipackets, VTY_NEWLINE);  
-        vty_out(vty, "Rx bytes                :%lx %s", stats.ibytes, VTY_NEWLINE); 
+    	vty_out(vty, "Rx Packet             :%-20ld %s", stats.ipackets, VTY_NEWLINE);  
+        vty_out(vty, "Rx bytes              :%-20ld %s", stats.ibytes, VTY_NEWLINE); 
  
 
-        vty_out(vty, "RX ERR(Total)          :%lx %s", stats.oerrors, VTY_NEWLINE);   
+        vty_out(vty, "RX ERR(Total)         :%-20ld %s", stats.oerrors, VTY_NEWLINE);   
 
-        vty_out(vty, "RX Drop               :%lx %s", stats.imissed, VTY_NEWLINE);   
-    	vty_out(vty, "Rx CRC                :%lx %s", stats.ibadcrc, VTY_NEWLINE);   
-    	vty_out(vty, "Rx Badlen             :%lx %s", stats.ibadlen, VTY_NEWLINE);   
-    	vty_out(vty, "RX ERR(Total)         :%lx %s", stats.ierrors, VTY_NEWLINE);   
-     	vty_out(vty, "Rx Mcasts             :%lx %s", stats.imcasts, VTY_NEWLINE); 
+        vty_out(vty, "RX Drop               :%-20ld %s", stats.imissed, VTY_NEWLINE);   
+    	vty_out(vty, "Rx CRC                :%-20ld %s", stats.ibadcrc, VTY_NEWLINE);   
+    	vty_out(vty, "Rx Badlen             :%-20ld %s", stats.ibadlen, VTY_NEWLINE);   
+    	vty_out(vty, "RX ERR(Total)         :%-20ld %s", stats.ierrors, VTY_NEWLINE);   
+     	vty_out(vty, "Rx Mcasts             :%-20ld %s", stats.imcasts, VTY_NEWLINE); 
   
-    	vty_out(vty, "Rx No mbuf            :%lx %s", stats.rx_nombuf, VTY_NEWLINE); 
+    	vty_out(vty, "Rx No mbuf            :%-20ld %s", stats.rx_nombuf, VTY_NEWLINE); 
         
-    	vty_out(vty, "Rx Filter match       :%lx %s", stats.fdirmatch, VTY_NEWLINE); 
-    	vty_out(vty, "Rx Filter nomatch     :%lx %s", stats.fdirmiss, VTY_NEWLINE);  
-        vty_out(vty, "Rx Pause_xoff         :%lx %s", stats.rx_pause_xoff, VTY_NEWLINE);         
-    	vty_out(vty, "Rx Pause_xon          :%lx %s", stats.rx_pause_xon, VTY_NEWLINE);  
+    	vty_out(vty, "Rx Filter match       :%-20ld %s", stats.fdirmatch, VTY_NEWLINE); 
+    	vty_out(vty, "Rx Filter nomatch     :%-20ld %s", stats.fdirmiss, VTY_NEWLINE);  
+        vty_out(vty, "Rx Pause_xoff         :%-20ld %s", stats.rx_pause_xoff, VTY_NEWLINE);         
+    	vty_out(vty, "Rx Pause_xon          :%-20ld %s", stats.rx_pause_xon, VTY_NEWLINE);  
              
 
-        vty_out(vty, "Tx Packet             :%lx %s", stats.opackets, VTY_NEWLINE);  
-    	vty_out(vty, "Tx Byte               :%lx %s", stats.obytes, VTY_NEWLINE);  
-    	vty_out(vty, "Tx Pause_xon          :%lx %s", stats.tx_pause_xon, VTY_NEWLINE);  
-    	vty_out(vty, "Tx Pause_xoff         :%lx %s", stats.tx_pause_xoff, VTY_NEWLINE); 
+        vty_out(vty, "Tx Packet             :%-20ld %s", stats.opackets, VTY_NEWLINE);  
+    	vty_out(vty, "Tx Byte               :%-20ld %s", stats.obytes, VTY_NEWLINE);  
+    	vty_out(vty, "Tx Pause_xon          :%-20ld %s", stats.tx_pause_xon, VTY_NEWLINE);  
+    	vty_out(vty, "Tx Pause_xoff         :%-20ld %s", stats.tx_pause_xoff, VTY_NEWLINE); 
 
 
     }
