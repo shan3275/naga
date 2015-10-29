@@ -332,17 +332,23 @@ dmr_dump_vty(void *data, void *param)
             dmr_pram->pushed    += (uint64_t)entry->acl.pushed_cnt.cnt;
         }        
     }
+    else if (dmr_pram->flag == FLAG_SHOW_SUM)
+    {
+            dmr_pram->cnt_total +=  (uint64_t) entry->acl.cnt.cnt;
+            dmr_pram->non_drop  +=  (uint64_t)entry->acl.vcnt.cnt;
+            dmr_pram->pushed    += (uint64_t)entry->acl.pushed_cnt.cnt;  
+    }
     else
     {
-        vty_out(vty, "%-32s %-32s %-16ld %-16ld %-16ld %-8d %s", entry->host, action_str, 
+            vty_out(vty, "%-32s %-32s %-16ld %-16ld %-16ld %-8d %s", entry->host, action_str, 
                 (uint64_t) entry->acl.cnt.cnt,(uint64_t)entry->acl.vcnt.cnt,
                     (uint64_t)entry->acl.pushed_cnt.cnt, entry->interval, VTY_NEWLINE);
 
             dmr_pram->cnt_total +=  (uint64_t) entry->acl.cnt.cnt;
             dmr_pram->non_drop  +=  (uint64_t)entry->acl.vcnt.cnt;
-            dmr_pram->pushed    += (uint64_t)entry->acl.pushed_cnt.cnt;     
+            dmr_pram->pushed    += (uint64_t)entry->acl.pushed_cnt.cnt;  
+    
     }
-     
 }
 
 static int cmd_dmr_show(struct vty *vty, const char *host)
@@ -422,7 +428,7 @@ DEFUN(show_domain_all,
 
 DEFUN(show_domain_all_check,
       show_domain_all_check_cmd,
-      "show domain check (pushed|failed)",
+      "show domain check (pushed|failed|sum)",
       SHOW_STR
       DOMAIN_STR
       DOMAIN_ALL_STR)
@@ -442,6 +448,10 @@ DEFUN(show_domain_all_check,
         else if(!strcmp(argv[0], "failed"))
         {
             flag = FLAG_SHOW_FAILED;
+        }
+        else if(!strcmp(argv[0], "sum"))
+        {
+            flag = FLAG_SHOW_SUM;
         }
         else if(!strcmp(argv[0], "all"))
         {
@@ -788,7 +798,7 @@ dmr_write_file(void *data, void *param)
 
 	fprintf(fp, "%-32s %-32s %-16ld %-16ld %-16ld %-8d\n", entry->host, action_str, 
     (uint64_t) entry->acl.cnt.cnt,(uint64_t)entry->acl.vcnt.cnt,
-    (uint64_t)entry->acl.pushed_cnt.cnt, (uint64_t)entry->interval);     
+    (uint64_t)entry->acl.pushed_cnt.cnt, entry->interval);     
 
 }
 
