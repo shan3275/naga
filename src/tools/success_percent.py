@@ -31,22 +31,17 @@ LOG_FILE=open(ARGV1)
 for LINE in LOG_FILE.readlines():
     LINE=LINE.strip('\n')
     FIELD  = LINE.split('|')
-<<<<<<< HEAD
+    if len(FIELD) < 8:
+        continue
     SNET = FIELD[5]
     DOMAIN = FIELD[6]
     PUSH = FIELD[7]
-=======
-<<<<<<< HEAD
     TT   = FIELD[0]
     F1 = TT.split(' ');
     SNET   = F1[3]
-=======
-    print FIELD[5]
     SNET   = FIELD[5]
->>>>>>> fcfbda9bcccc1af643e525d5e94e8509066c7247
     DOMAIN = FIELD[6]
     PUSH   = FIELD[7][3]
->>>>>>> 7333d82c93b5219853d0590518e4d374e9571a69
 
     #if cmp(PUSH, 'P')==0:
     if PUSH.find("P") != -1:
@@ -62,9 +57,10 @@ LOG_FILE.close()
 
 SNET_FILE=open(SNET_FILE_NAME,"w")
 for SNET, SUCCESS_NUM in SNET_SUCCESS_TAB.items():
-    PUSH_NUM = SNET_PUSH_TAB[SNET]
-    PERCENT  = (SUCCESS_NUM * 100) / PUSH_NUM
-    print >> SNET_FILE, "%s    %d    %d    %d%%" %(SNET, PUSH_NUM, SUCCESS_NUM, PERCENT)
+    PUSH_NUM = SNET_PUSH_TAB.get(SNET, 0)
+    if PUSH_NUM != 0:
+        PERCENT  = (SUCCESS_NUM * 100) / PUSH_NUM
+        print >> SNET_FILE, "%s    %d    %d    %d%%" %(SNET, PUSH_NUM, SUCCESS_NUM, PERCENT)
 
 SNET_FILE.close()
 
@@ -72,9 +68,10 @@ print "Save SNET stat to file ", SNET_FILE
 
 DOMAIN_FILE=open(DOMAIN_FILE_NAME,"w")
 for DOMAIN, SUCCESS_NUM in DOMAIN_SUCCESS_TAB.items():
-    PUSH_NUM = DOMAIN_PUSH_TAB[DOMAIN]
-    PERCENT  = (SUCCESS_NUM * 100) / PUSH_NUM
-    print >> DOMAIN_FILE, "%s    %d    %d    %d%%" %(DOMAIN, PUSH_NUM, SUCCESS_NUM, PERCENT)
+    PUSH_NUM = DOMAIN_PUSH_TAB.get(DOMAIN, 0)
+    if PUSH_NUM != 0:
+        PERCENT  = (SUCCESS_NUM * 100) / PUSH_NUM
+        print >> DOMAIN_FILE, "%s    %d    %d    %d%%" %(DOMAIN, PUSH_NUM, SUCCESS_NUM, PERCENT)
 
 DOMAIN_FILE.close()
 
