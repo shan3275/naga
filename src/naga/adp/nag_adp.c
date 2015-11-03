@@ -380,13 +380,14 @@ berr naga_adp(hytag_t *hytag)
                 while ( hytag->content_offset < hytag->content_len)
                 {
                     m = txm;
+                   
                     txm =rte_pktmbuf_real_clone(txm, txm->pool);
                     if ( NULL == txm )
                     {
                         printf("Requse packet buffer  Failed\n");
                         return E_SUCCESS;
                     }
-
+                    txm->port = m->port;
                     if ( hytag->content_offset)
                     {
                         rte_pktmbuf_free(m);
