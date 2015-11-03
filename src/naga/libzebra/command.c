@@ -740,6 +740,7 @@ config_write_host (struct vty *vty)
   netseg_cmd_config_write(vty);
   adp_cmd_config_write(vty);
   url_cmd_config_write(vty);
+  urlr_cmd_config_write(vty);
   return 1;
 }
 

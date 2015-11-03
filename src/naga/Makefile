@@ -44,8 +44,9 @@ DIRS-y += netseg
 DIRS-y += dnet
 DIRS-y += template
 DIRS-y += adp
-DIRS-y += pub 
-DIRS-y += url 
+DIRS-y += pub
+DIRS-y += url
+DIRS-y += urlr
 DIRS-y += debug
 DIRS-y += main
 
