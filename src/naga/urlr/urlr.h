@@ -27,9 +27,9 @@ berr urlr_add(urlr_t *entry);
 berr urlr_del(char *url);
 berr urlr_clear(void);
 
-berr urlr_url_default_act_set(uint32_t action);
+berr urlr_default_act_set(uint32_t action);
 
-berr urlr_url_default_act_get(uint32_t *action);
+berr urlr_default_act_get(uint32_t *action);
 
 #define api_urlr_get urlr_get
 #define api_urlr_add urlr_add
@@ -37,8 +37,8 @@ berr urlr_url_default_act_get(uint32_t *action);
 #define api_urlr_clear urlr_clear
 #define api_urlr_stat_clear urlr_stat_clear
 #define api_urlr_stat_clear_all  urlr_stat_clear_all
-#define api_urlr_url_default_act_set   urlr_url_default_act_set
-#define api_urlr_url_default_act_get urlr_url_default_act_get
+#define api_urlr_default_act_set   urlr_default_act_set
+#define api_urlr_default_act_get urlr_default_act_get
 
 #define URL_TMP_FILE  "url_tmp.txt"
 

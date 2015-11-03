@@ -413,8 +413,8 @@ DEFUN(show_url,
 }
 
 
-DEFUN(show_url_all,
-      show_url_all_cmd,
+DEFUN(show_all_url,
+      show_all_url_cmd,
       "show url all",
       SHOW_STR
       URL_STR
@@ -692,7 +692,7 @@ DEFUN(clear_url_stat_all,
 }
 
 
-static int cmd_urlr_url_default_act_set(struct vty *vty, const char *act_str)
+static int cmd_urlr_default_act_set(struct vty *vty, const char *act_str)
 {
 	int ret = 0;
 	uint32_t action = 0;
@@ -701,7 +701,7 @@ static int cmd_urlr_url_default_act_set(struct vty *vty, const char *act_str)
     {
         return CMD_ERR_NO_MATCH;
     }
-	ret = api_urlr_url_default_act_set(action);
+	ret = api_urlr_default_act_set(action);
 	if (ret)
     {
         vty_out(vty, "url set default action fail:(%s)%s", berr_msg(ret), VTY_NEWLINE);
@@ -720,12 +720,12 @@ DEFUN(url_default_act_set,
       DEFAULT_STR
       ACTION_STR)
 {
-    return cmd_urlr_url_default_act_set(vty, argv[0]);
+    return cmd_urlr_default_act_set(vty, argv[0]);
 }
 
 
 
-static int cmd_urlr_url_interval_set(struct vty *vty, const char *url, uint16_t interval)
+static int cmd_urlr_interval_set(struct vty *vty, const char *url, uint16_t interval)
 {
 	int ret = 0;
     urlr_param_t pram;
@@ -761,7 +761,7 @@ DEFUN(url_interval_set,
       ACTION_STR)
 {
     uint16_t interval = (uint16_t )strtoul(argv[1], NULL, 0);
-    return cmd_urlr_url_interval_set(vty, argv[0], interval);
+    return cmd_urlr_interval_set(vty, argv[0], interval);
 }
 
 
@@ -899,7 +899,7 @@ void urlr_cmd_config_write(struct vty *vty)
 	uint32_t action = 0;
 	char action_str[NAGA_ACTION_STR_SZ] = {0};
 
-	ret = api_urlr_url_default_act_get(&action);
+	ret = api_urlr_default_act_get(&action);
 	if (ret)
     {
         vty_out(vty, "url get default action fail:(%s)%s", berr_msg(ret), VTY_NEWLINE);
@@ -928,7 +928,7 @@ void cmdline_urlr_init(void)
 	install_element(CMD_NODE, &clear_url_stat_cmd);
 	install_element(CMD_NODE, &clear_url_stat_all_cmd);
 	install_element(CMD_NODE, &show_url_cmd);
-	install_element(CMD_NODE, &show_url_all_cmd);
+	install_element(CMD_NODE, &show_all_url_cmd);
 	install_element(CMD_NODE, &url_default_act_set_cmd);
     install_element(CMD_NODE, &show_url_all_check_cmd);
 	install_element(CMD_NODE, &write_url_cmd);

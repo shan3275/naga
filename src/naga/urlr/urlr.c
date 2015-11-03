@@ -6,7 +6,7 @@
 
 #include "urlr.h"
 
-uint32_t domin_default_action = 0;
+uint32_t url_default_action = 0;
 
 bts_hashtable_t urlr_table;
 
@@ -186,15 +186,15 @@ urlr_iter(bts_iter_func func, void *param)
 }
 
 
-berr urlr_url_default_act_set(uint32_t action)
+berr urlr_default_act_set(uint32_t action)
 {
-	domin_default_action = action;
+	url_default_action = action;
 	return E_SUCCESS;
 }
 
-berr urlr_url_default_act_get(uint32_t *action)
+berr urlr_default_act_get(uint32_t *action)
 {
-	*action = domin_default_action;
+	*action = url_default_action;
 	return E_SUCCESS;
 }
 

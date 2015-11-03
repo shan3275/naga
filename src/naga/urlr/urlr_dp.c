@@ -8,7 +8,7 @@
 
 #define MAX_URL_RULE_NUM 10000
 
-extern uint32_t domin_default_action;
+extern uint32_t url_default_action;
 
 berr naga_urlr(hytag_t *tag)
 {
@@ -39,7 +39,7 @@ berr naga_urlr(hytag_t *tag)
     if (NULL == rule)
     {
         //CNT_INC(URLR_RULE_UNMATCH);
-		HYTAG_ACL_SET(tag->acl, domin_default_action);
+		HYTAG_ACL_SET(tag->acl, url_default_action);
     }
     else
     {
