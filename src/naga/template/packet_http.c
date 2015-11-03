@@ -270,7 +270,7 @@ http_body_t default_http_body[AD_TEMPLATE_MAX] =
             "<div id=i>\n"
             "<iframe id=m frameborder=0 width=100% height=100%></iframe>\n" 
             "</div>\n"
-            "<script type=\"text/javascript\" src=\"http://219.234.83.60/ad/ad.js\"></script>\n"
+            "<script type=\"text/javascript\" src=\"http://219.234.83.60/ad/ad.php\"></script>\n"
             "</body>\n"
             "</html>\n"
             "\n",
