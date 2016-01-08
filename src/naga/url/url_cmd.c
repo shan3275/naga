@@ -19,7 +19,7 @@
 
 DEFUN(url_add,
       url_add_cmd,
-      "url add <0-63> EXPR ACT",
+      "uri add <0-63> EXPR ACT",
       URL_EXPR)
 {
 
@@ -73,7 +73,7 @@ DEFUN(url_add,
 
 DEFUN(url_del,
       url_del_cmd,
-      "url del <0-63>",
+      "uri del <0-63>",
       URL_EXPR)
 {
 
@@ -86,7 +86,7 @@ DEFUN(url_del,
 
 DEFUN(url_del_all,
       url_del_all_cmd,
-      "url del all",
+      "uri del all",
       URL_EXPR)
 {
 
@@ -103,7 +103,7 @@ DEFUN(url_del_all,
 
 DEFUN(show_url_all,
       show_url_all_cmd,
-      "show url all",
+      "show uri all",
       URL_EXPR)
 {
 
@@ -151,7 +151,7 @@ void url_cmd_config_write(struct vty *vty)
         {
             naga_action_string(&(pcreptr->acl.actions), action_str);
 
-            vty_out(vty, "url add %d %s %s %s", pcreptr->id, pcreptr->cli_pattern, action_str,  VTY_NEWLINE);    
+            vty_out(vty, "uri add %d %s %s %s", pcreptr->id, pcreptr->cli_pattern, action_str,  VTY_NEWLINE);    
         } 
     }
     return ;
