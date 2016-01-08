@@ -141,7 +141,11 @@ berr  naga_uri(hytag_t *hytag)
     	}
 	}
 
-
+    if(hytag->uri[0] == '/' && hytag->host_len > 0 && hytag->uri_len > 0)
+    {
+        hytag->url_len= snprintf(hytag->url, URL_MAX_LEN, "http://%s%s",
+                                                hytag->host, hytag->uri);
+    }
 
 	
     if(hytag->uri_len == 1 && !strcmp(hytag->uri, "/"))
@@ -161,7 +165,7 @@ berr  naga_uri(hytag_t *hytag)
             if(urlcre->used && urlcre->cre)
             {
                 compare  = pcre_exec(urlcre->cre,
-                                NULL, hytag->uri, hytag->uri_len, 0, 0, ovector, OVECCOUNT);
+                                NULL, hytag->url, hytag->url_len, 0, 0, ovector, OVECCOUNT);
 
                 if(compare > 0)
                 {

@@ -29,34 +29,29 @@
 #   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 #   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-ifeq ($(RTE_SDK),)
-$(error "Please define RTE_SDK environment variable")
-endif
-
-# Default target, can be overriden by command line or environment
-RTE_TARGET ?= x86_64-native-linuxapp-gcc
-
 include $(RTE_SDK)/mk/rte.vars.mk
 
-# binary name
-APP = naga
+#
+# library name
+#
+LIB = libhijack.a
 
-# all source are stored in SRCS-y
-SRCS-y := main.c  main_data.c
+CFLAGS +=  -I .  -I ../include -I ../libzebra
 
-CFLAGS += -O3 $(USER_FLAGS)
 #CFLAGS += $(WERROR_FLAGS)
 
+EXPORT_MAP := lib_hijack.map
 
+LIBABIVER := 1
 
-#LDFLAGS += -L ../libzebra -L /mnt/hgfs/code/rose/src/dpdk-2.0.0/app/naga/cmdline -L ../vsr
-CFLAGS  += -I ../cmdline  -I ../libzebra  -I ../boots -I ../include -I ../vsr -I ../pid -I ../debug
-CFLAGS  += -I ../itf -I ../dmr -I ../acr -I ../adp -I ../netseg -I ../dnet -I ../urlr -I ../hijack
-#LDFLAGS += -L ../libzebra -L /mnt/hgfs/code/rose/src/dpdk-2.0.0/app/naga/cmdline -L ../vsr
-LDLIBS  +=  ../cmdline/libcmdline.a  ../libzebra/libzebra.a ../url/liburl.a
-LDLIBS  +=   ../vsr/libvsr.a  ../pid/libpid.a ../itf/libitf.a   ../dmr/libdmr.a ../acr/libacr.a ../boots/libboots.a ../pub/libpub.a ../urlr/liburlr.a
-LDLIBS  +=   ../adp/libadp.a ../template/libtemp.a ../debug/libdebug.a  -lpthread ../itf/libitf.a ../netseg/libnetseg.a ../dnet/libdnetseg.a ../url/liburl.a ../pcre-m/libpcre.a ../hijack/libhijack.a
-LDLIBS  +=   -lcrypt -lreadline -lrt -lpcap -lpthread -lz
+SRCS-y += naga_hijack.c hijack_cmd.c hijack.c
 
+#CFLAGS += -O3
+#CFLAGS += $(WERROR_FLAGS)
+CFLAGS += -I ../boots -I ../include  -I ../itf  -I ../template
 
-include $(RTE_SDK)/mk/rte.app.mk
+# this lib depends upon:
+#DEPDIRS-y += lib/librte_eal lib/librte_mempool lib/librte_ring lib/librte_mbuf
+
+include $(RTE_SDK)/mk/rte.lib.mk
+

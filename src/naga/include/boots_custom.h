@@ -11,7 +11,8 @@
     MOD_ACR, \
     MOD_ADP, \
     MOD_NET, \
-    MOD_DNET
+    MOD_DNET, \
+    MOD_HIJACK
 
 #define MOD_ARRAY_CUSTOM \
     {MOD_AMD, BAS, OFF, OFF, "AMD", "Admin Main Daemon"}, \
@@ -23,7 +24,8 @@
     {MOD_ACR, ON,  OFF, OFF, "ACR", "Account rule module"}, \
     {MOD_ADP, ON,  OFF, OFF, "ADP", "Advertising push"}, \
     {MOD_NET, ON,  OFF, OFF, "NET", "Net Segment module"}, \
-    {MOD_DNET, ON,  OFF, OFF, "DNET", "Dnet Segment module"}
+    {MOD_DNET, ON,  OFF, OFF, "DNET", "Dnet Segment module"},\
+    {MOD_HIJACK, ON,  OFF, OFF, "DNET", "Dnet Segment module"}
 
 #define DOPT_CUSTOM \
     DOPT_TAGMON, \
@@ -97,6 +99,14 @@
     DNET_UNMATCHPKTS, /* not match packets */ \
     DNET_MATCHPKTS, /* match packets */ \
     DNET_RULE_MATCHPKTS, /* rule ip, url all match */ \
+    \
+    HIJACK_IPKTS,\
+    HIJACK_DROP_GET_OR_POST,\
+    HIJACK_IP_SESSION_FAIL,\
+    HIJACK_HOST_NOT_MATCH,\
+    HIJACK_DROP_HEAD_GEN1,\
+    HIJACK_DROP_SEND_PACKET1,\
+    HIJACK_PUSH_TX_SUCCESS,\
     NAGA_CNT_MAX
 
 #define CNT_DEF_CUSTOM \
@@ -159,6 +169,14 @@
     CNT_DEF(DNET_UNMATCHPKTS), \
     CNT_DEF(DNET_MATCHPKTS), \
     CNT_DEF(DNET_RULE_MATCHPKTS), \
+    \
+    CNT_DEF(HIJACK_IPKTS),\
+    CNT_DEF(HIJACK_DROP_GET_OR_POST),\
+    CNT_DEF(HIJACK_IP_SESSION_FAIL),\
+    CNT_DEF(HIJACK_HOST_NOT_MATCH),\
+    CNT_DEF(HIJACK_DROP_HEAD_GEN1),\
+    CNT_DEF(HIJACK_DROP_SEND_PACKET1),\
+    CNT_DEF(HIJACK_PUSH_TX_SUCCESS),\
     CNT_DEF(NAGA_CNT_MAX)
 
 /* Custom spinlock */

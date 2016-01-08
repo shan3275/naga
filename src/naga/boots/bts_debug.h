@@ -36,7 +36,7 @@ berr dopt_modify(char *name, bswt enable);
 typedef enum {
     MOD_DBG,
     MOD_CUSTOM,
-    MOD_MAX,
+    MOD_MAX
 } bmod;
 
 typedef struct {

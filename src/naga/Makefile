@@ -47,6 +47,7 @@ DIRS-y += adp
 DIRS-y += pub
 DIRS-y += url
 DIRS-y += urlr
+DIRS-y += hijack
 DIRS-y += debug
 DIRS-y += main
 

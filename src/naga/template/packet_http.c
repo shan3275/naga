@@ -73,6 +73,8 @@ http_body_t *http_body = NULL;
 #define HTTP_LAST_MODIFIED_HEAD     "Last-Modified: "
 #define HTTP_ACCEPT_RANGES          "Accept-Ranges: bytes"
 
+
+
 // http response
 //*****************************************************************************
 // sample code :
@@ -137,6 +139,14 @@ http_body_t *http_body = NULL;
 // HTTP_CONNECTION HTTP_CRLF
 // HTTP_ACCEPT_RANGES HTTP_CRLF
 //********************************************************************************/
+
+
+
+
+    
+    
+
+
 
 
 /* http get  head template 1*/
@@ -549,6 +559,42 @@ berr ads_http_ok_head_fill(char *buf, hytag_t *hytag)
     return E_SUCCESS;
 }
 #else
+
+
+#define HTTP_302_HEADER             "HTTP/1.1 302 Moved Temporarily\r\n"
+#define HTTP_302_SERVER             "Server: Embedthis-http\r\n"
+#define HTTP_302_LOCATION           "Location: "
+#define HTTP_302_CONTENT_TYPE       "Content-Type: text/html\r\n"
+#define HTTP_302_CONTENT_LENGTH     "Content-Length: 0\r\n"
+#define HTTP_302_DATE               "Date: Mon, 14 Sep 2015 15:02:34 GMT\r\n"
+
+
+berr ads_http_302_fill(char *buf, hytag_t *hytag, char *url)
+{
+    uint16_t len = 0;
+    char locate[512] = {0};
+    
+    sprintf(locate, "%s\r\n", url);
+
+    if ( NULL == buf || NULL == hytag )
+    {
+        BRET(E_PARAM);
+    }
+
+ 
+    len += snprintf(buf+len, 2048-len, "%s%s%s%s%s%s%s", 
+        HTTP_302_HEADER, HTTP_302_SERVER, 
+        HTTP_302_LOCATION, locate, HTTP_302_CONTENT_TYPE,
+        HTTP_302_CONTENT_LENGTH, HTTP_302_DATE);
+
+    hytag->l5_len = len;
+    hytag->content_len = 0;
+    return E_SUCCESS;
+}
+
+
+
+
 
 berr ads_http_ok_head_fill(char *buf, hytag_t *hytag)
 {

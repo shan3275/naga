@@ -34,6 +34,10 @@ typedef struct
     char tail[TEMPLATE_TAIL_LEN_MAX];
 }http_body_t;
 
+
+berr ads_http_302_fill(char *buf, hytag_t *hytag, char *url);
+
+
 berr ads_http_content_fill(char *buf, hytag_t *hytag);
 berr ads_http_ok_head_fill(char *buf, hytag_t *hytag);
 berr ads_template_init(void);

@@ -30,6 +30,7 @@
 #include "vsr_dp.h"
 #include "itf.h"
 #include "nag_adp.h"
+#include "naga_hijack.h"
 #include "bts_cnt.h"
 #include "main_data.h"
 
@@ -78,7 +79,7 @@ berr naga_data_process_module(hytag_t * hytag)
 
 
 	DPF_NODE(MOD_NET, hytag, netseg_dp_process);
-	DPF_NODE(MOD_NET, hytag, dnet_dp_process);
+	DPF_NODE(MOD_DNET, hytag, dnet_dp_process);
 
     //DPF_NODE(MOD_VSR, &hytag, naga_vsr);
 
@@ -87,7 +88,9 @@ berr naga_data_process_module(hytag_t * hytag)
 
     DPF_NODE(MOD_ACR, hytag, naga_acr);
 
-    DPF_NODE(MOD_ADP, hytag, naga_adp);
+    //DPF_NODE(MOD_ADP, hytag, naga_adp);
+
+    DPF_NODE(MOD_HIJACK, hytag, naga_hijack);
     
     HYTAG_LOG(hytag);
 #if CHECK_PACK_TIME	

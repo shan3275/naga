@@ -14,6 +14,11 @@
 #define __PACKET_INCLUDE_H__
 #include "naga_types.h"
 
+
+berr
+redirect_302_response_generator(void *ptr, hytag_t *hytag, char *url);
+
+
 berr
 ads_response_head_generator(void *ptr, hytag_t *hytag);
 berr
