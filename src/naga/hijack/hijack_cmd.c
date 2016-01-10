@@ -84,6 +84,7 @@ static int hijack_info_get(struct vty *vty)
     int ip_interval = 0, ip_num_interval = 0;
     uint64_t hijack_can_push_count;
     uint64_t hijack_push_tx_success;
+    uint64_t hijack_push_arrive_success;
     time_t *boottime = NULL;
 
     if (api_hijack_enable_get(&status))
@@ -108,17 +109,34 @@ static int hijack_info_get(struct vty *vty)
 
     hijack_can_push_count = CNT_GET(HIJACK_ALL_CAN_PUSH); 
     hijack_push_tx_success = CNT_GET(HIJACK_PUSH_TX_SUCCESS);
+    hijack_push_arrive_success = CNT_GET(HIJACK_KEY_MATCH_DROP);
 
     boottime = api_hijack_get_start_time();
 
     if(boottime !=  NULL)
     {
-        vty_out(vty, "Boot Time      : %s%s", ctime(boottime), VTY_NEWLINE);
+        vty_out(vty, "Boot Time:    %s%s", ctime(boottime), VTY_NEWLINE);
     }
 
-    vty_out(vty, "All can hijack          : %ld%s",  hijack_can_push_count, VTY_NEWLINE);    
-    vty_out(vty, "Pushed(tx success)    : %ld%s",  hijack_push_tx_success, VTY_NEWLINE);
+    vty_out(vty, "All can hijack: %ld%s",  hijack_can_push_count, VTY_NEWLINE);    
+    vty_out(vty, "Pushed(tx success): %ld%s",  hijack_push_tx_success, VTY_NEWLINE);
+    vty_out(vty, "Arrived success: %ld%s", hijack_push_arrive_success, VTY_NEWLINE);
 
+    if(hijack_push_tx_success==0)
+	{
+		vty_out(vty, "NO hijack!!!!!!!!!!!%s", VTY_NEWLINE);
+		return 0;
+	}
+	else
+	{
+		float fpushed = hijack_push_tx_success;
+		float fsuccess = hijack_push_arrive_success;
+	
+		float aver =  (fsuccess/fpushed)*100;
+    
+		vty_out(vty, "Success percent   : (%f%%)%s", aver, VTY_NEWLINE);
+	}
+    return 0;
 
     return CMD_SUCCESS;
 }
