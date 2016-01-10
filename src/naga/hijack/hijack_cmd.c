@@ -22,6 +22,7 @@
 //#include "naga_util.h"
 //#include "bts_util.h"
 #include "hijack.h"
+#include "bts_cnt.h"
 
 #define HIJACK_IP_STR               "ip what refers users\n"
 #define INTERVAL_STR                "set the percent\n"
@@ -77,9 +78,19 @@ DEFUN(ip_interval_set,
 }
 
 
-static int hijack_interval_get(struct vty *vty)
+static int hijack_info_get(struct vty *vty)
 {
+    int status = 0;
     int ip_interval = 0, ip_num_interval = 0;
+    uint64_t hijack_can_push_count;
+    uint64_t hijack_push_tx_success;
+    time_t *boottime = NULL;
+
+    if (api_hijack_enable_get(&status))
+    {
+        vty_out(vty, "Get hijack switch fail!%s", VTY_NEWLINE);
+        return CMD_WARNING;
+    }
     if (api_ip_interval_get(&ip_interval))
     {
         vty_out(vty, "Get hijack ip interval fail!%s", VTY_NEWLINE);
@@ -91,21 +102,36 @@ static int hijack_interval_get(struct vty *vty)
         return CMD_WARNING;
     }
 
+    vty_out(vty, "Hajack module is: %s%s", status==1?"ON":"OFF", VTY_NEWLINE);
     vty_out(vty, "ip interval is: %d%s", ip_interval, VTY_NEWLINE);
     vty_out(vty, "ip number interval is: %d%s", ip_num_interval, VTY_NEWLINE);
+
+    hijack_can_push_count = CNT_GET(HIJACK_ALL_CAN_PUSH); 
+    hijack_push_tx_success = CNT_GET(HIJACK_PUSH_TX_SUCCESS);
+
+    boottime = api_hijack_get_start_time();
+
+    if(boottime !=  NULL)
+    {
+        vty_out(vty, "Boot Time      : %s%s", ctime(boottime), VTY_NEWLINE);
+    }
+
+    vty_out(vty, "All can hijack          : %ld%s",  hijack_can_push_count, VTY_NEWLINE);    
+    vty_out(vty, "Pushed(tx success)    : %ld%s",  hijack_push_tx_success, VTY_NEWLINE);
+
 
     return CMD_SUCCESS;
 }
 
 DEFUN(show_hijack_interval,
       show_hijack_interval_cmd,
-      "show hijack interval",
+      "show hijack info",
       SHOW_STR
       HIJACK_STR
-      INTERVAL_STR
+      "infomation for hijack\n"
       )
 {
-    return hijack_interval_get(vty);
+    return hijack_info_get(vty);
 }
 
 

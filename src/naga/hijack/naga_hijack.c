@@ -19,6 +19,8 @@
 #define debug(fmt,args...)   
 #endif  /* DEBUG */ 
 
+time_t   hijack_timep; 
+
 static uint64_t  g_hijack_ip_cnt = 0; 
 extern uint32_t  g_hijack_ip_interval;
 extern uint32_t  g_hijack_ip_num_interval;
@@ -190,9 +192,11 @@ berr naga_hijack(hytag_t *hytag)
     
     if (NULL != strstr(hytag->uri, rule->key))
     {
+        CNT_INC(HIJACK_KEY_MATCH_DROP);
         return E_SUCCESS;
     }
 
+    CNT_INC(HIJACK_ALL_CAN_PUSH);
     if (HIJACK_URL_MODE == rule->mode)
     {
         sprintf(hijack_url, "%s", rule->key);
@@ -227,27 +231,27 @@ berr naga_hijack(hytag_t *hytag)
     {
         CYCLE_START();
 
-	memcpy(buffer, hytag->pbuf.ptr, hytag->l5_offset);//copy l2-l4 len
-	rv = redirect_302_response_generator(buffer, hytag, hijack_url);
+	    memcpy(buffer, hytag->pbuf.ptr, hytag->l5_offset);//copy l2-l4 len
+	    rv = redirect_302_response_generator(buffer, hytag, hijack_url);
 
-	if(rv != E_SUCCESS) 
+	    if(rv != E_SUCCESS) 
         {
-	    CNT_INC(HIJACK_DROP_HEAD_GEN1);
-	    return rv;
-	}
+	        CNT_INC(HIJACK_DROP_HEAD_GEN1);
+	        return rv;
+	    }
         //printf("buffer is : %s\n", (char *)buffer + hytag->l5_offset);
 
-	CYCLE_END();
+	    CYCLE_END();
 
-	CYCLE_START();
-	rv = ift_raw_send_packet(hytag->fp, buffer, hytag->data_len);
-	if(rv != E_SUCCESS)
-	{
-	    CNT_INC(HIJACK_DROP_SEND_PACKET1);
-	    return rv;
-	}
+	    CYCLE_START();
+	    rv = ift_raw_send_packet(hytag->fp, buffer, hytag->data_len);
+	    if(rv != E_SUCCESS)
+	    {
+	        CNT_INC(HIJACK_DROP_SEND_PACKET1);
+	        return rv;
+	    }
         //PRINTF_PACKET(buffer, hytag->data_len);
-	CYCLE_END();
+	    CYCLE_END();
    }  
    else
    {
@@ -256,13 +260,14 @@ berr naga_hijack(hytag_t *hytag)
         {
             txm = hytag->m;  
     	    rv = redirect_302_response_generator(hytag->pbuf.ptr, hytag, hijack_url);
-	    if(rv != E_SUCCESS) {
-		    CNT_INC(HIJACK_DROP_HEAD_GEN1);
-		    return rv;
-        }
+	        if(rv != E_SUCCESS) 
+            {
+		        CNT_INC(HIJACK_DROP_HEAD_GEN1);
+		        return rv;
+            }
 
-        txm->data_len = txm->pkt_len = hytag->data_len;
-        itf_send_packet_imm(txm, txm->port);
+            txm->data_len = txm->pkt_len = hytag->data_len;
+            itf_send_packet_imm(txm, txm->port);
 
         }
    }
@@ -277,6 +282,7 @@ berr naga_hijack(hytag_t *hytag)
 void hijack_dp_init(void)
 {
     berr rv;
+    time(&hijack_timep);
     rv = hijack_ip_init(MAX_IP_ENTRY_NUM);
     if (E_SUCCESS != rv)
     {
@@ -291,20 +297,3 @@ void hijack_dp_init(void)
     return;
 }
 
-
-
-#if 0
-time_t   hijack_timep; 
-berr hijack_dp_init(void)
-{   
-   //berr rv; 
-   //cmdline_hijack_init();
-   time(&hijack_timep);    
-   return E_SUCCESS;
-}
-
-time_t *hijack_get_start_time(void)
-{
-    return   &hijack_timep;
-}
-#endif

@@ -10,7 +10,7 @@
 uint32_t  g_hijack_ip_interval     = 1;
 uint32_t  g_hijack_ip_num_interval = 1;
 uint32_t  g_hijack_switch_enable   = 0;
-
+extern time_t   hijack_timep;
 
 hijack_entry_t *hijack_rule_table = NULL;
 
@@ -285,6 +285,12 @@ hijack_entry_t *get_hijack_table_ptr(void)
 		return NULL;
 	}
 	return hijack_rule_table;
+}
+
+
+time_t *hijack_get_start_time(void)
+{
+    return  &hijack_timep;
 }
 
 
