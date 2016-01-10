@@ -36,7 +36,9 @@ include $(RTE_SDK)/mk/rte.vars.mk
 #
 LIB = libhijack.a
 
-CFLAGS +=  -I .  -I ../include -I ../libzebra
+CFLAGS +=   -I ../boots -I ../include -I ../pub -I ../libzebra -I ../pid 
+CFLAGS += -I ../itf  -I ../template
+#CFLAGS +=  -I .  -I ../include -I ../libzebra
 
 #CFLAGS += $(WERROR_FLAGS)
 
@@ -48,7 +50,6 @@ SRCS-y += naga_hijack.c hijack_cmd.c hijack.c
 
 #CFLAGS += -O3
 #CFLAGS += $(WERROR_FLAGS)
-CFLAGS += -I ../boots -I ../include  -I ../itf  -I ../template
 
 # this lib depends upon:
 #DEPDIRS-y += lib/librte_eal lib/librte_mempool lib/librte_ring lib/librte_mbuf

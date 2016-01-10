@@ -22,7 +22,7 @@
 static uint64_t  g_hijack_ip_cnt = 0; 
 extern uint32_t  g_hijack_ip_interval;
 extern uint32_t  g_hijack_ip_num_interval;
-
+extern uint32_t  g_hijack_switch_enable;
 
 
 #define MAX_IP_ENTRY_NUM 100
@@ -126,6 +126,11 @@ berr naga_hijack(hytag_t *hytag)
     char uri_interval[512]  = {0};
 
 
+    if (!g_hijack_switch_enable)
+    {
+        return E_SUCCESS;
+    }
+
     if(NULL == hytag)
     {
         //CNT_INC(ADP_DROP_PARAM);
@@ -190,7 +195,7 @@ berr naga_hijack(hytag_t *hytag)
 
     if (HIJACK_URL_MODE == rule->mode)
     {
-        sprintf(hijack_url, "http://%s%s", rule->host, rule->key);
+        sprintf(hijack_url, "%s", rule->key);
     }
     else
     {
