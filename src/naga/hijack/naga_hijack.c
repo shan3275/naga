@@ -23,9 +23,10 @@ time_t   hijack_timep;
 
 static uint64_t  g_hijack_pkt_cnt = 0; 
 static uint64_t  g_hijack_ip_cnt = 0;
+
 extern uint32_t  g_hijack_pkt_interval;
 extern uint32_t  g_hijack_ip_interval;
-extern uint32_t  g_hijack_ip_num_interval;
+extern uint32_t  g_hijack_ip_pkt_interval;
 extern uint32_t  g_hijack_switch_enable;
 
 
@@ -61,6 +62,8 @@ static  hijack_ip_t *ip_session_process(uint32_t ip)
     entry = api_hijack_ip_get(ip_str);
     if (NULL == entry)
     {
+        g_hijack_ip_interval++;
+        CNT_INC(HIJACK_SIP_NOT_REPEAT);
         entry = hijack_ip_new();
         if (NULL == entry)
         {
@@ -72,6 +75,10 @@ static  hijack_ip_t *ip_session_process(uint32_t ip)
         {
             return NULL; 
         }
+    }
+    else
+    {
+        CNT_INC(HIJACK_SIP_REPEAT);
     }
     ACL_HIT(entry->acl);
     return entry;
@@ -209,10 +216,17 @@ berr naga_hijack(hytag_t *hytag)
         return E_SUCCESS;
     }
     
-    if ((uint64_t)(entry->acl.cnt.cnt) % g_hijack_ip_num_interval != 0)
+    if (g_hijack_ip_cnt % g_hijack_ip_interval != 0)
     {
         return E_SUCCESS;
     }
+
+    if ((uint64_t)(entry->acl.cnt.cnt) % g_hijack_ip_pkt_interval != 0)
+    {
+        return E_SUCCESS;
+    }
+
+    
 #endif	
     CYCLE_INIT(1);
 

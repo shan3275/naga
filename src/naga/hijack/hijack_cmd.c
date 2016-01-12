@@ -39,23 +39,44 @@
 #define hj_debug(fmt,args...)
 #endif  /* DEBUG */
 
-static int ip_num_interval(const char *interval_str)
+
+
+static int pkt_interval(const char *interval_str)
 {
     int interval = strtoul(interval_str, NULL, 0);
-    return api_ip_num_set_interval(interval);
+    return api_pkt_set_interval(interval);
 }
 
-DEFUN(ip_num_interval_set,
-      ip_num_interval_set_cmd,
-      "hijack ip number interval <1-100000>",
+DEFUN(pkt_interval_set,
+      pkt_interval_set_cmd,
+      "hijack pkt interval <1-100000>",
       HIJACK_STR
-      HIJACK_IP_STR
-      "ip number\n"
+      "Packts\n"
       INTERVAL_STR
       "1-100000\n"
       )
 {
-    return ip_num_interval(argv[0]);
+    return pkt_interval(argv[0]);
+}
+
+
+static int ip_pkt_interval(const char *interval_str)
+{
+    int interval = strtoul(interval_str, NULL, 0);
+    return api_ip_pkt_set_interval(interval);
+}
+
+DEFUN(ip_pkt_interval_set,
+      ip_pkt_interval_set_cmd,
+      "hijack ip pkt interval <1-100000>",
+      HIJACK_STR
+      HIJACK_IP_STR
+      "Packets for one ip\n"
+      INTERVAL_STR
+      "1-100000\n"
+      )
+{
+    return ip_pkt_interval(argv[0]);
 }
 
 
@@ -81,7 +102,7 @@ DEFUN(ip_interval_set,
 static int hijack_info_get(struct vty *vty)
 {
     int status = 0;
-    int ip_interval = 0, ip_num_interval = 0;
+    int ip_interval = 0, ip_pkt_interval = 0, pkt_interval = 0;
     uint64_t hijack_can_push_count;
     uint64_t hijack_push_tx_success;
     uint64_t hijack_push_arrive_success;
@@ -97,15 +118,22 @@ static int hijack_info_get(struct vty *vty)
         vty_out(vty, "Get hijack ip interval fail!%s", VTY_NEWLINE);
         return CMD_WARNING;
     }
-    if (api_ip_num_interval_get(&ip_num_interval))
+    if (api_ip_pkt_interval_get(&ip_pkt_interval))
     {
-        vty_out(vty, "Get hijack ip number interval fail!%s", VTY_NEWLINE);
+        vty_out(vty, "Get hijack ip pkt interval fail!%s", VTY_NEWLINE);
         return CMD_WARNING;
     }
 
-    vty_out(vty, "Hajack module is: %s%s", status==1?"ON":"OFF", VTY_NEWLINE);
+    if (api_pkt_interval_get(&pkt_interval))
+    {
+        vty_out(vty, "Get hijack packet interval fail!%s", VTY_NEWLINE);
+        return CMD_WARNING;
+    }
+
+    vty_out(vty, "Hajack module status: %s%s", status==1?"ON":"OFF", VTY_NEWLINE);
     vty_out(vty, "ip interval is: %d%s", ip_interval, VTY_NEWLINE);
-    vty_out(vty, "ip number interval is: %d%s", ip_num_interval, VTY_NEWLINE);
+    vty_out(vty, "packet interval per ip is: %d%s", ip_pkt_interval, VTY_NEWLINE);
+    vty_out(vty, "packet interval is: %d%s", pkt_interval, VTY_NEWLINE);
 
     hijack_can_push_count = CNT_GET(HIJACK_ALL_CAN_PUSH); 
     hijack_push_tx_success = CNT_GET(HIJACK_PUSH_TX_SUCCESS);
@@ -403,7 +431,7 @@ void hijack_cmd_config_write(struct vty *vty)
     int ret = 0;
     uint8_t effect = 0;
     int status = 0;
-    int ip_interval = 0, ip_num_interval = 0;
+    int ip_interval = 0, ip_pkt_interval = 0, pkt_interval;
     hijack_rule_t hijack;
     int i;
 
@@ -441,14 +469,17 @@ void hijack_cmd_config_write(struct vty *vty)
     {
         return;
     }
-    if (api_ip_num_interval_get(&ip_num_interval))
+    if (api_ip_pkt_interval_get(&ip_pkt_interval))
     {
         return;
     }
-
+    if (api_pkt_interval_get(&pkt_interval))
+    {
+        return;
+    }
     vty_out(vty,"hijack ip interval %d%s", ip_interval, VTY_NEWLINE);
-    vty_out(vty,"hijack ip number interval %d%s", ip_num_interval, VTY_NEWLINE);
-
+    vty_out(vty,"hijack ip pkt interval %d%s", ip_pkt_interval, VTY_NEWLINE);
+    vty_out(vty,"hijack pkt interval %d%s", pkt_interval, VTY_NEWLINE);
 }
 
 /*
@@ -457,7 +488,8 @@ void hijack_cmd_config_write(struct vty *vty)
  * */
 void cmdline_hijack_init(void)
 {
-    install_element(CMD_NODE, &ip_num_interval_set_cmd);
+    install_element(CMD_NODE, &pkt_interval_set_cmd);
+    install_element(CMD_NODE, &ip_pkt_interval_set_cmd);
     install_element(CMD_NODE, &ip_interval_set_cmd);
     install_element(CMD_NODE, &hijack_set_with_locate_cmd);
     install_element(CMD_NODE, &hijack_set_without_locate_cmd);
