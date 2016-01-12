@@ -33,6 +33,7 @@
 #include "naga_hijack.h"
 #include "bts_cnt.h"
 #include "main_data.h"
+#include "domain_dp.h"
 
 
 #define MOD_IS_TURN_ON(mod)  (mod_is_enable(mod) == ON)
@@ -83,8 +84,10 @@ berr naga_data_process_module(hytag_t * hytag)
 
     //DPF_NODE(MOD_VSR, &hytag, naga_vsr);
 
+
     DPF_NODE(MOD_DMR, hytag, naga_dmr);
 
+    DPF_NODE(MOD_DOMAIN_CNT, hytag, naga_domain);
 
     DPF_NODE(MOD_ACR, hytag, naga_acr);
 

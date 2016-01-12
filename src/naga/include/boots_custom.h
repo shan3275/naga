@@ -12,7 +12,8 @@
     MOD_ADP, \
     MOD_NET, \
     MOD_DNET, \
-    MOD_HIJACK
+    MOD_HIJACK,\
+    MOD_DOMAIN_CNT
 
 #define MOD_ARRAY_CUSTOM \
     {MOD_AMD, BAS, OFF, OFF, "AMD", "Admin Main Daemon"}, \
@@ -25,7 +26,8 @@
     {MOD_ADP, ON,  OFF, OFF, "ADP", "Advertising push"}, \
     {MOD_NET, ON,  OFF, OFF, "NET", "Net Segment module"}, \
     {MOD_DNET, ON,  OFF, OFF, "DNET", "Dnet Segment module"},\
-    {MOD_HIJACK, ON,  OFF, OFF, "DNET", "Dnet Segment module"}
+    {MOD_HIJACK, ON,  OFF, OFF, "DNET", "Dnet Segment module"},\
+	{MOD_DOMAIN_CNT, ON,  OFF, OFF, "Domain", "Domain count"}
 
 #define DOPT_CUSTOM \
     DOPT_TAGMON, \

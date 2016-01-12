@@ -34,7 +34,7 @@ include $(RTE_SDK)/mk/rte.vars.mk
 #
 # library name
 #
-LIB = libdmr.a
+LIB = libdomain.a
 
 CFLAGS +=   -I ../boots -I ../include -I ../pub -I ../libzebra -I ../pid 
 #CFLAGS += $(WERROR_FLAGS)

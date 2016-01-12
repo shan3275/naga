@@ -6,7 +6,7 @@
 
 #include "domain.h"
 
-uint32_t domin_default_action = 0;
+uint32_t default_action = 0;
 
 bts_hashtable_t domain_table;
 
@@ -189,13 +189,13 @@ domain_iter(bts_iter_func func, void *param)
 
 berr domain_domain_default_act_set(uint32_t action)
 {
-	domin_default_action = action;
+	default_action = action;
 	return E_SUCCESS;
 }
 
 berr domain_domain_default_act_get(uint32_t *action)
 {
-	*action = domin_default_action;
+	*action = default_action;
 	return E_SUCCESS;
 }
 
