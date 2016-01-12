@@ -56,11 +56,12 @@ void hytag_print(hytag_t *tag)
 
 void hytag_log(hytag_t *tag)
 {
-	if(0)
+	if(1)
 	{
-		if(APP_TYPE_HTTP_GET_OR_POST == tag->app_type)
+		if((APP_TYPE_HTTP_GET_OR_POST == tag->app_type) && (tag->match & 0xc))
 		{
-			bts_zlog(LOG_ALERT, "{%d.%d.%d.%d %d.%d.%d.%d %d %d %d}\t|%-64s|AD<%s>", 
+                        //printf("hijack match is : %d\n", tag->match);
+			bts_zlog(LOG_ALERT, "%d.%d.%d.%d %d.%d.%d.%d %d %d %d %d %s", 
 		                    (tag->outer_srcip4 >>24) &0xff,
 		                    (tag->outer_srcip4 >>16) &0xff,
 		                    (tag->outer_srcip4 >>8) &0xff,
@@ -71,24 +72,9 @@ void hytag_log(hytag_t *tag)
 		                    (tag->outer_dstip4) &0xff,
 		                    tag->outer_srcport,
 		                    tag->outer_dstport,
-		                    tag->outer_protocol,
-		                    tag->url, tag->ad_act == AD_SUCCESS ? "Y":"N");
-		}
-
-		else
-		{
-			bts_zlog(LOG_INFO, "{%d.%d.%d.%d %d.%d.%d.%d %d %d %d}",
-		                    (tag->outer_srcip4 >>24) &0xff,
-		                    (tag->outer_srcip4 >>16) &0xff,
-		                    (tag->outer_srcip4 >>8) &0xff,
-		                    (tag->outer_srcip4) &0xff,
-		                    (tag->outer_dstip4 >>24) &0xff,
-		                    (tag->outer_dstip4 >>16) &0xff,
-		                    (tag->outer_dstip4 >>8) &0xff,
-		                    (tag->outer_dstip4) &0xff,             
-		                    tag->outer_srcport,
-		                    tag->outer_dstport,
-		                    tag->outer_protocol);
+		                    tag->match,
+                                    tag->hijack_rule_id,
+		                    tag->url);
 		}
 	}
 	else

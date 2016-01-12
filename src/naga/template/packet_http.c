@@ -571,23 +571,30 @@ berr ads_http_ok_head_fill(char *buf, hytag_t *hytag)
 
 berr ads_http_302_fill(char *buf, hytag_t *hytag, char *url)
 {
-    uint16_t len = 0;
-    char locate[512] = {0};
+    int len = 0;
     
-    sprintf(locate, "%s\r\n", url);
 
     if ( NULL == buf || NULL == hytag )
     {
         BRET(E_PARAM);
     }
 
- 
-    len += snprintf(buf+len, 2048-len, "%s%s%s%s%s%s%s", 
+    //printf("%s.%d\n", __func__, __LINE__);
+#if 1
+    len += snprintf(buf+len, 2048-len, "%s%s%s%s\r\n%s%s%s", 
         HTTP_302_HEADER, HTTP_302_SERVER, 
-        HTTP_302_LOCATION, locate, HTTP_302_CONTENT_TYPE,
+        HTTP_302_LOCATION, url, HTTP_302_CONTENT_TYPE,
         HTTP_302_CONTENT_LENGTH, HTTP_302_DATE);
-
-    hytag->l5_len = len;
+#endif
+    //printf("%s.%d\n", __func__, __LINE__);
+    if (len > 0)
+    {
+        hytag->l5_len = len;
+    }
+    else
+    {
+        hytag->l5_len = 0;
+    }
     hytag->content_len = 0;
     return E_SUCCESS;
 }
