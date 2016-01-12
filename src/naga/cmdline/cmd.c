@@ -248,6 +248,7 @@ int cmdline (int argc, char **argv)
     cmdline_vsr_init();
     cmdline_bts_init();
 	cmdline_dmr_init();
+	cmdline_domain_init();
 	cmdline_acr_init();
     cmdline_adp_init();
     cmdline_itf_init();
