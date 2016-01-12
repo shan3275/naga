@@ -9,11 +9,23 @@
 
 uint32_t  g_hijack_ip_interval     = 1;
 uint32_t  g_hijack_ip_num_interval = 1;
-
+uint32_t  g_hijack_switch_enable   = 0;
+extern time_t   hijack_timep;
 
 hijack_entry_t *hijack_rule_table = NULL;
 
 
+berr hijack_enable_set(int status)
+{
+    g_hijack_switch_enable = status;
+    return E_SUCCESS;
+}
+
+berr hijack_enable_get(int *status)
+{
+    *status = g_hijack_switch_enable;
+    return E_SUCCESS;
+}
 
 berr ip_num_set_interval(int interval)
 {
@@ -29,8 +41,17 @@ berr ip_set_interval(int interval)
 }
 
 
+berr ip_interval_get(int *interval)
+{
+    *interval = g_hijack_ip_interval;
+    return E_SUCCESS;
+}
 
-
+berr ip_num_interval_get(int *interval)
+{
+    *interval = g_hijack_ip_num_interval;
+    return E_SUCCESS;
+}
 
 bts_hashtable_t hijack_ip_table;
 
@@ -264,6 +285,12 @@ hijack_entry_t *get_hijack_table_ptr(void)
 		return NULL;
 	}
 	return hijack_rule_table;
+}
+
+
+time_t *hijack_get_start_time(void)
+{
+    return  &hijack_timep;
 }
 
 

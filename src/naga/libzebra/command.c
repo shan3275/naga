@@ -40,7 +40,7 @@ Boston, MA 02111-1307, USA.  */
 #include "acr_cmd.h"
 #include "adp_cmd.h"
 #include "url_cmd.h"
-
+#include "hijack_cmd.h"
 
 /* Command vector which includes some level of command lists. Normally
    each daemon maintains each own cmdvec. */
@@ -741,6 +741,7 @@ config_write_host (struct vty *vty)
   adp_cmd_config_write(vty);
   url_cmd_config_write(vty);
   urlr_cmd_config_write(vty);
+  hijack_cmd_config_write(vty);
   return 1;
 }
 

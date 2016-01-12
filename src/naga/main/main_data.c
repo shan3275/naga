@@ -47,7 +47,7 @@
         { \
             /*DBG_INFO(MOD_DPF, "%s ...... PASS.\n", #_func);*/ \
         } else { \
-            DBG_ERR(MOD_DPF, "%s  ...... FAIL!(%s)\n", #_func, berr_msg(_ec)); \
+           /* DBG_ERR(MOD_DPF, "%s  ...... FAIL!(%s)\n", #_func, berr_msg(_ec));*/ \
         } \
         HYTAG_DUMP(_tag); \
     } \
@@ -76,13 +76,11 @@ berr naga_data_process_module(hytag_t * hytag)
     //HYTAG_DUMP(hytag);
 
     DPF_NODE(MOD_PID, hytag, naga_pid);
-	DPF_NODE(MOD_ADP, hytag, naga_uri);
+    DPF_NODE(MOD_ADP, hytag, naga_uri);
 
 
-	DPF_NODE(MOD_NET, hytag, netseg_dp_process);
-	DPF_NODE(MOD_DNET, hytag, dnet_dp_process);
-
-    //DPF_NODE(MOD_VSR, &hytag, naga_vsr);
+    DPF_NODE(MOD_NET, hytag, netseg_dp_process);
+    DPF_NODE(MOD_DNET, hytag, dnet_dp_process);
 
 
     DPF_NODE(MOD_DMR, hytag, naga_dmr);

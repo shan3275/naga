@@ -48,8 +48,14 @@ typedef struct{
 } hijack_entry_t;
 
 
+berr hijack_enable_set(int status);
+berr hijack_enable_get(int *status);
+
+
 berr ip_num_set_interval(int interval);
 berr ip_set_interval(int interval);
+berr ip_interval_get(int *interval);
+berr ip_num_interval_get(int *interval);
 berr hijack_add(hijack_rule_t *hijack);
 berr hijack_del(uint32_t index);
 berr hijack_get(uint32_t index, hijack_rule_t *hijack, uint8_t *effect);
@@ -66,19 +72,22 @@ hijack_ip_del(char *host);
 
 hijack_ip_t *hijack_ip_get(char *key);
 hijack_entry_t *get_hijack_table_ptr(void);
-
-#define api_ip_num_set_interval  ip_num_set_interval
-#define api_ip_set_interval      ip_set_interval
-#define api_url_replace_set      url_replace_set
+time_t *hijack_get_start_time(void);
 
 
-#define api_hijack_add           hijack_add
-#define api_hijack_del           hijack_del
-#define api_hijack_get           hijack_get
-#define api_hijack_ip_get        hijack_ip_get
-#define api_hijack_ip_add        hijack_ip_add
-#define api_hijack_ip_del        hijack_ip_del
-#define api_get_hijack_table_ptr get_hijack_table_ptr
-
+#define api_hijack_enable_set       hijack_enable_set
+#define api_hijack_enable_get       hijack_enable_get
+#define api_ip_num_set_interval     ip_num_set_interval
+#define api_ip_set_interval         ip_set_interval
+#define api_ip_interval_get         ip_interval_get
+#define api_ip_num_interval_get     ip_num_interval_get
+#define api_hijack_add              hijack_add
+#define api_hijack_del              hijack_del
+#define api_hijack_get              hijack_get
+#define api_hijack_ip_get           hijack_ip_get
+#define api_hijack_ip_add           hijack_ip_add
+#define api_hijack_ip_del           hijack_ip_del
+#define api_get_hijack_table_ptr    get_hijack_table_ptr
+#define api_hijack_get_start_time   hijack_get_start_time
 
 #endif

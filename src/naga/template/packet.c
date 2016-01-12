@@ -347,6 +347,7 @@ redirect_302_response_generator(void *ptr, hytag_t *hytag, char *url)
     http_head = ((char *)ptr) + hytag->l5_offset;
 
 	CYCLE_START();
+
     rv = ads_http_302_fill(http_head, hytag, url);
     if (rv)
     {

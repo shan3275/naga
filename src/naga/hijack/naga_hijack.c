@@ -19,80 +19,21 @@
 #define debug(fmt,args...)   
 #endif  /* DEBUG */ 
 
+time_t   hijack_timep; 
+
 static uint64_t  g_hijack_ip_cnt = 0; 
 extern uint32_t  g_hijack_ip_interval;
 extern uint32_t  g_hijack_ip_num_interval;
-
+extern uint32_t  g_hijack_switch_enable;
 
 
 #define MAX_IP_ENTRY_NUM 100
 
-#if 0
-berr hijack_switch_set(int on)
-{
-    g_hijack_push_switch = on; 
-    return E_SUCCESS;
-}
 
-
-
-berr hijack_switch_get(int *on)
-{
-    *on = g_hijack_push_switch ; 
-    return E_SUCCESS;
-}
-
-
-berr hijack_set_interval(int interval)
-{
-    g_hijack_interval = interval;
-    return E_SUCCESS;
-}
-
-berr hijack_get_interval(int *interval)
-{
-    *interval = g_hijack_interval ;
-    //*hijack_cnt =  CNT_GET(ADP_ALL_CAN_PUSH);
-    //*success = CNT_GET(ADP_PUSH_TX_SUCCESS);
-    return E_SUCCESS;
-}
-
-berr hijack_clear_interval(void)
-{
-	CNT_SET(ADP_ALL_CAN_PUSH, 0);
-	CNT_SET(ADP_PUSH_TX_SUCCESS, 0);
-	CNT_SET(ADP_PUSH_ACK_SUCCESS, 0);	
-    return E_SUCCESS;
-}
-
-
-extern struct rte_mempool * l2fwd_pktmbuf_pool;
-
-static inline struct rte_mbuf *rte_pktmbuf_real_clone(struct rte_mbuf *md,
-    struct rte_mempool *mp)
-{
-  struct rte_mbuf *mc;
-  if (unlikely ((mc = rte_pktmbuf_alloc(mp)) == NULL))
-    return (NULL);
-  /* copy data */
-  rte_memcpy((void *)mc, (void *)md, (size_t) mp->elt_size);
-
-  /* update the addr */
-  mc->buf_addr = (char *)mc + sizeof(struct rte_mbuf);
-  mc->buf_physaddr = rte_mempool_virt2phy(mp, mc) +
-      sizeof(struct rte_mbuf);
-  __rte_mbuf_sanity_check(mc, 1);
-
-  /* dump */
-#if 0
-  printf("old mbuf:\n");
-  rte_pktmbuf_dump(stdout, md, md->pkt_len);
-  printf("new mbuf:\n");
-  rte_pktmbuf_dump(stdout, mc, mc->pkt_len);
-#endif
-  return (mc);
-}
-#endif     
+#define HIJACK_LATER_BLUR_FLAG    8
+#define HIJACK_LATER_NOT_FLAG     1
+#define HIJACK_LATER_EXACT_FLAG   2  
+#define HIJACK_LATER_OUR_FLAG     4  
 
 
 
@@ -109,9 +50,10 @@ static hijack_ip_t *hijack_ip_new(void)
 	return entry;
 }
 
-static berr ip_session_process(uint32_t ip, hijack_ip_t *entry)
+static hijack_ip_t *ip_session_process(uint32_t ip)
 {
     char ip_str[MAX_IPSTR_LEN] = {0};
+    hijack_ip_t *entry = NULL;
     bts_ip_string(ip, ip_str);
 
     entry = api_hijack_ip_get(ip_str);
@@ -120,79 +62,106 @@ static berr ip_session_process(uint32_t ip, hijack_ip_t *entry)
         entry = hijack_ip_new();
         if (NULL == entry)
         {
-            return E_FAIL;
+            return NULL;
         }
-        if (api_hijack_ip_add(entry)) 
+        if (E_SUCCESS != api_hijack_ip_add(entry)) 
         {
-            return E_FAIL;
+            return NULL; 
         }
     }
     ACL_HIT(entry->acl);
-    return E_SUCCESS;
+    return entry;
 }
 
 
 static berr hijack_rule_match(char *host, hijack_rule_t **rule)
 {
     int i;
-	hijack_entry_t *ptr = NULL;
+    hijack_entry_t *ptr = NULL;
 
-	ptr = api_get_hijack_table_ptr();
-	if ((NULL == ptr)||(NULL == rule) ||(NULL == host))
-	{
-		return E_FAIL;
-	}
+    ptr = api_get_hijack_table_ptr();
+    if ((NULL == ptr)||(NULL == rule) ||(NULL == host))
+    {
+	return E_FAIL;
+    }
 	
     for ( i = 0; i < HIJACK_RULE_NUM_MAX; i++)
     {
 
-		if(ptr[i].effective == HIJACK_RULE_UNEFFECTIVE)
-		{
-			continue;			
-		}
-		if (!strncmp(host, ptr[i].hijack.host, strlen(host)))
-		{
-			*rule = &ptr[i].hijack;
-			return E_SUCCESS;
-		}
-		else
-		{
-			continue;
-		}
+	if(ptr[i].effective == HIJACK_RULE_UNEFFECTIVE)
+	{
+       	    continue;			
+	}
+	if (!strncmp(host, ptr[i].hijack.host, strlen(ptr[i].hijack.host)))
+	{
+            *rule = &ptr[i].hijack;
+	    return E_SUCCESS;
+	}
+	else
+	{
+  	    continue;
+	}
 		
     }
     return E_NULL;
 }
 
 
+#define PRINTF_PACKET(_p, _len) \
+    do{ \
+         int _i; \
+         for(_i=0; _i<_len; _i++)\
+         {\
+            if(_i%16==0)\
+            {\
+                printf("\n");\
+            }\
+            printf("%02x ", *((uint8_t *)_p + _i) );\
+         }\
+     }while(0)
+
 berr naga_hijack(hytag_t *hytag)
 {
 
     berr rv;
-    //char *rear = NULL;
     struct rte_mbuf *txm = NULL;
-    //struct rte_mbuf *m = NULL;
-	unsigned char buffer[2048]; 
+    unsigned char buffer[2048]; 
 
     hijack_ip_t *entry = NULL;
     hijack_rule_t *rule = NULL;
     char hijack_url[512] = {0};
     char uri_interval[512]  = {0};
 
-    CNT_INC(HIJACK_IPKTS);
+    hytag->match = 0;
 
-    if(( NULL == hytag) || (NULL == hytag->m))
+
+    if (!g_hijack_switch_enable)
     {
-        //CNT_INC(ADP_DROP_PARAM);
-        BRET(E_PARAM);
+        return E_SUCCESS;
     }
 
+    if(NULL == hytag)
+    {
+        //CNT_INC(ADP_DROP_PARAM);
+        //BRET(E_PARAM);
+        return E_SUCCESS;
+    }
+    
+
+    CNT_INC(HIJACK_IPKTS);
     /* */
     if( APP_TYPE_HTTP_GET_OR_POST != hytag->app_type)
     {
         CNT_INC(HIJACK_DROP_GET_OR_POST);
         return E_SUCCESS;
     }
+
+    if (ACT_DROP == (hytag->acl.actions & ACT_DROP))
+    {
+        CNT_INC(HIJACK_DROP_ACT_DROP);
+        return E_SUCCESS;
+    }
+
 
     /*check The First char*/
 #if 0
@@ -203,20 +172,34 @@ berr naga_hijack(hytag_t *hytag)
 	}
 #endif
 
-    
-    g_hijack_ip_cnt ++;
-    if (g_hijack_ip_cnt % g_hijack_ip_interval != 0)
+    if(E_SUCCESS != hijack_rule_match((char *)hytag->host, &rule))
     {
+        CNT_INC(HIJACK_HOST_NOT_MATCH);
         return E_SUCCESS;
     }
 
+    if (NULL != strstr(hytag->uri, rule->key))
+    {
+        CNT_INC(HIJACK_KEY_MATCH_DROP);
+        hytag->match |= HIJACK_LATER_OUR_FLAG;
+        return E_SUCCESS;
+    }
+    
     if(hytag->uri_len == 1 && !strcmp(hytag->uri, "/"))
     {    
         CNT_INC(URL_HOMEPAGE);
         return E_SUCCESS;
     }
 
-    if(E_SUCCESS != ip_session_process(hytag->outer_srcip4, entry))
+    g_hijack_ip_cnt ++;
+    if (g_hijack_ip_cnt % g_hijack_ip_interval != 0)
+    {
+        return E_SUCCESS;
+    }
+
+#if 0
+    entry = ip_session_process(hytag->outer_srcip4);
+    if(NULL == entry)
     {
         CNT_INC(HIJACK_IP_SESSION_FAIL);
         return E_SUCCESS;
@@ -226,65 +209,59 @@ berr naga_hijack(hytag_t *hytag)
     {
         return E_SUCCESS;
     }
-	
-	CYCLE_INIT(1);
-
-    txm = hytag->m;
+#endif	
+    CYCLE_INIT(1);
 
     
-    if(E_SUCCESS != hijack_rule_match((char *)hytag->host, &rule))
-    {
-        CNT_INC(HIJACK_HOST_NOT_MATCH);
-        return E_SUCCESS;
-    }
-    
-    if (NULL != strstr(hytag->uri, rule->key))
-    {
-        return E_SUCCESS;
-    }
+    hytag->match |= HIJACK_LATER_BLUR_FLAG;
+    hytag->hijack_rule_id = rule->index;
 
+    CNT_INC(HIJACK_ALL_CAN_PUSH);
     if (HIJACK_URL_MODE == rule->mode)
     {
-        sprintf(hijack_url, "http://%s%s", rule->host, rule->key);
+        sprintf(hijack_url, "%s", rule->key);
     }
     else
     {
         char *locate_ptr = strstr(hytag->uri, rule->locate);       
         if (NULL == locate_ptr)
         {
+            hytag->match |= HIJACK_LATER_NOT_FLAG;
             return E_SUCCESS;
         }
         else
         {
+            hytag->match |= HIJACK_LATER_EXACT_FLAG;
             memcpy(uri_interval, hytag->uri, (hytag->uri_len - strlen(locate_ptr)));
             char *key_end_ptr = strstr(locate_ptr, "&");
             if (NULL == key_end_ptr)
             {
                 sprintf(hijack_url, "http://%s%s%s%s", rule->host, uri_interval, rule->locate, rule->key);
-                printf("%s.%d: Dst url is : %s, src url is http://%s/%s", 
-                       __func__, __LINE__, hijack_url, hytag->host, hytag->uri);
+                //printf("%s.%d: Dst url is : %s, src url is http://%s/%s", 
+                       //__func__, __LINE__, hijack_url, hytag->host, hytag->uri);
             }
             else
             {
                 sprintf(hijack_url, "http://%s%s%s%s%s", rule->host, uri_interval, rule->locate, rule->key, key_end_ptr);
-                printf("%s.%d: Dst url is : %s, src url is http://%s/%s", 
-                       __func__, __LINE__, hijack_url, hytag->host, hytag->uri);
+                //printf("%s.%d: Dst url is : %s, src url is http://%s/%s", 
+                      // __func__, __LINE__, hijack_url, hytag->host, hytag->uri);
             }
         }
     }
 
     if(hytag->eth_tx == ENABLE)
     {
-	    CYCLE_START();
-
+        CYCLE_START();
 
 	    memcpy(buffer, hytag->pbuf.ptr, hytag->l5_offset);//copy l2-l4 len
 	    rv = redirect_302_response_generator(buffer, hytag, hijack_url);
 
-	    if(rv != E_SUCCESS) {
-		    CNT_INC(HIJACK_DROP_HEAD_GEN1);
-		    return rv;
+	    if(rv != E_SUCCESS) 
+        {
+	        CNT_INC(HIJACK_DROP_HEAD_GEN1);
+	        return rv;
 	    }
+        //printf("buffer is : %s\n", (char *)buffer + hytag->l5_offset);
 
 	    CYCLE_END();
 
@@ -292,24 +269,29 @@ berr naga_hijack(hytag_t *hytag)
 	    rv = ift_raw_send_packet(hytag->fp, buffer, hytag->data_len);
 	    if(rv != E_SUCCESS)
 	    {
-		    printf("Send packet Failed\n");
-		    CNT_INC(HIJACK_DROP_SEND_PACKET1);
-		    return rv;
+	        CNT_INC(HIJACK_DROP_SEND_PACKET1);
+	        return rv;
 	    }
+        //PRINTF_PACKET(buffer, hytag->data_len);
 	    CYCLE_END();
    }  
    else
    {
 
+        if (NULL != hytag->m)
+        {
+            txm = hytag->m;  
     	    rv = redirect_302_response_generator(hytag->pbuf.ptr, hytag, hijack_url);
-	    if(rv != E_SUCCESS) {
-		    CNT_INC(HIJACK_DROP_HEAD_GEN1);
-		    return rv;
-	    }
+	        if(rv != E_SUCCESS) 
+            {
+		        CNT_INC(HIJACK_DROP_HEAD_GEN1);
+		        return rv;
+            }
 
-	    txm->data_len = txm->pkt_len = hytag->data_len;
-	    itf_send_packet_imm(txm, txm->port);
+            txm->data_len = txm->pkt_len = hytag->data_len;
+            itf_send_packet_imm(txm, txm->port);
 
+        }
    }
 
    CNT_INC(HIJACK_PUSH_TX_SUCCESS);
@@ -321,35 +303,19 @@ berr naga_hijack(hytag_t *hytag)
 
 void hijack_dp_init(void)
 {
-	berr rv;
-	rv = hijack_ip_init(MAX_IP_ENTRY_NUM);
-	if (E_SUCCESS != rv)
-	{
-		printf("Hijack init FAIL!\n");
-	}
-	else
-	{
-		printf("Hijack init success!\n");
-	}
+    berr rv;
+    time(&hijack_timep);
+    rv = hijack_ip_init(MAX_IP_ENTRY_NUM);
+    if (E_SUCCESS != rv)
+    {
+	printf("Hijack init FAIL!\n");
+    }
+    else
+    {
+	printf("Hijack init success!\n");
+    }
 
     hijack_init();
-	return;
+    return;
 }
 
-
-
-#if 0
-time_t   hijack_timep; 
-berr hijack_dp_init(void)
-{   
-   //berr rv; 
-   //cmdline_hijack_init();
-   time(&hijack_timep);    
-   return E_SUCCESS;
-}
-
-time_t *hijack_get_start_time(void)
-{
-    return   &hijack_timep;
-}
-#endif
