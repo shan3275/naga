@@ -21,7 +21,9 @@
 
 time_t   hijack_timep; 
 
-static uint64_t  g_hijack_ip_cnt = 0; 
+static uint64_t  g_hijack_pkt_cnt = 0; 
+static uint64_t  g_hijack_ip_cnt = 0;
+extern uint32_t  g_hijack_pkt_interval;
 extern uint32_t  g_hijack_ip_interval;
 extern uint32_t  g_hijack_ip_num_interval;
 extern uint32_t  g_hijack_switch_enable;
@@ -50,7 +52,7 @@ static hijack_ip_t *hijack_ip_new(void)
 	return entry;
 }
 
-static hijack_ip_t *ip_session_process(uint32_t ip)
+static  hijack_ip_t *ip_session_process(uint32_t ip)
 {
     char ip_str[MAX_IPSTR_LEN] = {0};
     hijack_ip_t *entry = NULL;
@@ -64,6 +66,8 @@ static hijack_ip_t *ip_session_process(uint32_t ip)
         {
             return NULL;
         }
+        entry->ip_str_len = strlen(ip_str);
+        memcpy(entry->ip_str, ip_str, strlen(ip_str));
         if (E_SUCCESS != api_hijack_ip_add(entry)) 
         {
             return NULL; 
@@ -74,7 +78,7 @@ static hijack_ip_t *ip_session_process(uint32_t ip)
 }
 
 
-static berr hijack_rule_match(char *host, hijack_rule_t **rule)
+static  berr hijack_rule_match(char *host, hijack_rule_t **rule)
 {
     int i;
     hijack_entry_t *ptr = NULL;
@@ -191,13 +195,13 @@ berr naga_hijack(hytag_t *hytag)
         return E_SUCCESS;
     }
 
-    g_hijack_ip_cnt ++;
-    if (g_hijack_ip_cnt % g_hijack_ip_interval != 0)
+    g_hijack_pkt_cnt ++;
+    if (g_hijack_pkt_cnt % g_hijack_pkt_interval != 0)
     {
         return E_SUCCESS;
     }
 
-#if 0
+#if 1
     entry = ip_session_process(hytag->outer_srcip4);
     if(NULL == entry)
     {
