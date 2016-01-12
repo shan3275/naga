@@ -368,7 +368,7 @@ static int cmd_domain_show_all(struct vty *vty)
 
 
 DEFUN(show_domain_all,
-      show_domain_all_cmd,
+      show_domain_all_cnt_cmd,
       "show counter domain all",
       SHOW_STR
       DOMAIN_STR
@@ -382,6 +382,6 @@ DEFUN(show_domain_all,
 
 void cmdline_domain_init(void)
 {
-	install_element(CMD_NODE, &show_domain_all_cmd);
+	install_element(CMD_NODE, &show_domain_all_cnt_cmd);
     return ;
 }
