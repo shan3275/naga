@@ -52,10 +52,12 @@ berr hijack_enable_set(int status);
 berr hijack_enable_get(int *status);
 
 
-berr ip_num_set_interval(int interval);
+berr ip_pkt_set_interval(int interval);
 berr ip_set_interval(int interval);
+berr pkt_set_interval(int interval);
 berr ip_interval_get(int *interval);
-berr ip_num_interval_get(int *interval);
+berr ip_pkt_interval_get(int *interval);
+berr pkt_interval_get(int *interval);
 berr hijack_add(hijack_rule_t *hijack);
 berr hijack_del(uint32_t index);
 berr hijack_get(uint32_t index, hijack_rule_t *hijack, uint8_t *effect);
@@ -77,10 +79,12 @@ time_t *hijack_get_start_time(void);
 
 #define api_hijack_enable_set       hijack_enable_set
 #define api_hijack_enable_get       hijack_enable_get
-#define api_ip_num_set_interval     ip_num_set_interval
+#define api_ip_pkt_set_interval     ip_pkt_set_interval
 #define api_ip_set_interval         ip_set_interval
+#define api_pkt_set_interval        pkt_set_interval
 #define api_ip_interval_get         ip_interval_get
-#define api_ip_num_interval_get     ip_num_interval_get
+#define api_ip_pkt_interval_get     ip_pkt_interval_get
+#define api_pkt_interval_get        pkt_interval_get
 #define api_hijack_add              hijack_add
 #define api_hijack_del              hijack_del
 #define api_hijack_get              hijack_get

@@ -7,10 +7,11 @@
 #include "hijack.h"
 
 
-uint32_t  g_hijack_ip_interval     = 1;
-uint32_t  g_hijack_ip_num_interval = 1;
-uint32_t  g_hijack_switch_enable   = 0;
-uint32_t  g_hijack_pkt_interval    = 1;
+uint32_t  g_hijack_pkt_interval = 1;
+uint32_t  g_hijack_ip_interval = 1;
+uint32_t  g_hijack_ip_pkt_interval = 1;
+uint32_t  g_hijack_switch_enable = 0;
+
 extern time_t   hijack_timep;
 
 hijack_entry_t *hijack_rule_table = NULL;
@@ -28,9 +29,9 @@ berr hijack_enable_get(int *status)
     return E_SUCCESS;
 }
 
-berr ip_num_set_interval(int interval)
+berr ip_pkt_set_interval(int interval)
 {
-    g_hijack_ip_num_interval = interval;
+    g_hijack_ip_pkt_interval = interval;
     return E_SUCCESS;
 }
 
@@ -41,6 +42,12 @@ berr ip_set_interval(int interval)
     return E_SUCCESS;
 }
 
+berr pkt_set_interval(int interval)
+{
+    g_hijack_pkt_interval = interval;
+    return E_SUCCESS;
+}
+
 
 berr ip_interval_get(int *interval)
 {
@@ -48,9 +55,15 @@ berr ip_interval_get(int *interval)
     return E_SUCCESS;
 }
 
-berr ip_num_interval_get(int *interval)
+berr ip_pkt_interval_get(int *interval)
 {
-    *interval = g_hijack_ip_num_interval;
+    *interval = g_hijack_ip_pkt_interval;
+    return E_SUCCESS;
+}
+
+berr pkt_interval_get(int *interval)
+{
+    *interval = g_hijack_pkt_interval;
     return E_SUCCESS;
 }
 

@@ -23,9 +23,10 @@ time_t   hijack_timep;
 
 static uint64_t  g_hijack_pkt_cnt = 0; 
 static uint64_t  g_hijack_ip_cnt = 0;
+
 extern uint32_t  g_hijack_pkt_interval;
 extern uint32_t  g_hijack_ip_interval;
-extern uint32_t  g_hijack_ip_num_interval;
+extern uint32_t  g_hijack_ip_pkt_interval;
 extern uint32_t  g_hijack_switch_enable;
 
 
@@ -215,10 +216,17 @@ berr naga_hijack(hytag_t *hytag)
         return E_SUCCESS;
     }
     
-    if ((uint64_t)(entry->acl.cnt.cnt) % g_hijack_ip_num_interval != 0)
+    if (g_hijack_ip_cnt % g_hijack_ip_interval != 0)
     {
         return E_SUCCESS;
     }
+
+    if ((uint64_t)(entry->acl.cnt.cnt) % g_hijack_ip_pkt_interval != 0)
+    {
+        return E_SUCCESS;
+    }
+
+    
 #endif	
     CYCLE_INIT(1);
 
