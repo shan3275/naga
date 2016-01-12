@@ -10,6 +10,7 @@
 uint32_t  g_hijack_ip_interval     = 1;
 uint32_t  g_hijack_ip_num_interval = 1;
 uint32_t  g_hijack_switch_enable   = 0;
+uint32_t  g_hijack_pkt_interval    = 1;
 extern time_t   hijack_timep;
 
 hijack_entry_t *hijack_rule_table = NULL;
