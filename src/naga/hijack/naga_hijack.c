@@ -62,6 +62,7 @@ static  hijack_ip_t *ip_session_process(uint32_t ip)
     if (NULL == entry)
     {
         g_hijack_ip_interval++;
+        CNT_INC(HIJACK_SIP_NOT_REPEAT);
         entry = hijack_ip_new();
         if (NULL == entry)
         {
@@ -73,6 +74,10 @@ static  hijack_ip_t *ip_session_process(uint32_t ip)
         {
             return NULL; 
         }
+    }
+    else
+    {
+        CNT_INC(HIJACK_SIP_REPEAT);
     }
     ACL_HIT(entry->acl);
     return entry;
