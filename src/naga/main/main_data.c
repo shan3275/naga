@@ -85,7 +85,7 @@ berr naga_data_process_module(hytag_t * hytag)
 
     DPF_NODE(MOD_DMR, hytag, naga_dmr);
 
-    DPF_NODE(MOD_DOMAIN_CNT, hytag, naga_domain);
+    DPF_NODE(MOD_DMR, hytag, naga_domain);
 
     DPF_NODE(MOD_ACR, hytag, naga_acr);
 
