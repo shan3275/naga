@@ -14,7 +14,7 @@ berr naga_domain(hytag_t *tag)
 {
     dmr_t* rule = NULL;
 
-	printf("dssssss1\n");
+	
 
     if (NULL == tag)
     {
@@ -28,10 +28,10 @@ berr naga_domain(hytag_t *tag)
 
     rule = domain_get((char *)tag->host);
 
-	printf("dssssss\n");
+	
     if (NULL == rule)
     {
-    	
+    	printf("dssssss\n");
 		rule = malloc(sizeof(dmr_t));
 		if (NULL != rule)
 		{
