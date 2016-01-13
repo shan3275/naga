@@ -26,6 +26,7 @@ berr naga_domain(hytag_t *tag)
 
     rule = domain_get((char *)tag->host);
 
+	printf("dssssss\n");
     if (NULL == rule)
     {
     	
