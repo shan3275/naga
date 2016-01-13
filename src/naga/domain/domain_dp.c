@@ -14,6 +14,8 @@ berr naga_domain(hytag_t *tag)
 {
     dmr_t* rule = NULL;
 
+	printf("dssssss1\n");
+
     if (NULL == tag)
     {
         BRET(E_FAIL);
