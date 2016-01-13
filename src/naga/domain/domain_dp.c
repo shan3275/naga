@@ -26,9 +26,12 @@ berr naga_domain(hytag_t *tag)
 
     rule = domain_get((char *)tag->host);
 
+
+	printf("domain create\n");
+
     if (NULL == rule)
     {
-    	printf("domain create\n");
+    	
 		rule = malloc(sizeof(dmr_t));
 		if (NULL != rule)
 		{
