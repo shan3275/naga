@@ -31,7 +31,7 @@ berr naga_domain(hytag_t *tag)
 	
     if (NULL == rule)
     {
-    	printf("dssssss\n");
+    	//printf("dssssss\n");
 		rule = malloc(sizeof(dmr_t));
 		if (NULL != rule)
 		{

@@ -86,6 +86,19 @@ domain_get(char *key)
 }
 
 
+dmr_t*
+domain_get_and_create(char *key)
+{
+	dmr_t data;
+
+	memset(&data, 0, sizeof(dmr_t));
+	data.host_len = strlen(key);
+	memcpy(data.host, key, data.host_len);
+    return (dmr_t *)bts_hashtable_lookup(&domain_table, (void*) (&data));
+}
+
+
+
 berr
 domain_add(dmr_t *entry)
 {

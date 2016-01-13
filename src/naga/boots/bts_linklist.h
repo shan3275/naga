@@ -28,6 +28,9 @@ typedef struct bts_list
   struct bts_listnode *head;
   struct bts_listnode *tail;
   struct list_head   bucket_head;
+  pthread_mutex_t mutex;
+
+  
   /* invariant: count is the number of bts_listnodes in the bts_list */
   unsigned int count;
     

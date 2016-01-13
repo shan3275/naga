@@ -77,6 +77,57 @@ bts_hashtable_lookup(bts_hashtable_t *tab, void *key)
     return NULL;
 }
 
+
+void *
+bts_hashtable_safe_lookup_and_create(bts_hashtable_t *tab, void *key)
+{
+    uint32_t hash, idx;
+    bts_list_t *bucket = NULL;
+    bts_listnode_t *node = NULL;
+
+    if ((NULL == tab) || (NULL == key))
+    {
+        return NULL;
+    }
+
+    if ((NULL == tab->hash) || (0 == tab->total_bucket) || (NULL == tab->buckets))
+    {
+        return NULL;
+    }
+
+    hash = tab->hash(key);
+
+    idx = hash % tab->total_bucket;
+
+    bucket = &tab->buckets[idx];
+
+	pthread_mutex_lock(&bucket->mutex);
+    node = bts_listnode_lookup_by_key(bucket, key);
+	if(node == NULL)
+	{
+		node = malloc(sizeof(bts_listnode_t));
+		if(node == NULL)
+		{
+			printf("Failed to malloc listnode\n");
+			return NULL;	
+		}
+		node->key = 
+		list_add();
+	}
+	pthread_mutex_unlock(&bucket->mutex);
+
+    
+    if (node)
+    {
+        return node->data;
+    }
+
+
+    return NULL;
+}
+
+
+
 berr
 bts_hashtable_add(bts_hashtable_t *tab, void *data)
 {
