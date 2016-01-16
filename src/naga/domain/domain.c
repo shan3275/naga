@@ -94,7 +94,8 @@ domain_get_and_create(char *key)
 	memset(&data, 0, sizeof(dmr_t));
 	data.host_len = strlen(key);
 	memcpy(data.host, key, data.host_len);
-    return (dmr_t *)bts_hashtable_lookup(&domain_table, (void*) (&data));
+    return (dmr_t *)bts_hashtable_safe_lookup_and_create
+				(&domain_table, (void*) (&data), sizeof(dmr_t));
 }
 
 

@@ -79,12 +79,14 @@ bts_hashtable_lookup(bts_hashtable_t *tab, void *key)
 
 
 void *
-bts_hashtable_safe_lookup_and_create(bts_hashtable_t *tab, void *key)
+bts_hashtable_safe_lookup_and_create
+			(bts_hashtable_t *tab, void *key, int size)
 {
     uint32_t hash, idx;
     bts_list_t *bucket = NULL;
     bts_listnode_t *node = NULL;
-
+	void *data = NULL;
+#if 0
     if ((NULL == tab) || (NULL == key))
     {
         return NULL;
@@ -105,13 +107,13 @@ bts_hashtable_safe_lookup_and_create(bts_hashtable_t *tab, void *key)
     node = bts_listnode_lookup_by_key(bucket, key);
 	if(node == NULL)
 	{
-		node = malloc(sizeof(bts_listnode_t));
-		if(node == NULL)
+		data = (void *)malloc(size);
+		if(data == NULL)
 		{
 			printf("Failed to malloc listnode\n");
 			return NULL;	
 		}
-		node->key = 
+		memcpy(data, key, size);    
 		list_add();
 	}
 	pthread_mutex_unlock(&bucket->mutex);
@@ -121,7 +123,7 @@ bts_hashtable_safe_lookup_and_create(bts_hashtable_t *tab, void *key)
     {
         return node->data;
     }
-
+#endif
 
     return NULL;
 }
