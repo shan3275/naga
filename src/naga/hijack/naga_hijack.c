@@ -163,8 +163,6 @@ berr naga_hijack(hytag_t *hytag)
         return E_SUCCESS;
     }
     
-
-    CNT_INC(HIJACK_IPKTS);
     /* */
     if( APP_TYPE_HTTP_GET_OR_POST != hytag->app_type)
     {
@@ -178,6 +176,7 @@ berr naga_hijack(hytag_t *hytag)
         return E_SUCCESS;
     }
 
+    CNT_INC(HIJACK_IPKTS);
 
     /*check The First char*/
 #if 0

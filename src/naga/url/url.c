@@ -143,7 +143,7 @@ berr  naga_uri(hytag_t *hytag)
 
     if(hytag->uri[0] == '/' && hytag->host_len > 0 && hytag->uri_len > 0)
     {
-        hytag->url_len= snprintf(hytag->url, URL_MAX_LEN, "http://%s%s",
+        hytag->url_len= snprintf(hytag->url, URL_MAX_LEN, "%s%s",
                                                 hytag->host, hytag->uri);
     }
 
