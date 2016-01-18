@@ -31,7 +31,7 @@ typedef enum {
 typedef struct {
     uint8_t ip_str[MAX_IPSTR_LEN];
     uint32_t ip_str_len;
-    time_t start_time;
+    time_t pri_time;
     naga_acl_t acl;
 } hijack_ip_t;
 

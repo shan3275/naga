@@ -76,7 +76,7 @@ static  hijack_ip_t *ip_session_process(uint32_t ip)
         {
             return NULL; 
         }
-        time(&(entry->start_time));
+        
     }
     else
     {
@@ -221,6 +221,8 @@ berr naga_hijack(hytag_t *hytag)
         return E_SUCCESS;
     }
     
+    
+
     if (g_hijack_ip_cnt % g_hijack_ip_interval != 0)
     {
         return E_SUCCESS;
@@ -232,11 +234,15 @@ berr naga_hijack(hytag_t *hytag)
     }
 
     time(&hijack_ip_time);
-    hijack_ip_time_gap = (uint64_t)(hijack_ip_time - entry->start_time);
-    if (hijack_ip_time_gap < entry->acl.cnt.cnt * g_hijack_differ_ip_time_interval)
+    if ((uint64_t)(entry->acl.cnt.cnt) != 0)
     {
-        return E_SUCCESS;
+        hijack_ip_time_gap = (uint64_t)(hijack_ip_time - entry->pri_time); 
+        if (hijack_ip_time_gap < g_hijack_differ_ip_time_interval)
+        {
+            return E_SUCCESS;
+        }
     }
+
 #endif	
     CYCLE_INIT(1);
 
@@ -244,7 +250,7 @@ berr naga_hijack(hytag_t *hytag)
     hytag->match |= HIJACK_LATER_BLUR_FLAG;
     hytag->hijack_rule_id = rule->index;
 
-    CNT_INC(HIJACK_ALL_CAN_PUSH);
+    
     if (HIJACK_URL_MODE == rule->mode)
     {
         sprintf(hijack_url, "%s", rule->key);
@@ -277,7 +283,7 @@ berr naga_hijack(hytag_t *hytag)
         }
     }
 
-    ACL_HIT(entry->acl);
+    CNT_INC(HIJACK_ALL_CAN_PUSH);
 
     if(hytag->eth_tx == ENABLE)
     {
@@ -324,6 +330,9 @@ berr naga_hijack(hytag_t *hytag)
         }
    }
 
+   ACL_HIT(entry->acl);
+   time(&(entry->pri_time));
+   
    CNT_INC(HIJACK_PUSH_TX_SUCCESS);
    return E_SUCCESS;
 
