@@ -31,6 +31,7 @@ typedef enum {
 typedef struct {
     uint8_t ip_str[MAX_IPSTR_LEN];
     uint32_t ip_str_len;
+    time_t start_time;
     naga_acl_t acl;
 } hijack_ip_t;
 
@@ -55,6 +56,8 @@ berr hijack_enable_get(int *status);
 berr ip_pkt_set_interval(int interval);
 berr ip_set_interval(int interval);
 berr pkt_set_interval(int interval);
+berr ip_time_set_interval(int interval);
+berr ip_time_interval_get(int *interval);
 berr ip_interval_get(int *interval);
 berr ip_pkt_interval_get(int *interval);
 berr pkt_interval_get(int *interval);
@@ -85,6 +88,8 @@ time_t *hijack_get_start_time(void);
 #define api_ip_interval_get         ip_interval_get
 #define api_ip_pkt_interval_get     ip_pkt_interval_get
 #define api_pkt_interval_get        pkt_interval_get
+#define api_ip_time_set_interval    ip_time_set_interval
+#define api_ip_time_interval_get    ip_time_interval_get
 #define api_hijack_add              hijack_add
 #define api_hijack_del              hijack_del
 #define api_hijack_get              hijack_get

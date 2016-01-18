@@ -99,10 +99,30 @@ DEFUN(ip_interval_set,
 }
 
 
+static int ip_time_interval(const char *interval_str)
+{
+    int interval = strtoul(interval_str, NULL, 0);
+    return api_ip_time_set_interval(interval);
+}
+
+DEFUN(ip_time_interval_set,
+      ip_time_interval_set_cmd,
+      "hijack ip time interval <1-100000>",
+      HIJACK_STR
+      HIJACK_IP_STR
+      "hajack ip time\n"
+      INTERVAL_STR
+      "1-100000\n"
+      )
+{
+    return ip_time_interval(argv[0]);
+}
+
+
 static int hijack_info_get(struct vty *vty)
 {
     int status = 0;
-    int ip_interval = 0, ip_pkt_interval = 0, pkt_interval = 0;
+    int ip_interval = 0, ip_pkt_interval = 0, pkt_interval = 0, ip_time_interval = 0;
     uint64_t hijack_can_push_count;
     uint64_t hijack_push_tx_success;
     uint64_t hijack_push_arrive_success;
@@ -130,10 +150,17 @@ static int hijack_info_get(struct vty *vty)
         return CMD_WARNING;
     }
 
+    if (api_ip_time_interval_get(&ip_time_interval))
+    {
+        vty_out(vty, "Get hijack ip time interval fail!%s", VTY_NEWLINE);
+        return CMD_WARNING;
+    }
+
     vty_out(vty, "Hajack module status: %s%s", status==1?"ON":"OFF", VTY_NEWLINE);
     vty_out(vty, "ip interval is: %d%s", ip_interval, VTY_NEWLINE);
     vty_out(vty, "packet interval per ip is: %d%s", ip_pkt_interval, VTY_NEWLINE);
     vty_out(vty, "packet interval is: %d%s", pkt_interval, VTY_NEWLINE);
+    vty_out(vty, "time interval per ip is : %d%s", ip_time_interval, VTY_NEWLINE);
 
     hijack_can_push_count = CNT_GET(HIJACK_ALL_CAN_PUSH); 
     hijack_push_tx_success = CNT_GET(HIJACK_PUSH_TX_SUCCESS);
@@ -431,7 +458,7 @@ void hijack_cmd_config_write(struct vty *vty)
     int ret = 0;
     uint8_t effect = 0;
     int status = 0;
-    int ip_interval = 0, ip_pkt_interval = 0, pkt_interval;
+    int ip_interval = 0, ip_pkt_interval = 0, pkt_interval = 0, ip_time_interval = 0;
     hijack_rule_t hijack;
     int i;
 
@@ -477,9 +504,15 @@ void hijack_cmd_config_write(struct vty *vty)
     {
         return;
     }
+    if (api_ip_time_interval_get(&ip_time_interval))
+    {
+        return;
+    }
+
     vty_out(vty,"hijack ip interval %d%s", ip_interval, VTY_NEWLINE);
     vty_out(vty,"hijack ip pkt interval %d%s", ip_pkt_interval, VTY_NEWLINE);
     vty_out(vty,"hijack pkt interval %d%s", pkt_interval, VTY_NEWLINE);
+    vty_out(vty,"hijack ip time interval %d%s", ip_time_interval, VTY_NEWLINE);
 }
 
 /*
@@ -499,6 +532,7 @@ void cmdline_hijack_init(void)
     install_element(CMD_NODE, &hijack_delete_all_cmd);
     install_element(CMD_NODE, &show_hijack_interval_cmd);
     install_element(CMD_NODE, &hijack_enable_cmd);
+    install_element(CMD_NODE, &ip_time_interval_set_cmd);
 
     return;
 }

@@ -10,6 +10,7 @@
 uint32_t  g_hijack_pkt_interval = 1;
 uint32_t  g_hijack_ip_interval = 1;
 uint32_t  g_hijack_ip_pkt_interval = 1;
+uint32_t  g_hijack_differ_ip_time_interval = 10;
 uint32_t  g_hijack_switch_enable = 0;
 
 extern time_t   hijack_timep;
@@ -48,6 +49,17 @@ berr pkt_set_interval(int interval)
     return E_SUCCESS;
 }
 
+berr ip_time_set_interval(int interval)
+{
+    g_hijack_differ_ip_time_interval = interval;
+    return E_SUCCESS;
+}
+
+berr ip_time_interval_get(int *interval)
+{
+    *interval = g_hijack_differ_ip_time_interval;
+    return E_SUCCESS;
+}
 
 berr ip_interval_get(int *interval)
 {
