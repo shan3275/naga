@@ -143,7 +143,7 @@ berr naga_hijack(hytag_t *hytag)
 
     hijack_ip_t *entry = NULL;
     hijack_rule_t *rule = NULL;
-    char hijack_url[512] = {0};
+    char hijack_url[1024] = {0};
     char uri_interval[512]  = {0};
     time_t hijack_ip_time;
     uint64_t hijack_ip_time_gap = 0;
@@ -187,6 +187,12 @@ berr naga_hijack(hytag_t *hytag)
 	}
 #endif
 
+    if(hytag->uri_len == 1 && !strcmp(hytag->uri, "/"))
+    {    
+        CNT_INC(URL_HOMEPAGE);
+        return E_SUCCESS;
+    }
+
     if(E_SUCCESS != hijack_rule_match((char *)hytag->host, &rule))
     {
         CNT_INC(HIJACK_HOST_NOT_MATCH);
@@ -200,15 +206,12 @@ berr naga_hijack(hytag_t *hytag)
         return E_SUCCESS;
     }
     
-    if(hytag->uri_len == 1 && !strcmp(hytag->uri, "/"))
-    {    
-        CNT_INC(URL_HOMEPAGE);
-        return E_SUCCESS;
-    }
+    
 
     g_hijack_pkt_cnt ++;
     if (g_hijack_pkt_cnt % g_hijack_pkt_interval != 0)
     {
+        CNT_INC(HIJACK_PKT_PERCENT_MATCH_FAIL);
         return E_SUCCESS;
     }
 
@@ -224,11 +227,13 @@ berr naga_hijack(hytag_t *hytag)
 
     if (g_hijack_ip_cnt % g_hijack_ip_interval != 0)
     {
+        CNT_INC(HIJACK_IP_PERCENT_MATCH_FAIL);
         return E_SUCCESS;
     }
 
     if ((uint64_t)(entry->acl.cnt.cnt) % g_hijack_ip_pkt_interval != 0)
     {
+        CNT_INC(HIJACK_IP_PKT_PERCENT_MATCH_FAIL);
         return E_SUCCESS;
     }
 
@@ -238,6 +243,7 @@ berr naga_hijack(hytag_t *hytag)
         hijack_ip_time_gap = (uint64_t)(hijack_ip_time - entry->pri_time); 
         if (hijack_ip_time_gap < g_hijack_differ_ip_time_interval)
         {
+            CNT_INC(HIJACK_TIME_PERCENT_MATCH_FAIL);
             return E_SUCCESS;
         }
     }
