@@ -392,19 +392,42 @@ DEFUN(hijack_delete_all,
 
 static int hijack_cmd_add(struct vty *vty, const char *index_str, const char *host, const char *key, const char *locate)
 {
-    int ret = 0;
+    int ret = 0, i;
     uint32_t index = 0;
-
+    char key_str[MAX_HIJACK_STR];
     hijack_rule_t hijack;
+    char lastchar = '\0';
+    int key_chr_index = 0;
+    int key_len = strlen(key);
 
     memset(&hijack, 0 ,sizeof(hijack_rule_t));
 
     index = atoi(index_str);
     hj_debug("index:%d", index);
 
+    for(i=0; i<key_len; i++)
+    {
+        
+        switch(key[i])
+        {
+            case 'Q':
+                if(lastchar == '\\')
+                {
+                   key_str[key_chr_index-1] = '?' ;                                                                                            
+                }
+                break;
+            default:
+                key_str[key_chr_index++] = key[i];
+                break;
+        }
+        lastchar = key[i];
+    }
+    key_str[key_chr_index]  = '\0';
+
     hijack.index = index;
     memcpy(hijack.host, host, strlen(host));
-    memcpy(hijack.key, key, strlen(key));
+    memcpy(hijack.key, key_str, strlen(key));
+
     if (NULL != locate)
     {
         hijack.mode = HIJACK_KEY_MODE;
