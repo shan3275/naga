@@ -106,8 +106,9 @@ static  berr hijack_rule_match(char *host, hijack_rule_t **rule)
 	{
        	    continue;			
 	}
-	if (!strncmp(host, ptr[i].hijack.host, strlen(ptr[i].hijack.host)))
+	if (!strcmp(host, ptr[i].hijack.host))
 	{
+            //printf("i= %d, host=%s, index=%d\n", i , ptr[i].hijack.host, ptr[i].hijack.index);
             *rule = &ptr[i].hijack;
 	    return E_SUCCESS;
 	}
@@ -172,6 +173,7 @@ berr naga_hijack(hytag_t *hytag)
 
     if (ACT_DROP == (hytag->acl.actions & ACT_DROP))
     {
+        //printf("%s.%d: http://%s%s\n", __func__, __LINE__, hytag->host, hytag->uri);
         CNT_INC(HIJACK_DROP_ACT_DROP);
         return E_SUCCESS;
     }
@@ -201,6 +203,7 @@ berr naga_hijack(hytag_t *hytag)
 
     if (NULL != strstr(hytag->uri, rule->key))
     {
+        //printf("%s.%d, hytag->uri : %s, key: %s, host: %s, index: %d\n", __func__, __LINE__, hytag->uri, rule->key, rule->host, rule->index);
         CNT_INC(HIJACK_KEY_MATCH_DROP);
         hytag->match |= HIJACK_LATER_OUR_FLAG;
         return E_SUCCESS;
@@ -258,7 +261,8 @@ berr naga_hijack(hytag_t *hytag)
     
     if (HIJACK_URL_MODE == rule->mode)
     {
-        sprintf(hijack_url, "%s", rule->key);
+        sprintf(hijack_url, "http://%s", rule->key);
+        //printf("%s.%d, hijack url is %s\n", __func__, __LINE__, hijack_url);
     }
     else
     {

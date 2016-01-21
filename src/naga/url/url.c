@@ -102,27 +102,26 @@ berr url_rule_del(uint32_t id)
 berr  naga_uri(hytag_t *hytag)
 {
 
-/* if(!strcmp((char *)hytag->host, "180.96.27.113"))
-    {
-        CNT_INC(ADP_DROP_NOT_HAO123);	         
-    }
-  */
-    //char str_tail[10] ={'\0'};
 
 #define OVECCOUNT 30
 
-    const char *tail = "_tTI=tTI";
-    char  *tailptr = NULL;
+   // const char *tail = "_tTI=tTI";
+    //char  *tailptr = NULL;
     int ovector[OVECCOUNT];
     struct pcre_s * urlcre= NULL;
     //if(hytag->uri_len >= 8)    
     //    tailptr = (char *)(&(hytag->uri[hytag->uri_len - 4]));//the last 
     //else
-    tailptr = (char *)(hytag->uri);
+   // tailptr = (char *)(hytag->uri);
     
-    uint32_t i; int compare;
+    uint32_t i; int compare = 0;
     //if(strstr(tailptr,  tail))
-
+    if( APP_TYPE_HTTP_GET_OR_POST != hytag->app_type)
+    {
+       // CNT_INC(HIJACK_DROP_GET_OR_POST);
+        return E_SUCCESS;
+    }
+#if 0
 	if(hytag->uri_len < 8)
 	{
 	
@@ -140,7 +139,7 @@ berr  naga_uri(hytag_t *hytag)
             return E_SUCCESS;
     	}
 	}
-
+#endif
     if(hytag->uri[0] == '/' && hytag->host_len > 0 && hytag->uri_len > 0)
     {
         hytag->url_len= snprintf(hytag->url, URL_MAX_LEN, "%s%s",
@@ -166,7 +165,8 @@ berr  naga_uri(hytag_t *hytag)
             {
                 compare  = pcre_exec(urlcre->cre,
                                 NULL, hytag->url, hytag->url_len, 0, 0, ovector, OVECCOUNT);
-
+                
+                
                 if(compare > 0)
                 {
                    	ACL_HIT(urlcre->acl);
@@ -180,7 +180,7 @@ berr  naga_uri(hytag_t *hytag)
         }  
     }
 
-	//hytag->acl.actions |=  ACT_DROP;
+	hytag->acl.actions |=  ACT_DROP;
 	CNT_INC(ADP_DROP_BACKSLASH_SUFFIX);
 	return E_SUCCESS;  
 

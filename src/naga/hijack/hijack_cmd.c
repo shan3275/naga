@@ -426,7 +426,7 @@ static int hijack_cmd_add(struct vty *vty, const char *index_str, const char *ho
 
     hijack.index = index;
     memcpy(hijack.host, host, strlen(host));
-    memcpy(hijack.key, key_str, strlen(key));
+    memcpy(hijack.key, key_str, key_chr_index);
 
     if (NULL != locate)
     {
