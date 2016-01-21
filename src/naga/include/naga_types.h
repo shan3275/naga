@@ -49,9 +49,15 @@ typedef struct {
     bts_atomic64_inc(&(_acl.pushed_cnt))
 
 
+#define ACL_PUSHED_ASSERT_SET(_acl, _val) \
+    bts_atomic64_set(&(_acl.pushed_cnt), _val)
+
 #define ACL_CNT_CLEAR(_acl) \
 	bts_atomic64_set(&(_acl.cnt), 0)
 
+
+#define ACL_CNT_SET(_acl, _val) \
+	bts_atomic64_set(&(_acl.cnt), _val)
 
 
 typedef enum

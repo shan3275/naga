@@ -258,13 +258,13 @@ static int hijack_cmd_get(struct vty *vty, const char *index_str)
         return CMD_WARNING;
     }
 
-    vty_out(vty, "%-8s %-36s%-36s %-36s%s","index", "host","key", "location", VTY_NEWLINE);
-    vty_out(vty, "------------------------------------------------------------%s", VTY_NEWLINE);
+    vty_out(vty, "%-8s%-36s%-36s%-36s%-9s%-9s%s","index", "host","key", "location", "tx-cnt", "arr-cnt", VTY_NEWLINE);
+    vty_out(vty, "-------------------------------------------------------------------------------------------%s", VTY_NEWLINE);
 
     if (HIJACK_RULE_EFFECTIVE == effect)
     {
-    	vty_out(vty, "%-8d %-36s%-36s %-36s%s",hijack.index,
-                hijack.host, hijack.key, hijack.locate, VTY_NEWLINE);
+    	vty_out(vty, "%-8d%-36s%-36s%-36s%-9ld%-9ld%s",hijack.index,
+                    hijack.host, hijack.key, hijack.locate, (uint64_t)hijack.acl.cnt.cnt, (uint64_t)hijack.acl.pushed_cnt.cnt, VTY_NEWLINE);
     }
     else
     {
@@ -282,21 +282,17 @@ static int hijack_cmd_get_all(struct vty *vty)
     hijack_rule_t hijack;
 
     memset(&hijack, 0, sizeof(hijack_rule_t));
-    vty_out(vty, "%-8s %-36s%-36s %-36s%s","index", "host","key", "location", VTY_NEWLINE);
+    vty_out(vty, "%-8s %-36s%-36s%-36s%-9s%-9s%s","index", "host","key", "location", "tx-cnt", "arr-cnt", VTY_NEWLINE);
+    vty_out(vty, "-------------------------------------------------------------------------------------------%s", VTY_NEWLINE);
     for (i = 0; i < HIJACK_RULE_NUM_MAX; i++)
     {
         effect = 0;
         ret = api_hijack_get(i, &hijack, &effect);
-        //if (ret)
-        //{
-            //vty_out(vty, "Hijack dump fail, index(%d) ret(%d)%s", i, ret, VTY_NEWLINE);
-            //return CMD_WARNING;
-        //}
 
         if (HIJACK_RULE_EFFECTIVE == effect)
     	{
-            vty_out(vty, "%-8d %-36s%-36s %-36s%s",hijack.index,
-                    hijack.host, hijack.key, hijack.locate, VTY_NEWLINE);
+            vty_out(vty, "%-8d%-36s%-36s%-36s%-9ld%-9ld%s",hijack.index,
+                    hijack.host, hijack.key, hijack.locate, (uint64_t)hijack.acl.cnt.cnt, (uint64_t)hijack.acl.pushed_cnt.cnt, VTY_NEWLINE);
     	}
 
     }
