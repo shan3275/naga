@@ -290,7 +290,7 @@ berr hijack_add(hijack_rule_t *hijack)
     }
     index = hijack->index;
 
-    memcpy(&hijack_rule_table[index].hijack, hijack, sizeof(hijack_entry_t));
+    memcpy(&hijack_rule_table[index].hijack, hijack, sizeof(hijack_rule_t));
     hijack_rule_table[index].effective = HIJACK_RULE_EFFECTIVE;
 
     //DBG_INFO(MOD_HIJACK, "hijack_rule_table[%d].effective(%d)\n", index, hijack_rule_table[%d].effective);

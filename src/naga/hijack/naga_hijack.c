@@ -88,19 +88,18 @@ static  hijack_ip_t *ip_session_process(uint32_t ip)
 }
 
 
-static  berr hijack_rule_match(char *host, char *uri, hijack_rule_t **rule)
+static  berr hijack_rule_match(char *host, char *url, hijack_rule_t **rule)
 {
     int i;
     hijack_entry_t *ptr = NULL;
-    char url[1024] = {0};
 
     ptr = api_get_hijack_table_ptr();
-    if ((NULL == ptr)||(NULL == rule) ||(NULL == host))
+    if ((NULL == ptr)||(NULL == rule) ||(NULL == host)||(NULL == url))
     {
 	    return E_FAIL;
     }
 
-    sprintf(url, "%s%s", host, uri);
+    //sprintf(url, "%s%s", host, uri);
 	
     for ( i = 0; i < HIJACK_RULE_NUM_MAX; i++)
     {
@@ -181,6 +180,12 @@ berr naga_hijack(hytag_t *hytag)
         return E_SUCCESS;
     }
 
+    if (hytag->uri_len > 512)
+    {
+        CNT_INC(HIJACK_LONG_URI_DROP);
+        return E_SUCCESS;
+    }
+
     CNT_INC(HIJACK_IPKTS);
 
     if(hytag->uri_len == 1 && !strcmp(hytag->uri, "/"))
@@ -189,9 +194,9 @@ berr naga_hijack(hytag_t *hytag)
         return E_SUCCESS;
     }
 
-    if(E_SUCCESS != hijack_rule_match((char *)hytag->host, (char *)hytag->uri, &rule))
+    if(E_SUCCESS != hijack_rule_match((char *)hytag->host, (char *)hytag->url, &rule))
     {
-        CNT_INC(HIJACK_HOST_NOT_MATCH);
+        CNT_INC(HIJACK_RULE_NOT_MATCH);
         return E_SUCCESS;
     }
 
@@ -268,7 +273,7 @@ berr naga_hijack(hytag_t *hytag)
     
     if (HIJACK_URL_MODE == rule->mode)
     {
-        sprintf(hijack_url, "http://%s", rule->key);
+        snprintf(hijack_url, 1024, "http://%s", rule->key);
         //printf("%s.%d, hijack url is %s\n", __func__, __LINE__, hijack_url);
     }
     else
@@ -286,13 +291,13 @@ berr naga_hijack(hytag_t *hytag)
             char *key_end_ptr = strstr(locate_ptr, "&");
             if (NULL == key_end_ptr)
             {
-                sprintf(hijack_url, "http://%s%s%s%s", rule->host, uri_interval, rule->locate, rule->key);
+                snprintf(hijack_url, 1024, "http://%s%s%s%s", rule->host, uri_interval, rule->locate, rule->key);
                 //printf("%s.%d: Dst url is : %s, src url is http://%s/%s", 
                        //__func__, __LINE__, hijack_url, hytag->host, hytag->uri);
             }
             else
             {
-                sprintf(hijack_url, "http://%s%s%s%s%s", rule->host, uri_interval, rule->locate, rule->key, key_end_ptr);
+                snprintf(hijack_url, 1024, "http://%s%s%s%s%s", rule->host, uri_interval, rule->locate, rule->key, key_end_ptr);
                 //printf("%s.%d: Dst url is : %s, src url is http://%s/%s", 
                       // __func__, __LINE__, hijack_url, hytag->host, hytag->uri);
             }
