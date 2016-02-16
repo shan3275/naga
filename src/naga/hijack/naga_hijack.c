@@ -63,7 +63,7 @@ static  hijack_ip_t *ip_session_process(uint32_t ip)
     entry = api_hijack_ip_get(ip_str);
     if (NULL == entry)
     {
-        g_hijack_ip_interval++;
+        g_hijack_ip_cnt++;
         CNT_INC(HIJACK_SIP_NOT_REPEAT);
         entry = hijack_ip_new();
         if (NULL == entry)

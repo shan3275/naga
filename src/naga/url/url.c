@@ -103,7 +103,7 @@ berr  naga_uri(hytag_t *hytag)
 {
 
 
-#define OVECCOUNT 30
+//#define OVECCOUNT 30
 
    // const char *tail = "_tTI=tTI";
     //char  *tailptr = NULL;

@@ -94,6 +94,8 @@ typedef enum
 #define MAX_ACCOUNT_LEN   64
 #define MAX_USER_AGENT_LEN  256
 
+#define OVECCOUNT 10
+
 #define ENABLE 1
 #define DISABLE 0
 
