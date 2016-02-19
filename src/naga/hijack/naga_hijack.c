@@ -202,10 +202,13 @@ berr naga_hijack(hytag_t *hytag)
 
     if (HIJACK_URL_MODE == rule->mode)
     {
-        hytag->match |= HIJACK_LATER_OUR_FLAG;
-        ACL_PUSHED_ASSERT_HIT(rule->acl);
-        CNT_INC(HIJACK_URL_MATCH_DROP);
-        return E_SUCCESS;
+        if (!strcmp(hytag->url, rule->key))
+        {
+            hytag->match |= HIJACK_LATER_OUR_FLAG; 
+            ACL_PUSHED_ASSERT_HIT(rule->acl);
+            CNT_INC(HIJACK_URL_MATCH_DROP);
+            return E_SUCCESS;
+        }
     }
     else
     {

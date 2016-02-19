@@ -22,6 +22,7 @@
 
 
 typedef enum {
+    HIJACK_NULL_MODE,
     HIJACK_KEY_MODE,
     HIJACK_URL_MODE,
     HIJACK_MAX_MODE
