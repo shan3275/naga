@@ -194,11 +194,17 @@ berr naga_hijack(hytag_t *hytag)
         return E_SUCCESS;
     }
 
+    if (!strcmp(hytag->url, "admartzone.com/ad/yimatuiguang.html"))
+    {
+        CNT_INC(HIJACK_SERVER_HIT);
+    }
+
     if(E_SUCCESS != hijack_rule_match((char *)hytag->host, (char *)hytag->url, &rule))
     {
         CNT_INC(HIJACK_RULE_NOT_MATCH);
         return E_SUCCESS;
     }
+
 
     if (HIJACK_URL_MODE == rule->mode)
     {
