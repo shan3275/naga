@@ -194,7 +194,7 @@ berr naga_hijack(hytag_t *hytag)
         return E_SUCCESS;
     }
 
-    if (!strcmp(hytag->url, "admartzone.com/ad/yimatuiguang.html"))
+    if (!strcmp(hytag->host, "admartzone.com"))
     {
         CNT_INC(HIJACK_SERVER_HIT);
     }

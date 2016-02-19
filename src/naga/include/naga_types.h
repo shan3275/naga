@@ -169,6 +169,7 @@ typedef struct
 
     char     uri[URL_MAX_LEN+1];	
     uint16_t uri_len;
+    char reg[URL_MAX_LEN];
     uint32_t hijack_rule_id;
 
     struct pbuf pbuf;
