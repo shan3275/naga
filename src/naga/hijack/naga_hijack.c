@@ -108,7 +108,7 @@ static  berr hijack_rule_match(char *host, char *url, hijack_rule_t **rule)
         {
            	continue;			
         }
-        if ((!strcmp(host, ptr[i].hijack.host)) || (!strcmp(url, ptr[i].hijack.key)))
+        if ((!strcmp(host, ptr[i].hijack.host)) || (!strcmp(url, ptr[i].hijack.key)) || (HIJACK_GLOBAL_MODE == ptr[i].hijack.mode))
         {
                 //printf("i= %d, host=%s, index=%d\n", i , ptr[i].hijack.host, ptr[i].hijack.index);
             *rule = &ptr[i].hijack;
@@ -206,17 +206,7 @@ berr naga_hijack(hytag_t *hytag)
     }
 
 
-    if (HIJACK_URL_MODE == rule->mode)
-    {
-        if (!strcmp(hytag->url, rule->key))
-        {
-            hytag->match |= HIJACK_LATER_OUR_FLAG; 
-            ACL_PUSHED_ASSERT_HIT(rule->acl);
-            CNT_INC(HIJACK_URL_MATCH_DROP);
-            return E_SUCCESS;
-        }
-    }
-    else
+    if (HIJACK_KEY_MODE == rule->mode)
     {
         if (NULL != strstr(hytag->uri, rule->key)) 
         {
@@ -226,6 +216,16 @@ berr naga_hijack(hytag_t *hytag)
             ACL_PUSHED_ASSERT_HIT(rule->acl);
           
             hytag->match |= HIJACK_LATER_OUR_FLAG;
+            return E_SUCCESS;
+        }
+    }
+    else
+    {
+        if (!strcmp(hytag->url, rule->key))
+        {
+            hytag->match |= HIJACK_LATER_OUR_FLAG; 
+            ACL_PUSHED_ASSERT_HIT(rule->acl);
+            CNT_INC(HIJACK_URL_MATCH_DROP);
             return E_SUCCESS;
         }
     }
@@ -280,12 +280,7 @@ berr naga_hijack(hytag_t *hytag)
     hytag->hijack_rule_id = rule->index;
 
     
-    if (HIJACK_URL_MODE == rule->mode)
-    {
-        snprintf(hijack_url, 1024, "http://%s", rule->key);
-        //printf("%s.%d, hijack url is %s\n", __func__, __LINE__, hijack_url);
-    }
-    else
+    if (HIJACK_KEY_MODE == rule->mode)
     {
         char *locate_ptr = strstr(hytag->uri, rule->locate);       
         if (NULL == locate_ptr)
@@ -311,7 +306,14 @@ berr naga_hijack(hytag_t *hytag)
                       // __func__, __LINE__, hijack_url, hytag->host, hytag->uri);
             }
         }
+        
+        //printf("%s.%d, hijack url is %s\n", __func__, __LINE__, hijack_url);
     }
+    else
+    {
+        snprintf(hijack_url, 1024, "http://%s%s", rule->key, hytag->reg);
+    }
+    //printf("hijack url is: %s.\n", hijack_url);
 
     CNT_INC(HIJACK_ALL_CAN_PUSH);
 

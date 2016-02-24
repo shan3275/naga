@@ -107,7 +107,7 @@ static int ip_time_interval(const char *interval_str)
 
 DEFUN(ip_time_interval_set,
       ip_time_interval_set_cmd,
-      "hijack ip time interval <1-100000>",
+      "hijack ip time interval <0-100000>",
       HIJACK_STR
       HIJACK_IP_STR
       "hajack ip time\n"
@@ -401,38 +401,49 @@ static int hijack_cmd_add(struct vty *vty, const char *index_str, const char *ho
     index = atoi(index_str);
     hj_debug("index:%d", index);
 
-    for(i=0; i<key_len; i++)
+    if (!strcmp("all", host))
     {
-        
-        switch(key[i])
-        {
-            case 'Q':
-                if(lastchar == '\\')
-                {
-                   key_str[key_chr_index-1] = '?' ;                                                                                            
-                }
-                break;
-            default:
-                key_str[key_chr_index++] = key[i];
-                break;
-        }
-        lastchar = key[i];
-    }
-    key_str[key_chr_index]  = '\0';
-
-    hijack.index = index;
-    memcpy(hijack.host, host, strlen(host));
-    memcpy(hijack.key, key_str, key_chr_index);
-
-    if (NULL != locate)
-    {
-        hijack.mode = HIJACK_KEY_MODE;
-        memcpy(hijack.locate, locate, strlen(locate));
+        hijack.mode = HIJACK_GLOBAL_MODE;
+        memcpy(hijack.key, key, strlen(key));
     }
     else
     {
-        hijack.mode = HIJACK_URL_MODE;
+        for (i = 0; i < key_len; i++) 
+        {
+            
+            switch(key[i])
+            {
+                case 'Q':
+                    if(lastchar == '\\')
+                    {
+                       key_str[key_chr_index-1] = '?' ;                                                                                            
+                    }
+                    break;
+                default:
+                    key_str[key_chr_index++] = key[i];
+                    break;
+            }
+            lastchar = key[i];
+        }
+        key_str[key_chr_index]  = '\0';
+
+        memcpy(hijack.key, key_str, key_chr_index);
+
+        if (NULL != locate)
+        {
+            hijack.mode = HIJACK_KEY_MODE;
+            memcpy(hijack.locate, locate, strlen(locate));
+        }
+        else
+        {
+            hijack.mode = HIJACK_URL_MODE;
+        }
     }
+
+    hijack.index = index;
+    memcpy(hijack.host, host, strlen(host));
+    
+
     ret = api_hijack_add(&hijack);
     if (ret)
     {

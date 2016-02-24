@@ -49,7 +49,7 @@ berr url_rule_add(uint32_t id,  char *url,  char * cli_pattern, uint32_t action)
 		pcre_n->used =1;
 		
     }
-    if(id > url_r.inuse)
+    if(id >= url_r.inuse)
     {
         url_r.inuse = id +1;
     }
@@ -146,6 +146,7 @@ berr  naga_uri(hytag_t *hytag)
                                                 hytag->host, hytag->uri);
     }
 
+        //printf("url is : %s\n", hytag->url);
 	
     if(hytag->uri_len == 1 && !strcmp(hytag->uri, "/"))
     {    
