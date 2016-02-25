@@ -164,7 +164,7 @@ static int hijack_info_get(struct vty *vty)
 
     hijack_can_push_count = CNT_GET(HIJACK_ALL_CAN_PUSH); 
     hijack_push_tx_success = CNT_GET(HIJACK_PUSH_TX_SUCCESS);
-    hijack_push_arrive_success = CNT_GET(HIJACK_KEY_MATCH_DROP);
+    hijack_push_arrive_success = CNT_GET(HIJACK_KEY_MATCH_DROP) + CNT_GET(HIJACK_URL_MATCH_DROP);
 
     boottime = api_hijack_get_start_time();
 

@@ -103,14 +103,16 @@ static  berr hijack_rule_match(char *host, char *url, hijack_rule_t **rule)
 	
     for ( i = 0; i < HIJACK_RULE_NUM_MAX; i++)
     {
-
+        
         if(ptr[i].effective == HIJACK_RULE_UNEFFECTIVE)
         {
            	continue;			
         }
-        if ((!strcmp(host, ptr[i].hijack.host)) || (!strcmp(url, ptr[i].hijack.key)) || (HIJACK_GLOBAL_MODE == ptr[i].hijack.mode))
+        
+        if ((!strcmp(host, ptr[i].hijack.host)) || (!strncmp(url, ptr[i].hijack.key, strlen(ptr[i].hijack.key))) || (HIJACK_GLOBAL_MODE == ptr[i].hijack.mode))
         {
                 //printf("i= %d, host=%s, index=%d\n", i , ptr[i].hijack.host, ptr[i].hijack.index);
+            //printf("url:%s., key:%s.\n", url, ptr[i].hijack.key);
             *rule = &ptr[i].hijack;
             return E_SUCCESS;
         }
@@ -221,7 +223,9 @@ berr naga_hijack(hytag_t *hytag)
     }
     else
     {
-        if (!strcmp(hytag->url, rule->key))
+        //printf("url:%s., key:%s., size: %d\n", hytag->url, rule->key, strlen(rule->key));
+        //printf("url:%s., key:%s.\n", hytag->url, rule->key);
+        if (!strncmp(hytag->url, rule->key, strlen(rule->key)))
         {
             hytag->match |= HIJACK_LATER_OUR_FLAG; 
             ACL_PUSHED_ASSERT_HIT(rule->acl);
@@ -313,7 +317,7 @@ berr naga_hijack(hytag_t *hytag)
     {
         snprintf(hijack_url, 1024, "http://%s%s", rule->key, hytag->reg);
     }
-    //printf("hijack url is: %s.\n", hijack_url);
+    printf("hijack url is: %s.\n", hijack_url);
 
     CNT_INC(HIJACK_ALL_CAN_PUSH);
 
