@@ -54,6 +54,8 @@
 }
 
 
+pthread_mutex_t naga_mutex = PTHREAD_MUTEX_INITIALIZER;
+
 /*
  * data plane main process flow, not include rx & tx
 */
@@ -92,8 +94,10 @@ berr naga_data_process_module(hytag_t * hytag)
     //DPF_NODE(MOD_ADP, hytag, naga_adp);
 
     DPF_NODE(MOD_HIJACK, hytag, naga_hijack);
-    
+   
+    pthread_mutex_lock(&naga_mutex);
     HYTAG_LOG(hytag);
+    pthread_mutex_unlock(&naga_mutex);
 #if CHECK_PACK_TIME	
 	gettimeofday(&tv1, NULL); 
 
@@ -134,6 +138,7 @@ berr naga_data_process_flow(struct rte_mbuf *m)
 
 #define BURST_TX_DRAIN_US 100 /* TX drain every ~100us */
 
+
 void naga_data_main_loop()
 {
 	uint64_t prev_tsc = 0, diff_tsc = 0, cur_tsc = 0;
@@ -146,6 +151,8 @@ void naga_data_main_loop()
 	unsigned int lcore_id;
 	uint16_t queue = 0;    
 	lcore_id = rte_lcore_id();
+
+    pthread_mutex_init(&naga_mutex,NULL);
 
 #if USE_M_QUEUE
 	switch(lcore_id)
