@@ -58,7 +58,7 @@ void hytag_log(hytag_t *tag)
 {
 	if(1)
 	{
-		if((APP_TYPE_HTTP_GET_OR_POST == tag->app_type) && (tag->match & 0xc))
+		if((APP_TYPE_HTTP_GET_OR_POST == tag->app_type) && ((tag->match & 0xc) || (ACT_LOG == (tag->acl.actions & ACT_LOG))))
 		{
                         //printf("hijack match is : %d\n", tag->match);
 			bts_zlog(LOG_ALERT, "%d.%d.%d.%d %d.%d.%d.%d %d %d %d %d %s", 
@@ -82,7 +82,7 @@ void hytag_log(hytag_t *tag)
 		if(APP_TYPE_HTTP_GET_OR_POST == tag->app_type 
 		&&	(ACT_LOG == (tag->acl.actions & ACT_LOG)))
 		{
-			bts_zlog(LOG_ALERT, "%d.%d.%d.%d|%d|%d.%d.%d.%d|%d|%d|%d|%s|AD<%s>", 
+			bts_zlog(LOG_ALERT, "%d.%d.%d.%d|%d|%d.%d.%d.%d|%d|%s", 
 		                    (tag->outer_srcip4 >>24) &0xff,
 		                    (tag->outer_srcip4 >>16) &0xff,
 		                    (tag->outer_srcip4 >>8) &0xff,
@@ -93,9 +93,7 @@ void hytag_log(hytag_t *tag)
 		                    (tag->outer_dstip4 >>8) &0xff,
 		                    (tag->outer_dstip4) &0xff,
 		                    tag->outer_dstport,
-		                    tag->outer_protocol,
-		                    tag->snet_hit_id,
-		                    tag->host, tag->ad_act == AD_SUCCESS ? "P":"N");        	
+                                    tag->url);
 		}
 		if(tag->pushed_second_assert)
 		{

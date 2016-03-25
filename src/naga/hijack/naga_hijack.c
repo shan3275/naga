@@ -317,7 +317,7 @@ berr naga_hijack(hytag_t *hytag)
     {
         snprintf(hijack_url, 1024, "http://%s%s", rule->key, hytag->reg);
     }
-    printf("hijack url is: %s.\n", hijack_url);
+    //printf("hijack url is: %s.\n", hijack_url);
 
     CNT_INC(HIJACK_ALL_CAN_PUSH);
 

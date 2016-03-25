@@ -1,6 +1,7 @@
 #ifndef __BTS_LINKLIST_H__
 #define __BTS_LINKLIST_H__
 
+#include <pthread.h>
 
 #include "bts_list.h"
 //#include "bts_hashtable.h"
@@ -28,7 +29,7 @@ typedef struct bts_list
   struct bts_listnode *head;
   struct bts_listnode *tail;
   struct list_head   bucket_head;
-  //pthread_mutex_t mutex;
+  pthread_mutex_t mutex;
 
   
   /* invariant: count is the number of bts_listnodes in the bts_list */

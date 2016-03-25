@@ -72,6 +72,7 @@ berr mod_modify(char *name, bswt enable, bswt debug);
 #define DBG_ERR(_mod, _fmt, _args...) \
     BTS_DEBUG_DUMP(_mod, DOPT_ERR, _fmt, ##_args)
 
+#if 0
 #define BRET(e) \
 { \
     berr _rv = (e);\
@@ -81,5 +82,11 @@ berr mod_modify(char *name, bswt enable, bswt debug);
     } \
     return _rv; \
 }
+#endif
 
+#define BRET(e) \
+{\
+    berr _rv = (e);\
+    return _rv; \
+}
 #endif
