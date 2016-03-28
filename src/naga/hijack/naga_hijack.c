@@ -377,6 +377,35 @@ berr naga_hijack(hytag_t *hytag)
 }
 
 
+void *time_check_loop(void *parm)
+{
+    berr rv;
+    time_t hijack_time;
+    struct tm* local;
+    
+    while(1)
+    {
+        local = gmtime(&hijack_time);
+        time(&hijack_time);
+        ctime(&hijack_time);
+
+        if ((local->tm_sec == 0) && (local->tm_min == 0) &&(local->tm_hour == 0))
+        {
+            g_hijack_pkt_cnt = 1;
+            g_hijack_ip_cnt = 1;
+
+            rv = api_hijack_ip_clear();
+            if (E_SUCCESS != rv)
+            {
+                printf("ip session table clear fail!\n");
+            }
+        }
+        
+        sleep(3);
+    }
+    return NULL;
+}
+
 
 void hijack_dp_init(void)
 {

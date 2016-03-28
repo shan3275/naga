@@ -100,6 +100,7 @@ time_t *hijack_get_start_time(void);
 #define api_hijack_ip_get           hijack_ip_get
 #define api_hijack_ip_add           hijack_ip_add
 #define api_hijack_ip_del           hijack_ip_del
+#define api_hijack_ip_clear         hijack_ip_clear
 #define api_get_hijack_table_ptr    get_hijack_table_ptr
 #define api_hijack_get_start_time   hijack_get_start_time
 

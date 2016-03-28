@@ -5,6 +5,8 @@
 #include "bts_debug.h"
 
 #include "hijack.h"
+#include "naga_hijack.h"
+#include <pthread.h>
 
 
 uint32_t  g_hijack_pkt_interval = 1;
@@ -18,8 +20,20 @@ extern time_t   hijack_timep;
 hijack_entry_t *hijack_rule_table = NULL;
 
 
+
 berr hijack_enable_set(int status)
 {
+    pthread_t time_check_thread;
+    int rv = pthread_create(&time_check_thread, NULL, time_check_loop, NULL);
+    if(rv)
+    {
+        printf("Failed Create Thread for time checking\n");
+        BRET(E_FAIL);
+    }
+    else
+    {
+        printf("Create Thread for time checking success\n");
+    }
     g_hijack_switch_enable = status;
     return E_SUCCESS;
 }

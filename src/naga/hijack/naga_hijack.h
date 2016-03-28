@@ -5,6 +5,7 @@
 #include "time.h"
 
 berr naga_hijack(hytag_t *hytag);
+void *time_check_loop(void *parm);
 void hijack_dp_init(void);
 
 #if 0
