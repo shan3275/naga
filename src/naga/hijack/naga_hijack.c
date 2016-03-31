@@ -377,31 +377,38 @@ berr naga_hijack(hytag_t *hytag)
 }
 
 
+void hijack_table_reset()
+{
+
+    berr rv;
+    g_hijack_pkt_cnt = 1;
+    g_hijack_ip_cnt = 1;
+
+    rv = api_hijack_ip_clear();
+    if (E_SUCCESS != rv)
+    {
+	printf("ip session table clear fail!\n");
+    }
+}
+
+
 void *time_check_loop(void *parm)
 {
-    berr rv;
     time_t hijack_time;
     struct tm* local;
+    local = gmtime(&hijack_time);
     
     while(1)
     {
-        local = gmtime(&hijack_time);
         time(&hijack_time);
         ctime(&hijack_time);
 
-        if ((local->tm_sec == 0) && (local->tm_min == 0) &&(local->tm_hour == 0))
+        if ((local->tm_sec < 20) && (local->tm_min == 0) &&(local->tm_hour == 0)) 
         {
-            g_hijack_pkt_cnt = 1;
-            g_hijack_ip_cnt = 1;
-
-            rv = api_hijack_ip_clear();
-            if (E_SUCCESS != rv)
-            {
-                printf("ip session table clear fail!\n");
-            }
+            hijack_table_reset();
         }
         
-        sleep(3);
+        sleep(2);
     }
     return NULL;
 }
