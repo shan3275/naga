@@ -10,6 +10,7 @@
 #include "hijack_cmd.h"
 #include "hijack.h"
 #include "bts_util.h"
+#include "bts_cnt.h"
 
 
 #define DEBUG
@@ -30,6 +31,7 @@ extern uint32_t  g_hijack_ip_pkt_interval;
 extern uint32_t  g_hijack_differ_ip_time_interval;
 extern uint32_t  g_hijack_switch_enable;
 
+extern char hijack_log_path[256];
 
 #define MAX_IP_ENTRY_NUM 100
 
@@ -40,6 +42,8 @@ extern uint32_t  g_hijack_switch_enable;
 #define HIJACK_LATER_OUR_FLAG     4  
 
 
+#define  HAO123   1
+#define  NEW_HAO123_IP   2
 
 static hijack_ip_t *hijack_ip_new(void)
 {
@@ -54,7 +58,7 @@ static hijack_ip_t *hijack_ip_new(void)
 	return entry;
 }
 
-static  hijack_ip_t *ip_session_process(uint32_t ip)
+static  hijack_ip_t *ip_session_process(uint32_t ip, uint8_t *hao123_flag)
 {
     char ip_str[MAX_IPSTR_LEN] = {0};
     hijack_ip_t *entry = NULL;
@@ -76,7 +80,8 @@ static  hijack_ip_t *ip_session_process(uint32_t ip)
         {
             return NULL; 
         }
-        
+
+        *hao123_flag |= NEW_HAO123_IP;
     }
     else
     {
@@ -106,42 +111,45 @@ static  berr hijack_rule_match(hytag_t *hytag, hijack_rule_t **rule, uint8_t *hi
         
         if(ptr[i].effective == HIJACK_RULE_UNEFFECTIVE)
         {
-           	continue;			
+            continue;			
         }
 
-		if (HIJACK_GLOBAL_MODE == ptr[i].hijack.mode)
-		{
-            *hijack_flag = HIJACK_GLOBAL_MODE;
-		}
-		else if ((HIJACK_KEY_MODE == ptr[i].hijack.mode) || (HIJACK_URL_MODE == ptr[i].hijack.mode))
-		{
-		     if (!strcmp(hytag->host, ptr[i].hijack.host))
-		     {
-                 *hijack_flag = HIJACK_KEY_MODE;
-		     }
+	if (HIJACK_GLOBAL_MODE == ptr[i].hijack.mode)
+	{
+	    if (!strncmp(hytag->url, ptr[i].hijack.key, strlen(ptr[i].hijack.key)))
+            {
+                *hijack_flag = HIJACK_GLOBAL_MODE;
+            }
+	}
+	else if ((HIJACK_KEY_MODE == ptr[i].hijack.mode) || (HIJACK_URL_MODE == ptr[i].hijack.mode))
+	{
+	    if (!strcmp(hytag->host, ptr[i].hijack.host))
+            {
+                *hijack_flag = HIJACK_KEY_MODE;
+            }
 
-             if (HIJACK_URL_MODE == ptr[i].hijack.mode)
-             {
-				 if (!strncmp(hytag->url, ptr[i].hijack.key, strlen(ptr[i].hijack.key)))
-			     {
-	                 *hijack_flag = HIJACK_URL_MODE;
-			     }
-             }
+            if (HIJACK_URL_MODE == ptr[i].hijack.mode)
+            { 
+	        if (!strncmp(hytag->url, ptr[i].hijack.key, strlen(ptr[i].hijack.key)))
+	        {
+	            *hijack_flag = HIJACK_URL_MODE;
 		}
+            }
+	}
         else
         {
             continue;
         }
 
-		if ( 0 != *hijack_flag)
-		{
+	if ( 0 != *hijack_flag)
+	{
             *rule = &ptr[i].hijack;
             return E_SUCCESS;  
-		}
-		else
-		{
+	}
+	else
+	{
             continue;
-		}
+	}
 		
     }
     return E_NULL;
@@ -161,6 +169,8 @@ static  berr hijack_rule_match(hytag_t *hytag, hijack_rule_t **rule, uint8_t *hi
          }\
      }while(0)
 
+
+
 berr naga_hijack(hytag_t *hytag)
 {
 
@@ -175,7 +185,8 @@ berr naga_hijack(hytag_t *hytag)
     time_t hijack_ip_time;
     uint64_t hijack_ip_time_gap = 0;
 
-	uint8_t hijack_flag = 0;
+    uint8_t hijack_flag = 0;
+    uint8_t hao123_flag = 0;
 
     hytag->match = 0;
 
@@ -220,6 +231,8 @@ berr naga_hijack(hytag_t *hytag)
         return E_SUCCESS;
     }
 
+
+
     if(E_SUCCESS != hijack_rule_match(hytag, &rule, &hijack_flag))
     {
         CNT_INC(HIJACK_RULE_NOT_MATCH);
@@ -260,8 +273,13 @@ berr naga_hijack(hytag_t *hytag)
         return E_SUCCESS;
     }
 
+    if (!strcmp(hytag->host, "www.hao123.com"))
+    {
+        hao123_flag |= HAO123;
+    }
+
 #if 1
-    entry = ip_session_process(hytag->outer_srcip4);
+    entry = ip_session_process(hytag->outer_srcip4, &hao123_flag);
     if(NULL == entry)
     {
         CNT_INC(HIJACK_IP_SESSION_FAIL);
@@ -386,7 +404,17 @@ berr naga_hijack(hytag_t *hytag)
    
    time(&(entry->pri_time));
    ACL_HIT(entry->acl);
-   ACL_HIT(rule->acl);
+   if (hao123_flag & HAO123)
+   {
+         if (hao123_flag & NEW_HAO123_IP)
+         {
+             ACL_HIT(rule->acl);
+         }
+   }
+   else
+   {
+         ACL_HIT(rule->acl);
+   }
    
    CNT_INC(HIJACK_PUSH_TX_SUCCESS);
    return E_SUCCESS;
@@ -394,9 +422,10 @@ berr naga_hijack(hytag_t *hytag)
 }
 
 
-void hijack_table_reset()
+berr hijack_table_reset()
 {
-
+    int i;
+    uint32_t total = 0;
     berr rv;
     g_hijack_pkt_cnt = 1;
     g_hijack_ip_cnt = 1;
@@ -404,25 +433,96 @@ void hijack_table_reset()
     rv = api_hijack_ip_clear();
     if (E_SUCCESS != rv)
     {
-	    printf("ip session table clear fail!\n");
+        printf("ip session table clear fail!\n");
     }
+
+    for (i = 0; i < CNT_MAX; i++)
+    {
+        cnt_clear(i, 1, &total);
+    }
+    
+    return rv;
+}
+
+
+berr hijack_record()
+{
+    berr rv;
+    int i;
+    FILE *fp = NULL;
+    hijack_entry_t *ptr = NULL;
+    time_t now;
+
+    fp = fopen(hijack_log_path, "a");
+    if (NULL == fp)
+    {
+        printf("open tuiguang.log fail!\n");
+        return E_FAIL;
+    }
+    time(&now);
+
+    fprintf(fp, "%s\n", ctime(&now));
+
+    ptr = api_get_hijack_table_ptr();
+    if (NULL == ptr)
+    {
+        printf("%s.%d\n", __func__, __LINE__);
+        return E_FAIL;
+    }
+
+    for ( i = 0; i < HIJACK_RULE_NUM_MAX; i++)
+    {
+        if(ptr[i].effective == HIJACK_RULE_EFFECTIVE)
+        {
+             fprintf(fp, "%s: %lld,  %lld\n", ptr[i].hijack.host, (uint64_t)ptr[i].hijack.acl.cnt.cnt, (uint64_t)ptr[i].hijack.acl.pushed_cnt.cnt);  
+             rv = api_hijack_clear_stat(ptr[i].hijack.index);
+             if (rv != E_SUCCESS)
+             {
+                 printf("%s.%d\n", __func__, __LINE__);
+                 return E_FAIL;
+             }
+        } 
+    } 
+
+    fprintf(fp, "***************************************************************\n");
+    fclose(fp);
+    
+    return E_SUCCESS;
+
 }
 
 
 void *time_check_loop(void *parm)
 {
+    berr rv;
     time_t hijack_time;
     struct tm* local;
     local = gmtime(&hijack_time);
-    
+    uint8_t flag = 0;
     while(1)
     {
         time(&hijack_time);
         ctime(&hijack_time);
-
-        if ((local->tm_sec < 20) && (local->tm_min == 0) &&(local->tm_hour == 0)) 
+        if (1 == flag)
         {
-            hijack_table_reset();
+            sleep(120);
+            flag = 0;
+        }
+        if ((local->tm_sec < 10) && (local->tm_min == 0) &&(local->tm_hour == 0)) 
+        {
+
+            rv = hijack_table_reset();
+            if (E_SUCCESS != rv)
+            {
+                continue;
+            }
+            rv = hijack_record();
+            if (E_SUCCESS != rv)
+            {
+                continue;
+            }
+
+            flag = 1;
         }
         
         sleep(3);

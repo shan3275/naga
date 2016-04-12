@@ -19,20 +19,27 @@ extern time_t   hijack_timep;
 
 hijack_entry_t *hijack_rule_table = NULL;
 
+char hijack_log_path[256] = {0};
+
 
 
 berr hijack_enable_set(int status)
 {
-    pthread_t time_check_thread;
-    int rv = pthread_create(&time_check_thread, NULL, time_check_loop, NULL);
-    if(rv)
+    if (1 == status)
     {
-        printf("Failed Create Thread for time checking\n");
-        BRET(E_FAIL);
-    }
-    else
-    {
-        printf("Create Thread for time checking success\n");
+        pthread_t time_check_thread;
+        int rv = pthread_create(&time_check_thread, NULL, time_check_loop, NULL);
+        if(rv)
+        {
+            printf("Failed Create Thread for time checking\n");
+            BRET(E_FAIL);
+        }
+        else
+        {
+            printf("Create Thread for time checking success\n");
+        }
+    
+        pthread_detach(time_check_thread);
     }
     g_hijack_switch_enable = status;
     return E_SUCCESS;
@@ -284,12 +291,6 @@ berr hijack_del(uint32_t index)
     memset(&hijack_rule_table[index].hijack, 0, sizeof(hijack_rule_t));
     hijack_rule_table[index].effective = HIJACK_RULE_UNEFFECTIVE;
 
-    //DBG_INFO(MOD_HIJACK, "hijack_rule_table[%d].effective(%d)\n", index, hijack_rule_table[%d].effective);
-    //DBG_INFO(MOD_HIJACK, "hijack_rule_table[%d].hijack.index(%d)\n", index, hijack_rule_table[%d].hijack.index);
-    //DBG_INFO(MOD_HIJACK, "hijack_rule_table[%d].hijack.host: %s\n", index, hijack_rule_table[%d].hijack.host);
-    //DBG_INFO(MOD_HIJACK, "hijack_rule_table[%d].hijack.key: %s\n", index, hijack_rule_table[%d].hijack.key);
-    //DBG_INFO(MOD_HIJACK, "hijack_rule_table[%d].hijack.locate: %s\n", index, hijack_rule_table[%d].hijack.locate);
-
     return E_SUCCESS;
 }
 
@@ -307,12 +308,30 @@ berr hijack_add(hijack_rule_t *hijack)
     memcpy(&hijack_rule_table[index].hijack, hijack, sizeof(hijack_rule_t));
     hijack_rule_table[index].effective = HIJACK_RULE_EFFECTIVE;
 
-    //DBG_INFO(MOD_HIJACK, "hijack_rule_table[%d].effective(%d)\n", index, hijack_rule_table[%d].effective);
-   // DBG_INFO(MOD_HIJACK, "hijack_rule_table[%d].hijack.index(%d)\n", index, hijack_rule_table[%d].hijack.index);
-   // DBG_INFO(MOD_HIJACK, "hijack_rule_table[%d].hijack.host: %s\n", index, hijack_rule_table[%d].hijack.host);
-   // DBG_INFO(MOD_HIJACK, "hijack_rule_table[%d].hijack.key: %s\n", index, hijack_rule_table[%d].hijack.key);
-   // DBG_INFO(MOD_HIJACK, "hijack_rule_table[%d].hijack.locate: %s\n", index, hijack_rule_table[%d].hijack.locate);
+    return E_SUCCESS;
+}
 
+berr hijack_clear_stat(uint32_t index)
+{
+    if (index >= HIJACK_RULE_NUM_MAX)
+    {
+        return E_PARAM;
+    }
+
+    bts_atomic64_set(&(hijack_rule_table[index].hijack.acl.cnt), 0);
+    bts_atomic64_set(&(hijack_rule_table[index].hijack.acl.pushed_cnt), 0);
+    return E_SUCCESS;
+}
+
+
+berr log_path_set(const char *path)
+{
+    if (NULL == path)
+    {
+        return E_PARAM;    
+    }
+    
+    snprintf(hijack_log_path, sizeof(hijack_log_path), "%s", path);
     return E_SUCCESS;
 }
 
@@ -332,6 +351,8 @@ time_t *hijack_get_start_time(void)
 {
     return  &hijack_timep;
 }
+
+
 
 
 void hijack_init(void)

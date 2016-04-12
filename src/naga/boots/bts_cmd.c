@@ -37,6 +37,7 @@ static int cmd_clear_stat(struct vty *vty, const char *str)
 
     for (i = 0; i < CNT_MAX; i++) 
     {
+#if 0
         if (str)  
         {
             if (NULL == strstr(cnt_array[i].name, str))
@@ -44,7 +45,7 @@ static int cmd_clear_stat(struct vty *vty, const char *str)
                 continue;
             }
         }
-
+#endif
         cnt_clear(i, 1, &total);
     }
 

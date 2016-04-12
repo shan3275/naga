@@ -138,6 +138,7 @@ berr cnt_clear(cnte idx, uint32_t number, uint32_t *total)
         CNT_SET(idxc, 0); 
         *total += 1;
     }
+     //printf("%s.%d\n", __func__, __LINE__);
 
     BRET(E_SUCCESS);
 }

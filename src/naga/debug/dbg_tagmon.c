@@ -79,21 +79,15 @@ void hytag_log(hytag_t *tag)
 	}
 	else
 	{
-		if(APP_TYPE_HTTP_GET_OR_POST == tag->app_type 
-		&&	(ACT_LOG == (tag->acl.actions & ACT_LOG)))
+		if((APP_TYPE_HTTP_GET_OR_POST == tag->app_type) && (ACT_LOG == (tag->acl.actions & ACT_LOG)))
 		{
-			bts_zlog(LOG_ALERT, "%d.%d.%d.%d|%d|%d.%d.%d.%d|%d|%s", 
+			bts_zlog(LOG_ALERT, "%d.%d.%d.%d|%s|%s", 
 		                    (tag->outer_srcip4 >>24) &0xff,
 		                    (tag->outer_srcip4 >>16) &0xff,
 		                    (tag->outer_srcip4 >>8) &0xff,
 		                    (tag->outer_srcip4) &0xff,
-		                     tag->outer_srcport,
-		                    (tag->outer_dstip4 >>24) &0xff,
-		                    (tag->outer_dstip4 >>16) &0xff,
-		                    (tag->outer_dstip4 >>8) &0xff,
-		                    (tag->outer_dstip4) &0xff,
-		                    tag->outer_dstport,
-                                    tag->url);
+                                    tag->url,
+                                    tag->user_agent);
 		}
 		if(tag->pushed_second_assert)
 		{

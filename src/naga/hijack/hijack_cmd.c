@@ -47,6 +47,22 @@ static int pkt_interval(const char *interval_str)
     return api_pkt_set_interval(interval);
 }
 
+
+
+DEFUN(hijack_log_file_set,
+      hijack_log_file_set_cmd,
+      "hijack log PATH", 
+      HIJACK_STR
+      "log for hijack only\n"
+      "where log file saved\n"
+      )
+{
+     const char *path = argv[0];
+     return api_log_path_set(path);
+}
+
+
+
 DEFUN(pkt_interval_set,
       pkt_interval_set_cmd,
       "hijack pkt interval <1-100000>",
@@ -563,6 +579,7 @@ void cmdline_hijack_init(void)
     install_element(CMD_NODE, &show_hijack_interval_cmd);
     install_element(CMD_NODE, &hijack_enable_cmd);
     install_element(CMD_NODE, &ip_time_interval_set_cmd);
+    install_element(CMD_NODE, &hijack_log_file_set_cmd);
 
     return;
 }

@@ -68,6 +68,8 @@ berr pkt_interval_get(int *interval);
 berr hijack_add(hijack_rule_t *hijack);
 berr hijack_del(uint32_t index);
 berr hijack_get(uint32_t index, hijack_rule_t *hijack, uint8_t *effect);
+berr hijack_clear_stat(uint32_t index);
+berr log_path_set(const char *path);
 void hijack_init(void);
 
 berr
@@ -103,5 +105,7 @@ time_t *hijack_get_start_time(void);
 #define api_hijack_ip_clear         hijack_ip_clear
 #define api_get_hijack_table_ptr    get_hijack_table_ptr
 #define api_hijack_get_start_time   hijack_get_start_time
+#define api_hijack_clear_stat       hijack_clear_stat
+#define api_log_path_set            log_path_set
 
 #endif
