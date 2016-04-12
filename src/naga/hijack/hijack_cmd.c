@@ -401,6 +401,24 @@ DEFUN(hijack_delete_all,
     return hijack_cmd_del_all(vty);
 }
 
+#define  HIJACK_COMB_VALUE  "$NAGA_VALUE"
+
+void hijack_free_val(hijack_rule_t *hijack)
+{
+    char *pri = NULL, *rear = NULL;
+    char *p = NULL, *q = NULL;
+
+    p = hijack->key;
+    pri = strstr(hijack->key, HIJACK_COMB_VALUE);
+    if (NULL != pri)
+    {
+        memcpy(hijack->val1, p, pri - p);
+	rear = pri + strlen(HIJACK_COMB_VALUE);
+	memcpy(hijack->val2, rear, strlen(rear));
+    }
+
+}
+
 
 static int hijack_cmd_add(struct vty *vty, const char *index_str, const char *host, const char *key, const char *locate)
 {
@@ -452,8 +470,17 @@ static int hijack_cmd_add(struct vty *vty, const char *index_str, const char *ho
         }
         else
         {
-            hijack.mode = HIJACK_URL_MODE;
-        }
+            if (NULL != strstr(hijack.key, HIJACK_COMB_VALUE))
+            {
+                hijack_free_val(&hijack);
+		//printf("val1 = %s, val2 = %s.\n", hijack.val1, hijack.val2);
+                hijack.mode = HIJACK_COMB_MODE;
+            }
+            else
+	    {
+                hijack.mode = HIJACK_URL_MODE;
+            }   
+	}
     }
 
     hijack.index = index;

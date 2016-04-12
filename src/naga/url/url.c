@@ -173,6 +173,7 @@ berr  naga_uri(hytag_t *hytag)
                     if (compare > 1)
                     {
                         memcpy(hytag->reg, (hytag->url + ovector[2]), (ovector[3] - ovector[2])); 
+                        //printf("reg = %s\n",hytag->reg);
                     }
       
                     ACL_HIT(urlcre->acl); 

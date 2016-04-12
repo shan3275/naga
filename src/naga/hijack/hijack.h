@@ -44,6 +44,8 @@ typedef struct {
     char host[MAX_HOST_LEN];
     char key[MAX_HIJACK_STR];
     char locate[MAX_HIJACK_STR];
+	char val1[MAX_HIJACK_STR];
+	char val2[MAX_HIJACK_STR];
     naga_acl_t acl;
 } hijack_rule_t;
 

@@ -101,7 +101,7 @@ static  berr hijack_rule_match(hytag_t *hytag, hijack_rule_t **rule, uint8_t *hi
     ptr = api_get_hijack_table_ptr();
     if ((NULL == ptr)||(NULL == rule) ||(NULL == hytag) || (NULL == hijack_flag))
     {
-	    return E_FAIL;
+        return E_FAIL;
     }
 
     //sprintf(url, "%s%s", host, uri);
@@ -121,7 +121,9 @@ static  berr hijack_rule_match(hytag_t *hytag, hijack_rule_t **rule, uint8_t *hi
                 *hijack_flag = HIJACK_GLOBAL_MODE;
             }
 	}
-	else if ((HIJACK_KEY_MODE == ptr[i].hijack.mode) || (HIJACK_URL_MODE == ptr[i].hijack.mode))
+	else if ((HIJACK_KEY_MODE == ptr[i].hijack.mode) 
+		|| (HIJACK_URL_MODE == ptr[i].hijack.mode)
+		|| (HIJACK_COMB_MODE == ptr[i].hijack.mode))
 	{
 	    if (!strcmp(hytag->host, ptr[i].hijack.host))
             {
@@ -133,23 +135,33 @@ static  berr hijack_rule_match(hytag_t *hytag, hijack_rule_t **rule, uint8_t *hi
 	        if (!strncmp(hytag->url, ptr[i].hijack.key, strlen(ptr[i].hijack.key)))
 	        {
 	            *hijack_flag = HIJACK_URL_MODE;
-		}
+	        }
             }
-	}
+
+	    if (HIJACK_COMB_MODE == ptr[i].hijack.mode)
+	    {
+	    //printf("%s.%d: url = %s\n", __func__, __LINE__, hytag->url);
+                if ((NULL != strstr(hytag->url, ptr[i].hijack.val1)) && (NULL != strstr(hytag->url, ptr[i].hijack.val2)))         
+                {
+	         //printf("%s.%d\n", __func__, __LINE__);
+	            *hijack_flag = HIJACK_COMB_MODE;
+	        }
+	    }
+         }
+        else
+        {
+             continue;
+        }
+
+        if ( 0 != *hijack_flag)
+        {
+            *rule = &ptr[i].hijack;
+            return E_SUCCESS;  
+        }
         else
         {
             continue;
         }
-
-	if ( 0 != *hijack_flag)
-	{
-            *rule = &ptr[i].hijack;
-            return E_SUCCESS;  
-	}
-	else
-	{
-            continue;
-	}
 		
     }
     return E_NULL;
@@ -255,7 +267,9 @@ berr naga_hijack(hytag_t *hytag)
     }
     else
     {
-        if ((HIJACK_GLOBAL_MODE == hijack_flag) || (HIJACK_URL_MODE == hijack_flag))
+        if ((HIJACK_GLOBAL_MODE == hijack_flag) 
+			|| (HIJACK_URL_MODE == hijack_flag)
+			|| (HIJACK_COMB_MODE == hijack_flag))
         {
             hytag->match |= HIJACK_LATER_OUR_FLAG; 
             ACL_PUSHED_ASSERT_HIT(rule->acl);
@@ -346,9 +360,12 @@ berr naga_hijack(hytag_t *hytag)
             }
         }
         
-        //printf("%s.%d, hijack url is %s\n", __func__, __LINE__, hijack_url);
     }
-    else
+    else if (HIJACK_COMB_MODE == rule->mode)
+    {
+        snprintf(hijack_url, 1024, "http://%s%s%s", rule->val1, hytag->reg, rule->val2);
+    }
+	else
     {
         snprintf(hijack_url, 1024, "http://%s%s", rule->key, hytag->reg);
     }
