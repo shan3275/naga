@@ -46,8 +46,8 @@ LIBABIVER := 1
 
 SRCS-y += url.c url_cmd.c
 
-CFLAGS += -O3
-CFLAGS += $(WERROR_FLAGS)
+#CFLAGS += -O3
+#CFLAGS += $(WERROR_FLAGS)
 CFLAGS += -I ../boots -I ../include  -I ../itf  -I ../template   -I ../pcre-m/pcre
 
 # this lib depends upon:

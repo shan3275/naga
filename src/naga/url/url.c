@@ -146,11 +146,12 @@ berr  naga_uri(hytag_t *hytag)
                                                 hytag->host, hytag->uri);
     }
 
-        //printf("url is : %s\n", hytag->url);
-	
-    if(hytag->uri_len == 1 && !strcmp(hytag->uri, "/"))
+                    //printf("url is : %s\n", hytag->url);
+    
+    //if((strcmp(hytag->host, "www.jd.com") != 0) && (hytag->uri_len == 1) && (!strcmp(hytag->uri, "/")))	
+    if (0)
     {    
-    	//hytag->acl.actions |=  ACT_LOG;
+    	hytag->acl.actions |=  ACT_DROP;
         CNT_INC(URL_HOMEPAGE);
 		return E_SUCCESS;
     }
@@ -170,10 +171,12 @@ berr  naga_uri(hytag_t *hytag)
                 
                 if(compare > 0)
                 {
+                   // printf("url is : %s\n", hytag->url);
                     if (compare > 1)
                     {
                         memcpy(hytag->reg, (hytag->url + ovector[2]), (ovector[3] - ovector[2])); 
                         //printf("reg = %s\n",hytag->reg);
+                        //printf("url is : %s\n", hytag->url);
                     }
       
                     ACL_HIT(urlcre->acl); 

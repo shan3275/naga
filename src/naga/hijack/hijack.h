@@ -12,7 +12,9 @@
 
 
 #define MAX_IPSTR_LEN  20
+#define MAX_HIJACK_LOCATE_STR  64
 #define MAX_HIJACK_STR 512
+#define MAX_KEY_NUM 5
 
 #define HIJACK_RULE_NUM_MAX     50
 #define HIJACK_RULE_EFFECTIVE   1
@@ -27,6 +29,7 @@ typedef enum {
     HIJACK_URL_MODE,
     HIJACK_GLOBAL_MODE,
     HIJACK_COMB_MODE,
+    HIJACK_ROLL_MODE,
     HIJACK_MAX_MODE
 } HIJACK_E;
 
@@ -38,12 +41,22 @@ typedef struct {
     naga_acl_t acl;
 } hijack_ip_t;
 
+
+typedef struct {
+	int weight;
+    char key[MAX_HIJACK_STR];
+    naga_acl_t acl;
+} roll_Key_t;
+
+
 typedef struct {
     HIJACK_E mode;
+	uint8_t key_num;
     uint32_t index;
     char host[MAX_HOST_LEN];
-    char key[MAX_HIJACK_STR];
-    char locate[MAX_HIJACK_STR];
+	char key[MAX_HIJACK_STR];
+    roll_Key_t key_arry[MAX_KEY_NUM];
+    char locate[MAX_HIJACK_LOCATE_STR];
 	char val1[MAX_HIJACK_STR];
 	char val2[MAX_HIJACK_STR];
     naga_acl_t acl;

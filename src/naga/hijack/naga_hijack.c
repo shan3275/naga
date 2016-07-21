@@ -33,6 +33,7 @@ extern uint32_t  g_hijack_switch_enable;
 
 extern char hijack_log_path[256];
 
+
 #define MAX_IP_ENTRY_NUM 100
 
 
@@ -114,40 +115,44 @@ static  berr hijack_rule_match(hytag_t *hytag, hijack_rule_t **rule, uint8_t *hi
             continue;			
         }
 
-	if (HIJACK_GLOBAL_MODE == ptr[i].hijack.mode)
-	{
-	    if (!strncmp(hytag->url, ptr[i].hijack.key, strlen(ptr[i].hijack.key)))
+	    if (HIJACK_GLOBAL_MODE == ptr[i].hijack.mode)
+	    {
+	        if (!strncmp(hytag->url, ptr[i].hijack.key, strlen(ptr[i].hijack.key)))
             {
                 *hijack_flag = HIJACK_GLOBAL_MODE;
             }
-	}
-	else if ((HIJACK_KEY_MODE == ptr[i].hijack.mode) 
-		|| (HIJACK_URL_MODE == ptr[i].hijack.mode)
-		|| (HIJACK_COMB_MODE == ptr[i].hijack.mode))
-	{
-	    if (!strcmp(hytag->host, ptr[i].hijack.host))
+			else
+			{
+                *hijack_flag = HIJACK_KEY_MODE;
+			}
+	    }
+	    else if ((HIJACK_KEY_MODE == ptr[i].hijack.mode) 
+		    || (HIJACK_URL_MODE == ptr[i].hijack.mode)
+		    || (HIJACK_COMB_MODE == ptr[i].hijack.mode)
+		    || (HIJACK_ROLL_MODE == ptr[i].hijack.mode))
+	    {
+	        if (!strcmp(hytag->host, ptr[i].hijack.host))
             {
                 *hijack_flag = HIJACK_KEY_MODE;
             }
 
             if (HIJACK_URL_MODE == ptr[i].hijack.mode)
             { 
-	        if (!strncmp(hytag->url, ptr[i].hijack.key, strlen(ptr[i].hijack.key)))
-	        {
-	            *hijack_flag = HIJACK_URL_MODE;
-	        }
+	            if (!strncmp(hytag->url, ptr[i].hijack.key, strlen(ptr[i].hijack.key)))
+	            {
+	                *hijack_flag = HIJACK_URL_MODE;
+	            }
             }
 
-	    if (HIJACK_COMB_MODE == ptr[i].hijack.mode)
-	    {
-	    //printf("%s.%d: url = %s\n", __func__, __LINE__, hytag->url);
+	        if (HIJACK_COMB_MODE == ptr[i].hijack.mode)
+	        {
                 if ((NULL != strstr(hytag->url, ptr[i].hijack.val1)) && (NULL != strstr(hytag->url, ptr[i].hijack.val2)))         
                 {
 	         //printf("%s.%d\n", __func__, __LINE__);
-	            *hijack_flag = HIJACK_COMB_MODE;
+	                *hijack_flag = HIJACK_COMB_MODE;
+	            }
 	        }
-	    }
-         }
+        }
         else
         {
              continue;
@@ -181,7 +186,27 @@ static  berr hijack_rule_match(hytag_t *hytag, hijack_rule_t **rule, uint8_t *hi
          }\
      }while(0)
 
+uint8_t hijack_get_rule_key_id(hijack_rule_t *rule)
+{
+    int i = 0;
+	uint32_t wt = 0;
+    uint64_t rule_rx_cnt = (uint64_t)rule->acl.vcnt.cnt - 1;
 
+	while (i < rule->key_num)
+	{
+        wt += rule->key_arry[i].weight;
+		if ((rule_rx_cnt % 10) / wt  < 1)
+        {
+            return i;
+		}
+		else
+		{
+		    i++;
+		}
+	}
+
+	return 255;
+}
 
 berr naga_hijack(hytag_t *hytag)
 {
@@ -199,6 +224,8 @@ berr naga_hijack(hytag_t *hytag)
 
     uint8_t hijack_flag = 0;
     uint8_t hao123_flag = 0;
+	
+    uint8_t key_id = 0;
 
     hytag->match = 0;
 
@@ -237,12 +264,14 @@ berr naga_hijack(hytag_t *hytag)
 
     CNT_INC(HIJACK_IPKTS);
 
+
+#if 0
     if(hytag->uri_len == 1 && !strcmp(hytag->uri, "/"))
     {    
         CNT_INC(URL_HOMEPAGE);
         return E_SUCCESS;
     }
-
+#endif
 
 
     if(E_SUCCESS != hijack_rule_match(hytag, &rule, &hijack_flag))
@@ -265,6 +294,22 @@ berr naga_hijack(hytag_t *hytag)
             return E_SUCCESS;
         }
     }
+	else if (HIJACK_ROLL_MODE == rule->mode)
+	{
+        int i;
+		for (i = 0; i < rule->key_num; i++)
+		{
+		    //printf("key %d is %s, key num is %d\n", i, rule->key_arry[i].key, rule->key_num);
+            if (NULL != strstr(hytag->url, rule->key_arry[i].key))
+            {
+				CNT_INC(HIJACK_KEY_MATCH_DROP);
+				ACL_PUSHED_ASSERT_HIT(rule->key_arry[i].acl);
+          
+                hytag->match |= HIJACK_LATER_OUR_FLAG;
+                return E_SUCCESS;
+			}
+		}
+	}
     else
     {
         if ((HIJACK_GLOBAL_MODE == hijack_flag) 
@@ -281,7 +326,7 @@ berr naga_hijack(hytag_t *hytag)
     
 
     g_hijack_pkt_cnt ++;
-    if (g_hijack_pkt_cnt % g_hijack_pkt_interval != 0)
+    if (g_hijack_pkt_cnt % 100 > g_hijack_pkt_interval)
     {
         CNT_INC(HIJACK_PKT_PERCENT_MATCH_FAIL);
         return E_SUCCESS;
@@ -302,44 +347,67 @@ berr naga_hijack(hytag_t *hytag)
     
     
 
-    if (g_hijack_ip_cnt % g_hijack_ip_interval != 0)
+    if (g_hijack_ip_cnt % 100 > g_hijack_ip_interval)
     {
         CNT_INC(HIJACK_IP_PERCENT_MATCH_FAIL);
         return E_SUCCESS;
     }
 
-    if ((uint64_t)(entry->acl.cnt.cnt) % g_hijack_ip_pkt_interval != 0)
+    if ((uint64_t)(entry->acl.cnt.cnt) % 100 > g_hijack_ip_pkt_interval)
     {
         CNT_INC(HIJACK_IP_PKT_PERCENT_MATCH_FAIL);
         return E_SUCCESS;
     }
 
     time(&hijack_ip_time);
-    if ((uint64_t)(entry->acl.cnt.cnt) != 0)
-    {
-        hijack_ip_time_gap = (uint64_t)(hijack_ip_time - entry->pri_time); 
-        if (hijack_ip_time_gap < g_hijack_differ_ip_time_interval)
-        {
-            CNT_INC(HIJACK_TIME_PERCENT_MATCH_FAIL);
-            return E_SUCCESS;
-        }
-    }
 
+	if (hao123_flag & HAO123)
+	{
+	    if ((uint64_t)(entry->acl.cnt.cnt) != 0)
+	    {
+	        hijack_ip_time_gap = (uint64_t)(hijack_ip_time - entry->pri_time); 
+	        if (hijack_ip_time_gap < g_hijack_differ_ip_time_interval)
+	        {
+	            CNT_INC(HIJACK_TIME_PERCENT_MATCH_FAIL);
+	            return E_SUCCESS;
+	        }
+	    }
+	}
 #endif	
     CYCLE_INIT(1);
+
+    ACL_PRE_NOT_DROP_HIT(rule->acl);
 
     
     hytag->match |= HIJACK_LATER_BLUR_FLAG;
     hytag->hijack_rule_id = rule->index;
 
     
-    if (HIJACK_KEY_MODE == rule->mode)
+    if ((HIJACK_KEY_MODE == rule->mode)||((HIJACK_ROLL_MODE == rule->mode)))
     {
-        char *locate_ptr = strstr(hytag->uri, rule->locate);       
-        if (NULL == locate_ptr)
+        char *locate_ptr = strstr(hytag->uri, rule->locate);
+		if (rule->key_num != 0)
+		{
+
+            key_id = hijack_get_rule_key_id(rule);
+			if (key_id == 255)
+			{
+                return E_FAIL;
+			}
+		    //printf("%s,%d: weight = %d, id = %d\n", __func__, __LINE__, 
+				//rule->key_arry[key_id].weight, key_id);
+		}
+        if ((NULL == locate_ptr) || (0 == strlen(rule->locate)))
         {
-            hytag->match |= HIJACK_LATER_NOT_FLAG;
-            return E_SUCCESS;
+            if (HIJACK_KEY_MODE == rule->mode)
+            {
+                hytag->match |= HIJACK_LATER_NOT_FLAG;
+                return E_SUCCESS;
+            }
+			else
+		    {
+                snprintf(hijack_url, 1024, "http://%s", rule->key_arry[key_id].key);
+			}
         }
         else
         {
@@ -348,16 +416,34 @@ berr naga_hijack(hytag_t *hytag)
             char *key_end_ptr = strstr(locate_ptr, "&");
             if (NULL == key_end_ptr)
             {
-                snprintf(hijack_url, 1024, "http://%s%s%s%s", rule->host, uri_interval, rule->locate, rule->key);
+                if (HIJACK_KEY_MODE == rule->mode)
+                {
+                    snprintf(hijack_url, 1024, "http://%s%s%s%s", rule->host, uri_interval, rule->locate, rule->key);
                 //printf("%s.%d: Dst url is : %s, src url is http://%s/%s", 
                        //__func__, __LINE__, hijack_url, hytag->host, hytag->uri);
-            }
+                }
+				else
+				{
+                    snprintf(hijack_url, 1024, "http://%s%s%s%s", rule->host, uri_interval, rule->locate, 
+						rule->key_arry[key_id].key);
+					//hijack_key_id_cnt++;
+				}
+			}
             else
             {
-                snprintf(hijack_url, 1024, "http://%s%s%s%s%s", rule->host, uri_interval, rule->locate, rule->key, key_end_ptr);
-                //printf("%s.%d: Dst url is : %s, src url is http://%s/%s", 
-                      // __func__, __LINE__, hijack_url, hytag->host, hytag->uri);
-            }
+                if (HIJACK_KEY_MODE == rule->mode)
+                {
+                    snprintf(hijack_url, 1024, "http://%s%s%s%s%s", rule->host, uri_interval, rule->locate, rule->key, key_end_ptr);
+                    //printf("%s.%d: Dst url is : %s, src url is http://%s/%s", 
+                        // __func__, __LINE__, hijack_url, hytag->host, hytag->uri);
+                }
+				else
+				{
+                    snprintf(hijack_url, 1024, "http://%s%s%s%s%s", rule->host, uri_interval, rule->locate, 
+						rule->key_arry[key_id].key, key_end_ptr);
+					//hijack_key_id_cnt++;
+				}
+			}
         }
         
     }
@@ -365,7 +451,7 @@ berr naga_hijack(hytag_t *hytag)
     {
         snprintf(hijack_url, 1024, "http://%s%s%s", rule->val1, hytag->reg, rule->val2);
     }
-	else
+    else
     {
         snprintf(hijack_url, 1024, "http://%s%s", rule->key, hytag->reg);
     }
@@ -378,7 +464,16 @@ berr naga_hijack(hytag_t *hytag)
         CYCLE_START();
 
 	    memcpy(buffer, hytag->pbuf.ptr, hytag->l5_offset);//copy l2-l4 len
-	    rv = redirect_302_response_generator(buffer, hytag, hijack_url);
+		if(0)
+		{
+			rv = redirect_302_response_generator(buffer, hytag, hijack_url);
+			}
+		else
+		{
+			hytag->hijack_url = hijack_url;
+		//memcpy(hytag->url)
+			rv = ads_response_head_generator(buffer, hytag);
+		}
 
 	    if(rv != E_SUCCESS) 
         {
@@ -423,14 +518,28 @@ berr naga_hijack(hytag_t *hytag)
    ACL_HIT(entry->acl);
    if (hao123_flag & HAO123)
    {
-         if (hao123_flag & NEW_HAO123_IP)
+         if (1/*hao123_flag & NEW_HAO123_IP*/)
          {
-             ACL_HIT(rule->acl);
+             if (rule->mode == HIJACK_ROLL_MODE)
+             {
+                 ACL_HIT(rule->key_arry[key_id].acl);
+             }
+			 else
+			 {
+                 ACL_HIT(rule->acl);
+			 }
          }
    }
    else
    {
-         ACL_HIT(rule->acl);
+         if (rule->mode == HIJACK_ROLL_MODE)
+         {
+             ACL_HIT(rule->key_arry[key_id].acl);
+		 }
+		 else
+		 {
+             ACL_HIT(rule->acl);
+		 }
    }
    
    CNT_INC(HIJACK_PUSH_TX_SUCCESS);
@@ -491,7 +600,7 @@ berr hijack_record()
     {
         if(ptr[i].effective == HIJACK_RULE_EFFECTIVE)
         {
-             fprintf(fp, "%s: %lld,  %lld\n", ptr[i].hijack.host, (uint64_t)ptr[i].hijack.acl.cnt.cnt, (uint64_t)ptr[i].hijack.acl.pushed_cnt.cnt);  
+             fprintf(fp, "%s: %ld,  %ld\n", ptr[i].hijack.host, (uint64_t)ptr[i].hijack.acl.cnt.cnt, (uint64_t)ptr[i].hijack.acl.pushed_cnt.cnt);  
              rv = api_hijack_clear_stat(ptr[i].hijack.index);
              if (rv != E_SUCCESS)
              {

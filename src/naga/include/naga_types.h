@@ -185,6 +185,7 @@ typedef struct
     uint16_t data_len;       /* total packet length, used for template */
     uint8_t  pushed_second_assert;
 	uint8_t  snet_hit_id;
+	char * hijack_url;
 }hytag_t;
 
 #define HYTAG_ACL_MERGE(_tagacl, _ruleacl) \
