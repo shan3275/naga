@@ -20,9 +20,22 @@ struct eth_hdr {
 
 struct eth_vlan_hdr 
 {
- 	uint16_t v_type;
     uint16_t v_val;	
+ 	uint16_t v_type;
 };
+
+
+
+struct eth_pppoe_hdr 
+{
+    uint8_t  ver_type;
+    uint8_t  data;
+    uint16_t  id;
+    uint16_t  plen;
+    uint16_t  proto;
+};
+
+
 
 
 berr pid_ethernet(struct pbuf *p, hytag_t *hytag);

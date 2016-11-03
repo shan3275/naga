@@ -5,11 +5,14 @@
 #define ETHERTYPE_IP4 		0x0800
 #define ETHERTYPE_IP6 		0x86dd
 #define ETHERTYPE_VLAN		0x8100
+#define ETHERTYPE_PPPOE		0x8864
+
+#define PPP_PROTO_IP4		0x0021
 
 
 berr pid_ethernet(struct pbuf *p, hytag_t *hytag)
 {
-
+    struct eth_pppoe_hdr *eth_pppoe_heder = NULL;
 	struct eth_vlan_hdr *eth_v_header = NULL;
     struct eth_hdr * eth_header = NULL;
 	uint16_t type = 0;
@@ -40,16 +43,27 @@ berr pid_ethernet(struct pbuf *p, hytag_t *hytag)
 	if(type == htons(ETHERTYPE_VLAN))
 	{
 		pid_incr_count(VLAN_PKTS);
-        //printf("len0 = %d\n", len);
-		len += 2;
-        //printf("len1 = %d\n", len);
 		do{
 			eth_v_header = (struct eth_vlan_hdr*)PBUF_PTR(p, len);	
 		}while(eth_v_header->v_type== htons(ETHERTYPE_VLAN) && (len += 4));
-        //printf("len2 = %d\n", len);
 		type = eth_v_header->v_type;
-        len += 2;
+        len += 4;
+//        printf("vlan len = %d\n", len);
 	}
+
+    /*  skip  PPPoE */
+    if(type == htons(ETHERTYPE_PPPOE))
+    {
+        pid_incr_count(PPPOE_PKTS);
+        eth_pppoe_heder = (struct eth_pppoe_hdr *)PBUF_PTR(p, len) ;
+        if(eth_pppoe_heder->proto == htons(PPP_PROTO_IP4))
+        {
+            type = htons(ETHERTYPE_IP4);
+        }
+        len += 8;
+//        printf("pppoe len = %d\n", len);
+//        printf("pppoe proto = %x\n", ntohs(type));
+    }
 
     UPDATE_PBUF_OFFSET(p, len);	
     hytag->l3_offset = p->ptr_offset;

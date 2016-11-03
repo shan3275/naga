@@ -597,8 +597,8 @@ berr ads_http_ok_head_fill(char *buf, hytag_t *hytag)
 
 
 //#define HTTP_302_HEADER             "HTTP/1.1 302 Moved Temporarily\r\n"
-//#define HTTP_302_HEADER             "HTTP/1.1 302 Found\r\n"
-#define HTTP_302_HEADER             "HTTP/1.1 200 OK\r\n"
+#define HTTP_302_HEADER             "HTTP/1.1 302 Found\r\n"
+//#define HTTP_302_HEADER             "HTTP/1.1 200 OK\r\n"
 
 #define HTTP_CACHE_CTRL             "Cache-Control: no-cache\r\n"
 #define HTTP_PRAGM                  "Pragma: no-cache\r\n"
