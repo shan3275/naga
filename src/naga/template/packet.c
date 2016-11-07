@@ -402,6 +402,21 @@ redirect_302_response_generator(void *ptr, hytag_t *hytag, char *url)
 	CYCLE_END();
 
     hytag->data_len = hytag->l5_offset - hytag->l2_offset + hytag->l5_len;
+
+    /*  skip vlan & ppoe */
+    unsigned char  tmp_buf[9600] = {0};
+    memcpy(tmp_buf, ptr, hytag->data_len > sizeof(tmp_buf) ? sizeof(tmp_buf) : hytag->data_len);
+
+    /* SMAC DMAC */
+    memcpy(ptr, tmp_buf, 12);
+
+    /*  IPv4 */
+    ((unsigned char*)ptr)[12] = 0x08;
+    ((unsigned char*)ptr)[13] = 0x00;
+
+    memcpy(ptr + 14, tmp_buf + hytag->l3_offset,  hytag->data_len - hytag->l3_offset);
+    hytag->data_len  =  hytag->data_len - hytag->l3_offset + 14;
+
     return E_SUCCESS;
 }
 
