@@ -609,6 +609,24 @@ berr ads_http_ok_head_fill(char *buf, hytag_t *hytag)
 #define HTTP_302_DATE               "Date: Mon, 14 Sep 2015 15:02:34 GMT\r\n"
 
 
+
+
+#define   HTTP_302_CONTENT                  \
+"HTTP/1.1 302 Found\r\n"                    \
+"Date: Mon, 07 Nov 2016 13:09:31 GMT\r\n"   \
+"Server: openresty\r\n"                     \
+"Content-Type: text/html\r\n"               \
+"Content-Length: 0\r\n"                     \
+"Last-Modified: Mon, 07 Nov 2016 13:09:31 GMT\r\n"  \
+"Cache-Control: no-cache\r\n"               \
+"Location: %s\r\n"                          \
+"Accept-Ranges: bytes\r\n"                  \
+"X-HITS: 0\r\n"                             \
+"Connection: close\r\n"                     \
+"\r\n"
+
+
+
 berr ads_http_302_fill(char *buf, hytag_t *hytag, char *url)
 {
     int len = 0;
@@ -620,12 +638,16 @@ berr ads_http_302_fill(char *buf, hytag_t *hytag, char *url)
     }
 
     //printf("%s.%d\n", __func__, __LINE__);
-#if 1
+#if 0
     len += snprintf(buf+len, 2048-len, "%s%s%s%s%s\r\n%s%s%s", 
         HTTP_302_HEADER, 
         HTTP_CACHE_CTRL, HTTP_PRAGM,
         HTTP_302_LOCATION, url, HTTP_302_CONTENT_TYPE,
         HTTP_302_CONTENT_LENGTH, HTTP_302_DATE);
+#else
+
+    len += snprintf(buf+len,  2048-len,  HTTP_302_CONTENT,  url);
+
 #endif
     //printf("%s.%d, len = %d\n", __func__, __LINE__, len);
     if (len > 0)
