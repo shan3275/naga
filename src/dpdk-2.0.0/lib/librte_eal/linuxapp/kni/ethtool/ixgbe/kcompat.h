@@ -304,7 +304,7 @@ struct msix_entry {
 #define IS_ALIGNED(x,a)         (((x) % ((typeof(x))(a))) == 0)
 #endif
 
-#ifndef NETIF_F_HW_VLAN_TX
+#ifndef NETIF_F_HW_VLAN_TX_zzzz
 struct _kc_vlan_ethhdr {
 	unsigned char	h_dest[ETH_ALEN];
 	unsigned char	h_source[ETH_ALEN];

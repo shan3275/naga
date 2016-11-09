@@ -15,7 +15,7 @@
 #define HAVE_PTE_MASK_PAGE_IOMAP
 #endif
 
-#ifndef PCI_MSIX_ENTRY_SIZE
+#ifndef PCI_MSIX_ENTRY_SIZE_zzzz
 #define PCI_MSIX_ENTRY_SIZE             16
 #define  PCI_MSIX_ENTRY_LOWER_ADDR      0
 #define  PCI_MSIX_ENTRY_UPPER_ADDR      4
