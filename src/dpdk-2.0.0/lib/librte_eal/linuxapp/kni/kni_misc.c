@@ -350,7 +350,7 @@ kni_ioctl_create(unsigned int ioctl_num, unsigned long ioctl_param)
 	up_read(&kni_list_lock);
 
 	net_dev = alloc_netdev(sizeof(struct kni_dev), dev_info.name,
-#ifdef NET_NAME_UNKNOWN
+#ifdef NET_NAME_UNKNOWN_zzz
 							NET_NAME_UNKNOWN,
 #endif
 							kni_net_init);
