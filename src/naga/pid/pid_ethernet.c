@@ -1,14 +1,6 @@
 #include "pid.h"
 
 
-#define SIZEOF_ETH_HDR 	(14)
-#define ETHERTYPE_IP4 		0x0800
-#define ETHERTYPE_IP6 		0x86dd
-#define ETHERTYPE_VLAN		0x8100
-#define ETHERTYPE_PPPOE		0x8864
-
-#define PPP_PROTO_IP4		0x0021
-
 
 berr pid_ethernet(struct pbuf *p, hytag_t *hytag)
 {

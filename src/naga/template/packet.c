@@ -35,6 +35,7 @@
 #include "rte_tcp.h"
 #include "rte_ip.h"
 
+
 //#define DEBUG
 #ifdef  DEBUG   
 #define debug(fmt,args...)  printf ("func(%s), line(%d)"fmt"\n" ,__FUNCTION__, __LINE__, ##args)
@@ -274,16 +275,47 @@ ads_eth_head_modify(struct ether_hdr *eth_hdr, hytag_t *hytag, uint8_t direction
         ether_addr_copy(&dst_mac, &(eth_hdr->s_addr));
 
 
-	if(ads_mac_enable[0])
-	{
-		memcpy(eth_hdr->d_addr.addr_bytes, ads_mac[0], 6);	
-	}
-	if(ads_mac_enable[1])
-	{
-		memcpy(eth_hdr->s_addr.addr_bytes, ads_mac[1], 6);	
-	}
+    	if(ads_mac_enable[0])
+    	{
+    		memcpy(eth_hdr->d_addr.addr_bytes, ads_mac[0], 6);	
+    	}
+    	if(ads_mac_enable[1])
+    	{
+    		memcpy(eth_hdr->s_addr.addr_bytes, ads_mac[1], 6);	
+    	}
 
     }
+
+    struct eth_pppoe_hdr *eth_pppoe_heder = NULL;
+    struct eth_vlan_hdr *eth_v_header = NULL;
+    struct eth_hdr * eth_header = NULL;
+    uint16_t type = 0;
+    uint16_t len = 0;
+
+    /*skip vlan*/
+    eth_header = eth_hdr;
+    type = eth_header->ethertype;
+    len += 14; 
+    if(type == htons(ETHERTYPE_VLAN))
+	{
+		do{
+			eth_v_header = (struct eth_vlan_hdr*)(eth_header + len);	
+		}while(eth_v_header->v_type== htons(ETHERTYPE_VLAN) && (len += 4));
+		type = eth_v_header->v_type;
+        len += 4;
+	}
+
+    /*  skip  PPPoE */
+    if(type == htons(ETHERTYPE_PPPOE))
+    {
+        eth_pppoe_heder = (struct eth_pppoe_hdr *)(eth_header + len);
+        if(eth_pppoe_heder->proto == htons(PPP_PROTO_IP4))
+        {
+            eth_pppoe_heder->plen = htons(hytag->l5_len + (hytag->l5_offset - hytag->l3_offset) + 2);
+        }
+        len += 8;
+    }
+
 
 #if 0	
     eth_hdr->s_addr.addr_bytes[0] = 0x90;
@@ -403,6 +435,8 @@ redirect_302_response_generator(void *ptr, hytag_t *hytag, char *url)
 
     hytag->data_len = hytag->l5_offset - hytag->l2_offset + hytag->l5_len;
 
+
+#if 0
     /*  skip vlan & ppoe */
     unsigned char  tmp_buf[9600] = {0};
     memcpy(tmp_buf, ptr, hytag->data_len > sizeof(tmp_buf) ? sizeof(tmp_buf) : hytag->data_len);
@@ -416,6 +450,9 @@ redirect_302_response_generator(void *ptr, hytag_t *hytag, char *url)
 
     memcpy(ptr + 14, tmp_buf + hytag->l3_offset,  hytag->data_len - hytag->l3_offset);
     hytag->data_len  =  hytag->data_len - hytag->l3_offset + 14;
+#endif
+
+
 
     return E_SUCCESS;
 }
