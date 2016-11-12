@@ -407,6 +407,7 @@ redirect_302_response_generator(unsigned char *ptr, hytag_t *hytag, char *url)
     uint16_t buf_len = 0;
     uint16_t ptr_len = 0;
 
+    hytag->data_len = hytag->l5_len + hytag->l5_offset;
     memcpy(buf, ptr, hytag->data_len > sizeof(buf) ? sizeof(buf) : hytag->data_len);
 
     /* cpoy MAC && type */
