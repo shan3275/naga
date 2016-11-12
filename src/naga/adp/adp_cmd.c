@@ -233,6 +233,32 @@ DEFUN(adp_mac_special_set,
 }
 
 
+DEFUN(adp_pkt_content_set, 
+        adp_pkt_content_set_cmd,
+      "adp pkt-content (eth|eth+pppoe|eth+vlan+pppoe)", "\n")
+{
+    int pkt_content = PKT_CONTENT_ETH;
+
+    if(!strcmp(argv[0], "eth+pppoe"))
+    {
+        pkt_content = PKT_CONTENT_ETH_PPPOE ; 
+    }
+    else if(!strcmp(argv[0], "eth+vlan+pppoe"))
+    {
+        pkt_content = PKT_CONTENT_ETH_VLAN_PPPOE ; 
+    }
+    else
+    {
+        pkt_content = PKT_CONTENT_ETH;
+    }
+
+    ads_pkt_content_set(pkt_content);
+
+    return 0;
+}
+
+
+
 
 void adp_cmd_config_write(struct vty *vty)
 {
@@ -314,6 +340,11 @@ void adp_cmd_config_write(struct vty *vty)
 					VTY_NEWLINE); 		
 
 		
+    int pkt_content;
+    ads_pkt_content_get(&pkt_content);
+    vty_out(vty, "adp pkt-content %s%s",
+            pkt_content == PKT_CONTENT_ETH ? "eth" : (pkt_content == PKT_CONTENT_ETH_PPPOE ? "eth+pppoe" : "eth+vlan+pppoe"),
+            VTY_NEWLINE); 		
 	
 }
 
@@ -340,6 +371,9 @@ void cmdline_adp_init(void)
     install_element(CMD_NODE, &adp_switch_template_cmd);
 
 	install_element(CMD_NODE, &adp_interval_clean_cmd);
+
+    install_element(CMD_NODE, &adp_pkt_content_set_cmd);
+    
     
     return ;
 }

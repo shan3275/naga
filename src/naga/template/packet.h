@@ -16,7 +16,7 @@
 
 
 berr
-redirect_302_response_generator(void *ptr, hytag_t *hytag, char *url);
+redirect_302_response_generator(unsigned char *ptr, hytag_t *hytag, char *url);
 
 
 berr
@@ -30,6 +30,18 @@ berr ads_mac_get(int dst_or_src, int *custom, uint8_t * mac);
 
 
 berr ads_mac_set(int dst_or_src, int custom, uint8_t* mac );
+
+
+berr ads_pkt_content_set(int pkt_content);
+berr ads_pkt_content_get(int *pkt_content);
+
+
+
+#define  PKT_CONTENT_ETH                0
+#define  PKT_CONTENT_ETH_PPPOE          1
+#define  PKT_CONTENT_ETH_VLAN_PPPOE     2
+
+
 
 
 #endif

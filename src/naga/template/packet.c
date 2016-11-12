@@ -34,7 +34,7 @@
 #include "pid.h"
 #include "rte_tcp.h"
 #include "rte_ip.h"
-
+#include "packet.h"
 
 //#define DEBUG
 #ifdef  DEBUG   
@@ -250,6 +250,24 @@ berr ads_mac_set(int dst_or_src, int custom, uint8_t* mac )
 	
 }
 
+
+int g_pkt_content = PKT_CONTENT_ETH;
+
+
+berr ads_pkt_content_set(int pkt_content)
+{
+    g_pkt_content = pkt_content;
+    return E_SUCCESS;
+}
+
+berr ads_pkt_content_get(int *pkt_content)
+{
+    *pkt_content = g_pkt_content;
+    return E_SUCCESS;
+}
+
+
+
 berr
 ads_eth_head_modify(struct ether_hdr *eth_hdr, hytag_t *hytag, uint8_t direction)
 {
@@ -283,58 +301,8 @@ ads_eth_head_modify(struct ether_hdr *eth_hdr, hytag_t *hytag, uint8_t direction
     	{
     		memcpy(eth_hdr->s_addr.addr_bytes, ads_mac[1], 6);	
     	}
-
     }
 
-    struct eth_pppoe_hdr *eth_pppoe_heder = NULL;
-    struct eth_vlan_hdr *eth_v_header = NULL;
-    struct eth_hdr * eth_header = NULL;
-    uint16_t type = 0;
-    uint16_t len = 0;
-
-    /*skip vlan*/
-    eth_header = eth_hdr;
-    type = eth_header->ethertype;
-    len += 14; 
-    if(type == htons(ETHERTYPE_VLAN))
-	{
-		do{
-			eth_v_header = (struct eth_vlan_hdr*)(eth_header + len);	
-		}while(eth_v_header->v_type== htons(ETHERTYPE_VLAN) && (len += 4));
-		type = eth_v_header->v_type;
-        len += 4;
-	}
-
-    /*  skip  PPPoE */
-    if(type == htons(ETHERTYPE_PPPOE))
-    {
-        eth_pppoe_heder = (struct eth_pppoe_hdr *)(eth_header + len);
-        if(eth_pppoe_heder->proto == htons(PPP_PROTO_IP4))
-        {
-            eth_pppoe_heder->plen = htons(hytag->l5_len + (hytag->l5_offset - hytag->l3_offset) + 2);
-        }
-        len += 8;
-    }
-
-
-#if 0	
-    eth_hdr->s_addr.addr_bytes[0] = 0x90;
-    eth_hdr->s_addr.addr_bytes[1] = 0xe2;
-    eth_hdr->s_addr.addr_bytes[2] = 0xba;
-    eth_hdr->s_addr.addr_bytes[3] = 0x19;
-    eth_hdr->s_addr.addr_bytes[4] = 0x5b;
-    eth_hdr->s_addr.addr_bytes[5] = 0x58;  
-
-
-
-    eth_hdr->d_addr.addr_bytes[0] = 0x00;
-    eth_hdr->d_addr.addr_bytes[1] = 0x1d;
-    eth_hdr->d_addr.addr_bytes[2] = 0x71;
-    eth_hdr->d_addr.addr_bytes[3] = 0xa6;
-    eth_hdr->d_addr.addr_bytes[4] = 0x91;
-    eth_hdr->d_addr.addr_bytes[5] = 0xc2;
-
-#endif
 
     return E_SUCCESS;
 }
@@ -346,7 +314,7 @@ ads_eth_head_modify(struct ether_hdr *eth_hdr, hytag_t *hytag, uint8_t direction
 
 
 berr
-redirect_302_response_generator(void *ptr, hytag_t *hytag, char *url)
+redirect_302_response_generator(unsigned char *ptr, hytag_t *hytag, char *url)
 {
     int rv;
     char *http_head = NULL;
@@ -433,7 +401,86 @@ redirect_302_response_generator(void *ptr, hytag_t *hytag, char *url)
     }
 	CYCLE_END();
 
-    hytag->data_len = hytag->l5_offset - hytag->l2_offset + hytag->l5_len;
+
+
+    unsigned char buf[9600] = {0};
+    uint16_t buf_len = 0;
+    uint16_t ptr_len = 0;
+
+    memcpy(buf, ptr, hytag->data_len > sizeof(buf) ? sizeof(buf) : hytag->data_len);
+
+    /* cpoy MAC && type */
+    memcpy(ptr + ptr_len, buf, 14);
+    ptr_len += 14;
+
+    if(g_pkt_content == PKT_CONTENT_ETH)
+    {
+        ptr[12] = 0x08;
+        ptr[13] = 0x00;
+    }
+    else if(g_pkt_content == PKT_CONTENT_ETH_PPPOE || 
+            g_pkt_content == PKT_CONTENT_ETH_VLAN_PPPOE)
+    {
+        struct eth_pppoe_hdr *eth_pppoe_heder = NULL;
+        struct eth_vlan_hdr *eth_v_header = NULL;
+        struct eth_hdr *eth_header = NULL;
+        uint16_t type = 0;
+
+        /*skip vlan*/
+        eth_header = buf;
+        type = eth_header->ethertype;
+        buf_len += 14; 
+        if(type == htons(ETHERTYPE_VLAN))
+        {
+            int vlan_offset = buf_len;
+            do{
+                eth_v_header = (struct eth_vlan_hdr*)(buf + buf_len);
+            }while(eth_v_header->v_type== htons(ETHERTYPE_VLAN) && (buf_len += 4));
+            type = eth_v_header->v_type;
+            buf_len += 4;
+
+            if(g_pkt_content == PKT_CONTENT_ETH_VLAN_PPPOE)
+            {
+                memcpy(ptr + ptr_len, buf + vlan_offset, buf_len - vlan_offset);
+                ptr_len += buf_len - vlan_offset;
+            }
+            else if(g_pkt_content == PKT_CONTENT_ETH_PPPOE)
+            {
+                ptr[12] = (htons(type) >> 8) & 0xff;
+                ptr[13] = (htons(type)) & 0xff;
+            }
+        }
+
+        /*  skip  PPPoE */
+        if(type == htons(ETHERTYPE_PPPOE))
+        {
+            int pppoe_offset = buf_len;
+            eth_pppoe_heder = (struct eth_pppoe_hdr *)(buf + buf_len);
+            if(eth_pppoe_heder->proto == htons(PPP_PROTO_IP4))
+            {
+                eth_pppoe_heder->plen = htons(hytag->l5_len + (hytag->l5_offset - hytag->l3_offset) + 2);
+            }
+            buf_len += 8;
+
+            if(g_pkt_content == PKT_CONTENT_ETH_VLAN_PPPOE ||
+               g_pkt_content == PKT_CONTENT_ETH_PPPOE)
+            {
+                memcpy(ptr + ptr_len, buf + pppoe_offset, buf_len - pppoe_offset);
+                ptr_len += buf_len - pppoe_offset;
+            }
+            else
+            {
+                // modify type ?;
+            }
+        }
+    }
+
+    memcpy(ptr + ptr_len,  buf + hytag->l3_offset,  hytag->l5_len + hytag->l5_offset - hytag->l3_offset) ; 
+    ptr_len += hytag->l5_len + hytag->l5_offset - hytag->l3_offset;
+
+
+
+    hytag->data_len = ptr_len;
 
 
 #if 0
@@ -451,6 +498,7 @@ redirect_302_response_generator(void *ptr, hytag_t *hytag, char *url)
     memcpy(ptr + 14, tmp_buf + hytag->l3_offset,  hytag->data_len - hytag->l3_offset);
     hytag->data_len  =  hytag->data_len - hytag->l3_offset + 14;
 #endif
+
 
 
 
