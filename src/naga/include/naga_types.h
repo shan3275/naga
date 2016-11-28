@@ -160,6 +160,7 @@ typedef struct
 	char url[URL_MAX_LEN+1];
 	uint8_t host[MAX_HOST_LEN+1];
     char account[MAX_ACCOUNT_LEN+1];
+    uint16_t referer_len;
 	char referer[URL_MAX_LEN+1];
     uint16_t user_agent_len;
     char  user_agent[MAX_USER_AGENT_LEN+1];

@@ -334,7 +334,17 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
 				memcpy(hytag->user_agent, &line[1], len);
 				hytag->user_agent_len = len;
 			}			
-		
+            if (hytag->referer_len== 0 
+                    && !strncmp(STRING_HTTP_REFERENCE, begin, STRING_HTTP_REFERENCE_LEN))
+            {
+
+                if( len > URL_MAX_LEN )
+                {	
+                    len = URL_MAX_LEN;
+                }
+                memcpy(hytag->referer, &line[1], len) ; 
+                hytag->referer_len = len; 
+            }			
 		}
 	}
 
