@@ -61,7 +61,7 @@ void hytag_log(hytag_t *tag)
 		if((APP_TYPE_HTTP_GET_OR_POST == tag->app_type) && ((tag->match & 0xc) || (ACT_LOG == (tag->acl.actions & ACT_LOG))))
 		{
                         //printf("hijack match is : %d\n", tag->match);
-			bts_zlog(LOG_ALERT, "  %d.%d.%d.%d   %d.%d.%d.%d   %d   %d   %d   %d   %s   %s", 
+			bts_zlog(LOG_ALERT, "  %d.%d.%d.%d   %d.%d.%d.%d   %d   %d   %d   %d   %s   %s   %s", 
 		                    (tag->outer_srcip4 >>24) &0xff,
 		                    (tag->outer_srcip4 >>16) &0xff,
 		                    (tag->outer_srcip4 >>8) &0xff,
@@ -75,7 +75,8 @@ void hytag_log(hytag_t *tag)
 		                    tag->match,
                             tag->hijack_rule_id,
 		                    tag->url,
-                            tag->user_agent) ; 
+                            tag->user_agent,
+                            tag->referer) ; 
 		}
 	}
 	else
