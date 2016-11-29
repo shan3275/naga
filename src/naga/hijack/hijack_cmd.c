@@ -504,6 +504,11 @@ static int hijack_cmd_add(struct vty *vty, const char *index_str, const char *ho
     index = atoi(index_str);
     hj_debug("index:%d", index);
 
+    if(index >= HIJACK_RULE_NUM_MAX)
+    {
+        vty_out(vty, "Error: index %d out of %d!%s", index, HIJACK_RULE_NUM_MAX, VTY_NEWLINE);
+    }
+
 	for (i = 0; i < key_len; i++) 
     {
             
@@ -537,6 +542,10 @@ static int hijack_cmd_add(struct vty *vty, const char *index_str, const char *ho
     {
         hijack.mode = HIJACK_GLOBAL_MODE;
         //memcpy(hijack.key, key, strlen(key));
+    }
+    else if(!strcmp("url_pcre", host))
+    {
+        hijack.mode = HIJACK_URL_PCRE_MODE;
     }
     else
     { 

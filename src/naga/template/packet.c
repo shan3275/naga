@@ -416,8 +416,8 @@ redirect_302_response_generator(unsigned char *ptr, hytag_t *hytag, char *url)
 
     if(g_pkt_content == PKT_CONTENT_ETH)
     {
-        ptr[12] = 0x08;
-        ptr[13] = 0x00;
+        ptr[ptr_len-2] = 0x08;
+        ptr[ptr_len-1] = 0x00;
     }
     else if(g_pkt_content == PKT_CONTENT_ETH_PPPOE || 
             g_pkt_content == PKT_CONTENT_ETH_VLAN_PPPOE)
@@ -427,10 +427,21 @@ redirect_302_response_generator(unsigned char *ptr, hytag_t *hytag, char *url)
         struct eth_hdr *eth_header = NULL;
         uint16_t type = 0;
 
+        /*   fixme yanheng:  add  outer vlan  040c  for  chengdu school */
+        ptr[ptr_len-2] = 0x81;
+        ptr[ptr_len-1] = 0x00;
+
+        ptr_len += 4 ;
+        ptr[ptr_len-4] = 0x04;
+        ptr[ptr_len-3] = 0x0c;
+        ptr[ptr_len-2] = 0x81;
+        ptr[ptr_len-1] = 0x00;
+
         /*skip vlan*/
         eth_header = buf;
         type = eth_header->ethertype;
         buf_len += 14; 
+
         if(type == htons(ETHERTYPE_VLAN))
         {
             int vlan_offset = buf_len;
@@ -447,8 +458,8 @@ redirect_302_response_generator(unsigned char *ptr, hytag_t *hytag, char *url)
             }
             else if(g_pkt_content == PKT_CONTENT_ETH_PPPOE)
             {
-                ptr[12] = (htons(type) >> 8) & 0xff;
-                ptr[13] = (htons(type)) & 0xff;
+                ptr[ptr_len-2] = (htons(type) >> 8) & 0xff;
+                ptr[ptr_len-1] = (htons(type)) & 0xff;
             }
         }
 
@@ -478,8 +489,6 @@ redirect_302_response_generator(unsigned char *ptr, hytag_t *hytag, char *url)
 
     memcpy(ptr + ptr_len,  buf + hytag->l3_offset,  hytag->l5_len + hytag->l5_offset - hytag->l3_offset) ; 
     ptr_len += hytag->l5_len + hytag->l5_offset - hytag->l3_offset;
-
-
 
     hytag->data_len = ptr_len;
 

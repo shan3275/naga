@@ -126,7 +126,11 @@ static  berr hijack_rule_match(hytag_t *hytag, hijack_rule_t **rule, uint8_t *hi
                 *hijack_flag = HIJACK_KEY_MODE;
 			}
 	    }
-	    else if ((HIJACK_KEY_MODE == ptr[i].hijack.mode) 
+        else if(HIJACK_URL_PCRE_MODE == ptr[i].hijack.mode)
+        {
+            *hijack_flag = HIJACK_URL_PCRE_MODE;
+        }
+        else if ((HIJACK_KEY_MODE == ptr[i].hijack.mode)
 		    || (HIJACK_URL_MODE == ptr[i].hijack.mode)
 		    || (HIJACK_COMB_MODE == ptr[i].hijack.mode)
 		    || (HIJACK_ROLL_MODE == ptr[i].hijack.mode))
@@ -451,10 +455,16 @@ berr naga_hijack(hytag_t *hytag)
     {
         snprintf(hijack_url, 1024, "http://%s%s%s", rule->val1, hytag->reg, rule->val2);
     }
+    else if(HIJACK_URL_PCRE_MODE == rule->mode)
+    {
+        snprintf(hijack_url, 1024, "http://%s", rule->key);
+    }
     else
     {
         snprintf(hijack_url, 1024, "http://%s%s", rule->key, hytag->reg);
     }
+
+    printf("original url is: %s.\n", hytag->url); 
     printf("hijack url is: %s.\n", hijack_url);
 
     CNT_INC(HIJACK_ALL_CAN_PUSH);
