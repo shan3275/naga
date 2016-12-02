@@ -253,7 +253,7 @@ berr naga_hijack(hytag_t *hytag)
         return E_SUCCESS;
     }
 
-    if (ACT_DROP == (hytag->acl.actions & ACT_DROP))
+    if (ACT_PUSH != (hytag->acl.actions & ACT_PUSH))
     {
         //printf("%s.%d: http://%s%s\n", __func__, __LINE__, hytag->host, hytag->uri);
         CNT_INC(HIJACK_DROP_ACT_DROP);
