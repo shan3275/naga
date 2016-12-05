@@ -123,5 +123,6 @@ time_t *hijack_get_start_time(void);
 #define api_hijack_get_start_time   hijack_get_start_time
 #define api_hijack_clear_stat       hijack_clear_stat
 #define api_log_path_set            log_path_set
+#define api_log_pash_get		    log_path_get
 
 #endif

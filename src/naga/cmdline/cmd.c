@@ -286,6 +286,7 @@ int cmdline (int argc, char **argv)
     /* Print banner. */
     zlog_notice ("Zebra %s starting: vty@%d", QUAGGA_VERSION, vty_port);
     printf ("Zebra %s starting: vty@%d", QUAGGA_VERSION, vty_port);
+    fflush(0);
 
     while (thread_fetch (zebrad.master, &thread))
         thread_call (&thread);

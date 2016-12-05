@@ -335,6 +335,17 @@ berr log_path_set(const char *path)
     return E_SUCCESS;
 }
 
+berr log_path_get(char path[256])
+{
+    if (NULL == path)
+    {
+        return E_PARAM;
+    }
+
+    snprintf(path, sizeof(hijack_log_path), "%s", hijack_log_path);
+    return E_SUCCESS;
+}
+
 
 hijack_entry_t *get_hijack_table_ptr(void)
 {

@@ -58,7 +58,8 @@ void hytag_log(hytag_t *tag)
 {
 	if(1)
 	{
-		if((APP_TYPE_HTTP_GET_OR_POST == tag->app_type) && ((tag->match & 0xc) || (ACT_LOG == (tag->acl.actions & ACT_LOG))))
+		//if((APP_TYPE_HTTP_GET_OR_POST == tag->app_type) && ((tag->match & 0xc) || (ACT_LOG == (tag->acl.actions & ACT_LOG))))
+		if (APP_TYPE_HTTP_GET_OR_POST == tag->app_type)
 		{
                         //printf("hijack match is : %d\n", tag->match);
 			bts_zlog(LOG_ALERT, "  %d.%d.%d.%d   %d.%d.%d.%d   %d   %d   %d   %d   %s   %s   %s", 

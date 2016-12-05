@@ -146,7 +146,7 @@ berr  naga_uri(hytag_t *hytag)
                                                 hytag->host, hytag->uri);
     }
 
-                    //printf("url is : %s\n", hytag->url);
+                   // printf("url is : %s\n", hytag->url);
     
     //if((strcmp(hytag->host, "www.jd.com") != 0) && (hytag->uri_len == 1) && (!strcmp(hytag->uri, "/")))	
     if (0)

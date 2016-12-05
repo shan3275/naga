@@ -143,6 +143,7 @@ static int hijack_info_get(struct vty *vty)
     uint64_t hijack_push_tx_success;
     uint64_t hijack_push_arrive_success;
     time_t *boottime = NULL;
+    char path[256]={0};
 
     if (api_hijack_enable_get(&status))
     {
@@ -172,11 +173,18 @@ static int hijack_info_get(struct vty *vty)
         return CMD_WARNING;
     }
 
+    if(api_log_pash_get(path))
+    {
+        vty_out(vty, "Get hijack log path!%s", VTY_NEWLINE);
+        return CMD_WARNING;
+    }
+
     vty_out(vty, "Hajack module status: %s%s", status==1?"ON":"OFF", VTY_NEWLINE);
     vty_out(vty, "ip interval is: %d%s", ip_interval, VTY_NEWLINE);
     vty_out(vty, "packet interval per ip is: %d%s", ip_pkt_interval, VTY_NEWLINE);
     vty_out(vty, "packet interval is: %d%s", pkt_interval, VTY_NEWLINE);
     vty_out(vty, "time interval per ip is : %d%s", ip_time_interval, VTY_NEWLINE);
+    vty_out(vty, "log path is : %s%s", path, VTY_NEWLINE);
 
     hijack_can_push_count = CNT_GET(HIJACK_ALL_CAN_PUSH); 
     hijack_push_tx_success = CNT_GET(HIJACK_PUSH_TX_SUCCESS);
@@ -625,6 +633,7 @@ void hijack_cmd_config_write(struct vty *vty)
     int ip_interval = 0, ip_pkt_interval = 0, pkt_interval = 0, ip_time_interval = 0;
     hijack_rule_t hijack;
     int i;
+    char path[256]={0};
 
     if (api_hijack_enable_get(&status))
     {
@@ -672,11 +681,16 @@ void hijack_cmd_config_write(struct vty *vty)
     {
         return;
     }
+    if(api_log_pash_get(path))
+    {
+        return;
+    }
 
     vty_out(vty,"hijack ip interval %d%s", ip_interval, VTY_NEWLINE);
     vty_out(vty,"hijack ip pkt interval %d%s", ip_pkt_interval, VTY_NEWLINE);
     vty_out(vty,"hijack pkt interval %d%s", pkt_interval, VTY_NEWLINE);
     vty_out(vty,"hijack ip time interval %d%s", ip_time_interval, VTY_NEWLINE);
+    vty_out(vty,"hijack log %s%s", path, VTY_NEWLINE);
 }
 
 /*

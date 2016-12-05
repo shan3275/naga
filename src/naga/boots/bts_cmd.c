@@ -69,12 +69,16 @@ static int cmd_show_stat(struct vty *vty, const char *str)
     int i;
     uint32_t total = 0;
     cnt_t cnt_array[CNT_MAX];
+    time_t t;
 	
     if (E_SUCCESS != cnt_get(0, CNT_MAX, cnt_array, &total))
     {
     	vty_out(vty, "Fail To Get cnt_get %s", VTY_NEWLINE);
         return CMD_WARNING;
     }
+
+    time(&t);
+    vty_out(vty, "Statistics of date and time: %s%s",ctime(&t), VTY_NEWLINE);
 
     for ( i = 0; i < CNT_MAX; i++)
     {
@@ -85,8 +89,12 @@ static int cmd_show_stat(struct vty *vty, const char *str)
                 continue;
             }
         }
+        if (cnt_array[i].val.cnt)
+        {
+        	vty_out(vty, "%-40s: %lld%s", cnt_array[i].name, (ULL)cnt_array[i].val.cnt, VTY_NEWLINE);
+        }
 
-        vty_out(vty, "%-40s: %lld%s", cnt_array[i].name, (ULL)cnt_array[i].val.cnt, VTY_NEWLINE);
+
     }
 
     return CMD_SUCCESS;
