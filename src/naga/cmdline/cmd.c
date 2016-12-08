@@ -179,6 +179,13 @@ int update_log_file_timer(struct thread * t)
 	thread_add_timer(zebrad.master, update_log_file_timer, NULL, 5);
 }
 
+/* update naga stat, refer bts_cmd.c */
+int bts_stat_log_file_timer(struct thread *t)
+{
+	bts_stat_log();
+	thread_add_timer(zebrad.master, bts_stat_log_file_timer, NULL, 10);
+}
+
 /* cmdline  startup routine. */
 //int cmdline (int argc, char **argv)
 int cmdline (int argc, char **argv)
@@ -312,6 +319,7 @@ int cmdline (int argc, char **argv)
     fflush(0);
     /* add by Samliu*/
     thread_add_timer(zebrad.master, update_log_file_timer, NULL, 5);
+    thread_add_timer(zebrad.master, bts_stat_log_file_timer, NULL, 10);
 
     while (thread_fetch (zebrad.master, &thread))
         thread_call (&thread);
