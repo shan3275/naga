@@ -156,6 +156,29 @@ struct quagga_signal_t zebra_signals[] =
     },
 };
 
+/* add by SamLiu, aim to
+ * 1. timer event；
+ * 2. 5 seconds update;
+ * 3. run cmd: file log cmd
+ * 4. update log file name
+ * */
+extern struct host host;
+extern struct zlog *zlog_default;
+extern int zlog_set_file (struct zlog *zl, const char *filename, int log_level);
+void update_log_file(void)
+{
+	 if (host.logfile && (zlog_default->maxlvl[ZLOG_DEST_FILE] != ZLOG_DISABLED))
+	 {
+		 zlog_set_file (NULL, host.logfile, zlog_default->default_lvl);
+	 }
+}
+
+int update_log_file_timer(struct thread * t)
+{
+	update_log_file();
+	thread_add_timer(zebrad.master, update_log_file_timer, NULL, 5);
+}
+
 /* cmdline  startup routine. */
 //int cmdline (int argc, char **argv)
 int cmdline (int argc, char **argv)
@@ -287,6 +310,8 @@ int cmdline (int argc, char **argv)
     zlog_notice ("Zebra %s starting: vty@%d", QUAGGA_VERSION, vty_port);
     printf ("Zebra %s starting: vty@%d", QUAGGA_VERSION, vty_port);
     fflush(0);
+    /* add by Samliu*/
+    thread_add_timer(zebrad.master, update_log_file_timer, NULL, 5);
 
     while (thread_fetch (zebrad.master, &thread))
         thread_call (&thread);

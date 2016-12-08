@@ -722,6 +722,10 @@ zlog_set_file (struct zlog *zl, const char *filename, int log_level)
   FILE *fp;
   mode_t oldumask;
 
+  /* add by SamLiu，aim to adding date to log file name*/
+  char temp_filename[256] = {0};
+  char temp_date[16] = {0};
+
   /* There is opend file.  */
   zlog_reset_file (zl);
 
@@ -729,15 +733,27 @@ zlog_set_file (struct zlog *zl, const char *filename, int log_level)
   if (zl == NULL)
     zl = zlog_default;
 
+  /* add by SamLiu*/
+  struct timeval clock;
+  struct tm *tm;
+  gettimeofday(&clock, NULL);
+  tm = localtime(&clock.tv_sec);
+  strftime(temp_date, sizeof(temp_date), "%Y%m%d", tm);
+  sprintf(temp_filename, "%s%s", filename, temp_date);
+
   /* Open file. */
   oldumask = umask (0777 & ~LOGFILE_MASK);
-  fp = fopen (filename, "a");
+  //fp = fopen (filename, "a");
+  /* modify by SamLiu */
+  fp = fopen (temp_filename, "a");
   umask(oldumask);
   if (fp == NULL)
     return 0;
 
   /* Set flags. */
-  zl->filename = strdup (filename);
+  //zl->filename = strdup (filename);
+  /* modify by Samliu */
+  zl->filename = strdup (temp_filename);
   zl->maxlvl[ZLOG_DEST_FILE] = log_level;
   zl->fp = fp;
   logfile_fd = fileno(fp);
