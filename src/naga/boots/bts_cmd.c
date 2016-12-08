@@ -297,6 +297,8 @@ void bts_stat_log(void) {
 	uint32_t total = 0;
 	cnt_t cnt_array[CNT_MAX];
 	time_t t;
+    struct tm* local;
+    local = gmtime(&t);
 
 	if (strlen(stat_log_file_name)) {
 		struct timeval clock;
@@ -328,6 +330,16 @@ void bts_stat_log(void) {
 
 		/* close file*/
 		fclose(fp);
+
+		/* if time is 0:0:0, then clear stat */
+		 if ((local->tm_sec < 10) && (local->tm_min == 0) &&(local->tm_hour == 0))
+		 {
+				int j;
+				uint32_t total = 0;
+				for (j = 0; j < CNT_MAX; j++) {
+					cnt_clear(j, 1, &total);
+				}
+		 }
 	}
 }
 
