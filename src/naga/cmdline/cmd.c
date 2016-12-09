@@ -318,8 +318,8 @@ int cmdline (int argc, char **argv)
     printf ("Zebra %s starting: vty@%d", QUAGGA_VERSION, vty_port);
     fflush(0);
     /* add by Samliu*/
-    thread_add_timer(zebrad.master, update_log_file_timer, NULL, 5);
-    thread_add_timer(zebrad.master, bts_stat_log_file_timer, NULL, 10);
+    //thread_add_timer(zebrad.master, update_log_file_timer, NULL, 5);
+    thread_add_timer(zebrad.master, bts_stat_log_file_timer, NULL, 8);
 
     while (thread_fetch (zebrad.master, &thread))
         thread_call (&thread);
