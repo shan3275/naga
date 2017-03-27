@@ -56,10 +56,20 @@ void hytag_print(hytag_t *tag)
 
 void hytag_log(hytag_t *tag)
 {
+
+/*
+ * Mozilla/5.0 (iPad; CPU OS 8_3 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko)
+ * Mobile/12F69 MicroMessenger/6.5.3 NetType/WIFI Language/zh_CN
+ * MicroMessenger
+ * MicroMessenger
+ */
+
 	if(1)
 	{
-		//if((APP_TYPE_HTTP_GET_OR_POST == tag->app_type) && ((tag->match & 0xc) || (ACT_LOG == (tag->acl.actions & ACT_LOG))))
-		if (APP_TYPE_HTTP_GET_OR_POST == tag->app_type)
+//		if((APP_TYPE_HTTP_GET_OR_POST == tag->app_type) && ((tag->match & 0xc) || (ACT_LOG == (tag->acl.actions & ACT_LOG))))
+
+		if((APP_TYPE_HTTP_GET_OR_POST == tag->app_type) &&
+				(tag->user_agent != NULL) && strstr(tag->user_agent, "MicroMessenger"))
 		{
                         //printf("hijack match is : %d\n", tag->match);
 			bts_zlog(LOG_ALERT, "  %d.%d.%d.%d   %d.%d.%d.%d   %d   %d   %d   %d   %s   %s   %s", 
