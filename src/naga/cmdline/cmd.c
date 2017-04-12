@@ -202,62 +202,8 @@ int cmdline (int argc, char **argv)
     /* Set umask before anything for security */
     umask (0027);
 
-    /* preserve my name */
-    //progname = ((p = strrchr (argv[0], '/')) ? ++p : argv[0]);
-
     zlog_default = openzlog (progname, ZLOG_ZEBRA,
             LOG_CONS|LOG_NDELAY|LOG_PID, LOG_DAEMON);
-
-#if 0
-
-    while (1) 
-    {
-        int opt;
-
-        opt = getopt_long (argc, argv, "bdf:hA:P:v", longopts, 0);
-
-        if (opt == EOF)
-            break;
-
-        switch (opt) 
-        {
-            case 0:
-                break;
-            case 'b':
-                batch_mode = 1;
-            case 'd':
-                daemon_mode = 1;
-                break;
-            case 'f':
-                config_file = optarg;
-                break;
-            case 'A':
-                vty_addr = optarg;
-                break;
-            case 'P':
-                /* Deal with atoi() returning 0 on failure, and zebra not
-                   listening on zebra port... */
-                if (strcmp(optarg, "0") == 0) 
-                {
-                    vty_port = 0;
-                    break;
-                } 
-                vty_port = atoi (optarg);
-                break;
-                break;
-            case 'v':
-                print_version (progname);
-                exit (0);
-                break;
-            case 'h':
-                usage (progname, 0);
-                break;
-            default:
-                usage (progname, 1);
-                break;
-        }
-    }
-#endif 
 
     /* port and conf file mandatory */
     if (!vty_port || !config_file)

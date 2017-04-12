@@ -31,63 +31,41 @@
  *   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdint.h>
-#include <inttypes.h>
-#include <sys/types.h>
-#include <sys/queue.h>
-#include <netinet/in.h>
-#include <setjmp.h>
-#include <stdarg.h>
-#include <ctype.h>
-#include <errno.h>
-#include <getopt.h>
+#ifndef _RTE_PREFETCH_H_
+#define _RTE_PREFETCH_H_
 
-#include "main_data.h"
-#include "vsr_dp.h"
-#include "dmr_dp.h"
-#include "acr_dp.h"
-#include "cmd.h"
-#include "pid.h"
-#include "itf.h"
-#include "dmr.h"
-#include "nag_adp.h"
-#include "bts_log.h"
-#include "netseg.h"
-#include "dnet.h"
+/**
+ * @file
+ *
+ * Prefetch operations.
+ *
+ * This file defines an API for prefetch macros / inline-functions,
+ * which are architecture-dependent. Prefetching occurs when a
+ * processor requests an instruction or data from memory to cache
+ * before it is actually needed, potentially speeding up the execution of the
+ * program.
+ */
 
+/**
+ * Prefetch a cache line into all cache levels.
+ * @param p
+ *   Address to prefetch
+ */
+static inline void rte_prefetch0(volatile void *p);
 
-char *interface_str = NULL; /*for eth name*/
+/**
+ * Prefetch a cache line into all cache levels except the 0th cache level.
+ * @param p
+ *   Address to prefetch
+ */
+static inline void rte_prefetch1(volatile void *p);
 
-int
-main(int argc, char **argv)
-{
-    if(argv[1] != NULL && !strcmp(argv[1], "--NODPDK") )
-    {
-    	berr rv;
-        printf("cmd core %d\n", rte_lcore_id());
-        vsr_dp_init();
-		dmr_dp_init();
-		//domain_dp_init();
-		acr_dp_init();
-		netseg_init();
-        adp_dp_init();
-        dnetseg_init();
-        hijack_dp_init();
-        rv = ads_template_init();
-        if (rv )
-        {
-            printf("%s %d ads_template_init fail, rv(%d)\n", __func__, __LINE__, rv);
-        }
+/**
+ * Prefetch a cache line into all cache levels except the 0th and 1th cache
+ * levels.
+ * @param p
+ *   Address to prefetch
+ */
+static inline void rte_prefetch2(volatile void *p);
 
-        if(argv[2] != NULL)
-            interface_str = strdup(argv[2]);
-
-        itf_raw_socket_init(interface_str);
-        cmdline (0, NULL);        
-    }
-	return 0;
-}
-
+#endif /* _RTE_PREFETCH_H_ */

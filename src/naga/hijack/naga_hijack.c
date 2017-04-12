@@ -216,7 +216,6 @@ berr naga_hijack(hytag_t *hytag)
 {
 
     berr rv;
-    struct rte_mbuf *txm = NULL;
     unsigned char buffer[2048]; 
 
     hijack_ip_t *entry = NULL;
@@ -503,27 +502,8 @@ berr naga_hijack(hytag_t *hytag)
 	    }
         //PRINTF_PACKET(buffer, hytag->data_len);
 	    CYCLE_END();
-   }  
-   else
-   {
-
-        if (NULL != hytag->m)
-        {
-            txm = hytag->m;  
-    	    rv = redirect_302_response_generator(hytag->pbuf.ptr, hytag, hijack_url);
-	        if(rv != E_SUCCESS) 
-            {
-		        CNT_INC(HIJACK_DROP_HEAD_GEN1);
-		        return rv;
-            }
-
-            txm->data_len = txm->pkt_len = hytag->data_len;
-            itf_send_packet_imm(txm, txm->port);
-
-        }
    }
 
-   
    time(&(entry->pri_time));
    ACL_HIT(entry->acl);
    if (hao123_flag & HAO123)

@@ -31,63 +31,64 @@
  *   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdint.h>
-#include <inttypes.h>
-#include <sys/types.h>
-#include <sys/queue.h>
-#include <netinet/in.h>
-#include <setjmp.h>
-#include <stdarg.h>
-#include <ctype.h>
-#include <errno.h>
-#include <getopt.h>
+#ifndef _RTE_SPINLOCK_X86_64_H_
+#define _RTE_SPINLOCK_X86_64_H_
 
-#include "main_data.h"
-#include "vsr_dp.h"
-#include "dmr_dp.h"
-#include "acr_dp.h"
-#include "cmd.h"
-#include "pid.h"
-#include "itf.h"
-#include "dmr.h"
-#include "nag_adp.h"
-#include "bts_log.h"
-#include "netseg.h"
-#include "dnet.h"
+#ifdef __cplusplus
+extern "C" {
+#endif
 
+#include "generic/rte_spinlock.h"
 
-char *interface_str = NULL; /*for eth name*/
-
-int
-main(int argc, char **argv)
+#ifndef RTE_FORCE_INTRINSICS
+static inline void
+rte_spinlock_lock(rte_spinlock_t *sl)
 {
-    if(argv[1] != NULL && !strcmp(argv[1], "--NODPDK") )
-    {
-    	berr rv;
-        printf("cmd core %d\n", rte_lcore_id());
-        vsr_dp_init();
-		dmr_dp_init();
-		//domain_dp_init();
-		acr_dp_init();
-		netseg_init();
-        adp_dp_init();
-        dnetseg_init();
-        hijack_dp_init();
-        rv = ads_template_init();
-        if (rv )
-        {
-            printf("%s %d ads_template_init fail, rv(%d)\n", __func__, __LINE__, rv);
-        }
-
-        if(argv[2] != NULL)
-            interface_str = strdup(argv[2]);
-
-        itf_raw_socket_init(interface_str);
-        cmdline (0, NULL);        
-    }
-	return 0;
+	int lock_val = 1;
+	asm volatile (
+			"1:\n"
+			"xchg %[locked], %[lv]\n"
+			"test %[lv], %[lv]\n"
+			"jz 3f\n"
+			"2:\n"
+			"pause\n"
+			"cmpl $0, %[locked]\n"
+			"jnz 2b\n"
+			"jmp 1b\n"
+			"3:\n"
+			: [locked] "=m" (sl->locked), [lv] "=q" (lock_val)
+			: "[lv]" (lock_val)
+			: "memory");
 }
 
+static inline void
+rte_spinlock_unlock (rte_spinlock_t *sl)
+{
+	int unlock_val = 0;
+	asm volatile (
+			"xchg %[locked], %[ulv]\n"
+			: [locked] "=m" (sl->locked), [ulv] "=q" (unlock_val)
+			: "[ulv]" (unlock_val)
+			: "memory");
+}
+
+static inline int
+rte_spinlock_trylock (rte_spinlock_t *sl)
+{
+	int lockval = 1;
+
+	asm volatile (
+			"xchg %[locked], %[lockval]"
+			: [locked] "=m" (sl->locked), [lockval] "=q" (lockval)
+			: "[lockval]" (lockval)
+			: "memory");
+
+	return (lockval == 0);
+}
+#endif
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* _RTE_SPINLOCK_X86_64_H_ */

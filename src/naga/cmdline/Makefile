@@ -39,7 +39,7 @@ LIB = libcmdline.a
 CFLAGS +=  -I . -I ../boots -I ../include -I ../libzebra -I ../vsr -I ../dmr -I ../acr -I ../template -I ../netseg
 CFLAGS += -I ../itf -I ../url -I ../hijack 
 
-EXPORT_MAP := lib_cmdline_version.map
+#EXPORT_MAP := lib_cmdline_version.map
 
 LIBABIVER := 1
 

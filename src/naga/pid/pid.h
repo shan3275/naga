@@ -5,7 +5,6 @@
 #include <string.h>
 #include <unistd.h>
 #include <arpa/inet.h>
-#include <rte_branch_prediction.h>
 
 #include "boots.h"
 #include "bts_debug.h"
@@ -96,7 +95,6 @@ do{\
 #include "pid_innerIp4.h"
 #include "pid_gre.h"
 #include "pid_http.h"
-#include "rte_mbuf.h"
 #include "naga_stat.h"
 
 //berr naga_pid_dpdk(struct rte_mbuf *m);

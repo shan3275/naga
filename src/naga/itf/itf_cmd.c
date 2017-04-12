@@ -81,7 +81,7 @@ DEFUN(itf_rxtx,
         hytag.pbuf.ptr = (void *)buffer;
         hytag.pbuf.len =  sizeof(buffer);
         hytag.pbuf.ptr_offset = 0;
-        hytag.m = NULL;
+        //hytag.m = NULL;
 
 
 
@@ -232,6 +232,7 @@ DEFUN(interface_set,
     return interface_cmd_set(vty, argv[0], argv[1]);
 }
 
+#if 0
 static int interface_cmd_show_status(struct vty *vty)
 {
     int rv;
@@ -286,6 +287,7 @@ static int interface_cmd_show_status(struct vty *vty)
 
     return CMD_SUCCESS;
 }
+#endif
 
 DEFUN(interface_show_stat, 
       interface_show_stat_cmd,
@@ -295,7 +297,8 @@ DEFUN(interface_show_stat,
       "Status information\n" 
       )
 {
-    return interface_cmd_show_status(vty);
+    return CMD_SUCCESS;
+    //return interface_cmd_show_status(vty);
 }
 
 void itf_cmd_config_write(struct vty *vty)

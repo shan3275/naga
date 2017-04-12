@@ -40,7 +40,7 @@ CFLAGS +=  -I .  -I ../include -I ../libzebra
 
 #CFLAGS += $(WERROR_FLAGS)
 
-EXPORT_MAP := lib_vsr_version.map
+#EXPORT_MAP := lib_vsr_version.map
 
 LIBABIVER := 1
 

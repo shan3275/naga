@@ -173,7 +173,7 @@ typedef struct
     uint32_t hijack_rule_id;
 
     struct pbuf pbuf;
-    struct rte_mbuf *m;
+    //struct rte_mbuf *m;
     uint16_t match;   /* 0 for not match, 1 for vsr match, 2 for other match  */
     enum ad_action_em ad_act; 
 
@@ -199,7 +199,7 @@ typedef struct
 
 #define HYTAG_ACL_SET(_acl, _val)   _acl.actions |= _val
 
-#define USE_D_PACKET 1
+#define USE_D_PACKET 0 // comment for now by shan275
 
 #define DEBUG_USE_CYCLE 0
 #if DEBUG_USE_CYCLE

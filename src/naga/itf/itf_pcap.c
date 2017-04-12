@@ -74,7 +74,6 @@ berr itf_raw_socket_init(char *ifname)
     if(ifname== NULL)
         return E_SUCCESS;
 
-    
     int sockfd = socket(PF_PACKET, SOCK_RAW, 0);
 	
     if(sockfd < 0 )
@@ -83,9 +82,6 @@ berr itf_raw_socket_init(char *ifname)
 		BRET(E_FAIL);
     }
 
-#if 1
-	
-   
     struct ifreq ifr;
     socklen_t addrlen = sizeof(sll);
     strcpy(ifr.ifr_name, ifname);
@@ -97,24 +93,12 @@ berr itf_raw_socket_init(char *ifname)
     sll.sll_pkttype   = PACKET_HOST;
     sll.sll_halen     = 6;
     
-    
     if(bind(sockfd, (struct sockaddr*)&sll, addrlen) < 0)
     {
     	printf("bind socket Failed\n");
 		BRET(E_FAIL);			    	
     }
 
-#else
-	struct ifreq ifr;
-	memset(&ifr, 0x0, sizeof(ifr));	
-    strcpy(ifr.ifr_name, ifname);//, IFNAMSIZE);
-    
-	if(setsockopt(sockfd,SOL_SOCKET,SO_BINDTODEVICE, (char*)&ifr,sizeof(ifr))< 0)
-	{
-		printf("set socket Failed\n");
-		BRET(E_FAIL);		
-	}
-#endif
 	send_socket = sockfd;
 	int flag = fcntl(sockfd, F_GETFL,0);
 	printf("flag is %x, %x\n", flag, O_NONBLOCK);
@@ -190,7 +174,7 @@ void libpcap_packet_handler(u_char *param __attribute__((unused)),
     hytag.pbuf.ptr = (void *)packet;
     hytag.pbuf.len = header->len;
     hytag.pbuf.ptr_offset = 0;
-    hytag.m = NULL;
+    //hytag.m = NULL;
     //printf("Success packet len = %d\n", hytag.pbuf.len);
     //return;
 
@@ -209,7 +193,6 @@ void *pcap_rx_loop(void *_param)
     memcpy(&rparam,  _param, sizeof(rparam)); 
     free(_param);
 
-#if  1 
     if (pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL) != 0) {
             perror("pthread_setcancelstate err:");
             return NULL;
@@ -218,8 +201,7 @@ void *pcap_rx_loop(void *_param)
             perror("pthread_setcanceltype err:");
             return NULL;
     }
-#endif
-    
+
     pcap_loop(rparam.fp, 0, (pcap_handler)libpcap_packet_handler, (void*)&rparam);
     return NULL;
 }
@@ -359,37 +341,3 @@ berr libpcap_rx_loop_unset(char * ifname __attribute__((unused)))
 #endif	
     return E_SUCCESS;
 }
-
-
-#if 0
-static pcap_dumper_t *gdump = NULL;
-berr libpcap_log_open(char *filename)
-{
-    char errbuf[PCAP_ERRBUF_SIZE]; 
-    pcap_t *fp = NULL;
-
-    fp = pcap_open_offline(filename, errbuf);
-
-    if(NULL  == fp )
-    {
-        printf( "pcap_open_offline Failed: %s\n", errbuf );
-        return E_FAIL;
-    }
-
-    gdump = pcap_dump_open(fp, filename);     
-}
-
-
-
-berr libpcap_log()
-{
-    
-    if(gdump != NULL)
-    {
-         pcap_dump(gdump, );  
-    }
-}
-
-#endif
-
-

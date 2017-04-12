@@ -34,10 +34,9 @@
 //*****************************************************************************
 #include "boots.h"
 #include "packet_http.h"
-#include "rte_memcpy.h"
+#include<string.h>
 #include "bts_debug.h"
 #include  "gzip.h"
-#include  "rte_cycles.h"
 //#define DEBUG
 #ifdef  DEBUG   
 #define debug(fmt,args...)  printf ("func(%s), line(%d)"fmt"\n" ,__FUNCTION__, __LINE__, ##args)
@@ -483,13 +482,13 @@ berr ads_gzip_and_fill_content( char *buf, uint16_t *out_len, hytag_t *hytag)
     memset(in, 0, len);
 
     len = 0;
-    rte_memcpy(in + len, http_body[hytag->template].head, (size_t) strlen(http_body[hytag->template].head));
+    memcpy(in + len, http_body[hytag->template].head, (size_t) strlen(http_body[hytag->template].head));
     len += strlen(http_body[hytag->template].head);
 
-    rte_memcpy(in + len, hytag->url, (size_t) hytag->url_len);
+    memcpy(in + len, hytag->url, (size_t) hytag->url_len);
     len += hytag->url_len;
 
-    rte_memcpy(in + len, http_body[hytag->template].tail, (size_t) strlen(http_body[hytag->template].tail));
+    memcpy(in + len, http_body[hytag->template].tail, (size_t) strlen(http_body[hytag->template].tail));
     len += strlen(http_body[hytag->template].tail);
 
     out = buf;
@@ -522,13 +521,13 @@ berr ads_http_ok_head_fill(char *buf, hytag_t *hytag)
 
     if( adt_send_is_multi())
     {
-        rte_memcpy(buf + len, http_head_response1, (size_t) strlen(http_head_response1));
+        memcpy(buf + len, http_head_response1, (size_t) strlen(http_head_response1));
         len += strlen(http_head_response1);
 
-        rte_memcpy(buf + len, http_head_response2, (size_t) strlen(http_head_response2));
+        memcpy(buf + len, http_head_response2, (size_t) strlen(http_head_response2));
         len += strlen(http_head_response2);
 
-        rte_memcpy(buf + len, http_head_response3, (size_t) strlen(http_head_response3));
+        memcpy(buf + len, http_head_response3, (size_t) strlen(http_head_response3));
         len += strlen(http_head_response3);
 
         /* get content length */
@@ -536,17 +535,17 @@ berr ads_http_ok_head_fill(char *buf, hytag_t *hytag)
         hytag->content_len = content_len;
         debug("hytag->content_len(%d)", hytag->content_len);
         sprintf(content_buff, "%d", content_len);
-        rte_memcpy(buf + len, content_buff, (size_t) strlen(content_buff));
+        memcpy(buf + len, content_buff, (size_t) strlen(content_buff));
         len += strlen(content_buff);
 
 
-        rte_memcpy(buf + len, http_head_response5, (size_t) strlen(http_head_response5));
+        memcpy(buf + len, http_head_response5, (size_t) strlen(http_head_response5));
         len += strlen(http_head_response5);
 
-        rte_memcpy(buf + len, http_head_response6, (size_t) strlen(http_head_response6));
+        memcpy(buf + len, http_head_response6, (size_t) strlen(http_head_response6));
         len += strlen(http_head_response6);
 
-        rte_memcpy(buf + len, http_head_response7, (size_t) strlen(http_head_response7));
+        memcpy(buf + len, http_head_response7, (size_t) strlen(http_head_response7));
         len += strlen(http_head_response7);
 
         hytag->l5_len = len;
@@ -559,33 +558,33 @@ berr ads_http_ok_head_fill(char *buf, hytag_t *hytag)
         {
             BRET(E_FAIL);
         }
-        rte_memcpy(buf + len, http_head_response1, (size_t) strlen(http_head_response1));
+        memcpy(buf + len, http_head_response1, (size_t) strlen(http_head_response1));
         len += strlen(http_head_response1);
 
-        rte_memcpy(buf + len, http_head_response2, (size_t) strlen(http_head_response2));
+        memcpy(buf + len, http_head_response2, (size_t) strlen(http_head_response2));
         len += strlen(http_head_response2);
 
-        rte_memcpy(buf + len, http_head_response3, (size_t) strlen(http_head_response3));
+        memcpy(buf + len, http_head_response3, (size_t) strlen(http_head_response3));
         len += strlen(http_head_response3);
 
         /* get content length */
         hytag->content_len = gzip_len;
         debug("hytag->content_len(%d)", hytag->content_len);
         sprintf(content_buff, "%d", hytag->content_len);
-        rte_memcpy(buf + len, content_buff, (size_t) strlen(content_buff));
+        memcpy(buf + len, content_buff, (size_t) strlen(content_buff));
         len += strlen(content_buff);
 
 
-        rte_memcpy(buf + len, http_head_response5, (size_t) strlen(http_head_response5));
+        memcpy(buf + len, http_head_response5, (size_t) strlen(http_head_response5));
         len += strlen(http_head_response5);
 
-        rte_memcpy(buf + len, http_head_response6, (size_t) strlen(http_head_response6));
+        memcpy(buf + len, http_head_response6, (size_t) strlen(http_head_response6));
         len += strlen(http_head_response6);
 
-        rte_memcpy(buf + len, http_head_response7, (size_t) strlen(http_head_response7));
+        memcpy(buf + len, http_head_response7, (size_t) strlen(http_head_response7));
         len += strlen(http_head_response7);
 
-        rte_memcpy(buf + len, gzip_buff, (size_t)gzip_len);
+        memcpy(buf + len, gzip_buff, (size_t)gzip_len);
         len += gzip_len;
 
         hytag->l5_len = len;
@@ -763,7 +762,7 @@ berr ads_http_content_fill(char *buf, hytag_t *hytag)
         if ( hytag->content_offset + hytag->fill_len <= head_len)
         {
             l = hytag->fill_len;
-            rte_memcpy(buf + len, &head[start], (size_t) l);
+            memcpy(buf + len, &head[start], (size_t) l);
             len += l;
             debug("len(%d)", len);
         }
@@ -772,13 +771,13 @@ berr ads_http_content_fill(char *buf, hytag_t *hytag)
         {
             /* first segment at the head segment */
             l = head_len - hytag->content_offset;
-            rte_memcpy(buf + len, &head[start], l);
+            memcpy(buf + len, &head[start], l);
             len += l;
             debug("len(%d)", len);
 
             /* second segment at the url segment */
             l = hytag->fill_len - len;
-            rte_memcpy(buf + len, url, l);
+            memcpy(buf + len, url, l);
             len += l;
             debug("len(%d)", len);
         }
@@ -787,19 +786,19 @@ berr ads_http_content_fill(char *buf, hytag_t *hytag)
         {
             /* first segment at the head segment */
             l = head_len - hytag->content_offset;
-            rte_memcpy(buf + len, &head[start], l);
+            memcpy(buf + len, &head[start], l);
             len += l;
             debug("len(%d)", len);
 
             /* second segment at the url segment */
             l = hytag->url_len;
-            rte_memcpy(buf + len, url, l);
+            memcpy(buf + len, url, l);
             len += l;
             debug("len(%d)", len);
 
             /* third segment at the tail segment */
             l = hytag->fill_len - len;
-            rte_memcpy(buf + len, tail, l);
+            memcpy(buf + len, tail, l);
             len += l;
             debug("len(%d)", len);
         }
@@ -814,7 +813,7 @@ berr ads_http_content_fill(char *buf, hytag_t *hytag)
         {
             /* first segment at the url segment */
             l = hytag->fill_len;
-            rte_memcpy(buf + len, &url[start], l);
+            memcpy(buf + len, &url[start], l);
             len += l;
             debug("len(%d)", len);
         }
@@ -823,13 +822,13 @@ berr ads_http_content_fill(char *buf, hytag_t *hytag)
         {
             /* first segment at the url segment */
             l = hytag->url_len - start ;
-            rte_memcpy(buf + len, &url[start], l);
+            memcpy(buf + len, &url[start], l);
             len += l;
             debug("len(%d)", len);
 
             /* second segment at the tail segment */
             l = hytag->fill_len - len;
-            rte_memcpy(buf + len, tail, l);
+            memcpy(buf + len, tail, l);
             len += l;
             debug("len(%d)", len);
         }
@@ -840,7 +839,7 @@ berr ads_http_content_fill(char *buf, hytag_t *hytag)
         /* start at the tial segment */
         /* first segment at the tail segment */
         l = hytag->fill_len;
-        rte_memcpy(buf + len, &tail[start], l);
+        memcpy(buf + len, &tail[start], l);
         len += l;
         debug("len(%d)", len);
     }
@@ -857,10 +856,10 @@ berr ads_template_fill(http_body_t *http_to, http_body_t *http_from)
         BRET(E_PARAM);
     }
 
-    rte_memcpy(http_to->name, http_from->name, (size_t)strlen(http_from->name));
-    rte_memcpy(http_to->head, http_from->head, (size_t)strlen(http_from->head));
-    rte_memcpy(http_to->url,  http_from->url,  (size_t)strlen(http_from->url));
-    rte_memcpy(http_to->tail, http_from->tail, (size_t)strlen(http_from->tail));
+    memcpy(http_to->name, http_from->name, (size_t)strlen(http_from->name));
+    memcpy(http_to->head, http_from->head, (size_t)strlen(http_from->head));
+    memcpy(http_to->url,  http_from->url,  (size_t)strlen(http_from->url));
+    memcpy(http_to->tail, http_from->tail, (size_t)strlen(http_from->tail));
     http_to->head_len = (size_t)strlen(http_from->head);
     http_to->tail_len = (size_t)strlen(http_from->tail);
     
@@ -910,7 +909,7 @@ berr adt_fill_template(ad_template_em template, const char *name, char * buff)
 
     http_to = &http_body[template];
 
-    rte_memcpy(http_to->name, name, (size_t)strlen(name));
+    memcpy(http_to->name, name, (size_t)strlen(name));
     
     head = strstr(buff, del);
     head += strlen(del);
@@ -938,11 +937,11 @@ berr adt_fill_template(ad_template_em template, const char *name, char * buff)
     }
 
     memset(http_to, 0, sizeof(http_body_t));
-    rte_memcpy(http_to->name, name, (size_t)strlen(name));
-    rte_memcpy(http_to->head, buff, head_len);
+    memcpy(http_to->name, name, (size_t)strlen(name));
+    memcpy(http_to->head, buff, head_len);
     http_to->head_len = head_len;
-    rte_memcpy(http_to->url,  url,  url_len);
-    rte_memcpy(http_to->tail, tail, tail_len);
+    memcpy(http_to->url,  url,  url_len);
+    memcpy(http_to->tail, tail, tail_len);
     http_to->tail_len = tail_len;
 
     i = template;

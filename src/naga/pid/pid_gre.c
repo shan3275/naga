@@ -33,7 +33,8 @@ berr pid_gtpu(struct pbuf *p, hytag_t *hytag)
 		||GRE_NPDU_FG(grehdr))
 	{
 		len	+= 4;//expend 
-		if (unlikely(GRE_NEXT_HDR_FG(grehdr)))
+		//if (unlikely(GRE_NEXT_HDR_FG(grehdr)))
+		if ((GRE_NEXT_HDR_FG(grehdr)))
 		{
             //PBUF_CUR_FORMAT(struct gre_hdr *, grehdr, p);
             PBUF_OFF_FORMAT(uint8_t *, next_hdr,p, len);
