@@ -36,7 +36,7 @@ include $(RTE_SDK)/mk/rte.vars.mk
 #
 LIB = liburl.a
 
-CFLAGS +=  -I .  -I ../include -I ../libzebra -I ../pub
+CFLAGS +=  -I .  -I ../include -I ../libzebra -I ../pub -I ../rte
 
 #CFLAGS += $(WERROR_FLAGS)
 

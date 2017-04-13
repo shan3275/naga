@@ -36,7 +36,7 @@ include $(RTE_SDK)/mk/rte.vars.mk
 #
 LIB = libnetseg.a
 
-CFLAGS +=   -I ../boots -I ../include -I ../libzebra -I ../pid -I ../pub
+CFLAGS +=   -I ../boots -I ../include -I ../libzebra -I ../pid -I ../pub -I ../rte
 #CFLAGS += $(WERROR_FLAGS)
 
 EXPORT_MAP := lib_vsr_version.map

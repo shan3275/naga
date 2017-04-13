@@ -36,7 +36,7 @@ include $(RTE_SDK)/mk/rte.vars.mk
 #
 LIB = libhijack.a
 
-CFLAGS +=   -I ../boots -I ../include -I ../pub -I ../libzebra -I ../pid 
+CFLAGS +=   -I ../boots -I ../include -I ../pub -I ../libzebra -I ../pid  -I ../rte
 CFLAGS += -I ../itf  -I ../template
 #CFLAGS +=  -I .  -I ../include -I ../libzebra
 
