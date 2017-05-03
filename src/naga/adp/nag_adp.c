@@ -167,6 +167,41 @@ berr naga_adp(hytag_t *hytag)
         return E_SUCCESS;
     }
 
+#if 1
+    if(NULL != strstr(hytag->uri, "?_t=t"))
+    {
+        CNT_INC(ADP_DROP_OUR_SUFFIX);
+        return E_SUCCESS;
+    }
+#endif
+#if 1
+    char *rear = NULL;
+    rear= strrchr(hytag->uri, '.');
+
+    if(rear == NULL)
+    {
+        if(hytag->uri_len == 1 && !strcmp(hytag->uri, "/"))
+        {
+
+        }
+        else
+        {
+            CNT_INC(ADP_DROP_BACKSLASH_SUFFIX);
+            return E_SUCCESS;
+        }
+    }
+    else
+    {
+        return E_SUCCESS;
+        if( strcmp(rear, ".html") &&  strcmp(rear, ".htm"))
+        {
+            CNT_INC(ADP_DROP_HTML_SUFFIX);
+            return E_SUCCESS;
+        }
+
+    }
+#endif
+
     /*check The First char*/
 	if(hytag->uri[0] == '/' && hytag->host_len > 0 && hytag->uri_len > 0)
 	{
