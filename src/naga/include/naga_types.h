@@ -199,8 +199,6 @@ typedef struct
 
 #define HYTAG_ACL_SET(_acl, _val)   _acl.actions |= _val
 
-#define USE_D_PACKET 0 // comment for now by shan275
-
 #define DEBUG_USE_CYCLE 0
 #if DEBUG_USE_CYCLE
 

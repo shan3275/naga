@@ -100,39 +100,9 @@ berr adp_clear_interval(void)
     return E_SUCCESS;
 }
 
-#if USE_D_PACKET
-static inline struct rte_mbuf *rte_pktmbuf_real_clone(struct rte_mbuf *md,
-    struct rte_mempool *mp)
-{
-  struct rte_mbuf *mc;
-  if (unlikely ((mc = rte_pktmbuf_alloc(mp)) == NULL))
-    return (NULL);
-  /* copy data */
-  rte_memcpy((void *)mc, (void *)md, (size_t) mp->elt_size);
-
-  /* update the addr */
-  mc->buf_addr = (char *)mc + sizeof(struct rte_mbuf);
-  mc->buf_physaddr = rte_mempool_virt2phy(mp, mc) +
-      sizeof(struct rte_mbuf);
-  __rte_mbuf_sanity_check(mc, 1);
-
-  /* dump */
-#if 0
-  printf("old mbuf:\n");
-  rte_pktmbuf_dump(stdout, md, md->pkt_len);
-  printf("new mbuf:\n");
-  rte_pktmbuf_dump(stdout, mc, mc->pkt_len);
-#endif
-  return (mc);
-}
-#endif
-
 berr naga_adp(hytag_t *hytag)
 {
     berr rv;
-#if USE_D_PACKET
-    struct rte_mbuf *m = NULL;
-#endif
 	unsigned char buffer[2048]; 
     CNT_INC(ADP_IPKTS);
 
@@ -300,99 +270,53 @@ berr naga_adp(hytag_t *hytag)
 
     if( adt_send_is_multi())
     {
-#if USE_D_PACKET
 #define CONTENT_FILL_LEN_MAX 1400
-            hytag->content_offset = 0;
-            /*
-               debug("hytag->content_len(%d), hytag->content_offset(%d), hytag->fill_len(%d)", 
-               hytag->content_len, hytag->content_offset, hytag->fill_len);
-               */
-            //usleep(10);
+        hytag->content_offset = 0;
+        /*
+           debug("hytag->content_len(%d), hytag->content_offset(%d), hytag->fill_len(%d)", 
+           hytag->content_len, hytag->content_offset, hytag->fill_len);
+           */
+        //usleep(10);
 
-            if(hytag->eth_tx == ENABLE)
+        if(hytag->eth_tx == ENABLE)
+        {
+            while ( hytag->content_offset < hytag->content_len)
             {
-                while ( hytag->content_offset < hytag->content_len)
+
+                if ( hytag->content_len - hytag->content_offset >= CONTENT_FILL_LEN_MAX)
                 {
-
-                    if ( hytag->content_len - hytag->content_offset >= CONTENT_FILL_LEN_MAX)
-                    {
-                        hytag->fill_len = CONTENT_FILL_LEN_MAX;
-                    }
-                    else
-                    {
-                        hytag->fill_len = hytag->content_len - hytag->content_offset;
-                    }
-					CYCLE_START();
-                    rv = ads_response_content_generator(buffer, hytag);
-					
-                    if(rv != E_SUCCESS){
-
-                        CNT_INC(ADP_DROP_HEAD_GEN2);
-                        return rv;
-                    }
-					CYCLE_END();
-
-					CYCLE_START();
-
-                    hytag->content_offset += hytag->fill_len;
-                    rv = ift_raw_send_packet(hytag->fp, buffer, hytag->data_len);
-
-                    if(rv != E_SUCCESS)
-                    {
-                        CNT_INC(ADP_DROP_SEND_PACKET2);
-                        printf("Send packet Failed\n");
-                        return rv;
-                    }
-					CYCLE_END();
-
+                    hytag->fill_len = CONTENT_FILL_LEN_MAX;
                 }
-            }
-            else
-            {
-                while ( hytag->content_offset < hytag->content_len)
+                else
                 {
-                    m = txm;
-                   
-                    txm =rte_pktmbuf_real_clone(txm, txm->pool);
-                    if ( NULL == txm )
-                    {
-                        printf("Requse packet buffer  Failed\n");
-                        return E_SUCCESS;
-                    }
-                    txm->port = m->port;
-                    if ( hytag->content_offset)
-                    {
-                        rte_pktmbuf_free(m);
-                    }
-
-                    if ( hytag->content_len - hytag->content_offset >= CONTENT_FILL_LEN_MAX)
-                    {
-                        hytag->fill_len = CONTENT_FILL_LEN_MAX;
-                    }
-                    else
-                    {
-                        hytag->fill_len = hytag->content_len - hytag->content_offset;
-                    }
-
-                    rv = ads_response_content_generator(rte_pktmbuf_mtod(txm, void *), hytag);
-                    if(rv != E_SUCCESS){
-
-                        CNT_INC(ADP_DROP_HEAD_GEN2);
-                        return rv;
-                    }
-
-                    txm->data_len = txm->pkt_len = hytag->data_len;
-
-                    hytag->content_offset += hytag->fill_len;
-
-                    itf_send_packet_imm(txm, txm->port);
+                    hytag->fill_len = hytag->content_len - hytag->content_offset;
                 }
+                CYCLE_START();
+                rv = ads_response_content_generator(buffer, hytag);
 
-                rte_pktmbuf_free(txm);
+                if(rv != E_SUCCESS){
+
+                    CNT_INC(ADP_DROP_HEAD_GEN2);
+                    return rv;
+                }
+                CYCLE_END();
+
+                CYCLE_START();
+
+                hytag->content_offset += hytag->fill_len;
+                rv = ift_raw_send_packet(hytag->fp, buffer, hytag->data_len);
+
+                if(rv != E_SUCCESS)
+                {
+                    CNT_INC(ADP_DROP_SEND_PACKET2);
+                    printf("Send packet Failed\n");
+                    return rv;
+                }
+                CYCLE_END();
 
             }
-    #endif
         }
+    }
        //g_adp_success++;
    hytag->ad_act = AD_SUCCESS;
 
