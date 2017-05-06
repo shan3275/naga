@@ -82,12 +82,20 @@ enum ad_action_em
     AD_FAILED,    
 };
 
+#define TEMPLATE_SEGMENT_ON        0
+#if TEMPLATE_SEGMENT_ON
 typedef enum
 {
     AD_TEMPLATE_PC,
     AD_TEMPLATE_MOBILE,
     AD_TEMPLATE_MAX,
 }ad_template_em;
+#else
+typedef enum
+{
+    AD_TEMPLATE_MAX = 1,
+}ad_template_em;
+#endif
 
 #define URL_MAX_LEN  1500//URL MAX LEN
 #define MAX_HOST_LEN 128

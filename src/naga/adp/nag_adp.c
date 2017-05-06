@@ -45,12 +45,20 @@ berr adp_switch_template_set(int type, int on)
 {
     switch(type)
     {
+#if TEMPLATE_SEGMENT_ON
         case AD_TEMPLATE_MOBILE   :
             g_adp_push_temp_mobile_switch = on;
             break;
         case AD_TEMPLATE_PC :  
             g_adp_push_temp_pc_switch = on; 
             break;
+#else
+        case   0 :
+        case   1 :
+            g_adp_push_temp_mobile_switch = on;
+            g_adp_push_temp_pc_switch = on; 
+            break;
+#endif
          default:
             return E_FAIL;
     }
@@ -63,12 +71,18 @@ berr adp_switch_template_get(int type, int *on)
 {
     switch(type)
     {
+#if TEMPLATE_SEGMENT_ON
         case AD_TEMPLATE_MOBILE   :
             *on = g_adp_push_temp_mobile_switch;
             break;
         case AD_TEMPLATE_PC :  
             *on = g_adp_push_temp_pc_switch; 
             break;
+#else
+        case   0 :
+        case   1 :
+            *on = g_adp_push_temp_pc_switch; 
+#endif
          default:
             return E_FAIL;
     }
@@ -188,7 +202,11 @@ berr naga_adp(hytag_t *hytag)
     {
         if((g_adp_push_temp_mobile_switch))
         {		  
+#if TEMPLATE_SEGMENT_ON
  		    hytag->template = AD_TEMPLATE_MOBILE;
+#else
+ 		    hytag->template = AD_TEMPLATE_MAX-1;
+#endif
 		    CNT_INC(ADP_PUSH_MOBILE);
         }
         else
@@ -207,7 +225,11 @@ berr naga_adp(hytag_t *hytag)
     {
         if(g_adp_push_temp_pc_switch)
         {
+#if TEMPLATE_SEGMENT_ON
 		    hytag->template = AD_TEMPLATE_PC;
+#else
+ 		    hytag->template = AD_TEMPLATE_MAX-1;
+#endif
 		    CNT_INC(ADP_PUSH_PC);
         }
         else
@@ -220,7 +242,11 @@ berr naga_adp(hytag_t *hytag)
     {
         if(g_adp_push_temp_mobile_switch)
         {		  
+#if TEMPLATE_SEGMENT_ON
  		    hytag->template = AD_TEMPLATE_MOBILE;
+#else
+ 		    hytag->template = AD_TEMPLATE_MAX-1;
+#endif
 		    CNT_INC(ADP_PUSH_MOBILE);
         }
         else

