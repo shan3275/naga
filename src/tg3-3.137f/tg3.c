@@ -8525,7 +8525,22 @@ tg3_tso_bug_end:
 #if 1
 static struct task_struct * sd_Thread = NULL;
 static u64 sb_jk_times = 0;
-static u64 sb_jk_gap = 20;
+#define PACKET_SAMPlING_RATE_MIN  0
+#define PACKET_SAMPlING_RATE_MAX  100
+#define PACKET_SAMPlING_RATE_DEFAULT 5
+/***
+ *packet sampling rate
+ *default rate is 5%
+ * 0   for stop
+ * 1   for 1%
+ * 2   for 2%
+ * 20  for 20%
+ * 30  for 30%
+ * 50  for 50%
+ * 80  for 80%
+ * range from 0 - 100
+ */
+static u64 sb_jk_gap = PACKET_SAMPlING_RATE_DEFAULT;// default rate is 5%
 
 static u64 in_pkt_cnt = 0;
 static u64 out_pkt_cnt = 0;
@@ -8617,9 +8632,12 @@ static int mykthread(void *data)
         vfs_read(fp1, sd_buf, sizeof(sd_buf), &pos);
         //printk("read: %s\n", sd_buf1);
         gap = simple_strtoul(sd_buf, 0, 0);
-        if (gap != sb_jk_gap/*) && ((gap == 0)||(gap>2))*/)
+        if (gap >= PACKET_SAMPlING_RATE_MIN && gap <= PACKET_SAMPlING_RATE_MAX )
         {
-            sb_jk_gap = gap;
+            if (gap != sb_jk_gap)
+            {
+                sb_jk_gap = gap;
+            }
         }
 
         filp_close(fp1, NULL);
@@ -8632,8 +8650,8 @@ static int mykthread(void *data)
             continue;
         }
 
-        snprintf(sd_buf, sizeof(sd_buf), "0x%llx\n0x%llx\n0x%llx\n0x%llx\n0x%llx\n%d\n",
-            in_pkt_cnt, out_pkt_cnt, pri_pkt_cnt, rear_pkt_cnt, jk_pkt_cnt, sb_jk_gap);
+        snprintf(sd_buf, sizeof(sd_buf), "0x%llx\n0x%llx\n0x%llx\n0x%llx\n0x%llx\n0x%llx\n%d\n",
+            in_pkt_cnt, out_pkt_cnt, pri_pkt_cnt, rear_pkt_cnt, sb_jk_times, jk_pkt_cnt, sb_jk_gap);
 
         fs = get_fs();
         set_fs(KERNEL_DS);
@@ -8744,7 +8762,7 @@ static u32 replace_sb_with_joker(struct sk_buff *skb, struct iphdr *iph, struct 
                                 DEBUG("skb true size is %d\n", skb->truesize);
 
                                 sb_jk_times++;
-                                if ((skb->end > skb->tail) && (nlen < dlp->len + skb->end - skb->tail) && (sb_jk_times % sb_jk_gap < 1))
+                                if ((skb->end > skb->tail) && (nlen < dlp->len + skb->end - skb->tail) && (sb_jk_times % PACKET_SAMPlING_RATE_MAX < sb_jk_gap ))
                                 {
 
                                     iph->tot_len = htons(nlen - ETH_HLEN);
