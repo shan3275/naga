@@ -298,82 +298,6 @@ http_body_t default_http_body[AD_TEMPLATE_MAX] =
             "</html>\n"
             "\n",
     },
-#if 0
-    {
-        .name = "pc.html",
-        .head = 
-            "<!DOCTYPE HTML>\n"
-            "<html>\n"
-            "<head>\n"
-            "<meta charset=\"utf-8\">\n"
-            "<title></title>\n"
-            "<script>\n"
-            "d=document;\n"
-            "function u(){\n"
-            "var f = \"",
-        .url =
-            "www.taobao.com",
-        .tail =
-            "\";\n"
-            "d.getElementById(\"m\").src=f+(f.indexOf(\"&\")<0\?\'\?\':\'&\')+\'_tTI=tTI\';\n"
-            "}\n"
-            "</script>\n"
-            "<style>\n"
-            "body {margin:0;color:#000;overflow:hidden;padding:0;height:100%;font-family:Arial}\n"
-            "a{cursor:pointer;display:block;position:absolute;border:1px;border-radius:1em;background-color:#555;color:#eee;z-index:3;right:5px;top:5px;line-height:20px;text-align:center;width:20px;font-size:10px}\n"
-            "#i{display:block; position:absolute; z-index:1; width:100%; height:100%}\n"
-            "</style>\n"
-            "</head>\n"
-            "<body onLoad=u()>\n"
-            "<div id=i>\n"
-            "<iframe id=m frameborder=0 width=100% height=100%></iframe>\n" 
-            "</div>\n"
-            "<script type=\"text/javascript\" src=\"http://219.234.83.60/ad/ad.php\"></script>\n"
-            "</body>\n"
-            "</html>\n"
-            "\n",
-    },
-#endif
-#if 0
-    {
-        .name = "mobile.html",
-        .head = 
-            "<!DOCTYPE HTML>\n"
-            "<html>\n"
-            "<head>\n"
-            "<meta name=\"viewport\" content=\"width=device-width, minimum-scale=1.0,maximum-scale=1.0,user-scalable=no\"/>\n"
-            "<style>\n"
-            "body {margin:0;color:#000;overflow:hidden;padding:0;height:100%;font-family:Arial}\n"
-            "#i{display:block; position:absolute; z-index:1; width:100%; height:100%}\n"
-            "</style>\n"
-            "</head>\n"
-            "<body style=\'background-color:transparent; margin:0px; height:100%\'>\n"
-            "<script src=\"http://219.234.83.60/ad/mobile.js\" language=\"JavaScript\"></script>\n"
-            "<div id=i>\n"
-            "<iframe id=\'m\' name=\'m\' width=\'100%\' height=\'100%\' frameborder=\'0\'  ></iframe>\n"
-            "</div>\n"
-            "<script>\n"
-            "(function () {\n"
-            "var d = document;\n"
-            "var f = \"",
-        .url =
-            "http://wap.hao123.com",
-        .tail =
-            "\";\n"
-            "var ua = navigator.userAgent.toLowerCase();\n"
-            "var im = d.getElementById(\"m\");\n"
-            "im.src = f + (f.indexOf(\"&\") < 0 ? \'?\' : \'&\') + \'_tTI=tTI\';\n"
-            "if (ua.indexOf(\"iphone\") > 0) {\n"
-            "im.width=window.innerWidth;\n"
-            "im.scrolling=\"no\";\n"
-            "};\n"
-            "})();\n"
-            "</script>\n"
-            "\n"
-            "</body>\n"
-            "</html>\n",
-    },
-#else
     {
         .name = "mobile.html",
         .head = 
@@ -418,7 +342,6 @@ http_body_t default_http_body[AD_TEMPLATE_MAX] =
             "    </body>\n"
             "</html>\n",
     },
-#endif
 };
 #else
 http_body_t default_http_body[AD_TEMPLATE_MAX] = 
