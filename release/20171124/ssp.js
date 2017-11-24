@@ -1,0 +1,3 @@
+var pb=document.createElement("div");
+pb.innerHTML="<div class=\"weiduduan clearfix\" style=\"z-index:999;right:0px;height:250px;width:300px;position:fixed;bottom:0px;\"><div class=\"tipfloat\"><div class=\"ranklist\"><a href=\"https://union-click.jd.com/jdc?e=0&p=AyIHZR5bEgAWBVMfWyUBFA5SG1kTMlZYDUUEJVtXQhQQRQtaV1MJBABAHUBZCQVYEwsVB1cdRExHTlplTl1hAWVwXG45XhhRGShaG2d8U2wWa1cZMhM3VRpaFAIRAVYaXSUyEgdlTTUVAxMGVBpaHAAUN1IbUxIFFgddGGsVBxsCVRhbHAYTB1ccaxcCIk8FRBlMUk1RA0sFJTIiNw%3D%3D&t=W1dCFBBFC1pXUwkEAEAdQFkJBVgTCxUHVx1ETEdOWg%3D%3D\"><img src=\"http://www.haiyaodata.com/fx_pc/images/1.png\" /></a></div></div>"
+document.body.appendChild(pb);
