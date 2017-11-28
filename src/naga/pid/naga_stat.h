@@ -78,5 +78,6 @@ void printf_pid_stat(void);
 
 
 #define pid_incr_count cnt_inc
+#define pid_add_count  cnt_add
 
 #endif

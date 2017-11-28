@@ -183,7 +183,7 @@ int update_log_file_timer(struct thread * t)
 int bts_stat_log_file_timer(struct thread *t)
 {
 	bts_stat_log();
-	thread_add_timer(zebrad.master, bts_stat_log_file_timer, NULL, 10);
+	thread_add_timer(zebrad.master, bts_stat_log_file_timer, NULL, 60);
 }
 
 /* cmdline  startup routine. */
@@ -221,19 +221,20 @@ int cmdline (int argc, char **argv)
     cmd_init (1);
     vty_init (zebrad.master);
     //memory_init ();
-    cmdline_vsr_init();
+    //comment by shan275
+    //cmdline_vsr_init();
     cmdline_bts_init();
-	cmdline_dmr_init();
-	cmdline_domain_init();
-	cmdline_acr_init();
-    cmdline_adp_init();
+	//cmdline_dmr_init();
+	//cmdline_domain_init();
+	//cmdline_acr_init();
+    //cmdline_adp_init();
     cmdline_itf_init();
-    cmdline_adt_init();
-	cmdline_netseg_init();
-	cmdline_dnetseg_init();
-	cmdline_url_init();
-    cmdline_urlr_init();
-    cmdline_hijack_init();
+    //cmdline_adt_init();
+	//cmdline_netseg_init();
+	//cmdline_dnetseg_init();
+	//cmdline_url_init();
+    //cmdline_urlr_init();
+    //cmdline_hijack_init();
     /* Zebra related initialize. */
     //access_list_init ();
 

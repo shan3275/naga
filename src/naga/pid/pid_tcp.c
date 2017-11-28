@@ -45,22 +45,25 @@ berr pid_tcp(struct pbuf *p, hytag_t *hytag, int inner_outer)
     hytag->l5_len    = hytag->total_len - ( hytag->l5_offset - hytag->l3_offset);
 
 	
-	uint16_t srcport = ntohs(tcp_hdr->src); 
-	uint16_t dstport = ntohs(tcp_hdr->dest); 
+	uint16_t srcport = ntohs(tcp_hdr->src);
+	uint16_t dstport = ntohs(tcp_hdr->dest);
 	
 	if( dstport == 80 || dstport == 8080 )
 	{
 	     pid_incr_count(APP_HTTP);
-		 return pid_http_up(p, hytag);     
+         pid_add_count(APP_HTTP_BYTES,hytag->pbuf.len);
+		 return pid_http_up(p, hytag);
 	}
     else if(srcport == 80 || srcport == 8080 )
     {
 	     pid_incr_count(APP_HTTP);
-		 return pid_http_up(p, hytag);          
+         pid_add_count(APP_HTTP_BYTES,hytag->pbuf.len);
+		 return pid_http_down(p, hytag);
     }
 	else
 	{
 	     pid_incr_count(APP_OTHER);
+         pid_add_count(APP_OTHER_BYTES,hytag->pbuf.len);
 	}
     return E_SUCCESS;
 }

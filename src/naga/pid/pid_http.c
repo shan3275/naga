@@ -14,6 +14,18 @@
 #define STRING_HTTP_AGENT     "User-Agent"
 #define STRING_HTTP_AGENT_LEN 10
 
+#define STRING_HTTP_200OK           "HTTP/1.1 200 OK"
+#define STRING_HTTP_200OK_LEN       15
+#define STRING_HTTP_302_FOUND       "HTTP/1.1 302 Found"
+#define STRING_HTTP_302_FOUND_LEN   18
+
+//#define DEBUG
+#ifdef  DEBUG   
+#define debug(fmt,args...)  printf ("func(%s), line(%d)"fmt"\n" ,__FUNCTION__, __LINE__, ##args)
+#else   
+#define debug(fmt,args...)   
+#endif  /* DEBUG */ 
+
 static inline int pid_http_request_method(uint8_t *p ,  uint8_t *method, uint16_t *len)
 {
 	int i = 0;
@@ -35,8 +47,6 @@ static inline int pid_http_request_method(uint8_t *p ,  uint8_t *method, uint16_
 
 	return TRUE;
 }
-
-
 
 static inline berr pid_http_request_url(uint8_t *p ,  uint8_t *url, uint16_t *len)
 {
@@ -60,7 +70,6 @@ static inline berr pid_http_request_url(uint8_t *p ,  uint8_t *url, uint16_t *le
 
 	return E_SUCCESS;
 }
-
 
 static inline berr pid_http_request_version_skip(uint8_t *p, uint16_t *len)
 {
@@ -86,159 +95,41 @@ static inline berr pid_http_request_version_skip(uint8_t *p, uint16_t *len)
 	return E_SUCCESS;
 }
 
-
-#if 0
-static inline berr pid_http_request_host(uint8_t *p ,  uint8_t *host, uint16_t *len)
-{
-	int i = 0;
-	while(('\r' != *p) && ('\0' != *p))    /*GET*/
-	{
-		if (i + 1 > MAX_HOST_LEN)
-		{
-			//pid_incr_count(HTTP_URL_EXCEED);
-			BRET(E_FAIL);
-		}
-		else
-		{
-			host[i++] = *(p++);
-		}
-	}
-
-	host[i] = '\0';
-	*len = i;
-
-	return E_SUCCESS;
-}
-
-#endif
-
 berr pid_http_down(struct pbuf *p ,  hytag_t * hytag )
 {
-    if( NULL == p || NULL == hytag)
-        BRET(E_PARAM);
+
+    uint8_t *http_p = NULL;
+    char l5payload[PACKET_MTU];
+    char *l5_ptr = NULL; 
+    uint16_t l5_len = 0;
+
+    l5_ptr = l5payload;
+    l5_len = p->len - p->ptr_offset;
+
+    PBUF_CUR_FORMAT(uint8_t *, http_p, p);
+    if( l5_len <= 0  || l5_len >= PACKET_MTU)
+    {
+        pid_incr_count(APP_HTTP_OTHER);
+	    return E_SUCCESS;
+    }
+    memcpy(l5_ptr, http_p, l5_len);
+    l5_ptr[l5_len] = '\0'; 
+    debug("HTTP content: %s\n", l5_ptr);
+
+    if (!strncmp(STRING_HTTP_302_FOUND, l5_ptr, STRING_HTTP_302_FOUND_LEN))
+    {
+        debug("302 Hit!!!\n");
+        pid_incr_count(APP_HTTP_302);
+        pid_add_count(APP_HTTP_302_BYTES, hytag->pbuf.len);
+        return E_SUCCESS;
+    }
+
+    debug("200-OK Hit!!!\n");
+    pid_incr_count(APP_HTTP_200);
+    pid_add_count(APP_HTTP_200_BYTES, hytag->pbuf.len);
+
     return E_SUCCESS;
 }
-#if 0
-
-berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
-{
-	uint16_t method_len = 0, vsr_len = 0;
-	uint16_t len = 0;
-	uint8_t *http_p = NULL;
-	uint8_t method_http[MAX_METHOD_LEN] = {0};
-	char *line = NULL, *begin = NULL, *context_p = NULL;
-	
-	PBUF_CUR_FORMAT(uint8_t *, http_p, p);
-
-    hytag->app_type = APP_TYPE_HTTP_OTHER; 
-
-	if(!pid_http_request_method(http_p, method_http, &method_len))
-	{
-        /*Tcp syn without method*/
-		return E_SUCCESS;
-	}
-	if ((method_len != STRING_HTTP_GET_LEN ) ||
-		(memcmp(STRING_HTTP_GET, method_http, STRING_HTTP_GET_LEN)))
-	{
-		pid_incr_count(APP_HTTP_OTHER);
-		return E_SUCCESS;
-	}
-	else
-	{
-		pid_incr_count(APP_HTTP_GET);
-	}
-
-	len = method_len + 1;
-	UPDATE_PBUF_OFFSET(p, len);
-	PBUF_CUR_FORMAT(uint8_t *, http_p, p);
-
-	if (pid_http_request_url(http_p, (uint8_t *)hytag->uri, &hytag->uri_len))
-	{
-		//hytag->app_type = URL_IN_NULL;
-		return E_SUCCESS;
-	}
-	else
-	{
-		hytag->app_type = APP_TYPE_HTTP_GET_OR_POST;
-	}
-    	//printf("the url is:  %s\n", hytag->url);
-
-
-
-	
-
-	len = hytag->uri_len + 1;
-	UPDATE_PBUF_OFFSET(p, len);
-	PBUF_CUR_FORMAT(uint8_t *, http_p, p);
-
-	if(pid_http_request_version_skip(http_p, &vsr_len))
-	{
-		return E_SUCCESS;
-	}
-
-	len = vsr_len + 1;
-	UPDATE_PBUF_OFFSET(p, len);
-#if 1
-	PBUF_CUR_FORMAT(char *, context_p, p);
-
-	char http_buf[1500];
-	char *http_bak=http_buf;
-        
-	char line_buf[1500];
-	char *line_bak=line_buf;
-	
-	memcpy(http_bak, context_p, p->len-p->ptr_offset);
-	http_bak[p->len - p->ptr_offset+1] = '\0';	
-			
-	
-	while(NULL != (line = strsep(&http_bak, "\n")))
-	{
-
-		line_bak= line_buf;
-		strcpy(line_bak, line);
-		begin = strsep(&line_bak, ":");
-		if(  NULL != line_bak && NULL != begin )
-		{	
-		#if 0
-			int len =  strlen(line_bak);
-			if(len <= 2)
-			{
-				//printf("line = %s<%s>\n", line_bak, context_p);
-				continue;
-			}	
-			if (hytag->host_len ==0 
-					&& !strncasecmp(STRING_HTTP_HOST, begin, STRING_HTTP_HOST_LEN)) 
-			{
-
-				memcpy(hytag->host, &line_bak[1], (len-2));
-				hytag->host_len = len -2;
-			}
-			if (hytag->user_agent_len== 0 
-					&& !strncasecmp(STRING_HTTP_AGENT, begin, STRING_HTTP_AGENT_LEN))   
-			{
-
-				memcpy(hytag->user_agent, &line_bak[1], (len-2));
-				hytag->user_agent_len = len-2;
-			}				
-		#endif
-		}
-
-	}
-
-
-#endif
-	/*check The First char*/
-	if(hytag->uri[0] == '/')
-	{
-		hytag->url_len= snprintf(hytag->url, 256, "http://%s%s",hytag->host, hytag->uri);
-	}
-	return E_SUCCESS;
-}
-
-
-
-
-#else
 
 berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
 {
@@ -260,6 +151,7 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
     PBUF_CUR_FORMAT(uint8_t *, http_p, p);
     if( l5_len <= 0  || l5_len >= PACKET_MTU)
     {
+        pid_incr_count(APP_HTTP_OTHER);
 	    return E_SUCCESS;
     }	 	
     memcpy(l5_ptr, http_p, l5_len);
@@ -275,6 +167,7 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
         	return E_SUCCESS;
         }
         pid_incr_count(APP_HTTP_GET);
+        pid_add_count(APP_HTTP_GET_BYTES,hytag->pbuf.len);
         uri = strsep(&line, " ");
         if(uri != NULL)
         {
@@ -351,26 +244,3 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
     return E_SUCCESS;
 }
 
-
-
-#endif
-
-
-
-
-
-
-#if 0
-berr pid_http_get(struct pbuf *p,  hytag_t * hytag)
-	    irintf("")	
-{
-
-       
-}
-
-berr pid_http_post(struct pbuf *p,  hytag_t * hytag)
-{
-
-       
-}
-#endif

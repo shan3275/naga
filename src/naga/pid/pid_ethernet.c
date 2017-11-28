@@ -59,7 +59,7 @@ berr pid_ethernet(struct pbuf *p, hytag_t *hytag)
 
     UPDATE_PBUF_OFFSET(p, len);	
     hytag->l3_offset = p->ptr_offset;
-    
+
 	switch( ntohs(type) )
 	{
 		case ETHERTYPE_IP4:

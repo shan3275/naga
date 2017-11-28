@@ -68,19 +68,19 @@ main(int argc, char **argv)
     {
     	berr rv;
         printf("cmd core %d\n", rte_lcore_id());
-        vsr_dp_init();
-		dmr_dp_init();
+        //vsr_dp_init();
+		//dmr_dp_init();
 		//domain_dp_init();
-		acr_dp_init();
-		netseg_init();
-        adp_dp_init();
-        dnetseg_init();
-        hijack_dp_init();
-        rv = ads_template_init();
-        if (rv )
-        {
-            printf("%s %d ads_template_init fail, rv(%d)\n", __func__, __LINE__, rv);
-        }
+		//acr_dp_init();
+		//netseg_init();
+        //adp_dp_init();
+        //dnetseg_init();
+        //hijack_dp_init();
+        //rv = ads_template_init();
+        //if (rv )
+        //{
+        //    printf("%s %d ads_template_init fail, rv(%d)\n", __func__, __LINE__, rv);
+        //}
 
         if(argv[2] != NULL)
             interface_str = strdup(argv[2]);

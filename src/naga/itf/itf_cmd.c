@@ -15,7 +15,8 @@
 
 DEFUN(itf_rxtx, 
       itf_rxtx_cmd,
-      "interface bussiness (add|remove|test) IFNAME", "interface setting\nenable or disable\nrx or tx\n")
+      "interface bussiness (add|remove|test) IFNAME", 
+      "interface setting\nenable or disable\nrx or tx\n")
 {
     if( !strcmp (argv[0], "add"))
     {

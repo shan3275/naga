@@ -291,7 +291,8 @@ DEFUN(debug_option,
 
 void bts_stat_log(void) {
 	char temp_filename[256] = { 0 };
-	char temp_date[16] = { 0 };
+	char temp_date[32] = { 0 };
+	char date[32] = { 0 };
 	FILE *fp;
 	int i;
 	uint32_t total = 0;
@@ -306,6 +307,8 @@ void bts_stat_log(void) {
 		gettimeofday(&clock, NULL);
 		tm = localtime(&clock.tv_sec);
 		strftime(temp_date, sizeof(temp_date), "%Y%m%d", tm);
+
+
 		sprintf(temp_filename, "%s%s", stat_log_file_name, temp_date);
 
 		/*open file*/
@@ -319,8 +322,8 @@ void bts_stat_log(void) {
 		if (E_SUCCESS != cnt_get(0, CNT_MAX, cnt_array, &total)) {
 			return;
 		}
-		time(&t);
-		fprintf(fp, "Statistics of date and time: %s", ctime(&t));
+        strftime(date, sizeof(date), "%Y-%m-%d %H:%M:%S", tm);
+		fprintf(fp, "Statistics of date and time: %s\n", date);
 		for (i = 0; i < CNT_MAX; i++) {
 			if (cnt_array[i].val.cnt) {
 				fprintf(fp, "%-40s: %lld\n", cnt_array[i].name,

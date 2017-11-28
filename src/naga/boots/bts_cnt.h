@@ -3,7 +3,6 @@
 
 #include "boots.h"
 #include "boots_custom.h"
-
 typedef enum {
       ITF0_IPKTS,
       ITF1_IPKTS,
@@ -44,10 +43,18 @@ typedef enum {
 	  GTPV2_C,
 	  
 	  APP_HTTP,
+	  APP_HTTP_BYTES,
 	  APP_OTHER,
+	  APP_OTHER_BYTES,
 	  HTTP_METHOD_EXCEED,
 	  APP_HTTP_GET,
+	  APP_HTTP_GET_BYTES,
+      APP_HTTP_200,
+      APP_HTTP_200_BYTES,
+      APP_HTTP_302,
+      APP_HTTP_302_BYTES,
 	  APP_HTTP_OTHER,
+	  APP_HTTP_OTHER_BYTES,
 	  HTTP_URL_EXCEED,
 	  ERR_PACKET,
 	  HEADER_UNEXPECT,
