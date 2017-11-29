@@ -23,12 +23,12 @@
 
 #define STAT_STR        "Statistics Operation\n"
 #define MODULE_STR      "module of this system\n"
-#define MODULE_NAME_STR "name of module\n"
+#define MODULE_NAME_STR "name of module, or all\n"
 #define MATCH_STR_STR   "string match in stat name\n"
 
 #define BTS_DEBUG_STR           "debug function\n"
 #define DEBUG_OPTION_STR        "debug option\n"
-#define DEBUG_OPTION_NAME_STR   "name of debug option\n"
+#define DEBUG_OPTION_NAME_STR   "name of debug option, or all\n"
 char stat_log_file_name[256] = { 0 };
 
 static int cmd_clear_stat(struct vty *vty, const char *str) {
@@ -141,7 +141,7 @@ void vty_module_dump(struct vty *vty, mod_t *module) {
 
 static int cmd_show_module(struct vty *vty, const char *name) {
 	mod_t *module = NULL;
-	if (NULL == name) {
+	if (!strncmp(name, "all", 3)) {
 		int i;
 		for (i = 0; i < MOD_MAX; i++) {
 			module = &mod_array[i];
@@ -227,7 +227,7 @@ void vty_dopt_dump(struct vty *vty, dopt_t *dopt) {
 
 static int cmd_show_dopt(struct vty *vty, const char *name) {
 	dopt_t *dopt = NULL;
-	if (NULL == name) {
+	if (!strncmp(name, "all", 3)) {
 		int i;
 		for (i = 0; i < DOPT_MAX; i++) {
 			dopt = &dopt_array[i];
