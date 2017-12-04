@@ -644,6 +644,8 @@ zencrypt (const char *passwd)
   return crypt (passwd, salt);
 }
 
+char rawlog_file_name[256] = { 0 };
+int  rawlog_file_fd = -1;
 /* This function write configuration of this host. */
 static int
 config_write_host (struct vty *vty)
@@ -682,6 +684,10 @@ config_write_host (struct vty *vty)
 		 zlog_priority[zlog_default->maxlvl[ZLOG_DEST_FILE]]);
       vty_out (vty, "%s", VTY_NEWLINE);
     }
+
+	if (strlen(rawlog_file_name)) {
+		vty_out(vty, "rawlog file %s%s", rawlog_file_name, VTY_NEWLINE);
+	}
 
   if (zlog_default->maxlvl[ZLOG_DEST_STDOUT] != ZLOG_DISABLED)
     {
@@ -3699,6 +3705,40 @@ DEFUN (no_config_log_monitor,
   return CMD_SUCCESS;
 }
 
+
+
+DEFUN (config_raw_log_file,
+       config_raw_log_file_cmd,
+       "rawlog file FILENAME",
+       "Logging control\n"
+       "Logging to file\n"
+       "Logging filename\n")
+{
+    char temp_filename[256] = {0};
+    char temp_date[16] = {0};
+    memset(rawlog_file_name, 0, sizeof(rawlog_file_name));
+    sprintf(rawlog_file_name, "%s", argv[0]);
+
+    struct timeval clock;
+    struct tm *tm;
+    gettimeofday(&clock, NULL);
+    tm = localtime(&clock.tv_sec);
+    strftime(temp_date, sizeof(temp_date), "%Y%m%d", tm);
+    sprintf(temp_filename, "%s%s", rawlog_file_name, temp_date);
+    if (strlen(rawlog_file_name)) 
+    {
+        if ((rawlog_file_fd = open(temp_filename, O_CREAT | O_TRUNC | O_WRONLY, 0644)) < 0)
+        {
+            perror("open");
+            close(rawlog_file_fd);
+            return CMD_ERR_NOTHING_TODO;
+        }
+    
+    }
+    return CMD_SUCCESS;
+}
+
+
 static int
 set_log_file(struct vty *vty, const char *fname, int loglevel)
 {
@@ -3711,13 +3751,13 @@ set_log_file(struct vty *vty, const char *fname, int loglevel)
     {
       char cwd[MAXPATHLEN+1];
       cwd[MAXPATHLEN] = '\0';
-      
+
       if (getcwd (cwd, MAXPATHLEN) == NULL)
         {
           zlog_err ("config_log_file: Unable to alloc mem!");
           return CMD_WARNING;
         }
-      
+
       if ( (p = XMALLOC (MTYPE_TMP, strlen (cwd) + strlen (fname) + 2))
           == NULL)
         {
@@ -3758,6 +3798,7 @@ DEFUN (config_log_file,
 {
   return set_log_file(vty, argv[0], zlog_default->default_lvl);
 }
+
 
 DEFUN (config_log_file_level,
        config_log_file_level_cmd,
@@ -4099,6 +4140,7 @@ cmd_init (int terminal)
       install_element (VIEW_NODE, &no_config_log_stdout_cmd);
       install_element (VIEW_NODE, &config_log_monitor_cmd);
       install_element (VIEW_NODE, &config_log_monitor_level_cmd);
+      install_element (VIEW_NODE, &config_raw_log_file_cmd);
       install_element (VIEW_NODE, &no_config_log_monitor_cmd);
       install_element (VIEW_NODE, &config_log_file_cmd);
       install_element (VIEW_NODE, &config_log_file_level_cmd);

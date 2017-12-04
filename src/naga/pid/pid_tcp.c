@@ -29,6 +29,15 @@ berr pid_tcp(struct pbuf *p, hytag_t *hytag, int inner_outer)
 	  	hytag->outer_srcport= ntohs(tcp_hdr->src);
 	  	hytag->outer_dstport= ntohs(tcp_hdr->dest);
         pid_incr_count(OUTERL4_TCP);
+        hytag->outer_seq = ntohl(tcp_hdr->seq);
+        hytag->outer_ack = ntohl(tcp_hdr->ack_seq);
+#ifdef HTTP_BLOCK
+        hytag->http_block.sport = hytag->outer_srcport;
+        hytag->http_block.dport = hytag->outer_dstport;
+        hytag->http_block.seq     = hytag->outer_seq;
+        hytag->http_block.ack     = hytag->outer_ack;
+#endif
+
 	}
 	else 
 	{

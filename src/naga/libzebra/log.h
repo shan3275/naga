@@ -120,6 +120,7 @@ extern void zlog_warn (const char *format, ...) PRINTF_ATTRIBUTE(1, 2);
 extern void zlog_info (const char *format, ...) PRINTF_ATTRIBUTE(1, 2);
 extern void zlog_notice (const char *format, ...) PRINTF_ATTRIBUTE(1, 2);
 extern void zlog_debug (const char *format, ...) PRINTF_ATTRIBUTE(1, 2);
+extern int rawzlog(char *buff, int size);
 
 /* For bgpd's peer oriented log. */
 extern void plog_err (struct zlog *, const char *format, ...)

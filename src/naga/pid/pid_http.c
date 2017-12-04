@@ -7,7 +7,8 @@
 
 #define STRING_HTTP_HOST "Host"
 #define STRING_HTTP_HOST_LEN 4
-
+#define STRING_HTTP_LOCATION "Location"
+#define STRING_HTTP_LOCATION_LEN 8
 
 #define STRING_HTTP_REFERENCE "Referer"
 #define STRING_HTTP_REFERENCE_LEN  7
@@ -102,6 +103,8 @@ berr pid_http_down(struct pbuf *p ,  hytag_t * hytag )
     char l5payload[PACKET_MTU];
     char *l5_ptr = NULL; 
     uint16_t l5_len = 0;
+    char * line = NULL;
+    char *begin = NULL;
 
     l5_ptr = l5payload;
     l5_len = p->len - p->ptr_offset;
@@ -121,12 +124,52 @@ berr pid_http_down(struct pbuf *p ,  hytag_t * hytag )
         debug("302 Hit!!!\n");
         pid_incr_count(APP_HTTP_302);
         pid_add_count(APP_HTTP_302_BYTES, hytag->pbuf.len);
+        hytag->app_type = APP_TYPE_HTTP_302;
+	    int len = 0;
+        /* find out the location*/
+        while(NULL != (line = strsep(&l5_ptr, "\n")))
+        {
+            if (NULL != (begin = strsep(&line, ":")))
+            {
+
+                if( NULL == line)
+                    continue;
+
+                len = strlen(line);
+                if(len <= 2)
+                {
+                    continue;
+                }
+                else
+                {
+                    len -= 2;//valid len
+                }
+
+                if (hytag->location_len ==0 
+                        && !strncmp(STRING_HTTP_LOCATION, begin, STRING_HTTP_LOCATION_LEN)) 
+                {
+
+                    if( len > LOCATION_MAX_LEN)
+                    {	
+                        len = LOCATION_MAX_LEN;
+                    }
+                    memcpy(hytag->location, &line[1], len);
+                    hytag->location_len = len;
+                }
+            }
+        }
         return E_SUCCESS;
     }
 
     debug("200-OK Hit!!!\n");
     pid_incr_count(APP_HTTP_200);
     pid_add_count(APP_HTTP_200_BYTES, hytag->pbuf.len);
+    hytag->app_type = APP_TYPE_HTTP_200OK;
+#ifdef HTTP_BLOCK
+    hytag->http_block.buff_len = l5_len;
+    memcpy(hytag->http_block.buff, http_p, l5_len);
+    hytag->http_block.buff[l5_len] = '\0'; 
+#endif
 
     return E_SUCCESS;
 }

@@ -177,7 +177,11 @@ void libpcap_packet_handler(u_char *param __attribute__((unused)),
     //hytag.m = NULL;
     //printf("Success packet len = %d\n", hytag.pbuf.len);
     //return;
-
+#ifdef HTTP_BLOCK
+    time_t now;
+    time(&now);
+    hytag.http_block.timestamp = (uint64_t)now;
+#endif
 	cnt_inc(ITF_IPKTS);
 	cnt_add(ITF_IBYTS, header->len);
 

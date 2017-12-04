@@ -93,7 +93,7 @@ quagga_timestamp(int timestamp_precision, char *buf, size_t buflen)
       cache.last = clock.tv_sec;
       tm = localtime(&cache.last);
       cache.len = strftime(cache.buf, sizeof(cache.buf),
-      			   "%Y/%m/%d %H:%M:%S", tm);
+      			   "%Y-%m-%d %H:%M:%S", tm);
     }
   /* note: it's not worth caching the subsecond part, because
      chances are that back-to-back calls are not sufficiently close together
@@ -583,6 +583,23 @@ zlog_backtrace(int priority)
       free(strings);
     }
 #endif /* HAVE_GLIBC_BACKTRACE */
+}
+
+extern int  rawlog_file_fd;
+int 
+rawzlog(char *buff, int size)
+{
+    int len;
+    if (rawlog_file_fd > 0)
+    {
+        len = write(rawlog_file_fd, buff, size);
+        if (len == size)
+        {
+             fsync(rawlog_file_fd);
+        }
+        return len;
+    }
+    return 0;
 }
 
 void

@@ -63,6 +63,8 @@ typedef struct {
 typedef enum
 {
     APP_TYPE_HTTP_GET_OR_POST = 1,
+    APP_TYPE_HTTP_200OK,
+    APP_TYPE_HTTP_302,
     APP_TYPE_HTTP_OTHER,    
 }APP_TYPE_E;
 
@@ -98,6 +100,7 @@ typedef enum
 #endif
 
 #define URL_MAX_LEN  1500//URL MAX LEN
+#define LOCATION_MAX_LEN  1500
 #define MAX_HOST_LEN 128
 #define MAX_ACCOUNT_LEN   64
 #define MAX_USER_AGENT_LEN  256
@@ -106,6 +109,20 @@ typedef enum
 
 #define ENABLE 1
 #define DISABLE 0
+#define HTTP_BLOCK
+#ifdef HTTP_BLOCK
+typedef struct {
+    uint64_t timestamp;
+    uint32_t sip;
+    uint32_t dip;
+    uint16_t sport;
+    uint16_t dport;
+    uint32_t seq;
+    uint32_t ack;
+    uint32_t buff_len;
+    char buff[1568];
+}http_block_t;
+#endif
 
 typedef struct
 {
@@ -164,14 +181,16 @@ typedef struct
 
     uint16_t url_len;
     uint16_t host_len;
+    uint16_t location_len;
 	uint16_t referer_len;
 	char url[URL_MAX_LEN+1];
+	char location[LOCATION_MAX_LEN+1];
 	uint8_t host[MAX_HOST_LEN+1];
     char account[MAX_ACCOUNT_LEN+1];
 	char referer[URL_MAX_LEN+1];
     uint16_t user_agent_len;
     char  user_agent[MAX_USER_AGENT_LEN+1];
-    
+
     naga_acl_t acl;
 
 
@@ -194,6 +213,11 @@ typedef struct
     uint8_t  pushed_second_assert;
 	uint8_t  snet_hit_id;
 	char * hijack_url;
+
+#ifdef HTTP_BLOCK
+    /* http 200OK blcok*/
+    http_block_t http_block;
+#endif
 }hytag_t;
 
 #define HYTAG_ACL_MERGE(_tagacl, _ruleacl) \
