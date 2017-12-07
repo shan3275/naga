@@ -44,6 +44,8 @@ berr pid_outerip4(struct pbuf *p,  hytag_t * hytag)
 
 	UPDATE_PBUF_OFFSET(p, iphdr_hlen);	
     hytag->l4_offset = p->ptr_offset;
+    DEBUG_PRINTF("p->len:%d\n", p->len); 
+    DEBUG_PRINTF("hytag->l4_offset = p->ptr_offset:%d\n", hytag->l4_offset); 
 
     DEBUG_PRINTF("srcIp=0x%x, DstIp=0x%x, Iphd_len=%d\n",
                 hytag->outer_dstip4,

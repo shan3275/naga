@@ -52,6 +52,9 @@ berr pid_tcp(struct pbuf *p, hytag_t *hytag, int inner_outer)
     UPDATE_PBUF_OFFSET(p, tcphr_len);
     hytag->l5_offset = p->ptr_offset;
     hytag->l5_len    = hytag->total_len - ( hytag->l5_offset - hytag->l3_offset);
+    DEBUG_PRINTF("p->len:%d\n", p->len); 
+    DEBUG_PRINTF("hytag->l5_offset = p->ptr_offset:%d\n", hytag->l5_offset); 
+    DEBUG_PRINTF("hytag->l5_len :%d\n", hytag->l5_len); 
 
 	
 	uint16_t srcport = ntohs(tcp_hdr->src);

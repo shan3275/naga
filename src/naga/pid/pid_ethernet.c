@@ -20,6 +20,8 @@ berr pid_ethernet(struct pbuf *p, hytag_t *hytag)
 	PBUF_CUR_FORMAT(struct eth_hdr *, eth_header, p);
 
     hytag->l2_offset = p->ptr_offset;
+    DEBUG_PRINTF("p->len:%d\n", p->len); 
+    DEBUG_PRINTF("hytag->l2_offset = p->ptr_offset:%d\n", hytag->l2_offset); 
 	type = eth_header->ethertype;
 	len += SIZEOF_ETH_HDR; 
 	DEBUG_PRINTF("DstMac=%02x:%02x:%02x:%02x:%02x:%02x\n",
@@ -59,6 +61,8 @@ berr pid_ethernet(struct pbuf *p, hytag_t *hytag)
 
     UPDATE_PBUF_OFFSET(p, len);	
     hytag->l3_offset = p->ptr_offset;
+    DEBUG_PRINTF("p->len:%d\n", p->len); 
+    DEBUG_PRINTF("hytag->l3_offset = p->ptr_offset:%d\n", hytag->l3_offset); 
 
 	switch( ntohs(type) )
 	{
