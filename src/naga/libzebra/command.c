@@ -3727,7 +3727,7 @@ DEFUN (config_raw_log_file,
     sprintf(temp_filename, "%s%s", rawlog_file_name, temp_date);
     if (strlen(rawlog_file_name)) 
     {
-        if ((rawlog_file_fd = open(temp_filename, O_CREAT | O_TRUNC | O_WRONLY, 0644)) < 0)
+        if ((rawlog_file_fd = open(temp_filename, O_CREAT | O_APPEND | O_WRONLY, 0644)) < 0)
         {
             perror("open");
             close(rawlog_file_fd);
