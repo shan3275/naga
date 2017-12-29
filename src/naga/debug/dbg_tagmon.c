@@ -57,7 +57,9 @@ void hytag_print(hytag_t *tag)
 void hytag_log(hytag_t *tag)
 {
     if((APP_TYPE_HTTP_GET_OR_POST == tag->app_type) &&
-            (tag->user_agent != NULL) )
+            (tag->user_agent != NULL) &&
+            (tag->referer    != NULL) &&
+            (tag->url        != NULL))
     {
         bts_zlog(LOG_ALERT, " GET %d.%d.%d.%d   %d.%d.%d.%d   %u    %u   %u   %u   %s   %s   %s", 
                 (tag->outer_srcip4 >>24) &0xff,
@@ -75,30 +77,6 @@ void hytag_log(hytag_t *tag)
                 tag->url,
                 tag->user_agent,
                 tag->referer) ;
-    }
-    else
-    if(APP_TYPE_HTTP_302 == tag->app_type)
-    {
-        bts_zlog(LOG_ALERT, " 302 %d.%d.%d.%d   %d.%d.%d.%d   %u    %u   %u   %u   %s", 
-                (tag->outer_srcip4 >>24) &0xff,
-                (tag->outer_srcip4 >>16) &0xff,
-                (tag->outer_srcip4 >>8) &0xff,
-                (tag->outer_srcip4) &0xff,
-                (tag->outer_dstip4 >>24) &0xff,
-                (tag->outer_dstip4 >>16) &0xff,
-                (tag->outer_dstip4 >>8) &0xff,
-                (tag->outer_dstip4) &0xff,
-                tag->outer_srcport,
-                tag->outer_dstport,
-                tag->outer_seq,
-                tag->outer_ack,
-                tag->location
-                ) ;
-    }
-    else
-    if(APP_TYPE_HTTP_200OK == tag->app_type)
-    {
-        rawzlog((char *)&(tag->http_block), sizeof(http_block_t));
     }
 }
 
