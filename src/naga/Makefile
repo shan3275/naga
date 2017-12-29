@@ -46,6 +46,7 @@ DIRS-y += template
 DIRS-y += adp
 DIRS-y += pub
 DIRS-y += url
+DIRS-y += referer
 DIRS-y += urlr
 DIRS-y += hijack
 DIRS-y += debug

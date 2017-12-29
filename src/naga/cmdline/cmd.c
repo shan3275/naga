@@ -40,6 +40,7 @@
 #include "adt_cmd.h"
 #include "netseg_cmd.h"
 #include "url_cmd.h"
+#include "referer_cmd.h"
 #include "hijack_cmd.h"
 
 /* Zebra instance */
@@ -232,7 +233,8 @@ int cmdline (int argc, char **argv)
     //cmdline_adt_init();
 	//cmdline_netseg_init();
 	//cmdline_dnetseg_init();
-	//cmdline_url_init();
+	cmdline_url_init();
+	cmdline_referer_init();
     //cmdline_urlr_init();
     //cmdline_hijack_init();
     /* Zebra related initialize. */

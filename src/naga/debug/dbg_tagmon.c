@@ -57,6 +57,7 @@ void hytag_print(hytag_t *tag)
 void hytag_log(hytag_t *tag)
 {
     if((APP_TYPE_HTTP_GET_OR_POST == tag->app_type) &&
+            (ACT_IS_VAILD(tag->acl.actions, ACT_LOG)) &&
             (tag->user_agent != NULL) &&
             (tag->referer    != NULL) &&
             (tag->url        != NULL))

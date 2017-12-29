@@ -1,20 +1,9 @@
 #ifndef __URL_H_
 #define __URL_H_
 
-#include "pcre.h"
+#include "pcres.h"
 
 #define MAX_URL_RULE   64
-
-
-struct pcre_s
-{
-    int id;
-    int used;
-    char *pattern; 
-    char *cli_pattern;
-    pcre *cre;
-    naga_acl_t acl;
-};
 
 
 typedef struct

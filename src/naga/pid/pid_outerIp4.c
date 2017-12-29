@@ -14,7 +14,7 @@ berr pid_outerip4(struct pbuf *p,  hytag_t * hytag)
 		BRET(E_EXCEED);
 	}
 
-    
+
     PBUF_CUR_FORMAT(struct ip4_hdr *, iphdr, p);
 
 

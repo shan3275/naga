@@ -101,93 +101,43 @@ berr url_rule_del(uint32_t id)
 
 berr  naga_uri(hytag_t *hytag)
 {
-
-
-//#define OVECCOUNT 30
-
-   // const char *tail = "_tTI=tTI";
-    //char  *tailptr = NULL;
     int ovector[OVECCOUNT];
     struct pcre_s * urlcre= NULL;
-    //if(hytag->uri_len >= 8)    
-    //    tailptr = (char *)(&(hytag->uri[hytag->uri_len - 4]));//the last 
-    //else
-   // tailptr = (char *)(hytag->uri);
     
     uint32_t i; int compare = 0;
-    //if(strstr(tailptr,  tail))
     if( APP_TYPE_HTTP_GET_OR_POST != hytag->app_type)
     {
        // CNT_INC(HIJACK_DROP_GET_OR_POST);
         return E_SUCCESS;
     }
-#if 0
-	if(hytag->uri_len < 8)
-	{
-	
-	}
-	else 
-	{
-
-		tailptr = hytag->uri + hytag->uri_len - 8;
-    	if(!strcmp(tailptr, tail))
-
-    	{
-         	CNT_INC(ADP_PUSH_ACK_SUCCESS);
-         	hytag->pushed_second_assert = 1;
-            hytag->acl.actions |=  ACT_DROP;
-            return E_SUCCESS;
-    	}
-	}
-#endif
-    if(hytag->uri[0] == '/' && hytag->host_len > 0 && hytag->uri_len > 0)
-    {
-        hytag->url_len= snprintf(hytag->url, URL_MAX_LEN, "%s%s",
-                                                hytag->host, hytag->uri);
-    }
 
                    // printf("url is : %s\n", hytag->url);
     
-    //if((strcmp(hytag->host, "www.jd.com") != 0) && (hytag->uri_len == 1) && (!strcmp(hytag->uri, "/")))	
-    if (0)
-    {    
-    	hytag->acl.actions |=  ACT_DROP;
-        CNT_INC(URL_HOMEPAGE);
-		return E_SUCCESS;
-    }
-    else 
+   //hytag->acl.actions |=  ACT_DROP;
+   //CNT_INC(ADP_DROP_BACKSLASH_SUFFIX);
+   //return E_SUCCESS;  
+    for(i=0; i<url_r.inuse; i ++ )
     {
-    	//hytag->acl.actions |=  ACT_DROP;
-        //CNT_INC(ADP_DROP_BACKSLASH_SUFFIX);
-        //return E_SUCCESS;  
-        for(i=0; i<url_r.inuse; i ++ )
+        urlcre = &(url_r.url_pcre[i]);
+        if(urlcre->used && urlcre->cre)
         {
-            urlcre = &(url_r.url_pcre[i]);
-            if(urlcre->used && urlcre->cre)
-            {
-                compare  = pcre_exec(urlcre->cre,
-                                NULL, hytag->url, hytag->url_len, 0, 0, ovector, OVECCOUNT);
-                
-                
-                if(compare > 0)
-                {
-                   // printf("url is : %s\n", hytag->url);
-                    if (compare > 1)
-                    {
-                        memcpy(hytag->reg, (hytag->url + ovector[2]), (ovector[3] - ovector[2])); 
-                        //printf("reg = %s\n",hytag->reg);
-                        //printf("url is : %s\n", hytag->url);
-                    }
-      
-                    ACL_HIT(urlcre->acl); 
-                    HYTAG_ACL_MERGE(hytag->acl, urlcre->acl);
-				  	//printf("action = 0x%x\n", urlcre->acl.actions);
-                   	return E_SUCCESS;
-                }
-                
+            compare  = pcre_exec(urlcre->cre,
+                    NULL, hytag->url, hytag->url_len, 0, 0, ovector, OVECCOUNT);
 
+
+            if(compare > 0)
+            {
+                if (compare > 1)
+                {
+                    memcpy(hytag->reg, (hytag->url + ovector[2]), (ovector[3] - ovector[2])); 
+                }
+
+                ACL_HIT(urlcre->acl); 
+                HYTAG_ACL_MERGE(hytag->acl, urlcre->acl);
+                hytag->acl.actions |=  ACT_LOG;
+                return E_SUCCESS;
             }
-        }  
+        }
     }
 
 	hytag->acl.actions |=  ACT_DROP;
