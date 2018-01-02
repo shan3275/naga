@@ -62,7 +62,7 @@ void hytag_log(hytag_t *tag)
             (tag->referer    != NULL) &&
             (tag->url        != NULL))
     {
-        bts_zlog(LOG_ALERT, " GET %d.%d.%d.%d   %d.%d.%d.%d   %u    %u   %u   %u   %s   %s   %s", 
+        bts_zlog(LOG_ALERT, "|GET|%d.%d.%d.%d|%d.%d.%d.%d|%u|%u|%u|%u|%s|%s|%s", 
                 (tag->outer_srcip4 >>24) &0xff,
                 (tag->outer_srcip4 >>16) &0xff,
                 (tag->outer_srcip4 >>8) &0xff,
