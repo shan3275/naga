@@ -19,7 +19,7 @@
 #ifndef  __DNETSEG__H__
 #define  __DNETSEG__H__
 
-#define DNETSEG__RULE_NUM_MAX     150
+#define DNETSEG__RULE_NUM_MAX     16
 #define DNETSEG__RULE_EFFECTIVE   1
 #define DNETSEG__RULE_UNEFFECTIVE 0
 

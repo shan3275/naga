@@ -232,7 +232,7 @@ int cmdline (int argc, char **argv)
     cmdline_itf_init();
     //cmdline_adt_init();
 	//cmdline_netseg_init();
-	//cmdline_dnetseg_init();
+	cmdline_dnetseg_init();
 	cmdline_url_init();
 	cmdline_referer_init();
     //cmdline_urlr_init();

@@ -83,6 +83,7 @@ berr dnet_dp_process(hytag_t *hytag)
         /* add match statistics */
         cnt_inc(DNET_MATCHPKTS);
         hytag->match |= 1;
+        hytag->acl.actions |=  ACT_LOG;
 
 
 		ACL_HIT(rule->acl);
@@ -97,7 +98,7 @@ berr dnet_dp_process(hytag_t *hytag)
         {
             ACL_PUSHED_ASSERT_HIT(rule->acl);
         }
-        
+
 		HYTAG_ACL_MERGE(hytag->acl, rule->acl);
     }
     return E_SUCCESS; 

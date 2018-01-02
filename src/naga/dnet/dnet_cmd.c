@@ -103,7 +103,7 @@ static int dnet_cmd_add(struct vty *vty, const char *index_str, const char *ip_s
 
 DEFUN(dnet_add,
       dnet_add_cmd,
-      "dnet add <0-149> A.B.C.D/M ACT",
+      "dnet add <0-15> A.B.C.D/M ACT",
       DNET_STR
       ADD_STR
       DNET_INDEX_STR
@@ -134,7 +134,7 @@ static int dnet_cmd_del(struct vty *vty, const char *index_str)
 
 DEFUN(dnet_del,
       dnet_del_cmd,
-      "dnet del <0-99>",
+      "dnet del <0-15>",
       DNET_STR
       DEL_STR
       DNET_INDEX_STR)
@@ -257,7 +257,7 @@ static int dnet_cmd_show_all(struct vty *vty)
 
 DEFUN(dnet_show_by_index, 
       dnet_show_by_index_cmd,
-      "show dnet <0-149>",
+      "show dnet <0-15>",
       SHOW_STR
       DNET_STR
       DNET_INDEX_STR)
@@ -433,7 +433,7 @@ void cmdline_dnetseg_init(void)
     install_element(CMD_NODE, &dnet_show_all_cmd);
     install_element(CMD_NODE, &dnet_clear_statistics_cmd);
     install_element(CMD_NODE, &dnet_clear_statistics_all_cmd);
-	install_element(CMD_NODE, &dnetseg_default_act_set_cmd);
+    install_element(CMD_NODE, &dnetseg_default_act_set_cmd);
 
     return ;
 }

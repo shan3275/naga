@@ -74,7 +74,7 @@ main(int argc, char **argv)
 		//acr_dp_init();
 		//netseg_init();
         //adp_dp_init();
-        //dnetseg_init();
+        dnetseg_init();
         //hijack_dp_init();
         //rv = ads_template_init();
         //if (rv )

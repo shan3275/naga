@@ -749,6 +749,7 @@ config_write_host (struct vty *vty)
   //adp_cmd_config_write(vty);
   url_cmd_config_write(vty);
   referer_cmd_config_write(vty);
+  dnetseg_cmd_config_write(vty);
   //urlr_cmd_config_write(vty);
   //hijack_cmd_config_write(vty);
   bts_cmd_config_write(vty);
