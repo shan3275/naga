@@ -1,0 +1,35 @@
+!
+! Zebra configuration saved from vty
+!   2016/01/03 01:18:02
+!
+hostname Rose
+password rose
+enable password rose
+log file /root/log/naga.log
+itf tx enable
+itf rx enable
+interface 0 enable
+interface 1 enable
+interface bussiness add eth1
+domain default push
+snet default push
+hijack switch on
+hijack ip interval 100
+hijack ip time interval 0
+hijack pkt interval 100
+hijack ip pkt interval 100
+
+ori url add 1 ^sports\.sina\.com\.cn mask 0x1
+!ref url add 1 ^www\.sina\.com\.cn mask 0x2
+mask add 1 0x3 redir http://sports.163.com
+
+ori url add 2 ^wen\.xingsxj\.top mask 0x4
+!ref url add 2 ^www\.toutiao\.com mask 0x8
+mask add 2 12 redir http://sports.163.com
+
+!ori url add 3 ^mp\.weixin\.qq\.com\/s\\Q__biz=MzI0OTcyMjU4Mg redir http://mp.weixin.qq.com/s?__biz=MzI4NjU0Mjc5Ng==&mid=2247485054&idx=1&sn=a2af003338fe88e777d4ffe531bc00bc
+
+!debug option mask_url on
+
+!line vty
+!
