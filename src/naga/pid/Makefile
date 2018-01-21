@@ -50,7 +50,7 @@ SRCS-y := pid.c  pid_ethernet.c  pid_gre.c  naga_stat.c\
 
 CFLAGS += -O3
 CFLAGS += $(WERROR_FLAGS)
-CFLAGS += -I ../boots -I ../include -I ../boots -I ../pub -I ../rte -I ../http_parser/http_parser
+CFLAGS += -I ../boots -I ../include -I ../boots -I ../pub -I ../rte -I ../http_parser/http-parser
 
 # workaround for a gcc bug with noreturn attribute
 # http://gcc.gnu.org/bugzilla/show_bug.cgi?id=12603
