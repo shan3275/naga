@@ -134,7 +134,7 @@ static int dnet_cmd_del(struct vty *vty, const char *index_str)
 
 DEFUN(dnet_del,
       dnet_del_cmd,
-      "dnet del <0-99>",
+      "dnet del <0-149>",
       DNET_STR
       DEL_STR
       DNET_INDEX_STR)

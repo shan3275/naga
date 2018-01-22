@@ -267,7 +267,7 @@ static int net_cmd_show_all(struct vty *vty)
 
 DEFUN(net_show_by_index, 
       net_show_by_index_cmd,
-      "show snet <0-99>",
+      "show snet <0-149>",
       SHOW_STR
       NET_STR
       NET_INDEX_STR)

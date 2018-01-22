@@ -54,6 +54,10 @@ berr netseg_dp_process(hytag_t *hytag)
         return E_PARAM;
     }
 
+    if(ACT_IS_VAILD(hytag->acl.actions, ACT_DROP))
+    {
+        return E_SUCCESS;
+    }
     /*add recv statistics */
     cnt_inc(NET_PKTS);
 
@@ -101,5 +105,5 @@ berr netseg_dp_process(hytag_t *hytag)
         
 		HYTAG_ACL_MERGE(hytag->acl, rule->acl);
     }
-    return E_SUCCESS; 
+    return E_SUCCESS;
 }

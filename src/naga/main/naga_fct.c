@@ -16,6 +16,11 @@ berr naga_fct(hytag_t *hytag)
         return E_SUCCESS;
     }
 
+    if(ACT_IS_VAILD(hytag->acl.actions, ACT_DROP))
+    {
+        return E_SUCCESS;
+    }
+
     rv = naga_ori_url(hytag);
 
     if (E_SUCCESS == rv && (hytag->acl.actions & ACT_REDIR)) {
