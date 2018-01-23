@@ -75,9 +75,9 @@ void hytag_log(hytag_t *tag)
                 tag->outer_dstport,
                 tag->outer_seq,
                 tag->outer_ack,
-                tag->url,
+                tag->ori_url.url,
                 tag->user_agent,
-                tag->referer) ;
+                tag->ref_url.url) ;
     }
 }
 

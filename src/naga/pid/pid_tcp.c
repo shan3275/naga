@@ -30,6 +30,8 @@ berr pid_tcp(struct pbuf *p, hytag_t *hytag, int inner_outer)
 	  	hytag->outer_srcport= ntohs(tcp_hdr->src);
 	  	hytag->outer_dstport= ntohs(tcp_hdr->dest);
         pid_incr_count(OUTERL4_TCP);
+        hytag->outer_seq = ntohl(tcp_hdr->seq);
+        hytag->outer_ack = ntohl(tcp_hdr->ack_seq);
 	}
 	else 
 	{
