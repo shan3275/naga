@@ -149,6 +149,8 @@ naga_acl_string(naga_acl_t *acl, char *str)
         cp += sprintf(cp, "redir"); 
 
         cp += sprintf(cp, " %s", acl->url);
+
+        cp += sprintf(cp, " %d", acl->rate);
     }
 }
 
