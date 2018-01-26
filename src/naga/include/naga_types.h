@@ -26,8 +26,8 @@ typedef uint32_t ipaddr_t;
 
 #define NAGA_ACL_HITS_MAX   32
 
-#define NAGA_URL_LEN_MAX    1280
-#define URL_URI_LEN_MAX     NAGA_URL_LEN_MAX
+#define NAGA_URL_LEN_MAX    1344
+#define URL_URI_LEN_MAX     1280
 
 typedef struct {
     uint32_t actions;

@@ -482,9 +482,9 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
             
          */
             len = strlen(uri);
-            if( len > URL_MAX_LEN )
+            if( len > URL_URI_LEN_MAX )
             {	
-                len = URL_MAX_LEN;
+                len = URL_URI_LEN_MAX - 1;
             }
 
             debug("get uri:%s", uri);
@@ -540,9 +540,9 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
                 && !strncmp(STRING_HTTP_HOST, begin, STRING_HTTP_HOST_LEN)) 
 			{
                
-                if( len > MAX_HOST_LEN )
+                if( len > URL_HOST_LEN_MAX )
 				{	
-					len = MAX_HOST_LEN;
+					len = URL_HOST_LEN_MAX-1;
 				}
            
 				memcpy(hytag->ori_url.host, &line[1], len);
@@ -576,9 +576,9 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
             */
             if (!strncmp(STRING_HTTP_REFERENCE, begin, STRING_HTTP_REFERENCE_LEN))
             {
-                if( len > URL_MAX_LEN )
+                if( len > URL_URI_LEN_MAX )
                 {	
-                    len = URL_MAX_LEN;
+                    len = URL_URI_LEN_MAX-1;
                 }
                 debug("get refer");
                 pid_url(&line[1], len, &hytag->ref_url);

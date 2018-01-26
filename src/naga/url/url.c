@@ -93,7 +93,6 @@ berr url_rule_del(url_t *url_r, uint32_t id)
     return E_SUCCESS;
 }
 
-pthread_mutex_t url_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 berr  naga_url(url_t *url_r, hytag_t *hytag, char *url_str, int url_len)
 {
@@ -114,11 +113,7 @@ berr  naga_url(url_t *url_r, hytag_t *hytag, char *url_str, int url_len)
         urlcre = &(url_r->url_pcre[i]);
         if(urlcre->used && urlcre->cre)
         {
-            pthread_mutex_lock(&url_mutex);
             compare  = pcre_exec(urlcre->cre,  NULL, url_str, url_len, 0, 0, ovector, OVECCOUNT);
-            pthread_mutex_unlock(&url_mutex);
-
-
             if(compare > 0)
             {
                 CNT_INC(URL_MATCHED);
