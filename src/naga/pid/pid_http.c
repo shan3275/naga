@@ -359,7 +359,7 @@ static void dump_url (const char *url, const struct http_parser_url *u)
 }
 #endif
 
-
+#if HTTP_URL_PARSE_ORI_MOD
 static berr pid_url_param(char *str, naga_url_param_t *param)
 {
     char *token, *peq = NULL;
@@ -428,13 +428,12 @@ static berr pid_url(char *str, int len, naga_url_t *nu)
 
     if (u.field_data[4].len > 0) {
         memcpy(nu->pstr, str + u.field_data[4].off, u.field_data[4].len);
-        debug("pid_url_param before");
         pid_url_param(str + u.field_data[4].off, &nu->params);
-        debug("pid_url_param after");
     }
-    
+
     return E_SUCCESS;
 }
+#endif
 #endif
 
 berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
@@ -475,21 +474,21 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
         uri = strsep(&line, " ");
         if(uri != NULL)
         {
-         /*
-            strncpy(hytag->uri, uri, URL_MAX_LEN);
-            hytag->uri_len = strlen(uri);
-            
-         */
+#if HTTP_URL_PARSE_ORI_MOD
             len = strlen(uri);
             if( len > URL_URI_LEN_MAX )
             {	
-                len = URL_URI_LEN_MAX - 1;
+                len = URL_URI_LEN_MAX ;
             }
 
             debug("get uri:%s", uri);
             debug("get uri len:%d", len);
             pid_url(uri, len, &hytag->ori_url);
             debug("get uri over");
+#else
+            strncpy(hytag->uri, uri, URL_MAX_LEN);
+            hytag->uri_len = strlen(uri);
+#endif
         }
         else
         {
@@ -520,21 +519,7 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
             {
 			    len -= 2;//valid len
             }
-            /*
-			if (hytag->host_len ==0 
-                && !strncmp(STRING_HTTP_HOST, begin, STRING_HTTP_HOST_LEN)) 
-			{
-               
-                if( len > MAX_HOST_LEN )
-				{	
-					len = MAX_HOST_LEN;
-				}
-           
-				memcpy(hytag->host, &line[1], len);
-				hytag->host_len = len;
-               
-			}
-            */
+#if HTTP_URL_PARSE_ORI_MOD
             if (hytag->ori_url.host_len ==0 
                 && !strncmp(STRING_HTTP_HOST, begin, STRING_HTTP_HOST_LEN)) 
 			{
@@ -549,6 +534,22 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
                 debug("host(%d):%s", hytag->ori_url.host_len,hytag->ori_url.host);
                
 			}
+#else
+			if (hytag->host_len ==0 
+                && !strncmp(STRING_HTTP_HOST, begin, STRING_HTTP_HOST_LEN)) 
+			{
+               
+                if( len > MAX_HOST_LEN )
+				{	
+					len = MAX_HOST_LEN;
+				}
+           
+				memcpy(hytag->host, &line[1], len);
+				hytag->host_len = len;
+               
+			}
+#endif
+
 			if (hytag->user_agent_len== 0 
                     && !strncmp(STRING_HTTP_AGENT, begin, STRING_HTTP_AGENT_LEN))   
 			{
@@ -560,20 +561,7 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
 				memcpy(hytag->user_agent, &line[1], len);
 				hytag->user_agent_len = len;
 			}			
-            /*
-            if (hytag->referer_len== 0 
-                    && !strncmp(STRING_HTTP_REFERENCE, begin, STRING_HTTP_REFERENCE_LEN))
-            {
-
-                if( len > URL_MAX_LEN )
-                {	
-                    len = URL_MAX_LEN;
-                }
-                memcpy(hytag->referer, &line[1], len) ; 
-                hytag->referer_len = len; 
-                pid_url("REF", hytag->referer, hytag->referer_len);
-            }
-            */
+#if HTTP_URL_PARSE_ORI_MOD
             if (!strncmp(STRING_HTTP_REFERENCE, begin, STRING_HTTP_REFERENCE_LEN))
             {
                 if( len > URL_URI_LEN_MAX )
@@ -584,10 +572,24 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
                 pid_url(&line[1], len, &hytag->ref_url);
                 debug("get refer over");
             }
-            		
+#else
+            if (hytag->referer_len== 0 
+                    && !strncmp(STRING_HTTP_REFERENCE, begin, STRING_HTTP_REFERENCE_LEN))
+            {
+
+                if( len > URL_MAX_LEN )
+                {	
+                    len = URL_MAX_LEN;
+                }
+                memcpy(hytag->referer, &line[1], len) ; 
+                hytag->referer_len = len; 
+                //pid_url("REF", hytag->referer, hytag->referer_len);
+            }
+#endif
+		
 		}
 	}
-
+#if HTTP_URL_PARSE_ORI_MOD
     if (hytag->ori_url.pstr[0] != 0) {
         sprintf(hytag->ori_url.url, "%s%s?%s", hytag->ori_url.host, hytag->ori_url.uri, hytag->ori_url.pstr); 
     } else {
@@ -609,7 +611,14 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
         naga_url_dump(&hytag->ref_url);
         printf("--------------------------------------------------------------------------------------------------------\n");
     }
-    
+#else
+    if(hytag->uri[0] == '/' && hytag->host_len > 0 && hytag->uri_len > 0)
+    {
+        hytag->url_len= snprintf(hytag->url, URL_MAX_LEN, "%s%s",
+                hytag->host, hytag->uri);
+    }
+#endif
+
     return E_SUCCESS;
 }
 

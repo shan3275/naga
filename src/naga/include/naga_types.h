@@ -8,7 +8,11 @@ typedef uint32_t ipaddr_t;
 
 #define USE_M_QUEUE 0
 
-
+/***
+ * 1 for save to hytag->ori_url->url  module 
+ * 0 for save to hytag->url
+ * */
+#define HTTP_URL_PARSE_ORI_MOD   0 
 
 #define PACKET_MTU    1500
 
@@ -26,8 +30,8 @@ typedef uint32_t ipaddr_t;
 
 #define NAGA_ACL_HITS_MAX   32
 
-#define NAGA_URL_LEN_MAX    1344
-#define URL_URI_LEN_MAX     1280
+#define NAGA_URL_LEN_MAX    1500
+#define URL_URI_LEN_MAX     1400
 
 typedef struct {
     uint32_t actions;
@@ -127,10 +131,10 @@ typedef struct {
 typedef struct {
     uint16_t host_len;
     uint16_t uri_len;
-    char url[NAGA_URL_LEN_MAX+300];
-    char host[URL_HOST_LEN_MAX+300];
-    char uri[URL_URI_LEN_MAX+300];
-    char pstr[URL_URI_LEN_MAX+300];
+    char url[NAGA_URL_LEN_MAX];
+    char host[URL_HOST_LEN_MAX];
+    char uri[URL_URI_LEN_MAX];
+    char pstr[URL_URI_LEN_MAX];
     naga_url_param_t params;
 } naga_url_t;
 

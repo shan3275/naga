@@ -96,7 +96,7 @@ berr url_rule_del(url_t *url_r, uint32_t id)
 }
 
 
-pthread_mutex_t url_mutex = PTHREAD_MUTEX_INITIALIZER;
+//pthread_mutex_t url_mutex = PTHREAD_MUTEX_INITIALIZER;
 berr  naga_url(url_t *url_r, hytag_t *hytag, char *url_str, int url_len)
 {
     int ovector[OVECCOUNT]={0};
@@ -110,7 +110,7 @@ berr  naga_url(url_t *url_r, hytag_t *hytag, char *url_str, int url_len)
         return E_SUCCESS;
     }
     CNT_INC(URL_PKTS);
-    pthread_mutex_lock(&url_mutex);
+    //pthread_mutex_lock(&url_mutex);
     for(i=0; i<url_r->inuse; i ++ )
     {
         urlcre = &(url_r->url_pcre[i]);
@@ -149,12 +149,12 @@ berr  naga_url(url_t *url_r, hytag_t *hytag, char *url_str, int url_len)
                     }
                     HYTAG_ACL_MERGE(hytag->acl, urlcre->acl);
                 }
-                pthread_mutex_unlock(&url_mutex);
+                //pthread_mutex_unlock(&url_mutex);
                 return E_SUCCESS;
             }
         }
     }
-    pthread_mutex_unlock(&url_mutex);
+    //pthread_mutex_unlock(&url_mutex);
     CNT_INC(URL_DISMATCH);
 
 	return E_SUCCESS;  
@@ -163,24 +163,20 @@ berr  naga_url(url_t *url_r, hytag_t *hytag, char *url_str, int url_len)
 
 berr  naga_ori_url(hytag_t *hytag)
 {
-    //char url_str[URL_MAX_LEN + 1];
-    //int url_len = 0;
-    
-    //memset(url_str, 0, URL_MAX_LEN + 1);
-    //url_len = snprintf(url_str, URL_MAX_LEN, "%s%s", hytag->ori_url.host, hytag->ori_url.uri); 
-
+#if HTTP_URL_PARSE_ORI_MOD
     return naga_url(&ori_url_r, hytag, hytag->ori_url.url, strlen(hytag->ori_url.url)); 
+#else
+    return naga_url(&ori_url_r, hytag, hytag->url, hytag->url_len); 
+#endif
 }
 
 berr  naga_ref_url(hytag_t *hytag)
 {
-    //char url_str[URL_MAX_LEN + 1];
-    //int url_len = 0;
-    
-    //memset(url_str, 0, URL_MAX_LEN + 1);
-   // url_len = snprintf(url_str, URL_MAX_LEN, "%s%s", hytag->ref_url.host, hytag->ref_url.uri); 
-
+#if HTTP_URL_PARSE_ORI_MOD
     return naga_url(&ref_url_r, hytag, hytag->ref_url.url, strlen(hytag->ref_url.url));
+#else
+    return naga_url(&ref_url_r, hytag, hytag->url, hytag->url_len); 
+#endif
 }
 
 berr ori_url_rule_add(uint32_t id,  char *url,  char * cli_pattern, naga_acl_t *acl)
