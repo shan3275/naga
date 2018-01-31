@@ -123,7 +123,7 @@ void libpcap_packet_handler(u_char *param __attribute__((unused)),
 
     memset(&hytag, 0x0, sizeof(hytag));
     //memcpy((void *)buffer, (void *)packet, header->len);	
-    
+
     hytag.pbuf.ptr = (void *)packet;
     hytag.pbuf.len = header->len;
     hytag.pbuf.ptr_offset = 0;

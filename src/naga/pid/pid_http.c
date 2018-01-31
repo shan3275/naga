@@ -427,7 +427,7 @@ static berr pid_url(char *str, int len, naga_url_t *nu)
     }
 
     if (u.field_data[4].len > 0) {
-        strcpy(nu->pstr, str + u.field_data[4].off);
+        memcpy(nu->pstr, str + u.field_data[4].off, u.field_data[4].len);
         debug("pid_url_param before");
         pid_url_param(str + u.field_data[4].off, &nu->params);
         debug("pid_url_param after");
@@ -448,7 +448,6 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
     char *method = NULL, *uri = NULL;    
     char *begin = NULL;
  
-    
     l5_ptr = l5payload;
     l5_len = p->len - p->ptr_offset;
     
@@ -547,6 +546,7 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
            
 				memcpy(hytag->ori_url.host, &line[1], len);
 				hytag->ori_url.host_len = len;
+                debug("host(%d):%s", hytag->ori_url.host_len,hytag->ori_url.host);
                
 			}
 			if (hytag->user_agent_len== 0 

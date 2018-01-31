@@ -44,7 +44,7 @@ APP = naga
 # all source are stored in SRCS-y
 SRCS-y := naga_fct.c naga_acl.c main.c main_data.c
 
-CFLAGS += -O3 $(USER_FLAGS)
+CFLAGS += -O3 $(USER_FLAGS) -g
 #CFLAGS += $(WERROR_FLAGS)
 
 

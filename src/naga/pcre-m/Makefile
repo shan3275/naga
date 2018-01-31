@@ -11,7 +11,7 @@ libpcre.a:
 pcre-8.13:
 	tar xvf pcre-8.13.tar.gz>>/dev/null
 	ln -s pcre-8.13 pcre
-	cd pcre && ./configure >>/dev/null
+	cd pcre && ./configure CFLAGS+=-g CFLAGS+=-O0  >>/dev/null
 	cd pcre &&  make >>/dev/null
 
 

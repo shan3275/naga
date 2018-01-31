@@ -127,10 +127,10 @@ typedef struct {
 typedef struct {
     uint16_t host_len;
     uint16_t uri_len;
-    char url[NAGA_URL_LEN_MAX];
-    char host[URL_HOST_LEN_MAX];
-    char uri[URL_URI_LEN_MAX];
-    char pstr[URL_URI_LEN_MAX];
+    char url[NAGA_URL_LEN_MAX+300];
+    char host[URL_HOST_LEN_MAX+300];
+    char uri[URL_URI_LEN_MAX+300];
+    char pstr[URL_URI_LEN_MAX+300];
     naga_url_param_t params;
 } naga_url_t;
 

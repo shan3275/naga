@@ -36,11 +36,13 @@ berr url_rule_add(url_t *url_r, uint32_t id,  char *url,  char * cli_pattern, na
         pcre_n->pattern = strdup(url);
         pcre_n->cli_pattern = strdup(cli_pattern);
         pcre_n->cre =  pcre_compile( pcre_n->pattern , 0, &error, &erroffset, NULL);
+        printf("url_rule_add:error:%s,erroffset:%d\n", error, erroffset);
 		if(pcre_n->cre == NULL)
 		{
 			free(pcre_n->pattern);
 			return E_FAIL;
 		}
+        printf("pcre_n->id:%d, pcre_n->cre:%p\n", pcre_n->id, pcre_n->cre);
 		
         memcpy(&pcre_n->acl, acl, sizeof(naga_acl_t));
 		pcre_n->used =1;
@@ -94,9 +96,10 @@ berr url_rule_del(url_t *url_r, uint32_t id)
 }
 
 
+pthread_mutex_t url_mutex = PTHREAD_MUTEX_INITIALIZER;
 berr  naga_url(url_t *url_r, hytag_t *hytag, char *url_str, int url_len)
 {
-    int ovector[OVECCOUNT];
+    int ovector[OVECCOUNT]={0};
     struct pcre_s * urlcre= NULL;
 
 
@@ -107,7 +110,7 @@ berr  naga_url(url_t *url_r, hytag_t *hytag, char *url_str, int url_len)
         return E_SUCCESS;
     }
     CNT_INC(URL_PKTS);
-
+    pthread_mutex_lock(&url_mutex);
     for(i=0; i<url_r->inuse; i ++ )
     {
         urlcre = &(url_r->url_pcre[i]);
@@ -146,10 +149,12 @@ berr  naga_url(url_t *url_r, hytag_t *hytag, char *url_str, int url_len)
                     }
                     HYTAG_ACL_MERGE(hytag->acl, urlcre->acl);
                 }
+                pthread_mutex_unlock(&url_mutex);
                 return E_SUCCESS;
             }
         }
     }
+    pthread_mutex_unlock(&url_mutex);
     CNT_INC(URL_DISMATCH);
 
 	return E_SUCCESS;  

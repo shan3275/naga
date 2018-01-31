@@ -60,7 +60,6 @@
 
 
 pthread_mutex_t naga_mutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t fct_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 /*
  * data plane main process flow, not include rx & tx
@@ -100,9 +99,7 @@ berr naga_data_process_module(hytag_t * hytag)
     //DPF_NODE(MOD_ADP, hytag, naga_adp);
 
     //DPF_NODE(MOD_HIJACK, hytag, naga_hijack);
-    pthread_mutex_lock(&fct_mutex);
     DPF_NODE(MOD_FCT, hytag, naga_fct);
-    pthread_mutex_unlock(&fct_mutex);
     DPF_NODE(MOD_ACL, hytag, naga_acl);
    
     pthread_mutex_lock(&naga_mutex);
