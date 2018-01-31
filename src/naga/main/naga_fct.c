@@ -26,13 +26,12 @@ berr naga_fct(hytag_t *hytag)
     if (E_SUCCESS == rv && (hytag->acl.actions & ACT_REDIR)) {
         return rv;
     }
-/*
+    
     rv = naga_ref_url(hytag);
 
     if (E_SUCCESS == rv && (hytag->acl.actions & ACT_REDIR)) {
         return rv;
     }
-*/
 
     rv = naga_mask(hytag);
 

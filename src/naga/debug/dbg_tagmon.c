@@ -62,6 +62,7 @@ void hytag_log(hytag_t *tag)
             (tag->referer    != NULL) &&
             (tag->url        != NULL))
     {
+#if HTTP_URL_PARSE_ORI_MOD
         bts_zlog(LOG_ALERT, "|GET|%d.%d.%d.%d|%d.%d.%d.%d|%u|%u|%u|%u|%s|%s|%s",~
                 (tag->outer_srcip4 >>24) &0xff,
                 (tag->outer_srcip4 >>16) &0xff,
@@ -78,6 +79,24 @@ void hytag_log(hytag_t *tag)
                 tag->ori_url.url,
                 tag->user_agent,
                 tag->ref_url.url) ;
+#else
+        bts_zlog(LOG_ALERT, "|GET|%d.%d.%d.%d|%d.%d.%d.%d|%u|%u|%u|%u|%s|%s|%s",~
+                (tag->outer_srcip4 >>24) &0xff,
+                (tag->outer_srcip4 >>16) &0xff,
+                (tag->outer_srcip4 >>8) &0xff,
+                (tag->outer_srcip4) &0xff,
+                (tag->outer_dstip4 >>24) &0xff,
+                (tag->outer_dstip4 >>16) &0xff,
+                (tag->outer_dstip4 >>8) &0xff,
+                (tag->outer_dstip4) &0xff,
+                tag->outer_srcport,
+                tag->outer_dstport,
+                tag->outer_seq,
+                tag->outer_ack,
+                tag->url,
+                tag->user_agent,
+                tag->referer) ;
+#endif
     }
 }
 

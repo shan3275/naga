@@ -200,7 +200,6 @@ naga_acl_parse(const char *argv[], int argc, naga_acl_t *acl)
 
         acl->rate = strtoul(argv[2], NULL, 0);
         acl->sample = 100 / acl->rate;
-        printf("acl->sample:%u\n", acl->sample);
     }
 
 	return E_SUCCESS;

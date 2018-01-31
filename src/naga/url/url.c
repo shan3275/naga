@@ -36,13 +36,11 @@ berr url_rule_add(url_t *url_r, uint32_t id,  char *url,  char * cli_pattern, na
         pcre_n->pattern = strdup(url);
         pcre_n->cli_pattern = strdup(cli_pattern);
         pcre_n->cre =  pcre_compile( pcre_n->pattern , 0, &error, &erroffset, NULL);
-        printf("url_rule_add:error:%s,erroffset:%d\n", error, erroffset);
 		if(pcre_n->cre == NULL)
 		{
 			free(pcre_n->pattern);
 			return E_FAIL;
 		}
-        printf("pcre_n->id:%d, pcre_n->cre:%p\n", pcre_n->id, pcre_n->cre);
 		
         memcpy(&pcre_n->acl, acl, sizeof(naga_acl_t));
 		pcre_n->used =1;
@@ -122,6 +120,7 @@ berr  naga_url(url_t *url_r, hytag_t *hytag, char *url_str, int url_len)
                 CNT_INC(URL_MATCHED);
                 ACL_HIT(urlcre->acl); 
                 
+               #if 0
                 if (ACT_IS_VAILD(urlcre->acl.actions, ACT_REDIR))
                 {
                     if (ACL_CNT_GET(urlcre->acl)% urlcre->acl.sample < 1)
@@ -149,6 +148,28 @@ berr  naga_url(url_t *url_r, hytag_t *hytag, char *url_str, int url_len)
                     }
                     HYTAG_ACL_MERGE(hytag->acl, urlcre->acl);
                 }
+               #else
+                if (compare > 1)
+                {
+                    memcpy(hytag->reg, (url_str + ovector[2]), (ovector[3] - ovector[2])); 
+                }
+                HYTAG_ACL_MERGE(hytag->acl, urlcre->acl);
+                if (ACT_IS_VAILD(urlcre->acl.actions, ACT_REDIR))
+                {
+                    if (ACL_CNT_GET(urlcre->acl)% urlcre->acl.sample < 1)
+                    {
+                        // push statistics
+                        ACL_PUSHED_ASSERT_HIT(urlcre->acl);
+                    }
+                    else
+                    {
+                        // drop statistics
+                        ACL_PRE_NOT_DROP_HIT (urlcre->acl);
+                        hytag->acl.actions &= 0xFFFFFFEF;
+                    }
+                }
+               #endif
+               
                 //pthread_mutex_unlock(&url_mutex);
                 return E_SUCCESS;
             }
@@ -175,7 +196,7 @@ berr  naga_ref_url(hytag_t *hytag)
 #if HTTP_URL_PARSE_ORI_MOD
     return naga_url(&ref_url_r, hytag, hytag->ref_url.url, strlen(hytag->ref_url.url));
 #else
-    return naga_url(&ref_url_r, hytag, hytag->url, hytag->url_len); 
+    return naga_url(&ref_url_r, hytag, hytag->referer, hytag->referer_len); 
 #endif
 }
 
