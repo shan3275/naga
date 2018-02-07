@@ -120,7 +120,7 @@ berr naga_mask(hytag_t *hytag)
         debug("DOPT: mask_url  ===================================================================");
         debug("rule->mask:0x%x, rule->mask & hytag->acl.mask:0x%x", rule->mask, rule->mask & hytag->acl.mask);
 
-        if (hytag->acl.mask == (rule->mask & hytag->acl.mask)) {
+        if (rule->mask == (rule->mask & hytag->acl.mask)) {
             debug("DOPT: mask_url  ===================================================================");
             ACL_HIT(rule->acl);
             HYTAG_ACL_MERGE(hytag->acl, rule->acl);

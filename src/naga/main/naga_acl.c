@@ -83,7 +83,7 @@ berr naga_acl(hytag_t *hytag)
     rv = naga_acl_redir(hytag);
 
     if (rv != E_SUCCESS) {
-        printf("%s.%d: rv = %s\n", __func__, __LINE__, berr_msg(rv));
+        //printf("%s.%d: rv = %s\n", __func__, __LINE__, berr_msg(rv));
     }
 
     return E_SUCCESS;
