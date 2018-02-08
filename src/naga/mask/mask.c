@@ -126,6 +126,21 @@ berr naga_mask(hytag_t *hytag)
             HYTAG_ACL_MERGE(hytag->acl, rule->acl);
             CNT_INC(MASK_MATCHED);
 
+            if (ACT_IS_VAILD(rule->acl.actions, ACT_REDIR))
+            {
+                if (ACL_CNT_GET(rule->acl)% rule->acl.sample < 1)
+                {
+                    // push statistics
+                    ACL_PUSHED_ASSERT_HIT(rule->acl);
+                }
+                else
+                {
+                    // drop statistics
+                    ACL_PRE_NOT_DROP_HIT (rule->acl);
+                    hytag->acl.actions &= 0xFFFFFFEF;
+                }
+            }
+
             if (DOPT_IS_SELECTED(DOPT_MASK_URL)) 
             {
                 debug("DOPT: mask_url  ===================================================================");
