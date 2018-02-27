@@ -3,7 +3,7 @@
 
 #include "pcre.h"
 
-#define MAX_URL_RULE   128
+#define MAX_URL_RULE   256
 
 
 struct pcre_s

@@ -19,7 +19,7 @@
 
 DEFUN(ori_url_add,
       ori_url_add_cmd,
-      "ori url add <0-127> EXPR ACT",
+      "ori url add <0-255> EXPR ACT",
       ORL_EXPR
       URL_EXPR
       ADD_EXPR
@@ -82,7 +82,7 @@ DEFUN(ori_url_add,
 
 ALIAS (ori_url_add,
        ori_url_add_param_cmd,
-       "ori url add <0-127> EXPR ACT PARAM",
+       "ori url add <0-255> EXPR ACT PARAM",
        ORL_EXPR
        URL_EXPR
        ADD_EXPR
@@ -93,7 +93,7 @@ ALIAS (ori_url_add,
 
 ALIAS (ori_url_add,
        ori_url_add_param_rate_cmd,
-       "ori url add <0-127> EXPR ACT PARAM <1-100>",
+       "ori url add <0-255> EXPR ACT PARAM <1-100>",
        ORL_EXPR
        URL_EXPR
        ADD_EXPR
@@ -105,7 +105,7 @@ ALIAS (ori_url_add,
 
 DEFUN(ori_url_del,
       ori_url_del_cmd,
-      "ori url del <0-127>",
+      "ori url del <0-255>",
       ORL_EXPR
       URL_EXPR
       DEL_EXPR
@@ -198,7 +198,7 @@ void ori_url_cmd_config_write(struct vty *vty)
 
 DEFUN(ref_url_add,
       ref_url_add_cmd,
-      "ref url add <0-127> EXPR ACT",
+      "ref url add <0-255> EXPR ACT",
       URL_EXPR)
 {
 
@@ -256,17 +256,17 @@ DEFUN(ref_url_add,
 
 ALIAS (ref_url_add,
        ref_url_add_param_cmd,
-       "ref url add <0-127> EXPR ACT PARAM",
+       "ref url add <0-255> EXPR ACT PARAM",
        URL_EXPR)
 
 ALIAS (ref_url_add,
        ref_url_add_param_rate_cmd,
-       "ref url add <0-127> EXPR ACT PARAM <1-100>",
+       "ref url add <0-255> EXPR ACT PARAM <1-100>",
        URL_EXPR)
 
 DEFUN(ref_url_del,
       ref_url_del_cmd,
-      "ref url del <0-127>",
+      "ref url del <0-255>",
       URL_EXPR)
 {
 
@@ -347,7 +347,6 @@ void ref_url_cmd_config_write(struct vty *vty)
     return ;
 }
 
-
 void cmdline_url_init(void)
 {
 	install_element(CMD_NODE, &ori_url_add_cmd);
@@ -366,7 +365,3 @@ void cmdline_url_init(void)
 
     return ;
 }
-
-
-
-
