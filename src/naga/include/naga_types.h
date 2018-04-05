@@ -23,7 +23,7 @@ typedef uint32_t ipaddr_t;
 #define ACT_REDIR       16
 #define ACT_TAGDUMP     32
 #define ACT_MASK        64
-#define ACT_URLDUMP     128
+#define ACT_URLPUSH    128
 
 #define ACT_IS_VAILD(_val, _act) \
     (((_val) & (_act)) == (_act))

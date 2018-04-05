@@ -49,6 +49,7 @@ typedef enum {
     E_COMPARE,
     E_INIT,
     E_FORMAT,
+    E_ENCODE,   //编码失败
     E_MAX,      // 错误码的最大值
 } berr;
 

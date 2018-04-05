@@ -22,20 +22,18 @@ berr naga_fct(hytag_t *hytag)
     }
 
     rv = naga_ori_url(hytag);
-
-    if (E_SUCCESS == rv && (hytag->acl.actions & ACT_REDIR)) {
+    if (E_SUCCESS == rv && (hytag->acl.actions & ACT_REDIR ||hytag->acl.actions & ACT_URLPUSH )) {
         return rv;
     }
     
     rv = naga_ref_url(hytag);
-
-    if (E_SUCCESS == rv && (hytag->acl.actions & ACT_REDIR)) {
+    if (E_SUCCESS == rv && (hytag->acl.actions & ACT_REDIR ||hytag->acl.actions & ACT_URLPUSH )) {
         return rv;
     }
 
     rv = naga_mask(hytag);
 
-    if (E_SUCCESS == rv && (hytag->acl.actions & ACT_REDIR)) {
+    if (E_SUCCESS == rv && (hytag->acl.actions & ACT_REDIR ||hytag->acl.actions & ACT_URLPUSH )) {
         return rv;
     }
 

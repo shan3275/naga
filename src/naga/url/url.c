@@ -94,7 +94,6 @@ berr url_rule_del(url_t *url_r, uint32_t id)
 }
 
 
-//pthread_mutex_t url_mutex = PTHREAD_MUTEX_INITIALIZER;
 berr  naga_url(url_t *url_r, hytag_t *hytag, char *url_str, int url_len)
 {
     int ovector[OVECCOUNT]={0};
@@ -108,7 +107,6 @@ berr  naga_url(url_t *url_r, hytag_t *hytag, char *url_str, int url_len)
         return E_SUCCESS;
     }
     CNT_INC(URL_PKTS);
-    //pthread_mutex_lock(&url_mutex);
     for(i=0; i<url_r->inuse; i ++ )
     {
         urlcre = &(url_r->url_pcre[i]);
@@ -119,36 +117,7 @@ berr  naga_url(url_t *url_r, hytag_t *hytag, char *url_str, int url_len)
             {
                 CNT_INC(URL_MATCHED);
                 ACL_HIT(urlcre->acl); 
-                
-               #if 0
-                if (ACT_IS_VAILD(urlcre->acl.actions, ACT_REDIR))
-                {
-                    if (ACL_CNT_GET(urlcre->acl)% urlcre->acl.sample < 1)
-                    {
-                        if (compare > 1)
-                        {
-                            memcpy(hytag->reg, (url_str + ovector[2]), (ovector[3] - ovector[2])); 
-                        }
-                        // push statistics
-                        ACL_PUSHED_ASSERT_HIT(urlcre->acl);
-                        HYTAG_ACL_MERGE(hytag->acl, urlcre->acl);
-                    }
-                    else
-                    {
-                        // drop statistics
-                        ACL_PRE_NOT_DROP_HIT (urlcre->acl);
-                    }
-            
-                }
-                else
-                {
-                    if (compare > 1)
-                    {
-                        memcpy(hytag->reg, (url_str + ovector[2]), (ovector[3] - ovector[2])); 
-                    }
-                    HYTAG_ACL_MERGE(hytag->acl, urlcre->acl);
-                }
-               #else
+
                 if (compare > 1)
                 {
                     memcpy(hytag->reg, (url_str + ovector[2]), (ovector[3] - ovector[2])); 
@@ -168,14 +137,11 @@ berr  naga_url(url_t *url_r, hytag_t *hytag, char *url_str, int url_len)
                         hytag->acl.actions &= 0xFFFFFFEF;
                     }
                 }
-               #endif
-               
-                //pthread_mutex_unlock(&url_mutex);
+
                 return E_SUCCESS;
             }
         }
     }
-    //pthread_mutex_unlock(&url_mutex);
     CNT_INC(URL_DISMATCH);
 
 	return E_SUCCESS;  

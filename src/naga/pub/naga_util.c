@@ -54,6 +54,10 @@ naga_action_parse(char *str, uint32_t *actions)
         {
             *actions |= ACT_MASK;
         }
+        else if (!strcmp("upush", tokp))
+        {
+            *actions |= ACT_URLPUSH;
+        }
         else
         {
             BRET(E_FOUND);
@@ -115,6 +119,16 @@ naga_acl_string(naga_acl_t *acl, char *str)
         }
 
         cp += sprintf(cp, "push");
+    }
+
+    if (ACT_IS_VAILD(acl->actions, ACT_URLPUSH))
+    {
+        if (cp != str)
+        {
+            cp += sprintf(cp, ",");
+        }
+
+        cp += sprintf(cp, "upush");
     }
 
     if (ACT_IS_VAILD(acl->actions, ACT_TAGDUMP))

@@ -51,6 +51,7 @@ DIRS-y += hijack
 DIRS-y += debug
 DIRS-y += domain
 DIRS-y += mask
+DIRS-y += upush
 DIRS-y += main
 
 include $(RTE_SDK)/mk/rte.extsubdir.mk

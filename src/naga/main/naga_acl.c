@@ -8,6 +8,7 @@
 
 #include "packet.h"
 #include "itf.h"
+#include "upush.h"
 
 berr naga_acl_redir(hytag_t *hytag)
 {
@@ -15,16 +16,6 @@ berr naga_acl_redir(hytag_t *hytag)
     berr rv;
     unsigned char buffer[2048]; 
     char url[2048];
-
-    if (NULL == hytag) 
-    {
-        return E_PARAM; 
-    }
-
-    if(ACT_REDIR != (hytag->acl.actions & ACT_REDIR))
-    {
-        return E_SUCCESS;
-    }
 
     CNT_INC(ACL_REDIR_PKTS);
     
@@ -75,15 +66,62 @@ berr naga_acl_redir(hytag_t *hytag)
    return E_SUCCESS;
 }
 
+berr naga_acl_urlpush(hytag_t *hytag)
+{
+    berr rv;
+    char ptr[2048]; 
+
+    CNT_INC(ACL_URLPUSH_PKTS);
+
+    if( APP_TYPE_HTTP_GET_OR_POST != hytag->app_type)
+    {
+        CNT_INC(ACL_URLPUSH_DROP_GET_OR_POST);
+        return E_SUCCESS;
+    }
+
+    memset(ptr,0, 2048);
+    rv = upush_content_generator(hytag, ptr); 
+    if(rv != E_SUCCESS) 
+    {
+        CNT_INC(ACL_URLPUSH_ENCODE_FAIL);
+        return rv;
+    }
+
+    rv = upush_send(ptr);
+    if(rv != E_SUCCESS)
+    {
+        CNT_INC(ACL_URLPUSH_SENDER_NULL);
+        return rv;
+    }
+
+   return E_SUCCESS;
+}
 
 berr naga_acl(hytag_t *hytag)
 {
     int rv = E_MAX;
 
-    rv = naga_acl_redir(hytag);
+    if (NULL == hytag) 
+    {
+        return E_SUCCESS;
+    }
 
-    if (rv != E_SUCCESS) {
-        //printf("%s.%d: rv = %s\n", __func__, __LINE__, berr_msg(rv));
+    if(ACT_REDIR == (hytag->acl.actions & ACT_REDIR))
+    {
+        CNT_INC(ACL_PKTS);
+        rv = naga_acl_redir(hytag);
+        if (rv != E_SUCCESS) {
+            //printf("%s.%d: rv = %s\n", __func__, __LINE__, berr_msg(rv));
+        }
+    }
+    else
+    if(ACT_URLPUSH == (hytag->acl.actions & ACT_URLPUSH))
+    {
+        CNT_INC(ACL_PKTS);
+        rv = naga_acl_urlpush(hytag);
+        if (rv != E_SUCCESS) {
+            //printf("%s.%d: rv = %s\n", __func__, __LINE__, berr_msg(rv));
+        }
     }
 
     return E_SUCCESS;
