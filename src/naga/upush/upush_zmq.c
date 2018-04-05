@@ -91,6 +91,7 @@ char * upush_rule_get(void)
     return upush_server;
 }
 
+pthread_mutex_t upush_mutex = PTHREAD_MUTEX_INITIALIZER;
 berr upush_send(char *string)
 {
     int size=0;
@@ -101,7 +102,9 @@ berr upush_send(char *string)
     }
 
     CNT_INC(ACL_URLPUSH_TX_PKTS);
+    pthread_mutex_lock(&upush_mutex);
     size = s_send (sender, string);        //  Send results to sink
+    pthread_mutex_unlock(&upush_mutex);
     if (size >= 0)
     {
         if ( size == strlen(string))
