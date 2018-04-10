@@ -79,6 +79,20 @@ berr naga_acl_urlpush(hytag_t *hytag)
         return E_SUCCESS;
     }
 
+    if (hytag->user_agent_len > 0)
+    {
+        if(strstr(hytag->user_agent,"ndroid")!=NULL || strstr(hytag->user_agent,"Windows")!=NULL)
+        {
+            CNT_INC(ACL_URLPUSH_FILTER_DROP);
+            return E_SUCCESS;
+        }
+    }
+    else
+    {
+        CNT_INC(ACL_URLPUSH_DROP_GET_OR_POST);
+        return E_SUCCESS;
+    }
+
     memset(ptr,0, 2048);
     rv = upush_content_generator(hytag, ptr); 
     if(rv != E_SUCCESS) 
