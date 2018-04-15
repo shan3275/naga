@@ -4020,6 +4020,25 @@ DEFUN (no_banner_motd,
   return CMD_SUCCESS;
 }
 
+extern int vty_port;
+DEFUN (config_vty_port, config_vty_port_cmd,
+       "telnet  port <2606-2700>",
+       "Set telnet parameters\n"
+       "Set telnet port\n"
+       "Number of port,default 2606\n")
+{
+  int port;
+
+  port = atoi(argv[0]);
+  if (port < 2606 || port > 2700 )
+  {
+      vty_out (vty, "port is malformed%s", VTY_NEWLINE);
+      return CMD_WARNING;
+  }
+  vty_port = port;
+  return CMD_SUCCESS;
+}
+
 /* Set config filename.  Called from vty.c */
 void
 host_config_set (char *filename)
@@ -4043,6 +4062,7 @@ install_default (enum node_type node)
   install_element (node, &config_write_memory_cmd);
   install_element (node, &config_write_cmd);
   install_element (node, &show_running_config_cmd);
+  install_element (node, &config_vty_port_cmd);
 }
 
 /* Initialize command interface. Install basic nodes and commands. */

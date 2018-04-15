@@ -188,6 +188,7 @@ int bts_stat_log_file_timer(struct thread *t)
 	thread_add_timer(zebrad.master, bts_stat_log_file_timer, NULL, 10);
 }
 
+int vty_port = ZEBRA_VTY_PORT;
 /* cmdline  startup routine. */
 //int cmdline (int argc, char **argv)
 int cmdline (int argc, char **argv)
@@ -195,7 +196,7 @@ int cmdline (int argc, char **argv)
     char *p;
     //char *vty_addr = "127.0.0.1";
     char *vty_addr = "0.0.0.0";
-    int vty_port = ZEBRA_VTY_PORT;
+    //int vty_port = ZEBRA_VTY_PORT;
     int batch_mode = 0;
     int daemon_mode = 0;
     char *config_file = "zebra.conf";

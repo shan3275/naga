@@ -93,7 +93,57 @@ DEFUN(itf_rxtx,
     return 0;
 }
 
-
+DEFUN(itf_injection, 
+      itf_injection_cmd,
+      "interface injection (add|remove) IFNAME", 
+      "interface setting\n"
+      "injection cmd\n"
+      "add or remove\n"
+      "interface name, such as:eth0\n")
+{
+    if( !strcmp (argv[0], "add"))
+    {
+        char * ifname = strdup(argv[1]);
+        berr rv = itf_raw_socket_add(ifname);
+        if(rv == E_SUCCESS)
+            vty_out(vty, "Success to add %s%s", ifname, VTY_NEWLINE);
+        else
+        if( rv = E_FAIL)
+        {
+            vty_out(vty, "Failed to add %s %s", ifname, VTY_NEWLINE);
+        }
+        else
+        if( rv = E_EXIST)
+        {
+            vty_out(vty, "Failed to add %s ,have existed%s", ifname, VTY_NEWLINE);
+        }
+        free(ifname);
+    }
+	else if(!strcmp (argv[0], "remove"))
+	{
+        char * ifname = strdup(argv[1]);
+        berr rv = itf_raw_socket_del(ifname);
+        if(rv == E_SUCCESS)
+            vty_out(vty, "Success to remove %s rx%s", ifname, VTY_NEWLINE);
+        else
+        if( rv = E_FAIL)
+        {
+            vty_out(vty, "Failed to remove %s%s", ifname, VTY_NEWLINE);
+        }
+        else
+        if( rv = E_MATCH)
+        {
+            vty_out(vty, "Failed to remove %s interface unmatch%s", ifname, VTY_NEWLINE);
+        }
+        else
+        if( rv = E_INIT)
+        {
+            vty_out(vty, "Failed to remove %s interface uninit%s", ifname, VTY_NEWLINE);
+        }
+        free(ifname);
+	}
+    return 0;
+}
 
 static int itf_cmd_show_status(struct vty *vty)
 {
@@ -120,6 +170,7 @@ static int itf_cmd_show_status(struct vty *vty)
     {
         vty_out(vty, "RX :%s%s", stat.enable == ITF_ENABLE ?"Enable":"Disable", VTY_NEWLINE);
     }
+
 
     return CMD_SUCCESS;
 }
@@ -232,63 +283,6 @@ DEFUN(interface_set,
     return interface_cmd_set(vty, argv[0], argv[1]);
 }
 
-#if 0
-static int interface_cmd_show_status(struct vty *vty)
-{
-    int rv;
-    int i;
-    port_stat stat;
-    struct rte_eth_stats stats;
-    uint8_t port_id; 
-    for ( i = 0; i < INTERFACE_NUM_MAX; i++ )
-    {
-        stat.port_id = i;
-        rv = interface_stat_get( &stat);
-        if (rv)
-        {
-            vty_out(vty, "get tx status fail rv(%d)%s", rv, VTY_NEWLINE);
-        }
-        else
-        {
-            vty_out(vty, "Port(%d) :%s%s", i, stat.enable == ITF_ENABLE ?"Enable":"Disable", VTY_NEWLINE);
-        }
-
-        port_id = (uint8_t)i;
-        rte_eth_stats_get(port_id, &stats);
-   
-    	vty_out(vty, "Rx Packet             :%-20ld %s", stats.ipackets, VTY_NEWLINE);  
-        vty_out(vty, "Rx bytes              :%-20ld %s", stats.ibytes, VTY_NEWLINE); 
- 
-  
-
-        vty_out(vty, "RX Drop               :%-20ld %s", stats.imissed, VTY_NEWLINE);   
-    	vty_out(vty, "Rx CRC                :%-20ld %s", stats.ibadcrc, VTY_NEWLINE);   
-    	vty_out(vty, "Rx Badlen             :%-20ld %s", stats.ibadlen, VTY_NEWLINE);   
-    	vty_out(vty, "RX ERR(Total)         :%-20ld %s", stats.ierrors, VTY_NEWLINE);   
-     	vty_out(vty, "Rx Mcasts             :%-20ld %s", stats.imcasts, VTY_NEWLINE); 
-  
-    	vty_out(vty, "Rx No mbuf            :%-20ld %s", stats.rx_nombuf, VTY_NEWLINE); 
-        
-    	vty_out(vty, "Rx Filter match       :%-20ld %s", stats.fdirmatch, VTY_NEWLINE); 
-    	vty_out(vty, "Rx Filter nomatch     :%-20ld %s", stats.fdirmiss, VTY_NEWLINE);  
-        vty_out(vty, "Rx Pause_xoff         :%-20ld %s", stats.rx_pause_xoff, VTY_NEWLINE);         
-    	vty_out(vty, "Rx Pause_xon          :%-20ld %s", stats.rx_pause_xon, VTY_NEWLINE);  
-             
-
-        vty_out(vty, "Tx Packet             :%-20ld %s", stats.opackets, VTY_NEWLINE);  
-    	vty_out(vty, "Tx Byte               :%-20ld %s", stats.obytes, VTY_NEWLINE);     
-        vty_out(vty, "TX ERR(Total)         :%-20ld %s", stats.oerrors, VTY_NEWLINE); 
-    	vty_out(vty, "Tx Pause_xon          :%-20ld %s", stats.tx_pause_xon, VTY_NEWLINE);  
-    	vty_out(vty, "Tx Pause_xoff         :%-20ld %s", stats.tx_pause_xoff, VTY_NEWLINE); 
-
-
-    }
-
-
-    return CMD_SUCCESS;
-}
-#endif
-
 DEFUN(interface_show_stat, 
       interface_show_stat_cmd,
       "show interface status",
@@ -297,6 +291,16 @@ DEFUN(interface_show_stat,
       "Status information\n" 
       )
 {
+    int rv;
+    char ifname[16]={0};
+    rv = itf_raw_socket_get_if_name(ifname);
+    if (rv == E_SUCCESS)
+    {
+        vty_out(vty, "interface injection %s%s", ifname, VTY_NEWLINE);
+    }
+    int socket = 0;
+    socket = itf_raw_socket_get_socket();
+    vty_out(vty, "interface injection socket %d%s", socket, VTY_NEWLINE);
     return CMD_SUCCESS;
     //return interface_cmd_show_status(vty);
 }
@@ -357,6 +361,7 @@ extern struct list_head	handle_head;
 void cmdline_itf_init(void)
 {
     install_element(CMD_NODE, &itf_rxtx_cmd);
+    install_element(CMD_NODE, &itf_injection_cmd);
     install_element(CMD_NODE, &itf_show_stat_cmd);
     install_element(CMD_NODE, &itf_set_cmd);
     install_element(CMD_NODE, &interface_set_cmd);

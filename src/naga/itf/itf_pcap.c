@@ -19,13 +19,20 @@
 
 pcap_t *gpcap_desc = NULL;
 static int send_socket = 0;
+char if_name[16]={0};
 static struct  sockaddr_ll  sll;
 
-berr itf_raw_socket_init(char *ifname)
-
+berr itf_raw_socket_add(char *ifname)
 {
     if(ifname== NULL)
+    {
         return E_SUCCESS;
+    }
+
+    if (strlen(if_name) > 0)
+    {
+        return E_EXIST;
+    }
 
     int sockfd = socket(PF_PACKET, SOCK_RAW, 0);
 	
@@ -57,9 +64,57 @@ berr itf_raw_socket_init(char *ifname)
 	printf("flag is %x, %x\n", flag, O_NONBLOCK);
 	fcntl(sockfd, F_SETFL, flag & ~O_NONBLOCK);	
     //shutdown(send_socket, SHUT_RD);
+
+    strcpy(if_name, ifname);
     return E_SUCCESS;
 }
 
+berr itf_raw_socket_del(char *ifname)
+{
+    if(ifname== NULL)
+    {
+        return E_SUCCESS;
+    }
+
+    if (strncmp(if_name,ifname, strlen(ifname)) )
+    {
+        return E_MATCH;
+    }
+
+    if (send_socket)
+    {
+        //if (shutdown(send_socket, SHUT_RDWR))
+        if (close(send_socket))
+        {
+            perror("shutdown:");
+            return E_FAIL;
+        }
+    }
+    else
+    {
+        return E_INIT;
+    }
+
+    memset(if_name,0,sizeof(if_name));
+    send_socket = 0;
+    return E_SUCCESS;
+}
+
+berr itf_raw_socket_get_if_name(char *ifname)
+{
+    if(ifname== NULL)
+    {
+        return E_SUCCESS;
+    }
+
+    strncpy(ifname, if_name, sizeof(if_name));
+    return E_SUCCESS;
+}
+
+int itf_raw_socket_get_socket(void)
+{
+    return send_socket;
+}
 
 
 berr ift_raw_send_packet(uint8_t * buff, int len)
