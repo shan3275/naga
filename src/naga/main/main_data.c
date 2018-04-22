@@ -27,7 +27,6 @@
 #include "boots_custom.h"
 #include "dbg_tagmon.h"
 #include <string.h>
-#include "vsr_dp.h"
 #include "itf.h"
 #include "nag_adp.h"
 #include "naga_hijack.h"
@@ -89,19 +88,13 @@ berr naga_data_process_module(hytag_t * hytag)
     DPF_NODE(MOD_NET, hytag, netseg_dp_process);
     DPF_NODE(MOD_DNET, hytag, dnet_dp_process);
 
-
-    //DPF_NODE(MOD_DMR, hytag, naga_dmr);
-
-    //DPF_NODE(MOD_DMR, hytag, naga_domain);
-
     //DPF_NODE(MOD_ACR, hytag, naga_acr);
 
     //DPF_NODE(MOD_ADP, hytag, naga_adp);
 
-    //DPF_NODE(MOD_HIJACK, hytag, naga_hijack);
     DPF_NODE(MOD_FCT, hytag, naga_fct);
     DPF_NODE(MOD_ACL, hytag, naga_acl);
-   
+
     pthread_mutex_lock(&naga_mutex);
     HYTAG_LOG(hytag);
     pthread_mutex_unlock(&naga_mutex);

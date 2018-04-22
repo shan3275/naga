@@ -330,7 +330,7 @@ dmr_dump_vty(void *data, void *param)
             dmr_pram->cnt_total +=  (uint64_t) entry->acl.cnt.cnt;
             dmr_pram->non_drop  +=  (uint64_t)entry->acl.vcnt.cnt;
             dmr_pram->pushed    += (uint64_t)entry->acl.pushed_cnt.cnt;
-        }        
+        }
     }
     else if (dmr_pram->flag == FLAG_SHOW_SUM)
     {
@@ -347,7 +347,7 @@ dmr_dump_vty(void *data, void *param)
             dmr_pram->cnt_total +=  (uint64_t) entry->acl.cnt.cnt;
             dmr_pram->non_drop  +=  (uint64_t)entry->acl.vcnt.cnt;
             dmr_pram->pushed    += (uint64_t)entry->acl.pushed_cnt.cnt;  
-    
+
     }
 }
 
@@ -499,7 +499,7 @@ static int cmd_dmr_del_all(struct vty *vty)
 
 DEFUN(remove_domain, 
       remove_domain_cmd,
-      "no domain NAME",
+      "domain remove NAME",
       REMOVE_STR
       DOMAIN_STR
       DOMAIN_NAME_STR)
@@ -509,7 +509,7 @@ DEFUN(remove_domain,
 
 DEFUN(remove_domain_all, 
       remove_domain_all_cmd,
-      "no domain all",
+      "domain remove all",
       REMOVE_STR
       DOMAIN_STR
       DOMAIN_ALL_STR)
@@ -518,13 +518,12 @@ DEFUN(remove_domain_all,
 }
 
 
-static int cmd_dmr_add(struct vty *vty, const char *host, const char *action_str, uint16_t interval)
+static int cmd_dmr_add(struct vty *vty, const char *host, naga_acl_t *acl, uint16_t interval)
 {
     berr ret = 0;
-	char action_arry[NAGA_ACL_STR_SZ]= {0};
 	dmr_t *entry = NULL;
 		
-	if ((NULL == host) || (NULL == action_str))
+	if ((NULL == host) || (NULL == acl))
 	{
         return CMD_ERR_NO_MATCH;
 	}
@@ -535,16 +534,12 @@ static int cmd_dmr_add(struct vty *vty, const char *host, const char *action_str
         return CMD_ERR_NO_MATCH;
 	}
 
-    sprintf(action_arry, "%s", action_str);
-	if(naga_acl_parse(&action_arry, 1, &entry->acl))
-    {
-        return CMD_ERR_NO_MATCH;
-    }
+    memcpy(&entry->acl, acl, sizeof(naga_acl_t));
 
 	entry->host_len = strlen(host);
     if( 0 == interval )
         interval = DOMAIN_INTERVAL;
-    
+
     entry->interval = interval;
 	memcpy(entry->host, host, entry->host_len);
 
@@ -567,20 +562,63 @@ DEFUN(domain,
       DOMAIN_NAME_STR
       ACTION_STR)
 {
-    return cmd_dmr_add(vty, argv[0], argv[1], 0);
+	berr rv;
+    char * url_str =  strdup(argv[0]);
+    naga_acl_t acl;
+    memset(&acl, 0, sizeof(naga_acl_t));
+
+	if(naga_acl_parse(&argv[1], argc - 1, &acl))
+    {
+        free(url_str);
+        return CMD_ERR_NO_MATCH;
+    }
+    rv =  cmd_dmr_add(vty, url_str, &acl, 0);
+    free(url_str);
+	if(rv != E_SUCCESS)
+	{
+		 vty_out(vty, "Failed To add Url rule %s", VTY_NEWLINE);
+		 return 0;
+	}
+	return 0;
 }
 
-static int cmd_dmr_load(struct vty *vty, const char *file_name, const char *action_str, uint16_t interval)
+ALIAS(domain, 
+      domain_param_cmd,
+      "domain NAME ACT PARAM",
+      DOMAIN_STR
+      DOMAIN_NAME_STR
+      ACTION_STR
+      "Action Param\n")
+
+ALIAS(domain, 
+      domain_param_rate_cmd,
+      "domain NAME ACT PARAM <1-100>",
+      DOMAIN_STR
+      DOMAIN_NAME_STR
+      ACTION_STR
+      "Action Param\n"
+      "Parameter rate\n"
+      )
+
+DEFUN(load_domain,
+      load_domain_cmd,
+      "load domain FILE <1-65535> ACT",
+      LOAD_STR
+      DOMAIN_STR
+      FILE_STR
+      "INTERVAL\n"
+      ACTION_STR)
 {
+    uint16_t interval = strtoul(argv[1], NULL, 0);    
 	FILE *fp = NULL;
 	char host_line[MAX_HOST_LEN] = {0};
 	int rv = 0;
 	char *p = NULL;
 
-	fp = fopen(file_name, "r");
+	fp = fopen(argv[0], "r");
 	if (NULL == fp)
 	{
-		dmr_debug("Open the file %s failed!\n", file_name);
+		dmr_debug("Open the file %s failed!\n", argv[0]);
 		return CMD_ERR_NOTHING_TODO;
 	}
 
@@ -591,18 +629,32 @@ static int cmd_dmr_load(struct vty *vty, const char *file_name, const char *acti
 			continue;
 		}
 
-		if (NULL != (p = strchr(host_line, '\n')))
+		if (NULL != (p = strchr(host_line, '\r'))|| NULL != (p = strchr(host_line, '\n')))
 		{
             *p = '\0';
 		}
 
-		if (!strcmp("remove", action_str))
+		if (!strcmp("remove", argv[2]))
 		{
 			rv = cmd_dmr_del(vty, host_line);
 		}
 		else
 		{
-			rv = cmd_dmr_add(vty, host_line, action_str, interval);
+            berr rv;
+            naga_acl_t acl;
+            memset(&acl, 0, sizeof(naga_acl_t));
+            if(naga_acl_parse(&argv[2], argc - 2, &acl))
+            {
+                fclose(fp);
+                return CMD_ERR_NO_MATCH;
+            }
+            rv =  cmd_dmr_add(vty, host_line, &acl, interval);
+            if(rv != E_SUCCESS)
+            {
+                vty_out(vty, "Failed To add Url rule %s", VTY_NEWLINE);
+                fclose(fp);
+                return 0;
+            }
 		}
 		if (CMD_SUCCESS != rv)
 		{
@@ -610,6 +662,7 @@ static int cmd_dmr_load(struct vty *vty, const char *file_name, const char *acti
 			fclose(fp);
 			return rv;
 		}
+        memset(host_line,0,sizeof(host_line));
 	}
 
 	fclose(fp);
@@ -617,18 +670,26 @@ static int cmd_dmr_load(struct vty *vty, const char *file_name, const char *acti
 	return CMD_SUCCESS;
 }
 
-
-DEFUN(load_domain,
-      load_domain_cmd,
-      "load domain FILE ACT <1-65535>",
+ALIAS(load_domain,
+      load_domain_param_cmd,
+      "load domain FILE <1-65535> ACT PARAM",
       LOAD_STR
       DOMAIN_STR
       FILE_STR
-      ACTION_STR)
-{
-    uint16_t interval = strtoul(argv[2], NULL, 0);    
-    return cmd_dmr_load(vty, argv[0], argv[1], interval);
-}
+      "INTERVAL\n"
+      ACTION_STR
+      "Action Param\n")
+
+ALIAS(load_domain,
+      load_domain_param_rate_cmd,
+      "load domain FILE <1-65535> ACT PARAM <1-100>",
+      LOAD_STR
+      DOMAIN_STR
+      FILE_STR
+      "INTERVAL\n"
+      ACTION_STR
+      "Action Param\n"
+      "Param Rate\n")
 
 static int cmd_dmr_clear_stat(struct vty *vty, const char *host)
 {
@@ -924,9 +985,13 @@ void dmr_cmd_config_write(struct vty *vty)
 void cmdline_dmr_init(void)
 {
 	install_element(CMD_NODE, &domain_cmd);
+	install_element(CMD_NODE, &domain_param_cmd);
+	install_element(CMD_NODE, &domain_param_rate_cmd);
 	install_element(CMD_NODE, &remove_domain_cmd);
 	install_element(CMD_NODE, &remove_domain_all_cmd);
 	install_element(CMD_NODE, &load_domain_cmd);
+	install_element(CMD_NODE, &load_domain_param_cmd);
+	install_element(CMD_NODE, &load_domain_param_rate_cmd);
 	install_element(CMD_NODE, &clear_domain_stat_cmd);
 	install_element(CMD_NODE, &clear_domain_stat_all_cmd);
 	install_element(CMD_NODE, &show_domain_cmd);

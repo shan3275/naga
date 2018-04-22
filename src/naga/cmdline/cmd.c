@@ -225,10 +225,10 @@ int cmdline (int argc, char **argv)
     cmd_init (1);
     vty_init (zebrad.master);
     //memory_init ();
-    cmdline_vsr_init();
+    //cmdline_vsr_init();
     cmdline_bts_init();
 	cmdline_dmr_init();
-	cmdline_domain_init();
+	//cmdline_domain_init();
 	cmdline_acr_init();
     cmdline_adp_init();
     cmdline_itf_init();
@@ -237,7 +237,7 @@ int cmdline (int argc, char **argv)
 	cmdline_dnetseg_init();
 	cmdline_url_init();
     cmdline_urlr_init();
-    cmdline_hijack_init();
+    //cmdline_hijack_init();
     cmdline_mask_init();
     cmdline_upush_init();
     /* Zebra related initialize. */

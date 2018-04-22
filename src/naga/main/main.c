@@ -46,7 +46,7 @@
 #include <getopt.h>
 
 #include "main_data.h"
-#include "vsr_dp.h"
+//#include "vsr_dp.h"
 #include "dmr_dp.h"
 #include "acr_dp.h"
 #include "cmd.h"
@@ -63,8 +63,7 @@ main(int argc, char **argv)
 {
     berr rv;
     printf("cmd core %d\n", rte_lcore_id());
-    //vsr_dp_init();
-    //dmr_dp_init();
+    dmr_dp_init();
     //domain_dp_init();
     //acr_dp_init();
     netseg_init();
