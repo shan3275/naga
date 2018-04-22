@@ -32,7 +32,6 @@
 #include "naga_hijack.h"
 #include "bts_cnt.h"
 #include "main_data.h"
-#include "domain_dp.h"
 
 #include "naga_fct.h"
 #include "naga_acl.h"

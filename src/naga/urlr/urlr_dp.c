@@ -8,11 +8,13 @@
 
 #define MAX_URL_RULE_NUM 10000
 
-extern uint32_t url_default_action;
+extern naga_acl_t url_default_acl;
 
 berr naga_urlr(hytag_t *tag)
 {
     urlr_t* rule = NULL;
+    uint8_t url[MAX_URL_LENGTH] = {0};
+    char *p = NULL;
 
     if (NULL == tag)
     {
@@ -23,29 +25,28 @@ berr naga_urlr(hytag_t *tag)
     {
         return E_SUCCESS;
     }
-#if 0
-	if (0 == (tag->acl.actions & ACT_PUSH))
-	{
-		return E_SUCCESS;
-	}
 
-	tag->acl.actions = tag->acl.actions & (~ACT_PUSH);
-#endif	
-//	CNT_INC(URLR_PKTS);
-    tag->url_len= snprintf(tag->url, MAX_URL_LENGTH, "http://%s%s", tag->host, tag->uri);
-
-    rule = urlr_get((char *)tag->url);
+//  CNT_INC(URLR_PKTS);
+    if (NULL != (p = strchr(tag->url, '\?')))
+    {
+        memcpy(url,tag->url, p-tag->url);
+        rule = urlr_get((char *)url);
+    }
+    else
+    {
+        rule = urlr_get((char *)tag->url);
+    }
 
     if (NULL == rule)
     {
         //CNT_INC(URLR_RULE_UNMATCH);
-		HYTAG_ACL_SET(tag->acl, url_default_action);
+		//HYTAG_ACL_SET(tag->acl, url_default_action);
+        HYTAG_ACL_MERGE(tag->acl, url_default_acl);
     }
     else
     {
        // CNT_INC(URLR_RULE_MATCH);
         ACL_HIT(rule->acl);
-
 
         if(tag->pushed_second_assert)
         {

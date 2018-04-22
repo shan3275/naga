@@ -500,7 +500,7 @@ static int cmd_urlr_del_all(struct vty *vty)
 
 DEFUN(remove_url, 
       remove_url_cmd,
-      "no url NAME",
+      "url remove NAME",
       REMOVE_STR
       URL_STR
       URL_NAME_STR)
@@ -510,7 +510,7 @@ DEFUN(remove_url,
 
 DEFUN(remove_url_all, 
       remove_url_all_cmd,
-      "no url all",
+      "url remove all",
       REMOVE_STR
       URL_STR
       URL_ALL_STR)
@@ -519,13 +519,12 @@ DEFUN(remove_url_all,
 }
 
 
-static int cmd_urlr_add(struct vty *vty, const char *url, const char *acl_str, uint16_t interval)
+static int cmd_urlr_add(struct vty *vty, const char *url, naga_acl_t *acl, uint16_t interval)
 {
     berr ret = 0;
-	char action_arry[NAGA_ACL_STR_SZ]= {0};
 	urlr_t *entry = NULL;
 		
-	if ((NULL == url) || (NULL == acl_str))
+	if ((NULL == url) || (NULL == acl))
 	{
         return CMD_ERR_NO_MATCH;
 	}
@@ -536,23 +535,19 @@ static int cmd_urlr_add(struct vty *vty, const char *url, const char *acl_str, u
         return CMD_ERR_NO_MATCH;
 	}
 
-    sprintf(action_arry, "%s", acl_str);
-	if(naga_acl_parse(&action_arry, 1, &entry->acl))
-    {
-        return CMD_ERR_NO_MATCH;
-    }
+    memcpy(&entry->acl, acl, sizeof(naga_acl_t));
 
 	entry->url_len = strlen(url);
     if( 0 == interval )
         interval = URL_INTERVAL;
-    
+
     entry->interval = interval;
 	memcpy(entry->url, url, entry->url_len);
 
     ret = api_urlr_add(entry);
     if (ret)
     {
-        vty_out(vty, "urlr add url fail: ret(%s)%s", berr_msg(ret), VTY_NEWLINE);
+        vty_out(vty, "dmr add url fail: ret(%s)%s", berr_msg(ret), VTY_NEWLINE);
         return CMD_WARNING;
     }
 
@@ -568,49 +563,106 @@ DEFUN(url,
       URL_NAME_STR
       ACTION_STR)
 {
-    return cmd_urlr_add(vty, argv[0], argv[1], 0);
+	berr rv;
+    char * url_str =  strdup(argv[0]);
+    naga_acl_t acl;
+    memset(&acl, 0, sizeof(naga_acl_t));
+
+	if(naga_acl_parse(&argv[1], argc - 1, &acl))
+    {
+        free(url_str);
+        return CMD_ERR_NO_MATCH;
+    }
+    rv =  cmd_urlr_add(vty, url_str, &acl, 0);
+    free(url_str);
+	if(rv != E_SUCCESS)
+	{
+		 vty_out(vty, "Failed To add Url rule %s", VTY_NEWLINE);
+		 return 0;
+	}
+	return 0;
 }
 
-static int cmd_urlr_load(struct vty *vty, const char *file_name, const char *acl_str, uint16_t interval)
+ALIAS(url,
+      url_param_cmd,
+      "url NAME ACT PARAM",
+      URL_STR
+      URL_NAME_STR
+      ACTION_STR
+      "Action Paramerter\n")
+
+ALIAS(url,
+      url_param_rate_cmd,
+      "url NAME ACT PARAM <1-100>",
+      URL_STR
+      URL_NAME_STR
+      ACTION_STR
+      "Action Paramerter\n"
+      "Parameter Rate\n")
+
+DEFUN(load_url,
+      load_url_cmd,
+      "load url FILE <1-65535> ACT",
+      LOAD_STR
+      URL_STR
+      FILE_STR
+      "Interval\n"
+      ACTION_STR)
 {
+    uint16_t interval = strtoul(argv[1], NULL, 0);    
 	FILE *fp = NULL;
-	char url_line[MAX_URL_LENGTH] = {0};
+	char host_line[MAX_HOST_LEN] = {0};
 	int rv = 0;
 	char *p = NULL;
 
-	fp = fopen(file_name, "r");
+	fp = fopen(argv[0], "r");
 	if (NULL == fp)
 	{
-		urlr_debug("Open the file %s failed!\n", file_name);
+		urlr_debug("Open the file %s failed!\n", argv[0]);
 		return CMD_ERR_NOTHING_TODO;
 	}
 
-	while(NULL != fgets(url_line, MAX_URL_LENGTH, fp))
+	while(NULL != fgets(host_line, MAX_HOST_LEN, fp))
 	{
-		if ('#' == url_line[0])
+		if ('#' == host_line[0])
 		{
 			continue;
 		}
 
-		if (NULL != (p = strchr(url_line, '\n')))
+		if (NULL != (p = strchr(host_line, '\r'))|| NULL != (p = strchr(host_line, '\n')))
 		{
             *p = '\0';
 		}
 
-		if (!strcmp("remove", acl_str))
+		if (!strcmp("remove", argv[2]))
 		{
-			rv = cmd_urlr_del(vty, url_line);
+			rv = cmd_urlr_del(vty, host_line);
 		}
 		else
 		{
-			rv = cmd_urlr_add(vty, url_line, acl_str, interval);
+            berr rv;
+            naga_acl_t acl;
+            memset(&acl, 0, sizeof(naga_acl_t));
+            if(naga_acl_parse(&argv[2], argc - 2, &acl))
+            {
+                fclose(fp);
+                return CMD_ERR_NO_MATCH;
+            }
+            rv =  cmd_urlr_add(vty, host_line, &acl, interval);
+            if(rv != E_SUCCESS)
+            {
+                vty_out(vty, "Failed To add Url rule %s", VTY_NEWLINE);
+                fclose(fp);
+                return 0;
+            }
 		}
 		if (CMD_SUCCESS != rv)
 		{
-			urlr_debug("Operate url %s rule failed!\n", url_line);
+			urlr_debug("Operate host %s rule failed!\n", host_line);
 			fclose(fp);
 			return rv;
 		}
+        memset(host_line,0,sizeof(host_line));
 	}
 
 	fclose(fp);
@@ -618,18 +670,26 @@ static int cmd_urlr_load(struct vty *vty, const char *file_name, const char *acl
 	return CMD_SUCCESS;
 }
 
-
-DEFUN(load_url,
-      load_url_cmd,
-      "load url FILE ACT <1-65535>",
+ALIAS(load_url,
+      load_url_param_cmd,
+      "load url FILE <1-65535> ACT PARAM",
       LOAD_STR
       URL_STR
       FILE_STR
-      ACTION_STR)
-{
-    uint16_t interval = strtoul(argv[2], NULL, 0);    
-    return cmd_urlr_load(vty, argv[0], argv[1], interval);
-}
+      "Interval\n"
+      ACTION_STR
+      "Action Param\n")
+
+ALIAS(load_url,
+      load_url_param_rate_cmd,
+      "load url FILE <1-65535> ACT PARAM <1-100>",
+      LOAD_STR
+      URL_STR
+      FILE_STR
+      "Interval\n"
+      ACTION_STR
+      "Action Param\n"
+      "Paramter Rate\n")
 
 static int cmd_urlr_clear_stat(struct vty *vty, const char *url)
 {
@@ -926,9 +986,13 @@ void urlr_cmd_config_write(struct vty *vty)
 void cmdline_urlr_init(void)
 {
 	install_element(CMD_NODE, &url_cmd);
+	install_element(CMD_NODE, &url_param_cmd);
+	install_element(CMD_NODE, &url_param_rate_cmd);
 	install_element(CMD_NODE, &remove_url_cmd);
 	install_element(CMD_NODE, &remove_url_all_cmd);
 	install_element(CMD_NODE, &load_url_cmd);
+	install_element(CMD_NODE, &load_url_param_cmd);
+	install_element(CMD_NODE, &load_url_param_rate_cmd);
 	install_element(CMD_NODE, &clear_url_stat_cmd);
 	install_element(CMD_NODE, &clear_url_stat_all_cmd);
 	install_element(CMD_NODE, &show_url_cmd);

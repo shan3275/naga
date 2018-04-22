@@ -7,7 +7,6 @@
 #include "urlr.h"
 
 naga_acl_t url_default_acl;
-
 bts_hashtable_t urlr_table;
 
 uint32_t 

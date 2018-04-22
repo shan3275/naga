@@ -48,6 +48,7 @@
 #include "main_data.h"
 //#include "vsr_dp.h"
 #include "dmr_dp.h"
+#include "urlr_dp.h"
 #include "acr_dp.h"
 #include "cmd.h"
 #include "pid.h"
@@ -64,6 +65,7 @@ main(int argc, char **argv)
     berr rv;
     printf("cmd core %d\n", rte_lcore_id());
     dmr_dp_init();
+    urlr_dp_init();
     //domain_dp_init();
     //acr_dp_init();
     netseg_init();
