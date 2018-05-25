@@ -227,17 +227,18 @@ int cmdline (int argc, char **argv)
     //memory_init ();
     //cmdline_vsr_init();
     cmdline_bts_init();
-	cmdline_dmr_init();
 	//cmdline_domain_init();
 	cmdline_acr_init();
     cmdline_adp_init();
     cmdline_itf_init();
     cmdline_adt_init();
 	cmdline_netseg_init();
-	cmdline_dnetseg_init();
-	cmdline_url_init();
+	//cmdline_dnetseg_init();
+	cmdline_dmr_init();
     cmdline_urlr_init();
+	cmdline_url_init();
     //cmdline_hijack_init();
+    cmdline_ua_init();
     cmdline_mask_init();
     cmdline_upush_init();
     /* Zebra related initialize. */

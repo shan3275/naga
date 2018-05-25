@@ -21,11 +21,23 @@ berr naga_fct(hytag_t *hytag)
         return E_SUCCESS;
     }
 
+    rv = netseg_dp_process(hytag);
+    if (E_SUCCESS == rv && (hytag->acl.actions & ACT_REDIR ||hytag->acl.actions & ACT_URLPUSH ))
+    {
+        return rv;
+    }
+
+    if(ACT_IS_VAILD(hytag->acl.actions, ACT_DROP))
+    {
+        return E_SUCCESS;
+    }
+
     rv = naga_dmr(hytag);
     if (E_SUCCESS == rv && (hytag->acl.actions & ACT_REDIR ||hytag->acl.actions & ACT_URLPUSH ))
     {
         return rv;
     }
+
     if(ACT_IS_VAILD(hytag->acl.actions, ACT_DROP))
     {
         return E_SUCCESS;
@@ -50,12 +62,23 @@ berr naga_fct(hytag_t *hytag)
     {
         return E_SUCCESS;
     }
-    
+
     rv = naga_ref_url(hytag);
     if (E_SUCCESS == rv && (hytag->acl.actions & ACT_REDIR ||hytag->acl.actions & ACT_URLPUSH ))
     {
         return rv;
     }
+
+    if(ACT_IS_VAILD(hytag->acl.actions, ACT_DROP))
+    {
+        return E_SUCCESS;
+    }
+    rv = naga_ua(hytag);
+    if (E_SUCCESS == rv && (hytag->acl.actions & ACT_REDIR ||hytag->acl.actions & ACT_URLPUSH ))
+    {
+        return rv;
+    }
+
     if(ACT_IS_VAILD(hytag->acl.actions, ACT_DROP))
     {
         return E_SUCCESS;

@@ -139,6 +139,11 @@
     URL_MATCHED, \
     URL_DISMATCH, \
     \
+    /* User Agent Module */ \
+    UA_PKTS, \
+    UA_MATCHED, \
+    UA_DISMATCH, \
+    \
     /* MASK Module */ \
     MASK_PKTS, \
     MASK_PARAM, \
@@ -257,6 +262,11 @@
     CNT_DEF(URL_NOTZERO), \
     CNT_DEF(URL_MATCHED), \
     CNT_DEF(URL_DISMATCH), \
+    \
+    /* User Agent Module */ \
+    CNT_DEF(UA_PKTS), \
+    CNT_DEF(UA_MATCHED), \
+    CNT_DEF(UA_DISMATCH), \
     \
     /* MASK Module */ \
     CNT_DEF(MASK_PKTS), \
