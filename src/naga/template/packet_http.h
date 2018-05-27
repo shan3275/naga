@@ -20,10 +20,13 @@ typedef enum
     ADT_SEND_MULTI
 }adt_send_em;
 
-#define TEMPLATE_NAME_LEN_MAX   256
-#define TEMPLATE_HEAD_LEN_MAX   8196
-#define TEMPLATE_URL_LEN_MAX    512
-#define TEMPLATE_TAIL_LEN_MAX   8196
+#define TEMPLATE_NAME_LEN_MAX      256
+#define TEMPLATE_CONTENT_LEN_MAX   8196
+
+#if TEMPLATE_SEGMENT_ON
+#define TEMPLATE_HEAD_LEN_MAX      8196
+#define TEMPLATE_URL_LEN_MAX       512
+#define TEMPLATE_TAIL_LEN_MAX      8196
 typedef struct
 {
     char name[TEMPLATE_NAME_LEN_MAX];
@@ -33,6 +36,14 @@ typedef struct
     int tail_len;
     char tail[TEMPLATE_TAIL_LEN_MAX];
 }http_body_t;
+#else
+typedef struct
+{
+    char name[TEMPLATE_NAME_LEN_MAX];
+    char content[TEMPLATE_CONTENT_LEN_MAX];
+    int  content_len;
+}http_body_t;
+#endif
 
 
 berr ads_http_302_fill(char *buf, hytag_t *hytag, char *url);

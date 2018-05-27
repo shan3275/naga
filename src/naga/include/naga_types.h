@@ -12,18 +12,19 @@ typedef uint32_t ipaddr_t;
  * 1 for save to hytag->ori_url->url  module 
  * 0 for save to hytag->url
  * */
-#define HTTP_URL_PARSE_ORI_MOD   0 
+#define HTTP_URL_PARSE_ORI_MOD   0
 
 #define PACKET_MTU    1500
 
-#define ACT_LOG         1
-#define ACT_TRACE       2
-#define ACT_DROP        4
-#define ACT_PUSH        8
+#define ACT_LOG          1
+#define ACT_TRACE        2
+#define ACT_DROP         4
+#define ACT_PUSH         8
 #define ACT_REDIR       16
 #define ACT_TAGDUMP     32
 #define ACT_MASK        64
 #define ACT_URLPUSH    128
+#define ACT_ADP        256
 
 #define ACT_IS_VAILD(_val, _act) \
     (((_val) & (_act)) == (_act))
@@ -100,12 +101,20 @@ enum ad_action_em
     AD_FAILED,    
 };
 
+#define TEMPLATE_SEGMENT_ON        0
+#if TEMPLATE_SEGMENT_ON
 typedef enum
 {
     AD_TEMPLATE_PC,
     AD_TEMPLATE_MOBILE,
     AD_TEMPLATE_MAX,
 }ad_template_em;
+#else
+typedef enum
+{
+    AD_TEMPLATE_MAX = 1,
+}ad_template_em;
+#endif
 
 #define URL_MAX_LEN  1500//URL MAX LEN
 #define MAX_HOST_LEN 128

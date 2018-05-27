@@ -58,6 +58,10 @@ naga_action_parse(char *str, uint32_t *actions)
         {
             *actions |= ACT_URLPUSH;
         }
+        else if (!strcmp("adp", tokp))
+        {
+            *actions |= ACT_ADP;
+        }
         else
         {
             BRET(E_FOUND);
@@ -119,6 +123,16 @@ naga_acl_string(naga_acl_t *acl, char *str)
         }
 
         cp += sprintf(cp, "push");
+    }
+
+    if (ACT_IS_VAILD(acl->actions, ACT_ADP))
+    {
+        if (cp != str)
+        {
+            cp += sprintf(cp, ",");
+        }
+
+        cp += sprintf(cp, "adp");
     }
 
     if (ACT_IS_VAILD(acl->actions, ACT_URLPUSH))
