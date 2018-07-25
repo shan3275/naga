@@ -185,7 +185,7 @@ int update_log_file_timer(struct thread * t)
 int bts_stat_log_file_timer(struct thread *t)
 {
 	bts_stat_log();
-	thread_add_timer(zebrad.master, bts_stat_log_file_timer, NULL, 10);
+	thread_add_timer(zebrad.master, bts_stat_log_file_timer, NULL, 60);
 }
 
 int vty_port = ZEBRA_VTY_PORT;

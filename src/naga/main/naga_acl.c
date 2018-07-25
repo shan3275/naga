@@ -121,15 +121,7 @@ berr naga_acl_urlpush(hytag_t *hytag)
         return E_SUCCESS;
     }
 
-    if (hytag->user_agent_len > 0)
-    {
-        if(strstr(hytag->user_agent,"ndroid")!=NULL || strstr(hytag->user_agent,"Windows")!=NULL)
-        {
-            CNT_INC(ACL_URLPUSH_FILTER_DROP);
-            return E_SUCCESS;
-        }
-    }
-    else
+    if (hytag->user_agent_len <= 0)
     {
         CNT_INC(ACL_URLPUSH_DROP_GET_OR_POST);
         return E_SUCCESS;
@@ -139,7 +131,15 @@ berr naga_acl_urlpush(hytag_t *hytag)
     rv = upush_content_generator(hytag, ptr); 
     if(rv != E_SUCCESS) 
     {
-        CNT_INC(ACL_URLPUSH_ENCODE_FAIL);
+        if (rv == E_ENCODE)
+        {
+            CNT_INC(ACL_URLPUSH_ENCODE_FAIL);
+        }
+        else
+        if (rv == E_PARAM)
+        {
+            CNT_INC(ACL_URLPUSH_PARAM_ERR);
+        }
         return rv;
     }
 

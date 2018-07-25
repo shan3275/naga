@@ -43,6 +43,7 @@ berr naga_fct(hytag_t *hytag)
         return E_SUCCESS;
     }
 
+    /*
     rv = naga_urlr(hytag);
     if (E_SUCCESS == rv && (hytag->acl.actions & ACT_REDIR ||hytag->acl.actions & ACT_URLPUSH ))
     {
@@ -52,6 +53,7 @@ berr naga_fct(hytag_t *hytag)
     {
         return E_SUCCESS;
     }
+    */
 
     rv = naga_ori_url(hytag);
     if (E_SUCCESS == rv && (hytag->acl.actions & ACT_REDIR ||hytag->acl.actions & ACT_URLPUSH ))

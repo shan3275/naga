@@ -39,7 +39,9 @@ typedef struct {
     uint32_t mask;
     uint16_t rate; /* redir sample rate, rate%, 1%,2%,3%*/
     uint16_t sample; /* redir sample 100/rate, int*/
-    uint32_t resv; /* resverd for align*/
+    uint8_t  push_type; /* upush type */
+    uint8_t  resv0; /* resverd for align*/
+    uint16_t resv; /* resverd for align*/
     bts_atomic64_t cnt;
     bts_atomic64_t vcnt;/*pre drop*/
     bts_atomic64_t pushed_cnt;/*pre pushed then second assert*/
@@ -84,6 +86,13 @@ typedef enum
     APP_TYPE_HTTP_GET_OR_POST = 1,
     APP_TYPE_HTTP_OTHER,    
 }APP_TYPE_E;
+
+typedef enum
+{
+    APP_URLPUSH_IDFA = 1,
+    APP_URLPUSH_APPID,    
+    APP_URLPUSH_OTHER,
+}APP_URLPUSH_TYPE_E;
 
 struct pbuf {
 	//struct pbuf *next; /*always NULL*/
@@ -260,6 +269,7 @@ typedef struct {
 { \
     (_tagacl).actions |= (_ruleacl).actions; \
     (_tagacl).mask |= (_ruleacl).mask;\
+    (_tagacl).push_type |= (_ruleacl).push_type;\
     if ((0 == strlen((_tagacl).url)) && (0 != strlen((_ruleacl).url))) { \
         strcpy((_tagacl).url, (_ruleacl).url); \
     } \

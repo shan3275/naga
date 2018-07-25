@@ -118,10 +118,12 @@ berr  naga_url(url_t *url_r, hytag_t *hytag, char *url_str, int url_len)
                 CNT_INC(URL_MATCHED);
                 ACL_HIT(urlcre->acl); 
 
+                /*
                 if (compare > 1)
                 {
                     memcpy(hytag->reg, (url_str + ovector[2]), (ovector[3] - ovector[2])); 
                 }
+                */
                 HYTAG_ACL_MERGE(hytag->acl, urlcre->acl);
                 if (ACT_IS_VAILD(urlcre->acl.actions, ACT_REDIR))
                 {
@@ -136,6 +138,25 @@ berr  naga_url(url_t *url_r, hytag_t *hytag, char *url_str, int url_len)
                         ACL_PRE_NOT_DROP_HIT (urlcre->acl);
                         hytag->acl.actions &= 0xFFFFFFEF;
                     }
+                }
+
+                if (ACT_IS_VAILD(urlcre->acl.actions, ACT_URLPUSH))
+                {
+                   if (APP_URLPUSH_IDFA == urlcre->acl.push_type)
+                   {
+                       memcpy(hytag->reg, (url_str + ovector[3]+1), ovector[1]-ovector[3]-1);
+                       CNT_INC(URL_URLPUSH_IDFA);
+                   }
+                   else
+                   if (APP_URLPUSH_APPID == urlcre->acl.push_type)
+                   {
+                       memcpy(hytag->reg, (url_str + ovector[0]), ovector[1]-ovector[0]);
+                       CNT_INC(URL_URLPUSH_APPID);
+                   }
+                   else
+                   {
+                       CNT_INC(URL_URLPUSH_OTHER);
+                   }
                 }
 
                 return E_SUCCESS;

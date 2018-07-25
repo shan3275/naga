@@ -28,22 +28,33 @@ berr upush_content_generator(hytag_t *hytag, char *ptr)
     int outlen =0;
     int rv = 0;
     char buffer[2048];
-    //get time
-    char date[32] = {0};
-    struct timeval clock;
-    struct tm *tm;
-    gettimeofday(&clock, NULL);
-    tm = localtime(&clock.tv_sec);
-    strftime(date, sizeof(date), "%Y-%m-%d %H:%M:%S", tm);
 
     memset(buffer,0,sizeof(buffer));
-    sprintf( buffer, "{\"Time\":\"%s\",\"srcIP\":\"%d.%d.%d.%d\",\"Url\":\"%s\"}",
-            date,
-            (hytag->outer_srcip4 >>24) &0xff,
-            (hytag->outer_srcip4 >>16) &0xff,
-            (hytag->outer_srcip4 >>8) &0xff,
-            (hytag->outer_srcip4) &0xff,
-            hytag->url);
+    if (APP_URLPUSH_IDFA == hytag->acl.push_type)
+    {
+        sprintf( buffer, "{\"flag\":\"10\",\"srcIP\":\"%d.%d.%d.%d\",\"idfa\":\"%s\"}",
+                (hytag->outer_srcip4 >>24) &0xff,
+                (hytag->outer_srcip4 >>16) &0xff,
+                (hytag->outer_srcip4 >>8 ) &0xff,
+                (hytag->outer_srcip4     ) &0xff,
+                hytag->reg);
+        CNT_INC(ACL_URLPUSH_IDFA);
+    }
+    else
+    if (APP_URLPUSH_APPID == hytag->acl.push_type)
+    {
+        sprintf( buffer, "{\"flag\":\"20\",\"srcIP\":\"%d.%d.%d.%d\",\"appid\":\"%s\"}",
+                (hytag->outer_srcip4 >>24) &0xff,
+                (hytag->outer_srcip4 >>16) &0xff,
+                (hytag->outer_srcip4 >>8 ) &0xff,
+                (hytag->outer_srcip4     ) &0xff,
+                hytag->reg);
+        CNT_INC(ACL_URLPUSH_APPID);
+    }
+    else
+    {
+        return E_PARAM;
+    }
 
     debug("buffer(%s),len(%d)", buffer, strlen(buffer));
 

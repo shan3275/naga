@@ -25,7 +25,6 @@ naga_action_parse(char *str, uint32_t *actions)
     tokp = strtok(act_str, ",");
 
     while(tokp != NULL) {
-        
         if (!strcmp("log", tokp))
         {
             *actions |= ACT_LOG;
@@ -143,6 +142,7 @@ naga_acl_string(naga_acl_t *acl, char *str)
         }
 
         cp += sprintf(cp, "upush");
+        cp += sprintf(cp, " %s", acl->push_type == APP_URLPUSH_IDFA ? "idfa":(acl->push_type==APP_URLPUSH_APPID?"appid":"other"));
     }
 
     if (ACT_IS_VAILD(acl->actions, ACT_TAGDUMP))
@@ -187,7 +187,7 @@ naga_acl_parse(const char *argv[], int argc, naga_acl_t *acl)
 {
     berr rv = E_MAX;
     char *tokp = NULL;
-	char *act_str = NULL, *mask_str = NULL;
+	char *act_str = NULL, *mask_str = NULL,*push_str = NULL;
 
     if ((NULL == argv) || (NULL == acl || 0 > argc || 3 < argc))
     {
@@ -212,6 +212,29 @@ naga_acl_parse(const char *argv[], int argc, naga_acl_t *acl)
             BRET(E_PARAM);
         }
 
+    }
+
+    if (acl->actions & ACT_URLPUSH) {
+        if (argc != 2) {
+            BRET(E_PARAM);
+        }
+        push_str = strdup(argv[1]);
+        if (!strcmp("idfa", push_str))
+        {
+            acl->push_type = APP_URLPUSH_IDFA;
+        }
+        else if (!strcmp("appid", push_str))
+        {
+            acl->push_type = APP_URLPUSH_APPID;
+        }
+        else
+        {
+            acl->push_type = APP_URLPUSH_OTHER;
+        }
+        if (APP_URLPUSH_OTHER == acl->push_type) 
+        {
+            BRET(E_PARAM);
+        }
     }
 
     if (acl->actions & ACT_REDIR) {
