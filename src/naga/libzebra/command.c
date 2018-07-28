@@ -47,6 +47,7 @@ Boston, MA 02111-1307, USA.  */
 /* Command vector which includes some level of command lists. Normally
    each daemon maintains each own cmdvec. */
 vector cmdvec = NULL;
+extern int vty_port;
 
 struct cmd_token token_cr;
 char *command_cr = NULL;
@@ -733,6 +734,10 @@ config_write_host (struct vty *vty)
     vty_out (vty, "banner motd file %s%s", host.motdfile, VTY_NEWLINE);
   else if (! host.motd)
     vty_out (vty, "no banner motd%s", VTY_NEWLINE);
+  if (vty_port >= 2606 &&  vty_port <= 2700 )
+  {
+      vty_out (vty, "telnet port %d%s", vty_port, VTY_NEWLINE);
+  }
 
   //vsr_cmd_config_write(vty);
   adt_cmd_config_write(vty);
@@ -747,6 +752,7 @@ config_write_host (struct vty *vty)
   bts_cmd_config_write(vty);
   itf_cmd_config_write(vty);
   upush_cmd_config_write(vty);
+  rpush_cmd_config_write(vty);
 
   return 1;
 }
@@ -4020,9 +4026,8 @@ DEFUN (no_banner_motd,
   return CMD_SUCCESS;
 }
 
-extern int vty_port;
 DEFUN (config_vty_port, config_vty_port_cmd,
-       "telnet  port <2606-2700>",
+       "telnet port <2606-2700>",
        "Set telnet parameters\n"
        "Set telnet port\n"
        "Number of port,default 2606\n")

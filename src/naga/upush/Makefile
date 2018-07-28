@@ -42,7 +42,7 @@ include $(RTE_SDK)/mk/rte.vars.mk
 LIB  = libupush.a
 
 # all source are stored in SRCS-y
-SRCS-y :=  upush_cmd.c upush_zmq.c upush_url.c cbase64.c
+SRCS-y :=  upush_cmd.c upush_zmq.c upush_url.c cbase64.c rpush_cmd.c rpush_udp.c
 
 
 CFLAGS += -O3

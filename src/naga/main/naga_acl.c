@@ -108,6 +108,57 @@ berr naga_acl_adp(hytag_t *hytag)
 
 }
 
+berr naga_acl_udppush(hytag_t *hytag)
+{
+    berr rv;
+    char payload[1024];
+    unsigned char buffer[2048]; 
+    int len;
+
+    CNT_INC(ACL_UDPPUSH_PKTS);
+
+    /* */
+    if( APP_TYPE_HTTP_GET_OR_POST != hytag->app_type)
+    {
+        CNT_INC(ACL_UDPPUSH_DROP_GET_OR_POST);
+        return E_SUCCESS;
+    }
+    
+    if (hytag->user_agent_len <= 0)
+    {
+        CNT_INC(ACL_UDPPUSH_DROP_GET_OR_POST);
+        return E_SUCCESS;
+    }
+
+    memset(payload,0, 1024);
+    rv = upush_content_generator(hytag, payload);
+    if(rv != E_SUCCESS) 
+    {
+        CNT_INC(ACL_UDPPUSH_FAIL);
+        return rv;
+    }
+    CNT_INC(ACL_UDPPUSH_PAYLOAD_GEN);
+
+    rv = raw_udp_content_generator(buffer, payload, &len, hytag);
+    if(rv != E_SUCCESS) 
+    {
+        CNT_INC(ACL_UDPPUSH_DROP_HEAD_GEN1);
+        return rv;
+    }
+    CNT_INC(ACL_UDPPUSH_RAW_UDP_GEN);
+
+    CYCLE_START();
+    rv = ift_raw_send_packet(buffer, len);
+    if(rv != E_SUCCESS)
+    {
+        CNT_INC(ACL_UDPPUSH_DROP_SEND_PACKET);
+        return rv;
+    }
+
+    CNT_INC(ACL_UDPPUSH_TX_SUCCESS);
+    return E_SUCCESS;
+}
+
 berr naga_acl_urlpush(hytag_t *hytag)
 {
     berr rv;
@@ -184,6 +235,15 @@ berr naga_acl(hytag_t *hytag)
     {
         CNT_INC(ACL_PKTS);
         rv = naga_acl_adp(hytag);
+        if (rv != E_SUCCESS) {
+            //printf("%s.%d: rv = %s\n", __func__, __LINE__, berr_msg(rv));
+        }
+    }
+    else
+    if(ACT_UDPPUSH == (hytag->acl.actions & ACT_UDPPUSH))
+    {
+        CNT_INC(ACL_PKTS);
+        rv = naga_acl_udppush(hytag);
         if (rv != E_SUCCESS) {
             //printf("%s.%d: rv = %s\n", __func__, __LINE__, berr_msg(rv));
         }

@@ -22,6 +22,13 @@ static int send_socket = 0;
 char if_name[16]={0};
 static struct  sockaddr_ll  sll;
 
+#define DEBUG
+#ifdef  DEBUG
+#define debug(fmt,args...)  printf("func=%s line=%d:" fmt , __FUNCTION__, __LINE__, ##args)
+#else
+#define debug(fmt,args...)
+#endif  /* DEBUG */
+
 berr itf_raw_socket_add(char *ifname)
 {
     if(ifname== NULL)
@@ -128,6 +135,7 @@ berr ift_raw_send_packet(uint8_t * buff, int len)
 			if(sendto(send_socket, buff, len, 0, (const struct sockaddr *)&sll, sizeof(sll))!= len)
 			{
 				perror("The Err is:");
+                debug("send len  ! = len\n");
 				return E_FAIL;		
 			}
 		    else

@@ -2,3 +2,9 @@ pcre/
 pcre-8.13/
 http-parser-2.7.1/
 http-parser/
+zeromq/
+zeromq-4.1.3/
+cscope*
+http-parser/
+_postclean
+tags

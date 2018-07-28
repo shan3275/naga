@@ -140,7 +140,7 @@ berr  naga_url(url_t *url_r, hytag_t *hytag, char *url_str, int url_len)
                     }
                 }
 
-                if (ACT_IS_VAILD(urlcre->acl.actions, ACT_URLPUSH))
+                if (ACT_IS_VAILD(urlcre->acl.actions, ACT_URLPUSH) || ACT_IS_VAILD(urlcre->acl.actions, ACT_UDPPUSH) )
                 {
                    if (APP_URLPUSH_IDFA == urlcre->acl.push_type)
                    {

@@ -25,6 +25,7 @@ typedef uint32_t ipaddr_t;
 #define ACT_MASK        64
 #define ACT_URLPUSH    128
 #define ACT_ADP        256
+#define ACT_UDPPUSH    512
 
 #define ACT_IS_VAILD(_val, _act) \
     (((_val) & (_act)) == (_act))

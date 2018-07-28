@@ -106,7 +106,7 @@ DEFUN(itf_injection,
         char * ifname = strdup(argv[1]);
         berr rv = itf_raw_socket_add(ifname);
         if(rv == E_SUCCESS)
-            vty_out(vty, "Success to add %s%s", ifname, VTY_NEWLINE);
+            vty_out(vty, "Success to add %s injection%s", ifname, VTY_NEWLINE);
         else
         if( rv = E_FAIL)
         {
@@ -346,6 +346,12 @@ extern struct list_head	handle_head;
 		vty_out(vty, "interface bussiness add %s%s", handle->ifname, VTY_NEWLINE);			
 	}
 
+    char ifname[16]={0};
+    rv = itf_raw_socket_get_if_name(ifname);
+    if (rv == E_SUCCESS)
+    {
+        vty_out(vty, "interface injection add %s%s", ifname, VTY_NEWLINE);
+    }
 
 }
 

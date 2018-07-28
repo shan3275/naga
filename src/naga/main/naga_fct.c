@@ -22,7 +22,7 @@ berr naga_fct(hytag_t *hytag)
     }
 
     rv = netseg_dp_process(hytag);
-    if (E_SUCCESS == rv && (hytag->acl.actions & ACT_REDIR ||hytag->acl.actions & ACT_URLPUSH ))
+    if (E_SUCCESS == rv && (hytag->acl.actions & ACT_REDIR ||hytag->acl.actions & ACT_URLPUSH ||hytag->acl.actions & ACT_UDPPUSH))
     {
         return rv;
     }
@@ -33,7 +33,7 @@ berr naga_fct(hytag_t *hytag)
     }
 
     rv = naga_dmr(hytag);
-    if (E_SUCCESS == rv && (hytag->acl.actions & ACT_REDIR ||hytag->acl.actions & ACT_URLPUSH ))
+    if (E_SUCCESS == rv && (hytag->acl.actions & ACT_REDIR ||hytag->acl.actions & ACT_URLPUSH ||hytag->acl.actions & ACT_UDPPUSH))
     {
         return rv;
     }
@@ -45,7 +45,7 @@ berr naga_fct(hytag_t *hytag)
 
     /*
     rv = naga_urlr(hytag);
-    if (E_SUCCESS == rv && (hytag->acl.actions & ACT_REDIR ||hytag->acl.actions & ACT_URLPUSH ))
+    if (E_SUCCESS == rv && (hytag->acl.actions & ACT_REDIR ||hytag->acl.actions & ACT_URLPUSH ||hytag->acl.actions & ACT_UDPPUSH))
     {
         return rv;
     }
@@ -56,7 +56,7 @@ berr naga_fct(hytag_t *hytag)
     */
 
     rv = naga_ori_url(hytag);
-    if (E_SUCCESS == rv && (hytag->acl.actions & ACT_REDIR ||hytag->acl.actions & ACT_URLPUSH ))
+    if (E_SUCCESS == rv && (hytag->acl.actions & ACT_REDIR ||hytag->acl.actions & ACT_URLPUSH ||hytag->acl.actions & ACT_UDPPUSH))
     {
         return rv;
     }
@@ -66,7 +66,7 @@ berr naga_fct(hytag_t *hytag)
     }
 
     rv = naga_ref_url(hytag);
-    if (E_SUCCESS == rv && (hytag->acl.actions & ACT_REDIR ||hytag->acl.actions & ACT_URLPUSH ))
+    if (E_SUCCESS == rv && (hytag->acl.actions & ACT_REDIR ||hytag->acl.actions & ACT_URLPUSH ||hytag->acl.actions & ACT_UDPPUSH))
     {
         return rv;
     }
@@ -76,7 +76,7 @@ berr naga_fct(hytag_t *hytag)
         return E_SUCCESS;
     }
     rv = naga_ua(hytag);
-    if (E_SUCCESS == rv && (hytag->acl.actions & ACT_REDIR ||hytag->acl.actions & ACT_URLPUSH ))
+    if (E_SUCCESS == rv && (hytag->acl.actions & ACT_REDIR ||hytag->acl.actions & ACT_URLPUSH ||hytag->acl.actions & ACT_UDPPUSH))
     {
         return rv;
     }
@@ -87,7 +87,7 @@ berr naga_fct(hytag_t *hytag)
     }
 
     rv = naga_mask(hytag);
-    if (E_SUCCESS == rv && (hytag->acl.actions & ACT_REDIR ||hytag->acl.actions & ACT_URLPUSH ))
+    if (E_SUCCESS == rv && (hytag->acl.actions & ACT_REDIR ||hytag->acl.actions & ACT_URLPUSH ||hytag->acl.actions & ACT_UDPPUSH))
     {
         return rv;
     }

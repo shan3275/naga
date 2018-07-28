@@ -34,23 +34,21 @@ include $(RTE_SDK)/mk/rte.vars.mk
 #
 # library name
 #
-LIB = libtemp.a
+LIB = libua.a
 
-CFLAGS +=  -I . -I ../boots -I ../include -I ../libzebra -I ../pid -I ../rte
+CFLAGS +=  -I .  -I ../include -I ../libzebra -I ../pub -I ../rte
+
 #CFLAGS += $(WERROR_FLAGS)
 
-EXPORT_MAP := lib_vsr_version.map
+EXPORT_MAP := lib_ua.map
 
 LIBABIVER := 1
 
-SRCS-y += packet.c packet_http.c adt_cmd.c raw_udp.c
+SRCS-y += ua.c ua_cmd.c
 
-#
-# Export include files
-#
-#SYMLINK-y-include += rte_ether.h
-#SYMLINK-y-include += rte_ethdev.h
-#SYMLINK-y-include += rte_eth_ctrl.h
+#CFLAGS += -O3
+#CFLAGS += $(WERROR_FLAGS)
+CFLAGS += -I ../boots -I ../include  -I ../itf  -I ../template   -I ../pcre-m/pcre
 
 # this lib depends upon:
 #DEPDIRS-y += lib/librte_eal lib/librte_mempool lib/librte_ring lib/librte_mbuf
