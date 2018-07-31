@@ -10,12 +10,48 @@
 #include "itf.h"
 #include "upush.h"
 
+static int urlencode(char* str, int strSize, char* result, int resultSize)
+{
+    int i;
+    int j = 0; /* for result index */
+    char ch;
+
+    if ((str == NULL) || (result == NULL) || (strSize <= 0) || (resultSize <= 0)) {
+        return 0;
+    }
+
+    for (i=0; (i<strSize) && (j<resultSize); i++) {
+        ch = str[i];
+        if ((ch >= 'A') && (ch <= 'Z')) {
+            result[j++] = ch;
+        } else if ((ch >= 'a') && (ch <= 'z')) {
+            result[j++] = ch;
+        } else if ((ch >= '0') && (ch <= '9')) {
+            result[j++] = ch;
+        } else if(ch == ' '){
+            result[j++] = '+';
+        } else {
+            if (j + 3 < resultSize) {
+                sprintf(result+j, "%%%02X", (unsigned char)ch);
+                j += 3;
+            } else {
+                return 0;
+            }
+        }
+    }
+    result[j] = '\0';
+    return j;
+}
+
 berr naga_acl_redir(hytag_t *hytag)
 {
 
     berr rv;
     unsigned char buffer[2048]; 
     char url[2048];
+    char all_url[512] = {0};
+    char encode_url[512] = {0};
+    uint16_t encode_url_len;
 
     CNT_INC(ACL_REDIR_PKTS);
 
@@ -36,8 +72,11 @@ berr naga_acl_redir(hytag_t *hytag)
 
     memcpy(buffer, hytag->pbuf.ptr, hytag->l5_offset);//copy l2-l4 len
 
+    snprintf(all_url, 512, "http://%s", hytag->url);
+    encode_url_len = urlencode(all_url, strlen(all_url), encode_url, 512); 
     memset(url, 0, 2048);
     strcpy(url, hytag->acl.url);
+    snprintf(url, 2048, "%s?ink=%s", hytag->acl.url, encode_url);
     rv = redirect_302_response_generator(buffer, hytag, url); 
 
 

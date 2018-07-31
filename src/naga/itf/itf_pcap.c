@@ -135,7 +135,6 @@ berr ift_raw_send_packet(uint8_t * buff, int len)
 			if(sendto(send_socket, buff, len, 0, (const struct sockaddr *)&sll, sizeof(sll))!= len)
 			{
 				perror("The Err is:");
-                debug("send len  ! = len\n");
 				return E_FAIL;		
 			}
 		    else
