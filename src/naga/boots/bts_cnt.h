@@ -13,6 +13,8 @@ typedef enum {
       ITF_OBYTS,
       VLAN_PKTS,
       PPPOE_PKTS,
+      XF0_PKTS,
+      XF1_PKTS,
 	  OUTERL3_HD, /*Head Err, length not compare or infomation err*/
 	  OUTERL3_IPV4,
 	  OUTERL3_IPV6,

@@ -57,12 +57,33 @@ berr pid_ethernet(struct pbuf *p, hytag_t *hytag)
 //        printf("pppoe proto = %x\n", ntohs(type));
     }
 
+    /* xinfeng packet deal */
+    if(type == htons(ETHERTYPE_XF0))
+    {
+        pid_incr_count(XF0_PKTS);
+        eth_header = (struct eth_hdr *)PBUF_PTR(p, len) ;
+        type = eth_header->ethertype;
+        len += SIZEOF_ETH_HDR; 
+        DEBUG_PRINTF("DstMac=%02x:%02x:%02x:%02x:%02x:%02x\n",
+                eth_header->dest.addr[0], eth_header->dest.addr[1], eth_header->dest.addr[2],
+                eth_header->dest.addr[3], eth_header->dest.addr[4], eth_header->dest.addr[5]);
+        DEBUG_PRINTF("SrcMac=%02x:%02x:%02x:%02x:%02x:%02x\n", 
+                eth_header->src.addr[0], eth_header->src.addr[1], eth_header->src.addr[2],
+                eth_header->src.addr[3], eth_header->src.addr[4], eth_header->src.addr[5]);
+        DEBUG_PRINTF("Ethertype=%04x\n", ntohs(type)); 
+        if (type == htons(ETHERTYPE_XF1))
+        {
+            pid_incr_count(XF1_PKTS);
+        }
+    }
+
     UPDATE_PBUF_OFFSET(p, len);	
     hytag->l3_offset = p->ptr_offset;
     
 	switch( ntohs(type) )
 	{
 		case ETHERTYPE_IP4:
+        case ETHERTYPE_XF1:
 			pid_incr_count(OUTERL3_IPV4);
             return pid_outerip4(p, hytag);
 		case ETHERTYPE_IP6:

@@ -12,6 +12,8 @@ cnt_t cnt_array[CNT_MAX] =
     CNT_DEF(ITF_OBYTS),
     CNT_DEF(VLAN_PKTS),
     CNT_DEF(PPPOE_PKTS),
+    CNT_DEF(XF0_PKTS),
+    CNT_DEF(XF1_PKTS),
 	CNT_DEF(OUTERL3_HD),   /*Head Err, length not compare or infomation err*/
 	CNT_DEF(OUTERL3_IPV4),
 	CNT_DEF(OUTERL3_IPV6),
