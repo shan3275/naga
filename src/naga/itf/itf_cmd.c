@@ -12,6 +12,7 @@
 #include "itf.h"
 #include "itf_cmd.h"
 #include "itf_stat.h"
+#include "itf_worker_thread.h"
 
 DEFUN(itf_rxtx, 
       itf_rxtx_cmd,
@@ -145,6 +146,45 @@ DEFUN(itf_injection,
     return 0;
 }
 
+DEFUN(itf_work_thread, 
+      itf_work_thread_cmd,
+      "interface work-thread (add|remove) <2-40>", 
+      "interface setting\n"
+      "work thread cmd\n"
+      "add or remove\n"
+      "work thread nunber, don't exceed cores number\n")
+{
+    berr rv;
+    if( !strcmp (argv[0], "add"))
+    {
+        int nthreads = strtoul(argv[1], NULL, 0 );
+        rv = itf_worker_thread_setup(nthreads);
+        if(rv == E_SUCCESS)
+            vty_out(vty, "Success to add %d work-thread%s", nthreads, VTY_NEWLINE);
+        else
+        if( rv = E_FAIL)
+        {
+            vty_out(vty, "Failed to add %d work-thread%s", nthreads, VTY_NEWLINE);
+        }
+        else
+        if( rv = E_INIT)
+        {
+            vty_out(vty, "Failed to add %d work-thread%s", nthreads, VTY_NEWLINE);
+        }
+    }
+	else if(!strcmp (argv[0], "remove"))
+	{
+        rv = itf_worker_thread_close();
+        if(rv == E_SUCCESS)
+            vty_out(vty, "Success to remove work-thread%s", VTY_NEWLINE);
+        else
+        if( rv = E_FAIL)
+        {
+            vty_out(vty, "Failed to remove work-thread%s", VTY_NEWLINE);
+        }
+	}
+    return 0;
+}
 static int itf_cmd_show_status(struct vty *vty)
 {
     int rv;
@@ -305,6 +345,33 @@ DEFUN(interface_show_stat,
     //return interface_cmd_show_status(vty);
 }
 
+DEFUN(interface_show_work_thread, 
+      interface_show_work_thread_cmd,
+      "show interface work-thread",
+      SHOW_STR
+      INTERFACE_STR
+      "Work-thread information\n" 
+      )
+{
+    int rv;
+    char buff[512]={0};
+    rv = itf_worker_thread_get(buff);
+    if (rv == E_SUCCESS)
+    {
+        vty_out(vty, "idx    thread_id      rx_id      tx_id%s",  VTY_NEWLINE);
+        vty_out(vty, "%s", buff);
+    }
+    else
+    {
+        vty_out(vty, "interface work-thread is NULL%s",  VTY_NEWLINE);
+    }
+    memset(buff, 0,512);
+    itf_thread_stat_get(buff);
+    vty_out(vty, "Thread Statistics:%s", VTY_NEWLINE);
+    vty_out(vty, "%s", buff);
+    return CMD_SUCCESS;
+}
+
 void itf_cmd_config_write(struct vty *vty)
 {
     int rv;
@@ -337,6 +404,9 @@ void itf_cmd_config_write(struct vty *vty)
         }
     }
 
+    int worker_thread_num = itf_worker_thread_num_get();
+    vty_out(vty, "interface work-thread add %d%s", worker_thread_num, VTY_NEWLINE);
+
 extern struct list_head	handle_head;
 	struct list_head *pos = NULL, *next = NULL;
 	libpcap_handler_t *handle = NULL;
@@ -368,10 +438,12 @@ void cmdline_itf_init(void)
 {
     install_element(CMD_NODE, &itf_rxtx_cmd);
     install_element(CMD_NODE, &itf_injection_cmd);
+    install_element(CMD_NODE, &itf_work_thread_cmd);
     install_element(CMD_NODE, &itf_show_stat_cmd);
     install_element(CMD_NODE, &itf_set_cmd);
     install_element(CMD_NODE, &interface_set_cmd);
     install_element(CMD_NODE, &interface_show_stat_cmd);
+    install_element(CMD_NODE, &interface_show_work_thread_cmd);
 
     return ;
 }

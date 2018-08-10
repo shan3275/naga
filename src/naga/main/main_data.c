@@ -66,10 +66,6 @@ pthread_mutex_t naga_mutex = PTHREAD_MUTEX_INITIALIZER;
 berr naga_data_process_module(hytag_t * hytag)
 {
 
-	if (!itf_rx_is_enable())
-	{
-		return E_SUCCESS;
-	}
 
 #if CHECK_PACK_TIME
 	struct timeval tv0, tv1; 

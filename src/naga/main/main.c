@@ -64,6 +64,7 @@ main(int argc, char **argv)
 {
     berr rv;
     printf("cmd core %d\n", rte_lcore_id());
+    itf_stat_init();
     dmr_dp_init();
     urlr_dp_init();
     //domain_dp_init();

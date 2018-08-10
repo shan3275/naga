@@ -56,7 +56,7 @@ LDFLAGS += -lstdc++
 LDLIBS  +=  ../cmdline/libcmdline.a  ../libzebra/libzebra.a ../url/liburl.a
 LDLIBS  +=  ../pid/libpid.a ../http_parser/libhttp_parser.a ../itf/libitf.a   ../dmr/libdmr.a ../acr/libacr.a ../boots/libboots.a ../pub/libpub.a ../urlr/liburlr.a ../mask/libmask.a
 LDLIBS  +=   ../adp/libadp.a ../template/libtemp.a ../debug/libdebug.a  -lpthread ../itf/libitf.a ../netseg/libnetseg.a ../dnet/libdnetseg.a ../url/liburl.a ../pcre-m/libpcre.a ../hijack/libhijack.a  ../upush/libupush.a ../libzmq/libzmq.a
-LDLIBS  +=   -lcrypt -lreadline -lrt -lpcap -lpthread -lz ../ua/libua.a
+LDLIBS  +=   -lcrypt -lreadline -lrt -lpcap -lpthread -lz ../ua/libua.a ../libevent/libevent.a
 
 
 include $(RTE_SDK)/mk/rte.app.mk

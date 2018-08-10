@@ -128,3 +128,50 @@ bool itf_rx_is_enable(void)
     return false;
 }
 
+itf_thread_stat_t itf_thread_stat;
+void itf_stat_init(void)
+{
+    memset(&itf_thread_stat, 0,sizeof(itf_thread_stat_t));
+}
+
+void itf_pcap_thread_inc(int id)
+{
+    itf_thread_stat.pcap_thread_stat[id%MAX_PCAP_THREAD_NUM]++;
+}
+
+void itf_work_thread_inc(int id)
+{
+    itf_thread_stat.worker_thread_stat[id%MAX_WORKER_THREAD_NUM]++;
+}
+
+void itf_work_thread_fail_inc(int id)
+{
+    itf_thread_stat.worker_thread_fail_stat[id%MAX_WORKER_THREAD_NUM]++;
+}
+
+void itf_thread_stat_get(char *buff)
+{
+    int i;
+    int l =0;
+    for(i = 0; i < MAX_PCAP_THREAD_NUM; i++)
+    {
+        if (itf_thread_stat.pcap_thread_stat[i])
+        {
+            l += sprintf(buff+l, "pcap_thread[%d]          :  %llu\n\r", i, itf_thread_stat.pcap_thread_stat[i]);
+        }
+    }
+    for(i = 0; i < MAX_WORKER_THREAD_NUM; i++)
+    {
+        if (itf_thread_stat.worker_thread_stat[i])
+        {
+            l += sprintf(buff+l, "worker_thread[%d]        :  %llu\n\r", i, itf_thread_stat.worker_thread_stat[i]);
+        }
+    }
+    for(i = 0; i < MAX_WORKER_THREAD_NUM; i++)
+    {
+        if (itf_thread_stat.worker_thread_fail_stat[i])
+        {
+            l += sprintf(buff+l, "worker_thread_fail[%d]   :  %llu\n\r", i, itf_thread_stat.worker_thread_fail_stat[i]);
+        }
+    }
+}

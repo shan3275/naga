@@ -16,11 +16,13 @@
 #include <sys/ioctl.h>
 #include <linux/if_ether.h>
 #include <fcntl.h>
+#include "itf_worker_thread.h"
 
 pcap_t *gpcap_desc = NULL;
 static int send_socket = 0;
 char if_name[16]={0};
 static struct  sockaddr_ll  sll;
+int pcap_if_num = 0;
 
 #define DEBUG
 #ifdef  DEBUG
@@ -167,36 +169,61 @@ void itf_set_hytag_pcap(hytag_t * tag)
     return ;
 }
 
+extern event_thread_ctx_t  *threads;
+extern int Nthreads;
+
 typedef struct
 {
+    int    id;
+    int    last_thread;
     pcap_t *fp;
 }libpcap_param_t;
 
-void libpcap_packet_handler(u_char *param __attribute__((unused)), 
-                            const struct pcap_pkthdr *header,  u_char *packet);
+void libpcap_packet_handler(u_char *param ,
+                            const struct pcap_pkthdr *pkthdr,  u_char *packet);
 extern berr naga_data_process_module(hytag_t * tag);
 
-void libpcap_packet_handler(u_char *param __attribute__((unused)), 
-                            const struct pcap_pkthdr *header,   u_char *packet)
+void libpcap_packet_handler(u_char *param ,
+                            const struct pcap_pkthdr *pkthdr,   u_char *packet)
 {
-    hytag_t hytag;
-    //char buffer[2048];	
+    libpcap_param_t *tparam = (libpcap_param_t *)param;
+    int tid;
     pthread_testcancel();
 
+    if(pkthdr->caplen <10) return;
+
+	cnt_inc(ITF_IPKTS);
+	cnt_add(ITF_IBYTS, pkthdr->len);
+
+	if (!itf_rx_is_enable())
+	{
+		return ;
+	}
+
+    itf_pcap_thread_inc(tparam->id);
+
+    tid = ( (tparam->last_thread) + 1) % Nthreads ;
+    tparam->last_thread = tid;
+    event_thread_ctx_t* local_thread = threads + tid;
+
+    if (write(local_thread->notify_send_fd, packet, pkthdr->len) != pkthdr->len) 
+    {
+        perror("Writing to thread notify pipe");
+    }
+
+    /* work thread process 
+    hytag_t hytag;
     memset(&hytag, 0x0, sizeof(hytag));
-    //memcpy((void *)buffer, (void *)packet, header->len);	
 
     hytag.pbuf.ptr = (void *)packet;
     hytag.pbuf.len = header->len;
     hytag.pbuf.ptr_offset = 0;
-    //hytag.m = NULL;
-    //printf("Success packet len = %d\n", hytag.pbuf.len);
-    //return;
 
 	cnt_inc(ITF_IPKTS);
 	cnt_add(ITF_IBYTS, header->len);
 
     naga_data_process_module(&hytag);
+    */
     return;
 }
 
@@ -243,9 +270,11 @@ berr libpcap_rx_loop_setup(char * ifname)
 		pthread_t recv_thread;
 
 		libpcap_handler_t *pos = NULL, *next = NULL;
-		
-		list_for_each_entry_safe(pos, next, (&handle_head), node)
 
+        /*防止命令行中没有添加worker线程的命令，故缺省添加*/
+        itf_worker_thread_setup(Nthreads);
+
+		list_for_each_entry_safe(pos, next, (&handle_head), node)
 		{			
 			if(!strcmp(pos->ifname, ifname))
 			{
@@ -253,7 +282,6 @@ berr libpcap_rx_loop_setup(char * ifname)
 				return E_FOUND;
 			}
 		}
-
 
 		libpcap_handler_t *handle = (libpcap_handler_t *)
 								malloc(sizeof(libpcap_handler_t));
@@ -286,6 +314,8 @@ berr libpcap_rx_loop_setup(char * ifname)
             BRET(E_FAIL);
         }
         param.fp = fp;
+        param.id = pcap_if_num++;
+        param.last_thread = 0;
         handle->fp = fp;
 		handle->ifname = strdup(ifname);
 		
@@ -330,29 +360,26 @@ berr libpcap_rx_loop_setup(char * ifname)
 
 berr libpcap_rx_loop_unset(char * ifname __attribute__((unused)))
 {
-#if 1
-	struct list_head *pos = NULL, *next = NULL;
-	libpcap_handler_t *handle = NULL;
-	//list_for_each_entry_safe(pos, next, (&handle_head), node)
-	list_for_each_safe(pos, next,&handle_head)
+    struct list_head *pos = NULL, *next = NULL;
+    libpcap_handler_t *handle = NULL;
+    //list_for_each_entry_safe(pos, next, (&handle_head), node)
+    list_for_each_safe(pos, next,&handle_head)
+    {
+        handle = (libpcap_handler_t *)list_entry(pos, libpcap_handler_t, node);
+        if(!strcmp(handle->ifname, ifname))
+        {
 
-	{
-		handle = (libpcap_handler_t *)list_entry(pos, libpcap_handler_t, node);
-		if(!strcmp(handle->ifname, ifname))
-		{
-		
-			pcap_close(handle->fp); 
-			list_del(&handle->node);
-			if(pthread_cancel(handle->recv_thread))
-			{
+            pcap_close(handle->fp); 
+            list_del(&handle->node);
+            if(pthread_cancel(handle->recv_thread))
+            {
                 printf("cancel Thread-%s Failed\n", handle->ifname);
                 return E_FAIL;        
             }
             pthread_join(handle->recv_thread, NULL);
             free(handle->ifname);
-			free(handle);
-		}
-	}
-#endif	
+            free(handle);
+        }
+    }
     return E_SUCCESS;
 }
