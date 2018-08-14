@@ -6,6 +6,7 @@
 #include "itf_stat.h"
 #include "bts_cnt.h"
 #include "boots_custom.h"
+#include "itf.h"
 
 /*
  * Worker thread: main event loop
@@ -75,18 +76,20 @@ static void transhex( unsigned char* ucParam, int nlen)
 static void thread_libevent_process(int fd, short which, void *arg)
 {
     event_thread_ctx_t *me = (event_thread_ctx_t *)arg;
-    u_char buf[65535] = {0};
+    pcap_pktbuf_t pkt;
     hytag_t hytag;
 
+    memset(&pkt, 0,sizeof(pcap_pktbuf_t));
     //回调函数中回去读取pipe中的信息
     //主线程中如果有新的连接，会向其中一个线程的pipe中写入1
     //这边读取pipe中的数据，如果为1，则说明从pipe中获取的数据是正确的
-    int nsize = read(fd, buf, 65535) ;
+    int nsize = read(fd, (void *)&pkt, sizeof(pcap_pktbuf_t));
     if(nsize < 0)
     {
         itf_work_thread_fail_inc(me->idx);
         return;
     }
+
     itf_work_thread_inc(me->idx);
 
     //printf("thread idx = %d , current id : %ld, recv datalen = %d\n",me->idx,  me->thread_id, nsize);
@@ -95,8 +98,8 @@ static void thread_libevent_process(int fd, short which, void *arg)
     /* work thread process */
     memset(&hytag, 0x0, sizeof(hytag));
 
-    hytag.pbuf.ptr = (void *)buf;
-    hytag.pbuf.len = nsize;
+    hytag.pbuf.ptr = (void *)pkt.packet;
+    hytag.pbuf.len = pkt.len;
     hytag.pbuf.ptr_offset = 0;
 
     naga_data_process_module(&hytag);

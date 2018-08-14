@@ -18,6 +18,14 @@ typedef struct
 	struct list_head node;
 }libpcap_handler_t;
 
+
+typedef struct
+{
+    int len;
+    int rsv;
+    u_char packet[2040];
+}pcap_pktbuf_t;
+
 extern pcap_t *gpcap_desc;
 #define MAX_PCAP_THREAD_NUM 4
 #define MAX_WORKER_THREAD_NUM 40

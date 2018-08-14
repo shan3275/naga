@@ -179,6 +179,7 @@ typedef struct
     pcap_t *fp;
 }libpcap_param_t;
 
+
 void libpcap_packet_handler(u_char *param ,
                             const struct pcap_pkthdr *pkthdr,  u_char *packet);
 extern berr naga_data_process_module(hytag_t * tag);
@@ -188,9 +189,11 @@ void libpcap_packet_handler(u_char *param ,
 {
     libpcap_param_t *tparam = (libpcap_param_t *)param;
     int tid;
+    pcap_pktbuf_t pkt;
     pthread_testcancel();
 
     if(pkthdr->caplen <10) return;
+    if(pkthdr->len >2000) return;
 
 	cnt_inc(ITF_IPKTS);
 	cnt_add(ITF_IBYTS, pkthdr->len);
@@ -206,7 +209,11 @@ void libpcap_packet_handler(u_char *param ,
     tparam->last_thread = tid;
     event_thread_ctx_t* local_thread = threads + tid;
 
-    if (write(local_thread->notify_send_fd, packet, pkthdr->len) != pkthdr->len) 
+
+    memset(&pkt,0,sizeof(pcap_pktbuf_t));
+    pkt.len = pkthdr->len;
+    memcpy(pkt.packet, packet, pkthdr->len);
+    if (write(local_thread->notify_send_fd, (void *)&pkt, sizeof(pcap_pktbuf_t)) != sizeof(pcap_pktbuf_t)) 
     {
         perror("Writing to thread notify pipe");
     }
