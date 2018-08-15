@@ -211,7 +211,7 @@ uint8_t hijack_get_rule_key_id(hijack_rule_t *rule)
 
 	return 255;
 }
-
+#if 0
 berr naga_hijack(hytag_t *hytag)
 {
 
@@ -536,6 +536,7 @@ berr naga_hijack(hytag_t *hytag)
    return E_SUCCESS;
 
 }
+#endif
 
 
 berr hijack_table_reset()

@@ -427,7 +427,7 @@ redirect_302_response_generator(unsigned char *ptr, hytag_t *hytag, char *url)
         ptr[ptr_len-1] = 0x00;
 
         /*skip vlan*/
-        eth_header = buf;
+        eth_header = (struct eth_hdr *)buf;
         type = eth_header->ethertype;
         buf_len += 14; 
 

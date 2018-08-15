@@ -22,6 +22,7 @@
 #include "naga_cmd.h"
 #include "naga_util.h"
 #include "bts_util.h"
+#include "naga_types.h"
 
 #define DNET_STR                     "Net list\n"
 #define ADD_STR                     "ADD Operation\n"
@@ -341,7 +342,7 @@ static int cmd_dnetseg_default_act_set(struct vty *vty, const char *act_str)
     {
         return CMD_ERR_NO_MATCH;
     }
-	ret = api_dnetseg_default_act_set(&acl);
+	ret = api_dnetseg_default_act_set(acl.actions);
 	if (ret)
     {
         vty_out(vty, "dnetseg set default action fail:(%s)%s", berr_msg(ret), VTY_NEWLINE);
@@ -378,6 +379,7 @@ void dnetseg_cmd_config_write(struct vty *vty)
 	uint8_t effect = 0;
     int i;
 	uint32_t action = 0;
+    naga_acl_t acl;
 
 	ret = api_dnetseg_default_act_get(&action);
 	if (ret)
@@ -386,9 +388,12 @@ void dnetseg_cmd_config_write(struct vty *vty)
         return;
     }
 
+    memset(&acl, 0, sizeof(acl));
+    acl.actions = action;
+
 	if (0 != action)
 	{
-		naga_acl_string(&action, acl_str);
+		naga_acl_string(&acl, acl_str);
 		vty_out(vty, "net default %s%s", acl_str, VTY_NEWLINE);
 	}
     for ( i = 0; i < DNETSEG__RULE_NUM_MAX; i++ )

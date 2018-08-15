@@ -179,7 +179,6 @@ typedef struct
     pcap_t *fp;
 }libpcap_param_t;
 
-
 void libpcap_packet_handler(u_char *param ,
                             const struct pcap_pkthdr *pkthdr,  u_char *packet);
 extern berr naga_data_process_module(hytag_t * tag);

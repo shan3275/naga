@@ -141,6 +141,7 @@ static inline struct rte_mbuf *rte_pktmbuf_real_clone(struct rte_mbuf *md,
 }
 #endif
 
+#if 0
 berr naga_adp(hytag_t *hytag)
 {
     berr rv;
@@ -427,6 +428,7 @@ berr naga_adp(hytag_t *hytag)
    return E_SUCCESS;
 
 }
+#endif
 
 
 

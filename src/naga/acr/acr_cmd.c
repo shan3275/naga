@@ -218,7 +218,7 @@ static int cmd_acr_add(struct vty *vty, const char *account, const char *action_
         return CMD_ERR_NO_MATCH;
 	}
 	sprintf(action_arry, "%s", action_str);
-	if(naga_acl_parse(&action_arry, 1, &entry->acl))
+	if(naga_acl_parse((const char **)&action_arry, 1, &entry->acl))
     {
         return CMD_ERR_NO_MATCH;
     }
@@ -367,7 +367,7 @@ static int cmd_acr_account_default_act_set(struct vty *vty, const char *act_str)
     {
         return CMD_ERR_NO_MATCH;
     }
-	ret = api_acr_account_default_act_set(&acl);
+	ret = api_acr_account_default_act_set(acl.actions);
 	if (ret)
     {
         vty_out(vty, "account set default action fail:(%s)%s", berr_msg(ret), VTY_NEWLINE);

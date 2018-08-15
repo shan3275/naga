@@ -224,7 +224,7 @@ typedef struct
     char  user_agent[MAX_USER_AGENT_LEN+1];
     naga_url_t ori_url;
     naga_url_t ref_url;
-    
+
     naga_acl_t acl;
 
 
@@ -250,6 +250,7 @@ typedef struct
 
     uint32_t rule_hits;
     uint32_t rule_idxs[NAGA_ACL_HITS_MAX];
+
 }hytag_t;
 
 typedef struct {
