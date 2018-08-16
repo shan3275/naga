@@ -256,7 +256,11 @@ berr raw_udp_test(void)
     debug("rwa_udp_content_generator success");
     debug("len:%d\n", len);
     //PrintBuffer(buff, len);
+    #if USE_MULTI_RAW_SOCKET
+    rv = ift_raw_send_packet(0, buff, len);
+    #else
     rv = ift_raw_send_packet(buff, len);
+    #endif
     if(rv != E_SUCCESS)
     {
         debug("ift_raw_send_packet rv =%d", rv);

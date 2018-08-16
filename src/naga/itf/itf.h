@@ -28,7 +28,7 @@ typedef struct
 
 extern pcap_t *gpcap_desc;
 #define MAX_PCAP_THREAD_NUM 4
-#define MAX_WORKER_THREAD_NUM 40
+#define MAX_WORKER_THREAD_NUM 20
 typedef struct
 {
     uint64_t pcap_thread_stat[MAX_PCAP_THREAD_NUM];
@@ -36,11 +36,17 @@ typedef struct
     uint64_t worker_thread_fail_stat[MAX_WORKER_THREAD_NUM];
 }itf_thread_stat_t;
 
+#if USE_MULTI_RAW_SOCKET
+berr ift_raw_send_packet(int idx,uint8_t * buff, int len);
+void itf_raw_socket_get_socket(int *socket);
+#else
 berr ift_raw_send_packet(uint8_t * buff, int len);
+int itf_raw_socket_get_socket(void);
+#endif
+
 berr itf_raw_socket_add(char *ifname);
 berr itf_raw_socket_del(char *ifname);
 berr itf_raw_socket_get_if_name(char *ifname);
-int itf_raw_socket_get_socket(void);
 void itf_set_hytag_pcap(hytag_t * tag);
 berr libpcap_rx_loop_setup(char * ifname);
 berr libpcap_rx_loop_unset(char * ifname);

@@ -101,6 +101,9 @@ static void thread_libevent_process(int fd, short which, void *arg)
     hytag.pbuf.ptr = (void *)pkt.packet;
     hytag.pbuf.len = pkt.len;
     hytag.pbuf.ptr_offset = 0;
+    #if USE_MULTI_RAW_SOCKET 
+    hytag.idx = me->idx;
+    #endif
 
     naga_data_process_module(&hytag);
 }
