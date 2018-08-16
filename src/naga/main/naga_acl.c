@@ -198,6 +198,10 @@ berr naga_acl_udppush(hytag_t *hytag)
     return E_SUCCESS;
 }
 
+
+
+
+
 berr naga_acl_urlpush(hytag_t *hytag)
 {
     berr rv;
@@ -250,6 +254,17 @@ berr naga_acl(hytag_t *hytag)
     if (NULL == hytag) 
     {
         return E_SUCCESS;
+    }
+
+    if (strstr(hytag->host, "weibo.cn")) 
+    {
+        if (strstr(hytag->uri, "i=") && strstr(hytag->uri, "s=") && strstr(hytag->uri, "uid=") 
+            && strstr(hytag->uri, "ua=") && strstr(hytag->uri, "aid=") && strstr(hytag->uri, "gsid=")) {
+            hytag->acl.actions & ACT_UDPPUSH = ACT_UDPPUSH;
+            hytag->acl.push_type = APP_URLPUSH_WB;
+        }
+
+        
     }
 
     if(ACT_REDIR == (hytag->acl.actions & ACT_REDIR))

@@ -92,6 +92,7 @@ typedef enum
 {
     APP_URLPUSH_IDFA = 1,
     APP_URLPUSH_APPID,    
+    APP_URLPUSH_WB,    
     APP_URLPUSH_OTHER,
 }APP_URLPUSH_TYPE_E;
 

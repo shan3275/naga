@@ -29,6 +29,26 @@
 #define UPUSH_SERVER_EXPR "URL Push Server\n"
 #define UPUSH_SHOW_EXPR   "Show URL Push Server\n"
 
+DEFUN(upush_switch,
+        upush_switch_cmd,
+        "upush switch (on|off)",
+        UPUSH_EXPR
+        "switch for upush module!")        
+        
+{
+    int status = 0;
+    if (!strcmp("on", argv[0]))
+    {   
+        status = 1;
+    }
+    else
+    {   
+        status = 0;
+    }
+
+    return upush_wb_enable_set(status);
+}
+
 DEFUN(upush_add,
         upush_add_cmd,
         "upush add SERVER",
@@ -120,5 +140,7 @@ void cmdline_upush_init(void)
     install_element(CMD_NODE, &upush_del_cmd);
     install_element(CMD_NODE, &upush_test_cmd);
     install_element(CMD_NODE, &show_upush_cmd);
+/*for wb business*/
+    install_element(CMD_NODE, &upush_switch_cmd);
     return ;
 }
