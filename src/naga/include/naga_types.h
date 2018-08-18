@@ -7,6 +7,11 @@ typedef uint32_t ipaddr_t;
 
 
 #define USE_M_QUEUE 0
+/*
+* 1 表示使用自定义消息队列。尝试使用此种队列的初衷是为了提升性能；
+* 0 表示不使用自定义消息队列，使用目前的pipe方式，目前pipe方式测试稳定，并在线上运行；
+*/
+
 #define USE_MULTI_RAW_SOCKET 0
 /*
 * 1 表示打开使用多个raw socket发送；

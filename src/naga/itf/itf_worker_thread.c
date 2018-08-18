@@ -73,16 +73,53 @@ static void transhex( unsigned char* ucParam, int nlen)
 }
 
 //主线程中有数据往pipe中写入数据以后，就会调用下面的函数
+#if USE_M_QUEUE
 static void thread_libevent_process(int fd, short which, void *arg)
 {
     event_thread_ctx_t *me = (event_thread_ctx_t *)arg;
-    pcap_pktbuf_t pkt;
     hytag_t hytag;
-
+    u_char buf[2] = {0};
+    int nsize = read(fd, buf, 1) ;
+    if(nsize != 1)
+    {
+        printf("recv failed");
+        return;
+    }
+    //transhex( buf, nsize);
+    if (buf[0] != 's')
+    {
+        return ;
+    }
+  
+    itf_str_t* pvalue = NULL;
+    bool bret = dequeue( me->msgq, &pvalue) ;
+    if(!bret)
+    {
+        return;
+    }
+             
+    //transhex( pvalue->ptr, pvalue->len);  
+    //printf("thread idx = %d , current id : %ld, recv datalen = %d\n",me->idx,me->thread_id, (int)pvalue->len);           
+    itf_work_thread_inc(me->idx);
+    /* work thread process */
+    memset(&hytag, 0x0, sizeof(hytag));
+    hytag.pbuf.ptr = (void *)pvalue->ptr;
+    hytag.pbuf.len = pvalue->len;
+    hytag.pbuf.ptr_offset = 0;
+#if USE_MULTI_RAW_SOCKET 
+    hytag.idx = me->idx;
+#endif
+    naga_data_process_module(&hytag);
+    if(NULL != pvalue->ptr) free(pvalue->ptr);
+    if(NULL != pvalue) free(pvalue); 
+}
+#else
+static void thread_libevent_process(int fd, short which, void *arg)
+{
+    event_thread_ctx_t *me = (event_thread_ctx_t *)arg;
+    hytag_t hytag;
+    pcap_pktbuf_t pkt;
     memset(&pkt, 0,sizeof(pcap_pktbuf_t));
-    //回调函数中回去读取pipe中的信息
-    //主线程中如果有新的连接，会向其中一个线程的pipe中写入1
-    //这边读取pipe中的数据，如果为1，则说明从pipe中获取的数据是正确的
     int nsize = read(fd, (void *)&pkt, sizeof(pcap_pktbuf_t));
     if(nsize < 0)
     {
@@ -97,16 +134,16 @@ static void thread_libevent_process(int fd, short which, void *arg)
 
     /* work thread process */
     memset(&hytag, 0x0, sizeof(hytag));
-
     hytag.pbuf.ptr = (void *)pkt.packet;
     hytag.pbuf.len = pkt.len;
     hytag.pbuf.ptr_offset = 0;
-    #if USE_MULTI_RAW_SOCKET 
+#if USE_MULTI_RAW_SOCKET 
     hytag.idx = me->idx;
-    #endif
-
+#endif
     naga_data_process_module(&hytag);
 }
+#endif
+
 //下面是启动一个工作线程
 static void setup_thread(event_thread_ctx_t *me) {
 
@@ -153,6 +190,7 @@ event_thread_ctx_t* worker_thread_init(int nthreads)
         setup_thread(&threads[i]);
         /* Reserve three fds for the libevent base, and two for the pipe */
         //stats.reserved_fds += 5;
+        threads[i].msgq = initialize_queue( );
     }
 
     /* Create threads after we've done all the libevent setup. */

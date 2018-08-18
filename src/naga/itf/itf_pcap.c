@@ -324,7 +324,6 @@ void libpcap_packet_handler(u_char *param ,
 {
     libpcap_param_t *tparam = (libpcap_param_t *)param;
     int tid;
-    pcap_pktbuf_t pkt;
     pthread_testcancel();
 
     if(pkthdr->caplen <10) return;
@@ -343,8 +342,21 @@ void libpcap_packet_handler(u_char *param ,
     tid = ( (tparam->last_thread) + 1) % Nthreads ;
     tparam->last_thread = tid;
     event_thread_ctx_t* local_thread = threads + tid;
+#if USE_M_QUEUE
+    if (write(local_thread->notify_send_fd, "s", 1) != 1)
+    {
+        perror("Writing to thread notify pipe");
+        return;
+    }
 
-
+    itf_str_t * enc = calloc(1, sizeof(itf_str_t));
+    u_char* pac = calloc( 1, pkthdr->len + 1 );
+    memcpy(pac, packet, pkthdr->caplen);
+    enc->ptr = pac;
+    enc->len = pkthdr->caplen;       
+    enqueue( local_thread->msgq, enc ) ;
+#else
+    pcap_pktbuf_t pkt;
     memset(&pkt,0,sizeof(pcap_pktbuf_t));
     pkt.len = pkthdr->len;
     memcpy(pkt.packet, packet, pkthdr->len);
@@ -352,8 +364,7 @@ void libpcap_packet_handler(u_char *param ,
     {
         perror("Writing to thread notify pipe");
     }
-
-    return;
+#endif
 }
 
 void* pcap_rx_loop(void *_param);

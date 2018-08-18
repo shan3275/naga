@@ -9,6 +9,7 @@
 #include <errno.h> 
 #include <string.h>
 #include "boots.h"
+#include "itf_mq_queue.h"
 
 typedef struct {
 	int idx ;
@@ -17,6 +18,7 @@ typedef struct {
 	struct event notify_event; //notify event	
 	int notify_receive_fd;// pipe recv
 	int notify_send_fd; //pipe send 
+	queue_t* msgq;             //msg  queue 
 } event_thread_ctx_t;
 
 berr  itf_worker_thread_setup(int nthreads);
