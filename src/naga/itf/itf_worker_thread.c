@@ -232,8 +232,6 @@ event_thread_ctx_t* worker_thread_init(int nthreads)
 
     for (i = 0; i < nthreads; i++) {
         threads[i].idx = i;
-        
-        #if USE_M_QUEUE
         int fds[2];
         //这边会创建pipe，主要用于主线程和工作线程之间的通信
         if (pipe(fds)) {
@@ -249,6 +247,7 @@ event_thread_ctx_t* worker_thread_init(int nthreads)
         setup_thread(&threads[i]);
         /* Reserve three fds for the libevent base, and two for the pipe */
         //stats.reserved_fds += 5;
+        #if USE_M_QUEUE
         threads[i].msgq = initialize_queue( );
         #endif
         #if USE_M_RING
