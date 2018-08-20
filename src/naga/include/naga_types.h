@@ -12,7 +12,7 @@ typedef uint32_t ipaddr_t;
 * 0 表示不使用自定义消息队列，使用目前的pipe方式，目前pipe方式测试稳定，并在线上运行；
 */
 
-#define USE_M_RING  1
+#define USE_M_RING  0
 /*
 *  1 表示使用自定义的RING队列。
 *  0 表示不使用自定义的RING队列。
