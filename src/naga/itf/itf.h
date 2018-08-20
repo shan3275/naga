@@ -32,8 +32,13 @@ extern pcap_t *gpcap_desc;
 typedef struct
 {
     uint64_t pcap_thread_stat[MAX_PCAP_THREAD_NUM];
+    uint64_t pcap_thread_fail_stat[MAX_PCAP_THREAD_NUM];
+    uint64_t pcap_thread_fail1_stat[MAX_PCAP_THREAD_NUM];
+    uint64_t pcap_thread_fail2_stat[MAX_PCAP_THREAD_NUM];
     uint64_t worker_thread_stat[MAX_WORKER_THREAD_NUM];
     uint64_t worker_thread_fail_stat[MAX_WORKER_THREAD_NUM];
+    uint64_t worker_thread_fail1_stat[MAX_WORKER_THREAD_NUM];
+    uint64_t worker_thread_fail2_stat[MAX_WORKER_THREAD_NUM];
 }itf_thread_stat_t;
 
 #if USE_MULTI_RAW_SOCKET
@@ -52,7 +57,12 @@ berr libpcap_rx_loop_setup(char * ifname);
 berr libpcap_rx_loop_unset(char * ifname);
 void itf_stat_init(void);
 void itf_pcap_thread_inc(int id);
+void itf_pcap_thread_fail_inc(int id);
+void itf_pcap_thread_fail1_inc(int id);
+void itf_pcap_thread_fail2_inc(int id);
 void itf_work_thread_inc(int id);
 void itf_work_thread_fail_inc(int id);
+void itf_work_thread_fail1_inc(int id);
+void itf_work_thread_fail2_inc(int id);
 void itf_thread_stat_get(char *buff);
 #endif /* !__ITF_H__ */

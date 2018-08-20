@@ -7,10 +7,68 @@
 #include "bts_cnt.h"
 #include "boots_custom.h"
 #include "itf.h"
+#include "itf_mq_ring.h"
 
 /*
  * Worker thread: main event loop
  */
+#if USE_M_RING
+static void *worker_func(void *arg) {
+    event_thread_ctx_t *me = arg;
+    long thread_id = me->idx;
+    u_int numCPU = sysconf(_SC_NPROCESSORS_ONLN );
+    u_long core_id = (thread_id+1) % numCPU;
+    //printf("cpu nums = %d,  current thread id = %ld, bind cpu core id = %ld \n", numCPU, thread_id, core_id);
+
+    if(numCPU > 1)
+    {
+        cpu_set_t cpuset;
+        CPU_ZERO(&cpuset);
+        CPU_SET(core_id, &cpuset);
+        //下面的函数需要在libc2.3.4以后的版本才能使用 
+        /*if(pthread_setaffinity_np(pthread_self(), sizeof(cpuset), &cpuset) < 0 )
+          {
+          printf("Error while binding thread %ld to core %ld \n", thread_id, core_id );
+          }
+          else
+          {
+          printf("Set thread %lu on core %lu/%u\n", thread_id, core_id, numCPU);
+          }*/
+    }
+
+    //这个方法主要是开启事件的循环
+    //每个线程中都会有自己独立的event_base和事件的循环机制
+       while (1)
+    {
+        itf_pkt_t * enc = NULL;
+        bool bet = dering(me->msgr, &enc);
+        if (!bet)
+        {
+            itf_work_thread_fail_inc(me->idx);
+            usleep(1000);
+            continue;
+        }
+        itf_work_thread_inc(me->idx);
+        /* work thread process */
+        hytag_t hytag;
+        memset(&hytag, 0x0, sizeof(hytag));
+        hytag.pbuf.ptr = (void *)enc->packet;
+        hytag.pbuf.len = enc->len;
+        hytag.pbuf.ptr_offset = 0;
+    #if USE_MULTI_RAW_SOCKET 
+        hytag.idx = me->idx;
+    #endif
+        naga_data_process_module(&hytag);
+        bool bret = enring(enc->r, enc);
+        if (!bret)
+        {
+            itf_work_thread_fail1_inc(me->idx);
+        }
+
+    }
+    return NULL;
+}
+#else
 static void *worker_func(void *arg) {
     event_thread_ctx_t *me = arg;
     long thread_id = me->idx;
@@ -39,8 +97,7 @@ static void *worker_func(void *arg) {
     event_base_loop(me->base, 0);  //每个线程开启自己各自的线程循环读取从主线程中分发过来的数据的
     return NULL;
 }
-
-
+#endif
 /*
  * Creates a worker thread.
  */
@@ -73,11 +130,10 @@ static void transhex( unsigned char* ucParam, int nlen)
 }
 
 //主线程中有数据往pipe中写入数据以后，就会调用下面的函数
-#if USE_M_QUEUE
+#if USE_M_QUEUE /* 使用自定义链表队列*/
 static void thread_libevent_process(int fd, short which, void *arg)
 {
     event_thread_ctx_t *me = (event_thread_ctx_t *)arg;
-    hytag_t hytag;
     u_char buf[2] = {0};
     int nsize = read(fd, buf, 1) ;
     if(nsize != 1)
@@ -102,6 +158,7 @@ static void thread_libevent_process(int fd, short which, void *arg)
     //printf("thread idx = %d , current id : %ld, recv datalen = %d\n",me->idx,me->thread_id, (int)pvalue->len);           
     itf_work_thread_inc(me->idx);
     /* work thread process */
+    hytag_t hytag;
     memset(&hytag, 0x0, sizeof(hytag));
     hytag.pbuf.ptr = (void *)pvalue->ptr;
     hytag.pbuf.len = pvalue->len;
@@ -113,11 +170,10 @@ static void thread_libevent_process(int fd, short which, void *arg)
     if(NULL != pvalue->ptr) free(pvalue->ptr);
     if(NULL != pvalue) free(pvalue); 
 }
-#else
+#else /* use pipe  方式接受报文*/
 static void thread_libevent_process(int fd, short which, void *arg)
 {
     event_thread_ctx_t *me = (event_thread_ctx_t *)arg;
-    hytag_t hytag;
     pcap_pktbuf_t pkt;
     memset(&pkt, 0,sizeof(pcap_pktbuf_t));
     int nsize = read(fd, (void *)&pkt, sizeof(pcap_pktbuf_t));
@@ -133,6 +189,7 @@ static void thread_libevent_process(int fd, short which, void *arg)
     //transhex( buf, nsize);
 
     /* work thread process */
+    hytag_t hytag;
     memset(&hytag, 0x0, sizeof(hytag));
     hytag.pbuf.ptr = (void *)pkt.packet;
     hytag.pbuf.len = pkt.len;
@@ -142,7 +199,7 @@ static void thread_libevent_process(int fd, short which, void *arg)
 #endif
     naga_data_process_module(&hytag);
 }
-#endif
+#endif /* end of USE_M_QUEUE */
 
 //下面是启动一个工作线程
 static void setup_thread(event_thread_ctx_t *me) {
@@ -174,13 +231,15 @@ event_thread_ctx_t* worker_thread_init(int nthreads)
 
 
     for (i = 0; i < nthreads; i++) {
+        threads[i].idx = i;
+        
+        #if USE_M_QUEUE
         int fds[2];
         //这边会创建pipe，主要用于主线程和工作线程之间的通信
         if (pipe(fds)) {
             perror("Can't create notify pipe");
             return NULL;
         }
-        threads[i].idx = i;
         //threads是工作线程的基本结构：LIBEVENT_THREAD
         //将pipe接收端和写入端都放到工作线程的结构体中
         threads[i].notify_receive_fd = fds[0]; //接收端
@@ -191,6 +250,10 @@ event_thread_ctx_t* worker_thread_init(int nthreads)
         /* Reserve three fds for the libevent base, and two for the pipe */
         //stats.reserved_fds += 5;
         threads[i].msgq = initialize_queue( );
+        #endif
+        #if USE_M_RING
+        threads[i].msgr = initialize_ring(KSRT_WORKER_RING_SIZE);
+        #endif
     }
 
     /* Create threads after we've done all the libevent setup. */

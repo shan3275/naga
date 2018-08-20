@@ -139,6 +139,21 @@ void itf_pcap_thread_inc(int id)
     itf_thread_stat.pcap_thread_stat[id%MAX_PCAP_THREAD_NUM]++;
 }
 
+void itf_pcap_thread_fail_inc(int id)
+{
+    itf_thread_stat.pcap_thread_fail_stat[id%MAX_PCAP_THREAD_NUM]++;
+}
+
+void itf_pcap_thread_fail1_inc(int id)
+{
+    itf_thread_stat.pcap_thread_fail1_stat[id%MAX_PCAP_THREAD_NUM]++;
+}
+
+void itf_pcap_thread_fail2_inc(int id)
+{
+    itf_thread_stat.pcap_thread_fail2_stat[id%MAX_PCAP_THREAD_NUM]++;
+}
+
 void itf_work_thread_inc(int id)
 {
     itf_thread_stat.worker_thread_stat[id%MAX_WORKER_THREAD_NUM]++;
@@ -147,6 +162,14 @@ void itf_work_thread_inc(int id)
 void itf_work_thread_fail_inc(int id)
 {
     itf_thread_stat.worker_thread_fail_stat[id%MAX_WORKER_THREAD_NUM]++;
+}
+void itf_work_thread_fail1_inc(int id)
+{
+    itf_thread_stat.worker_thread_fail1_stat[id%MAX_WORKER_THREAD_NUM]++;
+}
+void itf_work_thread_fail2_inc(int id)
+{
+    itf_thread_stat.worker_thread_fail2_stat[id%MAX_WORKER_THREAD_NUM]++;
 }
 
 void itf_thread_stat_get(char *buff)
@@ -160,6 +183,29 @@ void itf_thread_stat_get(char *buff)
             l += sprintf(buff+l, "pcap_thread[%d]          :  %llu\n\r", i, itf_thread_stat.pcap_thread_stat[i]);
         }
     }
+    for(i = 0; i < MAX_PCAP_THREAD_NUM; i++)
+    {
+        if (itf_thread_stat.pcap_thread_fail_stat[i])
+        {
+            l += sprintf(buff+l, "pcap_thread_fail[%d]     :  %llu\n\r", i, itf_thread_stat.pcap_thread_fail_stat[i]);
+        }
+    }
+    for(i = 0; i < MAX_PCAP_THREAD_NUM; i++)
+    {
+        if (itf_thread_stat.pcap_thread_fail1_stat[i])
+        {
+            l += sprintf(buff+l, "pcap_thread_fail1[%d]    :  %llu\n\r", i, itf_thread_stat.pcap_thread_fail1_stat[i]);
+        }
+    }  
+
+    for(i = 0; i < MAX_PCAP_THREAD_NUM; i++)
+    {
+        if (itf_thread_stat.pcap_thread_fail2_stat[i])
+        {
+            l += sprintf(buff+l, "pcap_thread_fail2[%d]    :  %llu\n\r", i, itf_thread_stat.pcap_thread_fail2_stat[i]);
+        }
+    }  
+
     for(i = 0; i < MAX_WORKER_THREAD_NUM; i++)
     {
         if (itf_thread_stat.worker_thread_stat[i])
@@ -172,6 +218,20 @@ void itf_thread_stat_get(char *buff)
         if (itf_thread_stat.worker_thread_fail_stat[i])
         {
             l += sprintf(buff+l, "worker_thread_fail[%d]   :  %llu\n\r", i, itf_thread_stat.worker_thread_fail_stat[i]);
+        }
+    }
+    for(i = 0; i < MAX_WORKER_THREAD_NUM; i++)
+    {
+        if (itf_thread_stat.worker_thread_fail1_stat[i])
+        {
+            l += sprintf(buff+l, "worker_thread_fail1[%d]   :  %llu\n\r", i, itf_thread_stat.worker_thread_fail1_stat[i]);
+        }
+    }
+    for(i = 0; i < MAX_WORKER_THREAD_NUM; i++)
+    {
+        if (itf_thread_stat.worker_thread_fail2_stat[i])
+        {
+            l += sprintf(buff+l, "worker_thread_fail2[%d]   :  %llu\n\r", i, itf_thread_stat.worker_thread_fail2_stat[i]);
         }
     }
 }

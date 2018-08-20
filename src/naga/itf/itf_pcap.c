@@ -17,6 +17,7 @@
 #include <linux/if_ether.h>
 #include <fcntl.h>
 #include "itf_worker_thread.h"
+#include "itf_mq_ring.h"
 
 pcap_t *gpcap_desc = NULL;
 #if USE_MULTI_RAW_SOCKET
@@ -313,6 +314,9 @@ typedef struct
     int    id;
     int    last_thread;
     pcap_t *fp;
+#if USE_M_RING
+    ring_t *msgr;
+#endif
 }libpcap_param_t;
 
 void libpcap_packet_handler(u_char *param ,
@@ -345,10 +349,9 @@ void libpcap_packet_handler(u_char *param ,
 #if USE_M_QUEUE
     if (write(local_thread->notify_send_fd, "s", 1) != 1)
     {
-        perror("Writing to thread notify pipe");
+        itf_pcap_thread_fail_inc(tparam->id);
         return;
     }
-
     itf_str_t * enc = calloc(1, sizeof(itf_str_t));
     u_char* pac = calloc( 1, pkthdr->len + 1 );
     memcpy(pac, packet, pkthdr->caplen);
@@ -356,15 +359,42 @@ void libpcap_packet_handler(u_char *param ,
     enc->len = pkthdr->caplen;       
     enqueue( local_thread->msgq, enc ) ;
 #else
+    #if USE_M_RING
+    itf_pkt_t * enc = NULL;
+    bool bet = dering(tparam->msgr, &enc);
+    if (bet)
+    {
+        memset(enc, 0,sizeof(itf_pkt_t));
+        enc->r   = tparam->msgr;
+        enc->len =  pkthdr->caplen;
+        memcpy(enc->packet, packet, pkthdr->caplen);
+        bool bett = enring(local_thread->msgr, enc);
+        if (!bett)
+        {
+            itf_pcap_thread_fail1_inc(tparam->id);
+            bett = enring(tparam->msgr, enc);
+            if (!bett)
+            {
+                itf_pcap_thread_fail2_inc(tparam->id);
+            }
+        }
+    }
+    else
+    {
+        itf_pcap_thread_fail_inc(tparam->id);
+    }
+
+    #else /* 使用pipe 方式发送数据*/
     pcap_pktbuf_t pkt;
     memset(&pkt,0,sizeof(pcap_pktbuf_t));
     pkt.len = pkthdr->len;
     memcpy(pkt.packet, packet, pkthdr->len);
     if (write(local_thread->notify_send_fd, (void *)&pkt, sizeof(pcap_pktbuf_t)) != sizeof(pcap_pktbuf_t)) 
     {
-        perror("Writing to thread notify pipe");
+        itf_pcap_thread_fail_inc(tparam->id);
     }
-#endif
+    #endif  /* end of USE_M_RING */
+#endif /* end of USE_M_QUEUE */
 }
 
 void* pcap_rx_loop(void *_param);
@@ -388,19 +418,9 @@ void *pcap_rx_loop(void *_param)
     return NULL;
 }
 
-
-
-
-
-
 //#define NAGA_CONTROL_FILTER "dst port 80"
 
-
-
-
 BTS_LIST_HEAD(handle_head);
-
-
 berr libpcap_rx_loop_setup(char * ifname)
 {
         pcap_t *fp = NULL;
@@ -471,6 +491,26 @@ berr libpcap_rx_loop_setup(char * ifname)
             printf("Error setting the filter.\n");
             BRET(E_FAIL);
         }
+
+#if USE_M_RING
+        int i;
+        param.msgr = initialize_ring(KSTR_PCAP_RING_SIZE);
+        printf("tparam.msgr=%p\n", param.msgr);
+        itf_pkt_t *pkt = calloc(KSTR_PCAP_RING_SIZE, sizeof(itf_pkt_t));
+        if (pkt)
+        {
+            for (i=0; i < KSTR_PCAP_RING_SIZE; i++)
+            {   
+                bool bet = enring(param.msgr, pkt+i);
+                if (!bet)
+                {
+                    printf("have enring %d\n", i);
+                    break;
+                }
+            }
+            printf("have enring %d\n", i);          
+        }
+#endif
 
         libpcap_param_t *tparam = (libpcap_param_t * )malloc(sizeof(libpcap_param_t));
 

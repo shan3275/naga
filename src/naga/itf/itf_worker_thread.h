@@ -10,6 +10,8 @@
 #include <string.h>
 #include "boots.h"
 #include "itf_mq_queue.h"
+#include "itf_mq_ring.h"
+#include "naga_types.h"
 
 typedef struct {
 	int idx ;
@@ -18,7 +20,12 @@ typedef struct {
 	struct event notify_event; //notify event	
 	int notify_receive_fd;// pipe recv
 	int notify_send_fd; //pipe send 
+	#if USE_M_RING
+	ring_t * msgr;
+	#endif
+	#if USE_M_QUEUE
 	queue_t* msgq;             //msg  queue 
+	#endif
 } event_thread_ctx_t;
 
 berr  itf_worker_thread_setup(int nthreads);
