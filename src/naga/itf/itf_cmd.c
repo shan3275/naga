@@ -378,7 +378,7 @@ DEFUN(interface_show_work_thread,
     memset(buff, 0,2048);
     itf_thread_stat_get(buff);
     vty_out(vty, "Thread Statistics:%s", VTY_NEWLINE);
-    vty_out(vty, "%512s", buff);
+    vty_out(vty, "%s", buff);
     return CMD_SUCCESS;
 }
 
