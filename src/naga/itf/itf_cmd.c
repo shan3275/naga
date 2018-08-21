@@ -364,7 +364,7 @@ DEFUN(interface_show_work_thread,
       )
 {
     int rv;
-    char buff[512]={0};
+    char buff[2048]={0};
     rv = itf_worker_thread_get(buff);
     if (rv == E_SUCCESS)
     {
@@ -375,10 +375,10 @@ DEFUN(interface_show_work_thread,
     {
         vty_out(vty, "interface work-thread is NULL%s",  VTY_NEWLINE);
     }
-    memset(buff, 0,512);
+    memset(buff, 0,2048);
     itf_thread_stat_get(buff);
     vty_out(vty, "Thread Statistics:%s", VTY_NEWLINE);
-    vty_out(vty, "%s", buff);
+    vty_out(vty, "%512s", buff);
     return CMD_SUCCESS;
 }
 
