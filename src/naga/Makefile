@@ -35,7 +35,7 @@ DIRS-y += include
 DIRS-y += boots
 DIRS-y += libzebra
 DIRS-y += cmdline
-DIRS-y += vsr
+#DIRS-y += vsr
 DIRS-y += pid
 DIRS-y += itf
 DIRS-y += dmr
@@ -49,7 +49,9 @@ DIRS-y += url
 DIRS-y += urlr
 DIRS-y += hijack
 DIRS-y += debug
-DIRS-y += domain
+DIRS-y += ua
+DIRS-y += mask
+DIRS-y += upush
 DIRS-y += main
 
 include $(RTE_SDK)/mk/rte.extsubdir.mk

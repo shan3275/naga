@@ -7,27 +7,66 @@ typedef uint32_t ipaddr_t;
 
 
 #define USE_M_QUEUE 0
+/*
+* 1 表示使用自定义消息队列。尝试使用此种队列的初衷是为了提升性能；
+* 0 表示不使用自定义消息队列，使用目前的pipe方式，目前pipe方式测试稳定，并在线上运行；
+*/
 
+#define USE_M_RING  1
+/*
+*  1 表示使用自定义的RING队列。
+*  0 表示不使用自定义的RING队列。
+*
+*/
 
+#define USE_MULTI_RAW_SOCKET 0
+/*
+* 1 表示打开使用多个raw socket发送；
+* 0 表示关闭，使用一个raw socket发送，全部业务线程共用一个socket；
+* 测试结果来看：使用多个socket和单个socket发送报文，性能基本一致
+* 而且在流量过大的情况下，使用多个socket发送，还会出现No buffer space available的返回
+* 故暂时关闭
+*/
+
+/***
+ * 1 for save to hytag->ori_url->url  module 
+ * 0 for save to hytag->url
+ * */
+#define HTTP_URL_PARSE_ORI_MOD   0
 
 #define PACKET_MTU    1500
 
-#define ACT_LOG         1
-#define ACT_TRACE       2
-#define ACT_DROP        4
-#define ACT_PUSH        8
+#define ACT_LOG          1
+#define ACT_TRACE        2
+#define ACT_DROP         4
+#define ACT_PUSH         8
 #define ACT_REDIR       16
-#define ACT_TAGDUMP      32
+#define ACT_TAGDUMP     32
+#define ACT_MASK        64
+#define ACT_URLPUSH    128
+#define ACT_ADP        256
+#define ACT_UDPPUSH    512
 
 #define ACT_IS_VAILD(_val, _act) \
     (((_val) & (_act)) == (_act))
 
+#define NAGA_ACL_HITS_MAX   32
+
+#define NAGA_URL_LEN_MAX    1500
+#define URL_URI_LEN_MAX     1400
+
 typedef struct {
     uint32_t actions;
-    uint32_t outport;
+    uint32_t mask;
+    uint16_t rate; /* redir sample rate, rate%, 1%,2%,3%*/
+    uint16_t sample; /* redir sample 100/rate, int*/
+    uint8_t  push_type; /* upush type */
+    uint8_t  resv0; /* resverd for align*/
+    uint16_t resv; /* resverd for align*/
     bts_atomic64_t cnt;
     bts_atomic64_t vcnt;/*pre drop*/
-    bts_atomic64_t pushed_cnt;/*pre pushed then second assert*/    
+    bts_atomic64_t pushed_cnt;/*pre pushed then second assert*/
+    char url[NAGA_URL_LEN_MAX];
 } naga_acl_t;
 
 #define ACL_DORP(_acl) \
@@ -59,12 +98,22 @@ typedef struct {
 #define ACL_CNT_SET(_acl, _val) \
 	bts_atomic64_set(&(_acl.cnt), _val)
 
+#define ACL_CNT_GET(_acl) \
+	bts_atomic64_get(&(_acl.cnt))
+
 
 typedef enum
 {
     APP_TYPE_HTTP_GET_OR_POST = 1,
     APP_TYPE_HTTP_OTHER,    
 }APP_TYPE_E;
+
+typedef enum
+{
+    APP_URLPUSH_IDFA = 1,
+    APP_URLPUSH_APPID,    
+    APP_URLPUSH_OTHER,
+}APP_URLPUSH_TYPE_E;
 
 struct pbuf {
 	//struct pbuf *next; /*always NULL*/
@@ -82,12 +131,20 @@ enum ad_action_em
     AD_FAILED,    
 };
 
+#define TEMPLATE_SEGMENT_ON        0
+#if TEMPLATE_SEGMENT_ON
 typedef enum
 {
     AD_TEMPLATE_PC,
     AD_TEMPLATE_MOBILE,
     AD_TEMPLATE_MAX,
 }ad_template_em;
+#else
+typedef enum
+{
+    AD_TEMPLATE_MAX = 1,
+}ad_template_em;
+#endif
 
 #define URL_MAX_LEN  1500//URL MAX LEN
 #define MAX_HOST_LEN 128
@@ -98,6 +155,28 @@ typedef enum
 
 #define ENABLE 1
 #define DISABLE 0
+
+#define URL_HOST_LEN_MAX    64
+#define URL_PARAM_NUMB_MAX  32
+#define URL_PARAM_KEY_LEN_MAX   64
+#define URL_PARAM_VAL_LEN_MAX   1280
+
+typedef struct {
+    uint32_t  pnumb;
+    char pkeys[URL_PARAM_NUMB_MAX][URL_PARAM_KEY_LEN_MAX];
+    char pvals[URL_PARAM_NUMB_MAX][URL_PARAM_VAL_LEN_MAX];
+} naga_url_param_t;
+
+typedef struct {
+    uint16_t host_len;
+    uint16_t uri_len;
+    char url[NAGA_URL_LEN_MAX];
+    char host[URL_HOST_LEN_MAX];
+    char uri[URL_URI_LEN_MAX];
+    char pstr[URL_URI_LEN_MAX];
+    naga_url_param_t params;
+} naga_url_t;
+
 
 typedef struct
 {
@@ -163,7 +242,9 @@ typedef struct
 	char referer[URL_MAX_LEN+1];
     uint16_t user_agent_len;
     char  user_agent[MAX_USER_AGENT_LEN+1];
-    
+    naga_url_t ori_url;
+    naga_url_t ref_url;
+
     naga_acl_t acl;
 
 
@@ -173,9 +254,9 @@ typedef struct
     uint32_t hijack_rule_id;
 
     struct pbuf pbuf;
-    struct rte_mbuf *m;
+    //struct rte_mbuf *m;
     uint16_t match;   /* 0 for not match, 1 for vsr match, 2 for other match  */
-    enum ad_action_em ad_act; 
+    enum ad_action_em ad_act;
 
     /* ad template select */
     ad_template_em template;    /* ad template id , ad_template_enum */
@@ -186,20 +267,43 @@ typedef struct
     uint8_t  pushed_second_assert;
 	uint8_t  snet_hit_id;
 	char * hijack_url;
+
+    uint32_t rule_hits;
+    uint32_t rule_idxs[NAGA_ACL_HITS_MAX];
+
+    #if USE_MULTI_RAW_SOCKET
+    int idx; /* pthread idx, core id number,used for send_packet */
+    #endif
 }hytag_t;
+
+typedef struct {
+    uint32_t idx;
+    uint32_t acl;
+    uint32_t group;
+    void *data;
+} naga_rule_t;
+
+typedef struct {
+    uint32_t offset;
+    uint32_t size;
+    uint32_t inuse;
+    naga_rule_t *rules;
+} naga_rule_tab_t;
 
 #define HYTAG_ACL_MERGE(_tagacl, _ruleacl) \
 { \
     (_tagacl).actions |= (_ruleacl).actions; \
-    (_tagacl).outport |= (_ruleacl).outport; \
-    ACL_HIT(_tagacl);\
+    (_tagacl).mask |= (_ruleacl).mask;\
+    (_tagacl).push_type |= (_ruleacl).push_type;\
+    if ((0 == strlen((_tagacl).url)) && (0 != strlen((_ruleacl).url))) { \
+        strcpy((_tagacl).url, (_ruleacl).url); \
+    } \
+    ACL_HIT(_tagacl); \
 }
-
-
 
 #define HYTAG_ACL_SET(_acl, _val)   _acl.actions |= _val
 
-#define USE_D_PACKET 1
+#define USE_D_PACKET 0 // comment for now by shan275
 
 #define DEBUG_USE_CYCLE 0
 #if DEBUG_USE_CYCLE

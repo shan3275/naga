@@ -211,12 +211,11 @@ uint8_t hijack_get_rule_key_id(hijack_rule_t *rule)
 
 	return 255;
 }
-
+#if 0
 berr naga_hijack(hytag_t *hytag)
 {
 
     berr rv;
-    struct rte_mbuf *txm = NULL;
     unsigned char buffer[2048]; 
 
     hijack_ip_t *entry = NULL;
@@ -495,7 +494,7 @@ berr naga_hijack(hytag_t *hytag)
 	    CYCLE_END();
 
 	    CYCLE_START();
-	    rv = ift_raw_send_packet(hytag->fp, buffer, hytag->data_len);
+	    rv = ift_raw_send_packet(buffer, hytag->data_len);
 	    if(rv != E_SUCCESS)
 	    {
 	        CNT_INC(HIJACK_DROP_SEND_PACKET1);
@@ -503,27 +502,8 @@ berr naga_hijack(hytag_t *hytag)
 	    }
         //PRINTF_PACKET(buffer, hytag->data_len);
 	    CYCLE_END();
-   }  
-   else
-   {
-
-        if (NULL != hytag->m)
-        {
-            txm = hytag->m;  
-    	    rv = redirect_302_response_generator(hytag->pbuf.ptr, hytag, hijack_url);
-	        if(rv != E_SUCCESS) 
-            {
-		        CNT_INC(HIJACK_DROP_HEAD_GEN1);
-		        return rv;
-            }
-
-            txm->data_len = txm->pkt_len = hytag->data_len;
-            itf_send_packet_imm(txm, txm->port);
-
-        }
    }
 
-   
    time(&(entry->pri_time));
    ACL_HIT(entry->acl);
    if (hao123_flag & HAO123)
@@ -556,6 +536,7 @@ berr naga_hijack(hytag_t *hytag)
    return E_SUCCESS;
 
 }
+#endif
 
 
 berr hijack_table_reset()
@@ -652,12 +633,13 @@ void *time_check_loop(void *parm)
             {
                 continue;
             }
+            /*
             rv = hijack_record();
             if (E_SUCCESS != rv)
             {
                 continue;
             }
-
+            */
             flag = 1;
         }
         

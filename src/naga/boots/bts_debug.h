@@ -90,3 +90,5 @@ berr mod_modify(char *name, bswt enable, bswt debug);
     return _rv; \
 }
 #endif
+
+#define DOPT_IS_SELECTED(dop)    (dopt_is_enable(dop) == ENABLE)

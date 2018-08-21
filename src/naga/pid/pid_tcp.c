@@ -9,6 +9,7 @@
 
 berr pid_tcp(struct pbuf *p, hytag_t *hytag, int inner_outer)
 {
+    int rv = 0;
     uint16_t tcphr_len = 0;
 	struct tcp_hdr_s *tcp_hdr;
 
@@ -29,6 +30,8 @@ berr pid_tcp(struct pbuf *p, hytag_t *hytag, int inner_outer)
 	  	hytag->outer_srcport= ntohs(tcp_hdr->src);
 	  	hytag->outer_dstport= ntohs(tcp_hdr->dest);
         pid_incr_count(OUTERL4_TCP);
+        hytag->outer_seq = ntohl(tcp_hdr->seq);
+        hytag->outer_ack = ntohl(tcp_hdr->ack_seq);
 	}
 	else 
 	{
@@ -47,16 +50,18 @@ berr pid_tcp(struct pbuf *p, hytag_t *hytag, int inner_outer)
 	
 	uint16_t srcport = ntohs(tcp_hdr->src); 
 	uint16_t dstport = ntohs(tcp_hdr->dest); 
-	
+
 	if( dstport == 80 || dstport == 8080 )
 	{
-	     pid_incr_count(APP_HTTP);
-		 return pid_http_up(p, hytag);     
+	     pid_incr_count(APP_HTTP_UP);
+		 rv=  pid_http_up(p, hytag);     
+	     pid_incr_count(APP_HTTP_UP_OVER);
+         return rv;
 	}
     else if(srcport == 80 || srcport == 8080 )
     {
-	     pid_incr_count(APP_HTTP);
-		 return pid_http_up(p, hytag);          
+	     pid_incr_count(APP_HTTP_DN);
+		 //return pid_http_up(p, hytag);          
     }
 	else
 	{

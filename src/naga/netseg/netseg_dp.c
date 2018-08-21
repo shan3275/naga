@@ -10,7 +10,7 @@
 #include "bts_cnt.h"
 #include "netseg.h"
 
-extern uint32_t netseg_default_action;
+extern naga_acl_t netseg_default_acl;
 berr netseg_dp_match(uint32_t ip, net_t **rule)
 {
     int i;
@@ -54,6 +54,10 @@ berr netseg_dp_process(hytag_t *hytag)
         return E_PARAM;
     }
 
+    if(ACT_IS_VAILD(hytag->acl.actions, ACT_DROP))
+    {
+        return E_SUCCESS;
+    }
     /*add recv statistics */
     cnt_inc(NET_PKTS);
 
@@ -77,7 +81,7 @@ berr netseg_dp_process(hytag_t *hytag)
         cnt_inc(NET_UNMATCHPKTS);
         hytag->match &= 0xfffe;
 		hytag->snet_hit_id = 255;
-		HYTAG_ACL_SET(hytag->acl, netseg_default_action);
+        HYTAG_ACL_MERGE(hytag->acl, netseg_default_acl); 
     }
     else
     {
@@ -101,5 +105,5 @@ berr netseg_dp_process(hytag_t *hytag)
         
 		HYTAG_ACL_MERGE(hytag->acl, rule->acl);
     }
-    return E_SUCCESS; 
+    return E_SUCCESS;
 }

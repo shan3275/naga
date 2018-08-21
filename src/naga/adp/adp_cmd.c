@@ -98,7 +98,7 @@ DEFUN(adp_switch_set_off,
 }
 
 
-
+#if TEMPLATE_SEGMENT_ON
 DEFUN(adp_switch_template, 
       adp_switch_template_cmd,
       "adp switch template (pc|mobile) (on|off)", "\n")
@@ -108,7 +108,7 @@ DEFUN(adp_switch_template,
       
      if(argc < 2 )
      {
-         vty_out(vty, "PARAM Err argc < 2 %s", VTY_NEWLINE);
+         vty_out(vty, "param err argc < 2 %s", VTY_NEWLINE);
          return 0; 
      }  
       if(!strcmp(argv[0], "pc") )
@@ -121,7 +121,7 @@ DEFUN(adp_switch_template,
      }
      else
      {
-         vty_out(vty, "PARAM Err (pc|mobile) %s", VTY_NEWLINE);
+         vty_out(vty, "param err (pc|mobile) %s", VTY_NEWLINE);
          return 0;      
      }
 
@@ -135,7 +135,7 @@ DEFUN(adp_switch_template,
      }
      else
      {
-         vty_out(vty, "PARAM Err (on|off)%s", VTY_NEWLINE);
+         vty_out(vty, "param err (on|off)%s", VTY_NEWLINE);
          return 0;        
      }
 
@@ -143,6 +143,24 @@ DEFUN(adp_switch_template,
      
     return 0;
 }
+#else
+
+DEFUN(adp_switch_template_on,
+      adp_switch_template_on_cmd,
+      "adp switch template on", "\n")
+{
+
+    adp_switch_template_set(0, 1);        
+    return 0;
+}
+DEFUN(adp_switch_template_off,
+      adp_switch_template_off_cmd,
+      "adp switch template off", "\n")
+{
+    adp_switch_template_set(0, 0);        
+    return 0;
+}
+#endif
 
 
 
@@ -321,6 +339,7 @@ void adp_cmd_config_write(struct vty *vty)
 					VTY_NEWLINE); 
 
 
+#if TEMPLATE_SEGMENT_ON
     int type = AD_TEMPLATE_PC;
     adp_switch_template_get(type, &on);
 	vty_out(vty, "adp switch template pc %s%s",
@@ -332,13 +351,18 @@ void adp_cmd_config_write(struct vty *vty)
 	vty_out(vty, "adp switch template mobile %s%s",
 						on? "on":"off",
 					VTY_NEWLINE); 	
-	
+#else
+    int type = 0;
+    adp_switch_template_get(type, &on);
+	vty_out(vty, "adp switch template  %s%s",
+						on? "on":"off",
+					VTY_NEWLINE); 	
+#endif
 
 	adp_switch_get(&on);
 	vty_out(vty, "adp switch %s%s",
 						on? "on":"off",
 					VTY_NEWLINE); 		
-
 		
     int pkt_content;
     ads_pkt_content_get(&pkt_content);
@@ -368,7 +392,13 @@ void cmdline_adp_init(void)
 	
     install_element(CMD_NODE, &adp_mac_custom_set_cmd);
     install_element(CMD_NODE, &adp_mac_special_set_cmd);
+#if TEMPLATE_SEGMENT_ON
     install_element(CMD_NODE, &adp_switch_template_cmd);
+#else
+    install_element(CMD_NODE, &adp_switch_template_on_cmd);
+    install_element(CMD_NODE, &adp_switch_template_off_cmd);
+#endif
+
 
 	install_element(CMD_NODE, &adp_interval_clean_cmd);
 

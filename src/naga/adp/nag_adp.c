@@ -45,12 +45,20 @@ berr adp_switch_template_set(int type, int on)
 {
     switch(type)
     {
+#if TEMPLATE_SEGMENT_ON
         case AD_TEMPLATE_MOBILE   :
             g_adp_push_temp_mobile_switch = on;
             break;
         case AD_TEMPLATE_PC :  
             g_adp_push_temp_pc_switch = on; 
             break;
+#else
+        case   0 :
+        case   1 :
+            g_adp_push_temp_mobile_switch = on;
+            g_adp_push_temp_pc_switch = on; 
+            break;
+#endif
          default:
             return E_FAIL;
     }
@@ -63,12 +71,18 @@ berr adp_switch_template_get(int type, int *on)
 {
     switch(type)
     {
+#if TEMPLATE_SEGMENT_ON
         case AD_TEMPLATE_MOBILE   :
             *on = g_adp_push_temp_mobile_switch;
             break;
         case AD_TEMPLATE_PC :  
             *on = g_adp_push_temp_pc_switch; 
             break;
+#else
+        case   0 :
+        case   1 :
+            *on = g_adp_push_temp_pc_switch; 
+#endif
          default:
             return E_FAIL;
     }
@@ -100,9 +114,7 @@ berr adp_clear_interval(void)
     return E_SUCCESS;
 }
 
-
-extern struct rte_mempool * l2fwd_pktmbuf_pool;
-
+#if USE_D_PACKET
 static inline struct rte_mbuf *rte_pktmbuf_real_clone(struct rte_mbuf *md,
     struct rte_mempool *mp)
 {
@@ -127,18 +139,19 @@ static inline struct rte_mbuf *rte_pktmbuf_real_clone(struct rte_mbuf *md,
 #endif
   return (mc);
 }
+#endif
 
+#if 0
 berr naga_adp(hytag_t *hytag)
 {
-
     berr rv;
-    //char *rear = NULL;
-    struct rte_mbuf *txm = NULL;
+#if USE_D_PACKET
     struct rte_mbuf *m = NULL;
+#endif
 	unsigned char buffer[2048]; 
     CNT_INC(ADP_IPKTS);
 
-    if(( NULL == hytag) || (NULL == hytag->m))
+    if( NULL == hytag)
     {
         CNT_INC(ADP_DROP_PARAM);
         BRET(E_PARAM);
@@ -164,52 +177,45 @@ berr naga_adp(hytag_t *hytag)
         return E_SUCCESS;
 	}
 
+    if ((!g_adp_push_switch))
+    {
+        return E_SUCCESS;
+    }
 
-
-
-#if 0
+#if 1
     if(NULL != strstr(hytag->uri, "?_t=t"))
     {
         CNT_INC(ADP_DROP_OUR_SUFFIX);
-	    return E_SUCCESS;
+        return E_SUCCESS;
     }
 #endif
-#if 0
+#if 1
+    char *rear = NULL;
+    rear= strrchr(hytag->uri, '.');
 
-	rear= strrchr(hytag->uri, '.');
+    if(rear == NULL)
+    {
+        if(hytag->uri_len == 1 && !strcmp(hytag->uri, "/"))
+        {
 
-	if(rear == NULL)
-	{
-	    if(hytag->uri_len == 1 && !strcmp(hytag->uri, "/"))
-	    {
-            
-	    }						
-	    else
-	    {
+        }
+        else
+        {
             CNT_INC(ADP_DROP_BACKSLASH_SUFFIX);
-			return E_SUCCESS;
-        }							
-	}
-	else
-	{
-		return E_SUCCESS;
-		if( strcmp(rear, ".html") &&  strcmp(rear, ".htm"))
-		{
-            CNT_INC(ADP_DROP_HTML_SUFFIX);
-			return E_SUCCESS;
-		}
-		
-	}
-#endif
-
-    if (likely(!g_adp_push_switch))
+            return E_SUCCESS;
+        }
+    }
+    else
     {
         return E_SUCCESS;
-    }    
+        if( strcmp(rear, ".html") &&  strcmp(rear, ".htm"))
+        {
+            CNT_INC(ADP_DROP_HTML_SUFFIX);
+            return E_SUCCESS;
+        }
 
-
-
-
+    }
+#endif
 
     /*check The First char*/
 	if(hytag->uri[0] == '/' && hytag->host_len > 0 && hytag->uri_len > 0)
@@ -218,11 +224,6 @@ berr naga_adp(hytag_t *hytag)
                                                 hytag->host, hytag->uri);
 	}
 
-
-    txm = hytag->m;
-
-
-
     if( strstr(hytag->user_agent, "Phone") 
         || strstr(hytag->user_agent, "Android")
         //|| strstr(hytag->user_agent, "BlackBerry")
@@ -230,9 +231,13 @@ berr naga_adp(hytag_t *hytag)
         || strstr(hytag->user_agent, "iPad")
         )
     {
-        if(likely(g_adp_push_temp_mobile_switch))
+        if((g_adp_push_temp_mobile_switch))
         {		  
+#if TEMPLATE_SEGMENT_ON
  		    hytag->template = AD_TEMPLATE_MOBILE;
+#else
+ 		    hytag->template = AD_TEMPLATE_MAX-1;
+#endif
 		    CNT_INC(ADP_PUSH_MOBILE);
         }
         else
@@ -249,9 +254,13 @@ berr naga_adp(hytag_t *hytag)
        || strstr(hytag->user_agent, "Macintosh")
        )
     {
-        if(likely(g_adp_push_temp_pc_switch))
+        if(g_adp_push_temp_pc_switch)
         {
+#if TEMPLATE_SEGMENT_ON
 		    hytag->template = AD_TEMPLATE_PC;
+#else
+ 		    hytag->template = AD_TEMPLATE_MAX-1;
+#endif
 		    CNT_INC(ADP_PUSH_PC);
         }
         else
@@ -262,9 +271,13 @@ berr naga_adp(hytag_t *hytag)
     }
     else
     {
-        if(likely(g_adp_push_temp_mobile_switch))
+        if(g_adp_push_temp_mobile_switch)
         {		  
+#if TEMPLATE_SEGMENT_ON
  		    hytag->template = AD_TEMPLATE_MOBILE;
+#else
+ 		    hytag->template = AD_TEMPLATE_MAX-1;
+#endif
 		    CNT_INC(ADP_PUSH_MOBILE);
         }
         else
@@ -302,7 +315,7 @@ berr naga_adp(hytag_t *hytag)
  		CYCLE_END();
 
     	CYCLE_START();
-        rv = ift_raw_send_packet(hytag->fp, buffer, hytag->data_len);
+        rv = ift_raw_send_packet(buffer, hytag->data_len);
         if(rv != E_SUCCESS)
         {
             printf("Send packet Failed\n");
@@ -310,22 +323,8 @@ berr naga_adp(hytag_t *hytag)
             return rv;
         }
 		CYCLE_END();
-   }  
-   else
-    {
+   }
 
-    	    rv = ads_response_head_generator(hytag->pbuf.ptr, hytag);
-    		if(rv != E_SUCCESS) {
-    			CNT_INC(ADP_DROP_HEAD_GEN1);
-    			return rv;
-    		}
-
-         	txm->data_len = txm->pkt_len = hytag->data_len;
-            itf_send_packet_imm(txm, txm->port);
-
-    }
-        
-         
     if( adt_send_is_multi())
     {
 #if USE_D_PACKET
@@ -363,7 +362,7 @@ berr naga_adp(hytag_t *hytag)
 					CYCLE_START();
 
                     hytag->content_offset += hytag->fill_len;
-                    rv = ift_raw_send_packet(hytag->fp, buffer, hytag->data_len);
+                    rv = ift_raw_send_packet(buffer, hytag->data_len);
 
                     if(rv != E_SUCCESS)
                     {
@@ -429,6 +428,7 @@ berr naga_adp(hytag_t *hytag)
    return E_SUCCESS;
 
 }
+#endif
 
 
 

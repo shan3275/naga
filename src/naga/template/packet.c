@@ -20,16 +20,7 @@
 #include <errno.h>
 #include <sys/queue.h>
 #include <sys/time.h>
-#include <rte_cycles.h>
-#include <rte_byteorder.h>
-#include <rte_common.h>
-#include <rte_debug.h>
-#include <rte_ethdev.h>
-#include <rte_log.h>
-#include <rte_lcore.h>
-#include <rte_memory.h>
-#include <rte_string_fns.h>
-#include <rte_eth_bond.h>
+#include <rte_ether.h>
 #include "boots.h"
 #include "pid.h"
 #include "rte_tcp.h"
@@ -42,8 +33,6 @@
 #else   
 #define debug(fmt,args...)   
 #endif  /* DEBUG */ 
-
-
 
 struct tcp_option_timestamp_hdr
 {
@@ -438,7 +427,7 @@ redirect_302_response_generator(unsigned char *ptr, hytag_t *hytag, char *url)
         ptr[ptr_len-1] = 0x00;
 
         /*skip vlan*/
-        eth_header = buf;
+        eth_header = (struct eth_hdr *)buf;
         type = eth_header->ethertype;
         buf_len += 14; 
 

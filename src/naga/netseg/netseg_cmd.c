@@ -86,7 +86,7 @@ static int net_cmd_add(struct vty *vty, const char *index_str, const char *ip_st
     net.ip    = ip;
     net.mask  = ntohl(mask.s_addr);
 
-    if(naga_action_parse((char *)act_str, &net.acl.actions))
+    if(naga_acl_parse(&act_str, 1, &net.acl))
     {
         return CMD_ERR_NO_MATCH;
     }
@@ -170,7 +170,7 @@ DEFUN(net_del_all,
 
 static void net_dump(struct vty *vty, net_t *net)
 {
-    char action_str[NAGA_ACTION_STR_SZ] = {0};
+    char acl_str[NAGA_ACL_STR_SZ] = {0};
     struct in_addr netmask;
 
     if ((NULL == vty) || (NULL == net))
@@ -178,14 +178,14 @@ static void net_dump(struct vty *vty, net_t *net)
         return;
     }
 
-    naga_action_string(&net->acl.actions, action_str);
+    naga_acl_string(&net->acl, acl_str);
     netmask.s_addr = htonl(net->mask);
     vty_out(vty, "%-8d %d.%d.%d.%d/%-15d	%-16s %-16lu %-16lu %-16lu%s", net->index,
             (net->ip >> 24) & 0xff,
             (net->ip >> 16) & 0xff,
             (net->ip >>  8) & 0xff,
             (net->ip >>  0) & 0xff,
-            ip_masklen (netmask), action_str,
+            ip_masklen (netmask), acl_str,
             (uint64_t) net->acl.cnt.cnt, (uint64_t) net->acl.vcnt.cnt,
             (uint64_t) net->acl.pushed_cnt.cnt, VTY_NEWLINE);
 }
@@ -267,7 +267,7 @@ static int net_cmd_show_all(struct vty *vty)
 
 DEFUN(net_show_by_index, 
       net_show_by_index_cmd,
-      "show snet <0-99>",
+      "show snet <0-149>",
       SHOW_STR
       NET_STR
       NET_INDEX_STR)
@@ -344,13 +344,14 @@ DEFUN(net_clear_statistics_all,
 static int cmd_netseg_default_act_set(struct vty *vty, const char *act_str)
 {
 	int ret = 0;
-	uint32_t action = 0;
+	naga_acl_t acl;
+    memset(&acl, 0, sizeof(naga_acl_t));
 	
-	if(naga_action_parse((char *)act_str, &action))
+	if(naga_acl_parse(&act_str, 1, &acl))
     {
         return CMD_ERR_NO_MATCH;
     }
-	ret = api_netseg_default_act_set(action);
+	ret = api_netseg_default_act_set(&acl);
 	if (ret)
     {
         vty_out(vty, "netseg set default action fail:(%s)%s", berr_msg(ret), VTY_NEWLINE);
@@ -385,7 +386,7 @@ static int cmd_write_snet_file(struct vty *vty, const char *file_name)
 	int i;
 	net_t net;
 	uint8_t effect = 0;
-	char action_str[NAGA_ACTION_STR_SZ] = {0};
+	char acl_str[NAGA_ACL_STR_SZ] = {0};
     struct in_addr netmask;
 
 	if (NULL == file_name)
@@ -414,14 +415,14 @@ static int cmd_write_snet_file(struct vty *vty, const char *file_name)
 		}
 		if (NETSEG_RULE_EFFECTIVE == effect)
 		{
-    		naga_action_string(&net.acl.actions, action_str);
+    		naga_acl_string(&net.acl, acl_str);
     		netmask.s_addr = htonl(net.mask);
    			fprintf(fp, "%-8d %d.%d.%d.%d/%-15d	%-16s %-16lu %-16lu %-16lu\n", net.index,
             (net.ip >> 24) & 0xff,
             (net.ip >> 16) & 0xff,
             (net.ip >>  8) & 0xff,
             (net.ip >>  0) & 0xff,
-            ip_masklen (netmask), action_str,
+            ip_masklen (netmask), acl_str,
             (uint64_t) net.acl.cnt.cnt, (uint64_t) net.acl.vcnt.cnt,
             (uint64_t) net.acl.pushed_cnt.cnt);
 		}
@@ -454,24 +455,25 @@ DEFUN(write_snet,
 void netseg_cmd_config_write(struct vty *vty)
 {
     int ret = 0;
-    char action_str[NAGA_ACTION_STR_SZ] = {0};
+    char acl_str[NAGA_ACL_STR_SZ] = {0};
     struct in_addr netmask;
     net_t net;
 	uint8_t effect = 0;
     int i;
-	uint32_t action = 0;
+	naga_acl_t acl;
+    memset(&acl, 0, sizeof(naga_acl_t));
 
-	ret = api_netseg_default_act_get(&action);
+	ret = api_netseg_default_act_get(&acl);
 	if (ret)
     {
         vty_out(vty, "netseg get default action fail:(%s)%s", berr_msg(ret), VTY_NEWLINE);
         return;
     }
 
-	if (0 != action)
+    if (0 != acl.actions) 
 	{
-		naga_action_string(&action, action_str);
-		vty_out(vty, "snet default %s%s", action_str, VTY_NEWLINE);
+		naga_acl_string(&acl, acl_str);
+		vty_out(vty, "snet default %s%s", acl_str, VTY_NEWLINE);
 	}
     for ( i = 0; i < NETSEG_RULE_NUM_MAX; i++ )
     {
@@ -484,7 +486,7 @@ void netseg_cmd_config_write(struct vty *vty)
         }
         else
         {
-            naga_action_string(&net.acl.actions, action_str);
+            naga_acl_string(&net.acl, acl_str);
             netmask.s_addr = htonl(net.mask);
 			
 			if (NETSEG_RULE_EFFECTIVE == effect)
@@ -494,7 +496,7 @@ void netseg_cmd_config_write(struct vty *vty)
 	                    (net.ip >> 16) & 0xff,
 	                    (net.ip >>  8) & 0xff,
 	                    (net.ip >>  0) & 0xff,
-	                    ip_masklen (netmask), action_str,
+	                    ip_masklen (netmask), acl_str,
 	                    VTY_NEWLINE);
 			}
 		}

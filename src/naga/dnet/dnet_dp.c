@@ -54,6 +54,11 @@ berr dnet_dp_process(hytag_t *hytag)
         return E_PARAM;
     }
 
+    if(ACT_IS_VAILD(hytag->acl.actions, ACT_DROP))
+    {
+        return E_SUCCESS;
+    }
+
     /*add recv statistics */
     cnt_inc(DNET_PKTS);
 

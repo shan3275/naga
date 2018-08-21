@@ -5,7 +5,6 @@
 #include <string.h>
 #include <unistd.h>
 #include <arpa/inet.h>
-#include <rte_branch_prediction.h>
 
 #include "boots.h"
 #include "bts_debug.h"
@@ -18,6 +17,8 @@
 #define ETHERTYPE_IP6 		0x86dd
 #define ETHERTYPE_VLAN		0x8100
 #define ETHERTYPE_PPPOE		0x8864
+#define ETHERTYPE_XF0       0x8061 /* xinfeng packet define */
+#define ETHERTYPE_XF1       0xFFFF /* xinfeng packet define */
 
 #define PPP_PROTO_IP4		0x0021
 
@@ -96,7 +97,6 @@ do{\
 #include "pid_innerIp4.h"
 #include "pid_gre.h"
 #include "pid_http.h"
-#include "rte_mbuf.h"
 #include "naga_stat.h"
 
 //berr naga_pid_dpdk(struct rte_mbuf *m);

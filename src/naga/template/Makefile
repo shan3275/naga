@@ -36,14 +36,14 @@ include $(RTE_SDK)/mk/rte.vars.mk
 #
 LIB = libtemp.a
 
-CFLAGS +=  -I . -I ../boots -I ../include -I ../libzebra -I ../pid
+CFLAGS +=  -I . -I ../boots -I ../include -I ../libzebra -I ../pid -I ../rte
 #CFLAGS += $(WERROR_FLAGS)
 
 EXPORT_MAP := lib_vsr_version.map
 
 LIBABIVER := 1
 
-SRCS-y += packet.c packet_http.c adt_cmd.c
+SRCS-y += packet.c packet_http.c adt_cmd.c raw_udp.c
 
 #
 # Export include files

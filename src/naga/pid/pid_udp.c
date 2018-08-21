@@ -32,7 +32,8 @@ berr pid_udp(struct pbuf *p, hytag_t *hytag, int inner_outer)
 	}
 
 
-	if (likely(inner_outer == HEADER_OUTER))
+	//if (likely(inner_outer == HEADER_OUTER))
+	if ((inner_outer == HEADER_OUTER))
 	{
         if( hytag->outer_srcport == UDP_PORT_GTP_U
 		            || hytag->outer_dstport == UDP_PORT_GTP_U)//gtp-u        

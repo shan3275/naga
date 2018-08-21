@@ -15,8 +15,7 @@
 #include "bts_debug.h"
 
 netseg_t *netseg = NULL;
-uint32_t netseg_default_action = 0;
-
+naga_acl_t netseg_default_acl;
 
 #define __DPDK
 #ifdef  __DPDK
@@ -181,15 +180,15 @@ berr api_net_dp_match(uint32_t index, uint32_t ip)
 
 
 
-berr api_netseg_default_act_set(uint32_t action)
+berr api_netseg_default_act_set(naga_acl_t *acl)
 {
-	netseg_default_action = action;
+	memcpy(&netseg_default_acl, acl, sizeof(naga_acl_t));
 	return E_SUCCESS;
 }
 
-berr api_netseg_default_act_get(uint32_t *action)
+berr api_netseg_default_act_get(naga_acl_t *acl)
 {
-	*action = netseg_default_action;
+	memcpy(acl, &netseg_default_acl, sizeof(naga_acl_t));
 	return E_SUCCESS;
 }
 

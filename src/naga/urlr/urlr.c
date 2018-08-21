@@ -6,8 +6,7 @@
 
 #include "urlr.h"
 
-uint32_t url_default_action = 0;
-
+naga_acl_t url_default_acl;
 bts_hashtable_t urlr_table;
 
 uint32_t 
@@ -186,15 +185,15 @@ urlr_iter(bts_iter_func func, void *param)
 }
 
 
-berr urlr_default_act_set(uint32_t action)
+berr urlr_default_act_set(naga_acl_t *acl)
 {
-	url_default_action = action;
+	memcpy(&url_default_acl, acl, sizeof(naga_acl_t));
 	return E_SUCCESS;
 }
 
-berr urlr_default_act_get(uint32_t *action)
+berr urlr_default_act_get(naga_acl_t *acl)
 {
-	*action = url_default_action;
+	memcpy(acl, &url_default_acl, sizeof(naga_acl_t));
 	return E_SUCCESS;
 }
 

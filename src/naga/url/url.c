@@ -7,14 +7,10 @@
 
 #include "naga_types.h"
 #include "url.h"
-#include "pcre.h"
 
+url_t ori_url_r, ref_url_r;
 
-
-
-url_t url_r;
-
-berr url_rule_add(uint32_t id,  char *url,  char * cli_pattern, uint32_t action)
+berr url_rule_add(url_t *url_r, uint32_t id,  char *url,  char * cli_pattern, naga_acl_t *acl)
 {
     if(id >= MAX_URL_RULE || url == NULL) 
     {
@@ -23,7 +19,7 @@ berr url_rule_add(uint32_t id,  char *url,  char * cli_pattern, uint32_t action)
     int erroffset;
     const char * error= NULL;
     
-    struct pcre_s *pcre_n = &(url_r.url_pcre[id]);
+    struct pcre_s *pcre_n = &(url_r->url_pcre[id]);
 
     if(pcre_n->used)
     {
@@ -45,36 +41,37 @@ berr url_rule_add(uint32_t id,  char *url,  char * cli_pattern, uint32_t action)
 			free(pcre_n->pattern);
 			return E_FAIL;
 		}
-		pcre_n->acl.actions = action;
+		
+        memcpy(&pcre_n->acl, acl, sizeof(naga_acl_t));
 		pcre_n->used =1;
 		
     }
-    if(id >= url_r.inuse)
+    if(id >= url_r->inuse)
     {
-        url_r.inuse = id +1;
+        url_r->inuse = id +1;
     }
     return E_SUCCESS;
 }
 
-struct pcre_s * url_rule_get(uint32_t id)
+struct pcre_s * url_rule_get(url_t *url_r, uint32_t id)
 {
     if(id >= MAX_URL_RULE) 
     {
         return NULL;
     }    
 
-    return &(url_r.url_pcre[id]);   
+    return &(url_r->url_pcre[id]);   
 }
 
 
-berr url_rule_del(uint32_t id)
+berr url_rule_del(url_t *url_r, uint32_t id)
 {
     if(id >= MAX_URL_RULE) 
     {
         return E_PARAM;
     }
     int i, max_id;
-    struct pcre_s *pcre_n = &(url_r.url_pcre[id]);
+    struct pcre_s *pcre_n = &(url_r->url_pcre[id]);
 
     if(pcre_n->used)
     {
@@ -86,114 +83,137 @@ berr url_rule_del(uint32_t id)
        
     }
     
-
-   
     for(i=0; i< MAX_URL_RULE; i++)
     {
-    	pcre_n = &(url_r.url_pcre[i]);
+    	pcre_n = &(url_r->url_pcre[i]);
         if(pcre_n->used)
             max_id = i;                                 
     }
-    url_r.inuse = max_id +1;
+    url_r->inuse = max_id +1;
     return E_SUCCESS;
 }
 
 
-berr  naga_uri(hytag_t *hytag)
+berr  naga_url(url_t *url_r, hytag_t *hytag, char *url_str, int url_len)
 {
-
-
-//#define OVECCOUNT 30
-
-   // const char *tail = "_tTI=tTI";
-    //char  *tailptr = NULL;
-    int ovector[OVECCOUNT];
+    int ovector[OVECCOUNT]={0};
     struct pcre_s * urlcre= NULL;
-    //if(hytag->uri_len >= 8)    
-    //    tailptr = (char *)(&(hytag->uri[hytag->uri_len - 4]));//the last 
-    //else
-   // tailptr = (char *)(hytag->uri);
-    
+
+
     uint32_t i; int compare = 0;
-    //if(strstr(tailptr,  tail))
+
     if( APP_TYPE_HTTP_GET_OR_POST != hytag->app_type)
     {
-       // CNT_INC(HIJACK_DROP_GET_OR_POST);
         return E_SUCCESS;
     }
-#if 0
-	if(hytag->uri_len < 8)
-	{
-	
-	}
-	else 
-	{
-
-		tailptr = hytag->uri + hytag->uri_len - 8;
-    	if(!strcmp(tailptr, tail))
-
-    	{
-         	CNT_INC(ADP_PUSH_ACK_SUCCESS);
-         	hytag->pushed_second_assert = 1;
-            hytag->acl.actions |=  ACT_DROP;
-            return E_SUCCESS;
-    	}
-	}
-#endif
-    if(hytag->uri[0] == '/' && hytag->host_len > 0 && hytag->uri_len > 0)
+    CNT_INC(URL_PKTS);
+    for(i=0; i<url_r->inuse; i ++ )
     {
-        hytag->url_len= snprintf(hytag->url, URL_MAX_LEN, "%s%s",
-                                                hytag->host, hytag->uri);
-    }
-
-                   // printf("url is : %s\n", hytag->url);
-    
-    //if((strcmp(hytag->host, "www.jd.com") != 0) && (hytag->uri_len == 1) && (!strcmp(hytag->uri, "/")))	
-    if (0)
-    {    
-    	hytag->acl.actions |=  ACT_DROP;
-        CNT_INC(URL_HOMEPAGE);
-		return E_SUCCESS;
-    }
-    else 
-    {
-    	//hytag->acl.actions |=  ACT_DROP;
-        //CNT_INC(ADP_DROP_BACKSLASH_SUFFIX);
-        //return E_SUCCESS;  
-        for(i=0; i<url_r.inuse; i ++ )
+        urlcre = &(url_r->url_pcre[i]);
+        if(urlcre->used && urlcre->cre)
         {
-            urlcre = &(url_r.url_pcre[i]);
-            if(urlcre->used && urlcre->cre)
+            compare  = pcre_exec(urlcre->cre,  NULL, url_str, url_len, 0, 0, ovector, OVECCOUNT);
+            if(compare > 0)
             {
-                compare  = pcre_exec(urlcre->cre,
-                                NULL, hytag->url, hytag->url_len, 0, 0, ovector, OVECCOUNT);
-                
-                
-                if(compare > 0)
+                CNT_INC(URL_MATCHED);
+                ACL_HIT(urlcre->acl); 
+
+                /*
+                if (compare > 1)
                 {
-                   // printf("url is : %s\n", hytag->url);
-                    if (compare > 1)
-                    {
-                        memcpy(hytag->reg, (hytag->url + ovector[2]), (ovector[3] - ovector[2])); 
-                        //printf("reg = %s\n",hytag->reg);
-                        //printf("url is : %s\n", hytag->url);
-                    }
-      
-                    ACL_HIT(urlcre->acl); 
-                    HYTAG_ACL_MERGE(hytag->acl, urlcre->acl);
-				  	//printf("action = 0x%x\n", urlcre->acl.actions);
-                   	return E_SUCCESS;
+                    memcpy(hytag->reg, (url_str + ovector[2]), (ovector[3] - ovector[2])); 
                 }
-                
+                */
+                HYTAG_ACL_MERGE(hytag->acl, urlcre->acl);
+                if (ACT_IS_VAILD(urlcre->acl.actions, ACT_REDIR))
+                {
+                    if (ACL_CNT_GET(urlcre->acl)% urlcre->acl.sample < 1)
+                    {
+                        // push statistics
+                        ACL_PUSHED_ASSERT_HIT(urlcre->acl);
+                    }
+                    else
+                    {
+                        // drop statistics
+                        ACL_PRE_NOT_DROP_HIT (urlcre->acl);
+                        hytag->acl.actions &= 0xFFFFFFEF;
+                    }
+                }
 
+                if (ACT_IS_VAILD(urlcre->acl.actions, ACT_URLPUSH) || ACT_IS_VAILD(urlcre->acl.actions, ACT_UDPPUSH) )
+                {
+                   if (APP_URLPUSH_IDFA == urlcre->acl.push_type)
+                   {
+                       memcpy(hytag->reg, (url_str + ovector[3]+1), ovector[1]-ovector[3]-1);
+                       CNT_INC(URL_URLPUSH_IDFA);
+                   }
+                   else
+                   if (APP_URLPUSH_APPID == urlcre->acl.push_type)
+                   {
+                       memcpy(hytag->reg, (url_str + ovector[0]), ovector[1]-ovector[0]);
+                       CNT_INC(URL_URLPUSH_APPID);
+                   }
+                   else
+                   {
+                       CNT_INC(URL_URLPUSH_OTHER);
+                   }
+                }
+
+                return E_SUCCESS;
             }
-        }  
+        }
     }
+    CNT_INC(URL_DISMATCH);
 
-	hytag->acl.actions |=  ACT_DROP;
-	CNT_INC(ADP_DROP_BACKSLASH_SUFFIX);
 	return E_SUCCESS;  
 
 }
 
+berr  naga_ori_url(hytag_t *hytag)
+{
+#if HTTP_URL_PARSE_ORI_MOD
+    return naga_url(&ori_url_r, hytag, hytag->ori_url.url, strlen(hytag->ori_url.url)); 
+#else
+    return naga_url(&ori_url_r, hytag, hytag->url, hytag->url_len); 
+#endif
+}
 
+berr  naga_ref_url(hytag_t *hytag)
+{
+#if HTTP_URL_PARSE_ORI_MOD
+    return naga_url(&ref_url_r, hytag, hytag->ref_url.url, strlen(hytag->ref_url.url));
+#else
+    return naga_url(&ref_url_r, hytag, hytag->referer, hytag->referer_len); 
+#endif
+}
+
+berr ori_url_rule_add(uint32_t id,  char *url,  char * cli_pattern, naga_acl_t *acl)
+{
+    return url_rule_add(&ori_url_r, id, url, cli_pattern, acl);
+}
+
+berr ref_url_rule_add(uint32_t id,  char *url,  char * cli_pattern, naga_acl_t *acl)
+{
+    return url_rule_add(&ref_url_r, id, url, cli_pattern, acl);
+}
+
+berr ori_url_rule_del(uint32_t id)
+{
+    return url_rule_del(&ori_url_r, id);
+}
+
+berr ref_url_rule_del(uint32_t id)
+{
+    return url_rule_del(&ref_url_r, id);
+}
+
+struct pcre_s * ori_url_rule_get(uint32_t id)
+{
+    return url_rule_get(&ori_url_r, id);
+}
+
+struct pcre_s * ref_url_rule_get(uint32_t id)
+{
+    return url_rule_get(&ref_url_r, id);
+}
+/* End of file */

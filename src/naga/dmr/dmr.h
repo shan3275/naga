@@ -26,9 +26,9 @@ berr dmr_add(dmr_t *entry);
 berr dmr_del(char *host);
 berr dmr_clear(void);
 
-berr dmr_domain_default_act_set(uint32_t action);
+berr dmr_domain_default_act_set(naga_acl_t *acl);
 
-berr dmr_domain_default_act_get(uint32_t *action);
+berr dmr_domain_default_act_get(naga_acl_t *acl);
 
 #define api_dmr_get dmr_get
 #define api_dmr_add dmr_add

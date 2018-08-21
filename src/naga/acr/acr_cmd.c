@@ -63,7 +63,7 @@ acr_dump_vty(void *data, void *param)
     acr_t *entry = NULL;
     struct vty *vty = NULL;
 
-    char action_str[NAGA_ACTION_STR_SZ];
+    char action_str[NAGA_ACL_STR_SZ];
 
     if ((NULL == param) || (NULL == data))
     {
@@ -73,7 +73,7 @@ acr_dump_vty(void *data, void *param)
     entry = (acr_t *) data;
     vty   = (struct vty *) param;
 
-    naga_action_string(&entry->acl.actions, action_str);
+    naga_acl_string(&entry->acl, action_str);
 
     vty_out(vty, "%-32s %-32s %-16ld %s", entry->account, action_str, 
             (uint64_t) entry->acl.cnt.cnt, VTY_NEWLINE);
@@ -204,7 +204,7 @@ DEFUN(remove_account_all,
 static int cmd_acr_add(struct vty *vty, const char *account, const char *action_str)
 {
     berr ret = 0;
-	char action_arry[NAGA_ACTION_STR_SZ]= {0};
+	char action_arry[NAGA_ACL_STR_SZ]= {0};
 	acr_t *entry = NULL;
 		
 	if ((NULL == account) || (NULL == action_str))
@@ -218,7 +218,7 @@ static int cmd_acr_add(struct vty *vty, const char *account, const char *action_
         return CMD_ERR_NO_MATCH;
 	}
 	sprintf(action_arry, "%s", action_str);
-	if(naga_action_parse((char *)action_arry, &entry->acl.actions))
+	if(naga_acl_parse((const char **)&action_arry, 1, &entry->acl))
     {
         return CMD_ERR_NO_MATCH;
     }
@@ -359,13 +359,15 @@ DEFUN(clear_account_stat_all,
 static int cmd_acr_account_default_act_set(struct vty *vty, const char *act_str)
 {
 	int ret = 0;
-	uint32_t action = 0;
+	naga_acl_t acl;
+
+    memset(&acl, 0, sizeof(naga_acl_t));
 	
-	if(naga_action_parse((char *)act_str, &action))
+	if(naga_acl_parse(&act_str, 1, &acl))
     {
         return CMD_ERR_NO_MATCH;
     }
-	ret = api_acr_account_default_act_set(action);
+	ret = api_acr_account_default_act_set(acl.actions);
 	if (ret)
     {
         vty_out(vty, "account set default action fail:(%s)%s", berr_msg(ret), VTY_NEWLINE);
@@ -400,7 +402,7 @@ acr_write_config_vty(void *data, void *param)
 
     struct vty *vty = NULL;
 
-    char action_str[NAGA_ACTION_STR_SZ];
+    char action_str[NAGA_ACL_STR_SZ];
 
     if ((NULL == param) || (NULL == data))
     {
@@ -410,7 +412,7 @@ acr_write_config_vty(void *data, void *param)
     entry = (acr_t *) data;
     vty   = (struct vty *) param;
 
-    naga_action_string(&entry->acl.actions, action_str);
+    naga_acl_string(&entry->acl, action_str);
     vty_out(vty, "account %s %s %s", entry->account, action_str, VTY_NEWLINE);
 	
 }

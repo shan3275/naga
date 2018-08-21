@@ -22,6 +22,7 @@
 #include "naga_cmd.h"
 #include "naga_util.h"
 #include "bts_util.h"
+#include "naga_types.h"
 
 #define DNET_STR                     "Net list\n"
 #define ADD_STR                     "ADD Operation\n"
@@ -86,7 +87,7 @@ static int dnet_cmd_add(struct vty *vty, const char *index_str, const char *ip_s
     net.ip    = ip;
     net.mask  = ntohl(mask.s_addr);
 
-    if(naga_action_parse((char *)act_str, &net.acl.actions))
+    if(naga_acl_parse(&act_str, 1, &net.acl))
     {
         return CMD_ERR_NO_MATCH;
     }
@@ -134,7 +135,7 @@ static int dnet_cmd_del(struct vty *vty, const char *index_str)
 
 DEFUN(dnet_del,
       dnet_del_cmd,
-      "dnet del <0-99>",
+      "dnet del <0-149>",
       DNET_STR
       DEL_STR
       DNET_INDEX_STR)
@@ -170,7 +171,7 @@ DEFUN(dnet_del_all,
 
 static void dnet_dump(struct vty *vty, dnet_t *net)
 {
-    char action_str[NAGA_ACTION_STR_SZ] = {0};
+    char acl_str[NAGA_ACL_STR_SZ] = {0};
     struct in_addr netmask;
 
     if ((NULL == vty) || (NULL == net))
@@ -178,14 +179,14 @@ static void dnet_dump(struct vty *vty, dnet_t *net)
         return;
     }
 
-    naga_action_string(&net->acl.actions, action_str);
+    naga_acl_string(&net->acl, acl_str);
     netmask.s_addr = htonl(net->mask);
     vty_out(vty, "%-8d %d.%d.%d.%d/%-15d	%-16s %-16lu %-16lu %-16lu%s", net->index,
             (net->ip >> 24) & 0xff,
             (net->ip >> 16) & 0xff,
             (net->ip >>  8) & 0xff,
             (net->ip >>  0) & 0xff,
-            ip_masklen (netmask), action_str,
+            ip_masklen (netmask), acl_str,
             (uint64_t) net->acl.cnt.cnt, (uint64_t) net->acl.vcnt.cnt,
             (uint64_t) net->acl.pushed_cnt.cnt, VTY_NEWLINE);
 }
@@ -334,13 +335,14 @@ DEFUN(dnet_clear_statistics_all,
 static int cmd_dnetseg_default_act_set(struct vty *vty, const char *act_str)
 {
 	int ret = 0;
-	uint32_t action = 0;
-	
-	if(naga_action_parse((char *)act_str, &action))
+	naga_acl_t acl;
+	memset(&acl, 0, sizeof(naga_acl_t));
+
+	if(naga_acl_parse(&act_str, 1, &acl))
     {
         return CMD_ERR_NO_MATCH;
     }
-	ret = api_dnetseg_default_act_set(action);
+	ret = api_dnetseg_default_act_set(acl.actions);
 	if (ret)
     {
         vty_out(vty, "dnetseg set default action fail:(%s)%s", berr_msg(ret), VTY_NEWLINE);
@@ -371,12 +373,13 @@ DEFUN(dnetseg_default_act_set,
 void dnetseg_cmd_config_write(struct vty *vty)
 {
     int ret = 0;
-    char action_str[NAGA_ACTION_STR_SZ] = {0};
+    char acl_str[NAGA_ACL_STR_SZ] = {0};
     struct in_addr netmask;
     dnet_t net;
 	uint8_t effect = 0;
     int i;
 	uint32_t action = 0;
+    naga_acl_t acl;
 
 	ret = api_dnetseg_default_act_get(&action);
 	if (ret)
@@ -385,10 +388,13 @@ void dnetseg_cmd_config_write(struct vty *vty)
         return;
     }
 
+    memset(&acl, 0, sizeof(acl));
+    acl.actions = action;
+
 	if (0 != action)
 	{
-		naga_action_string(&action, action_str);
-		vty_out(vty, "net default %s%s", action_str, VTY_NEWLINE);
+		naga_acl_string(&acl, acl_str);
+		vty_out(vty, "net default %s%s", acl_str, VTY_NEWLINE);
 	}
     for ( i = 0; i < DNETSEG__RULE_NUM_MAX; i++ )
     {
@@ -401,7 +407,7 @@ void dnetseg_cmd_config_write(struct vty *vty)
         }
         else
         {
-            naga_action_string(&net.acl.actions, action_str);
+            naga_acl_string(&net.acl, acl_str);
             netmask.s_addr = htonl(net.mask);
 			
 			if (DNETSEG__RULE_EFFECTIVE == effect)
@@ -411,7 +417,7 @@ void dnetseg_cmd_config_write(struct vty *vty)
 	                    (net.ip >> 16) & 0xff,
 	                    (net.ip >>  8) & 0xff,
 	                    (net.ip >>  0) & 0xff,
-	                    ip_masklen (netmask), action_str,
+	                    ip_masklen (netmask), acl_str,
 	                    VTY_NEWLINE);
 			}
 		}

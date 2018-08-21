@@ -16,65 +16,196 @@
 #include <sys/ioctl.h>
 #include <linux/if_ether.h>
 #include <fcntl.h>
+#include "itf_worker_thread.h"
+#include "itf_mq_ring.h"
 
 pcap_t *gpcap_desc = NULL;
+#if USE_MULTI_RAW_SOCKET
+static int send_socket[MAX_WORKER_THREAD_NUM] = {0};
+#else
 static int send_socket = 0;
+#endif
+char if_name[16]={0};
+#if USE_MULTI_RAW_SOCKET
+static struct  sockaddr_ll  sll[MAX_WORKER_THREAD_NUM];
+#else
 static struct  sockaddr_ll  sll;
-#if 0
-berr itf_raw_socket_init(char *ifname)
+#endif
+int pcap_if_num = 0;
+
+#define DEBUG
+#ifdef  DEBUG
+#define debug(fmt,args...)  printf("func=%s line=%d:" fmt , __FUNCTION__, __LINE__, ##args)
+#else
+#define debug(fmt,args...)
+#endif  /* DEBUG */
+
+#if USE_MULTI_RAW_SOCKET
+/*
+* 参数说明：
+* idx：线程id；
+* buff： 发送的数据buffer
+* len：  发送的数据长度
+*/
+berr ift_raw_send_packet(int idx,uint8_t * buff, int len)
 {
-    char errbuf[PCAP_ERRBUF_SIZE];
 
-    if(ifname== NULL)
-        return E_SUCCESS;
-
-    
-    /* Open the adapter */
-    if ((gpcap_desc = pcap_open_live(ifname,  // name of the device
-               1500,                 // portion of the packet to capture. It doesn't matter in this case
-                 0                   // promiscuous mode (nonzero means promiscuous)
-                 
-                 ,
-                 0,                     // read timeout
-                 errbuf                 // error buffer
-        )) == NULL) 
-    {
-            printf( "Pcap unable open the adapter %s reason is:\n", ifname);
-            printf( "%s\n", errbuf );
-            BRET(E_FAIL);
-    }
-    return E_SUCCESS;
-}
-
-
-berr ift_raw_send_packet(void* fp, uint8_t * buff, int len)
-{
-    int rv;
-    
+    //printf("%s.%d: idx:%d,buff = %p, len =%d\n", __func__, __LINE__, idx, buff, len);
     if (itf_tx_is_enable())
     {
-        rv =  pcap_sendpacket((pcap_t *)fp, buff, len); 
-            
-        if(rv < 0)
+        if(send_socket[idx] > 0)
         {
-            printf("Send Packet Failed %s %d\n", __func__, __LINE__);
-            BRET(E_FAIL);
-        }		
-        cnt_inc(ITF_OPKTS);
-        cnt_add(ITF_OBYTS, len);
+            if(sendto(send_socket[idx], buff, len, 0, (const struct sockaddr *)&sll[idx], sizeof(struct  sockaddr_ll)) < 0)
+            {
+                perror("The Err is:");
+                return E_FAIL;      
+            }
+            else
+            {
+                return E_SUCCESS;   
+            }
+        }
+        else
+        {
+            printf("Socket is %d\n", send_socket[idx]);
+            return E_FAIL;
+        }
     }
+    return E_SUCCESS; 
+}
+
+berr itf_raw_socket_add(char *ifname)
+{
+    int i;
+    int sockfd;
+    if(ifname== NULL)
+    {
+        return E_SUCCESS;
+    }
+
+    if (strlen(if_name) > 0)
+    {
+        return E_EXIST;
+    }
+    for (i = 0; i < MAX_WORKER_THREAD_NUM; ++i)
+    {
+        sockfd = socket(PF_PACKET, SOCK_RAW, 0);
+        if(sockfd < 0 )
+        {
+            printf("create socket Failed\n");
+            BRET(E_FAIL);
+        }
+        /*
+        int nSendBufLen = 30*1024*1024; //设置为10M
+        setsockopt( sockfd, SOL_SOCKET, SO_SNDBUF, ( const char* )&nSendBufLen, sizeof( int ) );
+        */
+        struct ifreq ifr;
+        socklen_t addrlen = sizeof(struct  sockaddr_ll);
+        strcpy(ifr.ifr_name, ifname);
+        ioctl(sockfd, SIOCGIFINDEX, &ifr);
+        memset(&sll[i],0,sizeof(struct  sockaddr_ll));
+        sll[i].sll_ifindex = ifr.ifr_ifindex; 
+        
+        sll[i].sll_family    = AF_PACKET;
+        sll[i].sll_protocol  = htons(ETH_P_ALL);
+        sll[i].sll_pkttype   = PACKET_HOST;
+        sll[i].sll_halen     = 6;
+        
+        if(bind(sockfd, (struct sockaddr*)&sll[i], addrlen) < 0)
+        {
+            printf("bind socket Failed\n");
+            BRET(E_FAIL);                   
+        }
+
+        send_socket[i] = sockfd;
+        int flag = fcntl(sockfd, F_GETFL,0);
+        printf("flag is %x, %x\n", flag, O_NONBLOCK);
+        fcntl(sockfd, F_SETFL, flag & ~O_NONBLOCK);         
+    }
+
+    //shutdown(send_socket, SHUT_RD);
+
+    strcpy(if_name, ifname);
+    return E_SUCCESS;
+}
+berr itf_raw_socket_del(char *ifname)
+{
+    int i;
+    if(ifname== NULL)
+    {
+        return E_SUCCESS;
+    }
+
+    if (strncmp(if_name,ifname, strlen(ifname)) )
+    {
+        return E_MATCH;
+    }
+    for (i = 0; i < MAX_WORKER_THREAD_NUM; ++i)
+    {
+        if (send_socket[i])
+        {
+            if (close(send_socket[i]))
+            {
+                perror("shutdown:");
+                //return E_FAIL;
+            }
+        }
+        send_socket[i] = 0;       
+    }
+
+    memset(if_name,0,sizeof(if_name));
     return E_SUCCESS;
 }
 
+void itf_raw_socket_get_socket(int *socket)
+{
+    int i;
+    for (i = 0; i < MAX_WORKER_THREAD_NUM; ++i)
+    {
+        socket[i] = send_socket[i];
+    }
+}
 
 #else
-berr itf_raw_socket_init(char *ifname)
+berr ift_raw_send_packet(uint8_t * buff, int len)
+{
 
+    //printf("%s.%d: buff = %p, len =%d\n", __func__, __LINE__, buff, len);
+    if (itf_tx_is_enable())
+    {
+        if(send_socket > 0)
+        {
+            if(sendto(send_socket, buff, len, 0, (const struct sockaddr *)&sll, sizeof(sll))!= len)
+            {
+                perror("The Err is:");
+                return E_FAIL;      
+            }
+            else
+            {
+                return E_SUCCESS;   
+            }
+        }
+        else
+        {
+            printf("Socket is %d\n", send_socket);
+            return E_FAIL;
+        }
+    }
+    return E_SUCCESS; 
+}
+
+berr itf_raw_socket_add(char *ifname)
 {
     if(ifname== NULL)
+    {
         return E_SUCCESS;
+    }
 
-    
+    if (strlen(if_name) > 0)
+    {
+        return E_EXIST;
+    }
+
     int sockfd = socket(PF_PACKET, SOCK_RAW, 0);
 	
     if(sockfd < 0 )
@@ -82,10 +213,10 @@ berr itf_raw_socket_init(char *ifname)
     	printf("create socket Failed\n");
 		BRET(E_FAIL);
     }
-
-#if 1
-	
-   
+/*
+    int nSendBufLen = 10*1024*1024; //设置为10M
+    setsockopt( sockfd, SOL_SOCKET, SO_SNDBUF, ( const char* )&nSendBufLen, sizeof( int ) );
+*/
     struct ifreq ifr;
     socklen_t addrlen = sizeof(sll);
     strcpy(ifr.ifr_name, ifname);
@@ -97,62 +228,69 @@ berr itf_raw_socket_init(char *ifname)
     sll.sll_pkttype   = PACKET_HOST;
     sll.sll_halen     = 6;
     
-    
     if(bind(sockfd, (struct sockaddr*)&sll, addrlen) < 0)
     {
     	printf("bind socket Failed\n");
 		BRET(E_FAIL);			    	
     }
 
-#else
-	struct ifreq ifr;
-	memset(&ifr, 0x0, sizeof(ifr));	
-    strcpy(ifr.ifr_name, ifname);//, IFNAMSIZE);
-    
-	if(setsockopt(sockfd,SOL_SOCKET,SO_BINDTODEVICE, (char*)&ifr,sizeof(ifr))< 0)
-	{
-		printf("set socket Failed\n");
-		BRET(E_FAIL);		
-	}
-#endif
 	send_socket = sockfd;
 	int flag = fcntl(sockfd, F_GETFL,0);
 	printf("flag is %x, %x\n", flag, O_NONBLOCK);
 	fcntl(sockfd, F_SETFL, flag & ~O_NONBLOCK);	
     //shutdown(send_socket, SHUT_RD);
+
+    strcpy(if_name, ifname);
+    return E_SUCCESS;
+}
+berr itf_raw_socket_del(char *ifname)
+{
+    if(ifname== NULL)
+    {
+        return E_SUCCESS;
+    }
+
+    if (strncmp(if_name,ifname, strlen(ifname)) )
+    {
+        return E_MATCH;
+    }
+
+    if (send_socket)
+    {
+        //if (shutdown(send_socket, SHUT_RDWR))
+        if (close(send_socket))
+        {
+            perror("shutdown:");
+            return E_FAIL;
+        }
+    }
+    else
+    {
+        return E_INIT;
+    }
+
+    memset(if_name,0,sizeof(if_name));
+    send_socket = 0;
     return E_SUCCESS;
 }
 
-
-
-berr ift_raw_send_packet(void* fp, uint8_t * buff, int len)
+int itf_raw_socket_get_socket(void)
 {
+    return send_socket;
+}
+#endif
 
+berr itf_raw_socket_get_if_name(char *ifname)
+{
+    if(ifname== NULL)
+    {
+        return E_SUCCESS;
+    }
 
-	if (itf_tx_is_enable())
-	{
-		if(send_socket > 0)
-		{
-			if(sendto(send_socket, buff, len, 0, (const struct sockaddr *)&sll, sizeof(sll))!= len)
-			{
-				perror("The Err is:");
-				return E_FAIL;		
-			}
-		    else
-		    {
-		        return E_SUCCESS;   
-		    }
-		}
-		else
-		{
-		    printf("Socket is %d\n", send_socket);
-			return E_FAIL;
-		}
-	}
-	return E_SUCCESS; 
+    strncpy(ifname, if_name, sizeof(if_name));
+    return E_SUCCESS;
 }
 
-#endif
 void itf_set_hytag_pcap(hytag_t * tag)
 {
     if(gpcap_desc != NULL)
@@ -168,37 +306,95 @@ void itf_set_hytag_pcap(hytag_t * tag)
     return ;
 }
 
+extern event_thread_ctx_t  *threads;
+extern int Nthreads;
+
 typedef struct
 {
+    int    id;
+    int    last_thread;
     pcap_t *fp;
+#if USE_M_RING
+    ring_t *msgr;
+#endif
 }libpcap_param_t;
 
-void libpcap_packet_handler(u_char *param __attribute__((unused)), 
-                            const struct pcap_pkthdr *header,  u_char *packet);
+void libpcap_packet_handler(u_char *param ,
+                            const struct pcap_pkthdr *pkthdr,  u_char *packet);
 extern berr naga_data_process_module(hytag_t * tag);
 
-void libpcap_packet_handler(u_char *param __attribute__((unused)), 
-                            const struct pcap_pkthdr *header,   u_char *packet)
+void libpcap_packet_handler(u_char *param ,
+                            const struct pcap_pkthdr *pkthdr,   u_char *packet)
 {
-    hytag_t hytag;
-    //char buffer[2048];	
+    libpcap_param_t *tparam = (libpcap_param_t *)param;
+    int tid;
     pthread_testcancel();
 
-    memset(&hytag, 0x0, sizeof(hytag));
-    //memcpy((void *)buffer, (void *)packet, header->len);	
-    
-    hytag.pbuf.ptr = (void *)packet;
-    hytag.pbuf.len = header->len;
-    hytag.pbuf.ptr_offset = 0;
-    hytag.m = NULL;
-    //printf("Success packet len = %d\n", hytag.pbuf.len);
-    //return;
+    if(pkthdr->caplen <10) return;
+    if(pkthdr->len >2000) return;
 
 	cnt_inc(ITF_IPKTS);
-	cnt_add(ITF_IBYTS, header->len);
+	cnt_add(ITF_IBYTS, pkthdr->len);
 
-    naga_data_process_module(&hytag);
-    return;
+	if (!itf_rx_is_enable())
+	{
+		return ;
+	}
+
+    itf_pcap_thread_inc(tparam->id);
+
+    tid = ( (tparam->last_thread) + 1) % Nthreads ;
+    tparam->last_thread = tid;
+    event_thread_ctx_t* local_thread = threads + tid;
+#if USE_M_QUEUE
+    if (write(local_thread->notify_send_fd, "s", 1) != 1)
+    {
+        itf_pcap_thread_fail_inc(tparam->id);
+        return;
+    }
+    itf_str_t * enc = calloc(1, sizeof(itf_str_t));
+    u_char* pac = calloc( 1, pkthdr->len + 1 );
+    memcpy(pac, packet, pkthdr->caplen);
+    enc->ptr = pac;
+    enc->len = pkthdr->caplen;       
+    enqueue( local_thread->msgq, enc ) ;
+#else
+    #if USE_M_RING
+    itf_pkt_t * enc = NULL;
+    bool bet = dering(tparam->msgr, &enc);
+    if (bet)
+    {
+        memset(enc, 0,sizeof(itf_pkt_t));
+        enc->r   = tparam->msgr;
+        enc->len =  pkthdr->caplen;
+        memcpy(enc->packet, packet, pkthdr->caplen);
+        bool bett = enring(local_thread->msgr, enc);
+        if (!bett)
+        {
+            itf_pcap_thread_fail1_inc(tparam->id);
+            bett = enring(tparam->msgr, enc);
+            if (!bett)
+            {
+                itf_pcap_thread_fail2_inc(tparam->id);
+            }
+        }
+    }
+    else
+    {
+        itf_pcap_thread_fail_inc(tparam->id);
+    }
+
+    #else /* 使用pipe 方式发送数据*/
+    pcap_pktbuf_t pkt;
+    memset(&pkt,0,sizeof(pcap_pktbuf_t));
+    pkt.len = pkthdr->len;
+    memcpy(pkt.packet, packet, pkthdr->len);
+    if (write(local_thread->notify_send_fd, (void *)&pkt, sizeof(pcap_pktbuf_t)) != sizeof(pcap_pktbuf_t)) 
+    {
+        itf_pcap_thread_fail_inc(tparam->id);
+    }
+    #endif  /* end of USE_M_RING */
+#endif /* end of USE_M_QUEUE */
 }
 
 void* pcap_rx_loop(void *_param);
@@ -209,7 +405,6 @@ void *pcap_rx_loop(void *_param)
     memcpy(&rparam,  _param, sizeof(rparam)); 
     free(_param);
 
-#if  1 
     if (pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL) != 0) {
             perror("pthread_setcancelstate err:");
             return NULL;
@@ -218,25 +413,14 @@ void *pcap_rx_loop(void *_param)
             perror("pthread_setcanceltype err:");
             return NULL;
     }
-#endif
-    
+
     pcap_loop(rparam.fp, 0, (pcap_handler)libpcap_packet_handler, (void*)&rparam);
     return NULL;
 }
 
-
-
-
-
-
 //#define NAGA_CONTROL_FILTER "dst port 80"
 
-
-
-
 BTS_LIST_HEAD(handle_head);
-
-
 berr libpcap_rx_loop_setup(char * ifname)
 {
         pcap_t *fp = NULL;
@@ -246,9 +430,11 @@ berr libpcap_rx_loop_setup(char * ifname)
 		pthread_t recv_thread;
 
 		libpcap_handler_t *pos = NULL, *next = NULL;
-		
-		list_for_each_entry_safe(pos, next, (&handle_head), node)
 
+        /*防止命令行中没有添加worker线程的命令，故缺省添加*/
+        itf_worker_thread_setup(Nthreads);
+
+		list_for_each_entry_safe(pos, next, (&handle_head), node)
 		{			
 			if(!strcmp(pos->ifname, ifname))
 			{
@@ -256,7 +442,6 @@ berr libpcap_rx_loop_setup(char * ifname)
 				return E_FOUND;
 			}
 		}
-
 
 		libpcap_handler_t *handle = (libpcap_handler_t *)
 								malloc(sizeof(libpcap_handler_t));
@@ -289,6 +474,8 @@ berr libpcap_rx_loop_setup(char * ifname)
             BRET(E_FAIL);
         }
         param.fp = fp;
+        param.id = pcap_if_num++;
+        param.last_thread = 0;
         handle->fp = fp;
 		handle->ifname = strdup(ifname);
 		
@@ -304,6 +491,26 @@ berr libpcap_rx_loop_setup(char * ifname)
             printf("Error setting the filter.\n");
             BRET(E_FAIL);
         }
+
+#if USE_M_RING
+        int i;
+        param.msgr = initialize_ring(KSTR_PCAP_RING_SIZE);
+        printf("tparam.msgr=%p\n", param.msgr);
+        itf_pkt_t *pkt = calloc(KSTR_PCAP_RING_SIZE, sizeof(itf_pkt_t));
+        if (pkt)
+        {
+            for (i=0; i < KSTR_PCAP_RING_SIZE; i++)
+            {   
+                bool bet = enring(param.msgr, pkt+i);
+                if (!bet)
+                {
+                    printf("have enring %d\n", i);
+                    break;
+                }
+            }
+            printf("have enring %d\n", i);          
+        }
+#endif
 
         libpcap_param_t *tparam = (libpcap_param_t * )malloc(sizeof(libpcap_param_t));
 
@@ -333,63 +540,26 @@ berr libpcap_rx_loop_setup(char * ifname)
 
 berr libpcap_rx_loop_unset(char * ifname __attribute__((unused)))
 {
-#if 1
-	struct list_head *pos = NULL, *next = NULL;
-	libpcap_handler_t *handle = NULL;
-	//list_for_each_entry_safe(pos, next, (&handle_head), node)
-	list_for_each_safe(pos, next,&handle_head)
+    struct list_head *pos = NULL, *next = NULL;
+    libpcap_handler_t *handle = NULL;
+    //list_for_each_entry_safe(pos, next, (&handle_head), node)
+    list_for_each_safe(pos, next,&handle_head)
+    {
+        handle = (libpcap_handler_t *)list_entry(pos, libpcap_handler_t, node);
+        if(!strcmp(handle->ifname, ifname))
+        {
 
-	{
-		handle = (libpcap_handler_t *)list_entry(pos, libpcap_handler_t, node);
-		if(!strcmp(handle->ifname, ifname))
-		{
-		
-			pcap_close(handle->fp); 
-			list_del(&handle->node);
-			if(pthread_cancel(handle->recv_thread))
-			{
+            pcap_close(handle->fp); 
+            list_del(&handle->node);
+            if(pthread_cancel(handle->recv_thread))
+            {
                 printf("cancel Thread-%s Failed\n", handle->ifname);
                 return E_FAIL;        
             }
             pthread_join(handle->recv_thread, NULL);
             free(handle->ifname);
-			free(handle);
-		}
-	}
-#endif	
+            free(handle);
+        }
+    }
     return E_SUCCESS;
 }
-
-
-#if 0
-static pcap_dumper_t *gdump = NULL;
-berr libpcap_log_open(char *filename)
-{
-    char errbuf[PCAP_ERRBUF_SIZE]; 
-    pcap_t *fp = NULL;
-
-    fp = pcap_open_offline(filename, errbuf);
-
-    if(NULL  == fp )
-    {
-        printf( "pcap_open_offline Failed: %s\n", errbuf );
-        return E_FAIL;
-    }
-
-    gdump = pcap_dump_open(fp, filename);     
-}
-
-
-
-berr libpcap_log()
-{
-    
-    if(gdump != NULL)
-    {
-         pcap_dump(gdump, );  
-    }
-}
-
-#endif
-
-

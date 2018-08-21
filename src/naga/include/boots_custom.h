@@ -13,7 +13,9 @@
     MOD_NET, \
     MOD_DNET, \
     MOD_HIJACK,\
-    MOD_DOMAIN_CNT
+    MOD_DOMAIN_CNT, \
+    MOD_FCT, \
+    MOD_ACL
 
 #define MOD_ARRAY_CUSTOM \
     {MOD_AMD, BAS, OFF, OFF, "AMD", "Admin Main Daemon"}, \
@@ -27,18 +29,25 @@
     {MOD_NET, ON,  OFF, OFF, "NET", "Net Segment module"}, \
     {MOD_DNET, ON,  OFF, OFF, "DNET", "Dnet Segment module"},\
     {MOD_HIJACK, ON,  OFF, OFF, "DNET", "Dnet Segment module"},\
-	{MOD_DOMAIN_CNT, ON,  OFF, OFF, "Domain", "Domain count"}
+	{MOD_DOMAIN_CNT, ON,  OFF, OFF, "Domain", "Domain count"},\
+	{MOD_FCT, ON,  OFF, OFF, "FCT", "Rule matching"},\
+	{MOD_ACL, ON,  OFF, OFF, "ACL", "Polciy of rule"}
 
 #define DOPT_CUSTOM \
     DOPT_TAGMON, \
     DOPT_FAILPKT,\
-    DOPT_LOG
+    DOPT_LOG,\
+    DOPT_DUMP_URL,\
+    DOPT_MASK_URL
 	
 
 #define DOPT_ARRAY_CUSTOM \
     {DOPT_TAGMON, OFF,  "tagmon", "Hytag monitor"}, \
     {DOPT_FAILPKT,OFF, "failpkt", "Process fail packet record"},\
-    {DOPT_LOG, ON, "log", "log record"}
+    {DOPT_LOG, ON, "log", "log record"},\
+    {DOPT_DUMP_URL, OFF, "dump_url", "dump ori & ref url in pid module"},\
+    {DOPT_MASK_URL, OFF, "mask_url", "dump ori & ref url when mask rule matched"}
+
 
 #define CNT_CUSTOM \
     /* VSR Module counters */ \
@@ -121,6 +130,68 @@
     HIJACK_IP_PKT_PERCENT_MATCH_FAIL,\
     HIJACK_TIME_PERCENT_MATCH_FAIL,\
     HIJACK_SERVER_HIT,\
+    \
+    /* URL Module */ \
+    URL_PKTS, \
+    URL_PARAM, \
+    URL_ZERO, \
+    URL_NOTZERO, \
+    URL_MATCHED, \
+    URL_URLPUSH_IDFA, \
+    URL_URLPUSH_APPID, \
+    URL_URLPUSH_OTHER, \
+    URL_DISMATCH, \
+    \
+    /* User Agent Module */ \
+    UA_PKTS, \
+    UA_MATCHED, \
+    UA_DISMATCH, \
+    \
+    /* MASK Module */ \
+    MASK_PKTS, \
+    MASK_PARAM, \
+    MASK_ZERO, \
+    MASK_NOTZERO, \
+    MASK_MATCHED, \
+    MASK_DISMATCH, \
+    \
+    /* ACL module */ \
+    ACL_PKTS, \
+    ACL_REDIR_PKTS, \
+    ACL_REDIR_DROP_GET_OR_POST, \
+    ACL_REDIR_LONG_URI_DROP, \
+    ACL_REDIR_DROP_HEAD_GEN1, \
+    ACL_REDIR_DROP_SEND_PACKET, \
+    ACL_REDIR_TX_SUCCESS, \
+    ACL_URLPUSH_PKTS, \
+    ACL_URLPUSH_DROP_GET_OR_POST, \
+    ACL_URLPUSH_FILTER_DROP, \
+    ACL_URLPUSH_IDFA, \
+    ACL_URLPUSH_APPID, \
+    ACL_URLPUSH_PARAM_ERR, \
+    ACL_URLPUSH_ENCODE_FAIL, \
+    ACL_URLPUSH_SENDER_NULL, \
+    ACL_URLPUSH_TX_PKTS, \
+    ACL_URLPUSH_TX_SUCCESS, \
+    ACL_URLPUSH_TX_DISMATCH, \
+    ACL_URLPUSH_TX_FAIL, \
+    ACL_URLPUSH_RESOUR_UNAVA, \
+    ACL_ADP_PKTS, \
+    ACL_ADP_DROP_GET_OR_POST, \
+    ACL_ADP_LONG_URI_DROP, \
+    ACL_ADP_DROP_HEAD_GEN1, \
+    ACL_ADP_DROP_SEND_PACKET, \
+    ACL_ADP_TX_SUCCESS, \
+    ACL_UDPPUSH_PKTS, \
+    ACL_UDPPUSH_DROP_GET_OR_POST, \
+    ACL_UDPPUSH_FAIL, \
+    ACL_UDPPUSH_PAYLOAD_GEN,\
+    ACL_UDPPUSH_DROP_HEAD_GEN1,\
+    ACL_UDPPUSH_RAW_UDP_GEN,\
+    ACL_UDPPUSH_DROP_SEND_PACKET,\
+    ACL_UDPPUSH_TX_SUCCESS,\
+    \
+    /* Max of counter */ \
     NAGA_CNT_MAX
 
 #define CNT_DEF_CUSTOM \
@@ -203,6 +274,68 @@
     CNT_DEF(HIJACK_IP_PKT_PERCENT_MATCH_FAIL),\
     CNT_DEF(HIJACK_TIME_PERCENT_MATCH_FAIL),\
     CNT_DEF(HIJACK_SERVER_HIT),\
+    \
+    /* URL Module */ \
+    CNT_DEF(URL_PKTS), \
+    CNT_DEF(URL_PARAM), \
+    CNT_DEF(URL_ZERO), \
+    CNT_DEF(URL_NOTZERO), \
+    CNT_DEF(URL_MATCHED), \
+    CNT_DEF(URL_URLPUSH_IDFA), \
+    CNT_DEF(URL_URLPUSH_APPID), \
+    CNT_DEF(URL_URLPUSH_OTHER), \
+    CNT_DEF(URL_DISMATCH), \
+    \
+    /* User Agent Module */ \
+    CNT_DEF(UA_PKTS), \
+    CNT_DEF(UA_MATCHED), \
+    CNT_DEF(UA_DISMATCH), \
+    \
+    /* MASK Module */ \
+    CNT_DEF(MASK_PKTS), \
+    CNT_DEF(MASK_PARAM), \
+    CNT_DEF(MASK_ZERO), \
+    CNT_DEF(MASK_NOTZERO), \
+    CNT_DEF(MASK_MATCHED), \
+    CNT_DEF(MASK_DISMATCH), \
+    \
+    /* ACL module */ \
+    CNT_DEF(ACL_PKTS), \
+    CNT_DEF(ACL_REDIR_PKTS), \
+    CNT_DEF(ACL_REDIR_DROP_GET_OR_POST), \
+    CNT_DEF(ACL_REDIR_LONG_URI_DROP), \
+    CNT_DEF(ACL_REDIR_DROP_HEAD_GEN1), \
+    CNT_DEF(ACL_REDIR_DROP_SEND_PACKET), \
+    CNT_DEF(ACL_REDIR_TX_SUCCESS), \
+    CNT_DEF(ACL_URLPUSH_PKTS), \
+    CNT_DEF(ACL_URLPUSH_DROP_GET_OR_POST), \
+    CNT_DEF(ACL_URLPUSH_FILTER_DROP), \
+    CNT_DEF(ACL_URLPUSH_IDFA), \
+    CNT_DEF(ACL_URLPUSH_APPID), \
+    CNT_DEF(ACL_URLPUSH_PARAM_ERR), \
+    CNT_DEF(ACL_URLPUSH_ENCODE_FAIL), \
+    CNT_DEF(ACL_URLPUSH_SENDER_NULL), \
+    CNT_DEF(ACL_URLPUSH_TX_PKTS), \
+    CNT_DEF(ACL_URLPUSH_TX_SUCCESS), \
+    CNT_DEF(ACL_URLPUSH_TX_DISMATCH), \
+    CNT_DEF(ACL_URLPUSH_TX_FAIL), \
+    CNT_DEF(ACL_URLPUSH_RESOUR_UNAVA), \
+    CNT_DEF(ACL_ADP_PKTS), \
+    CNT_DEF(ACL_ADP_DROP_GET_OR_POST), \
+    CNT_DEF(ACL_ADP_LONG_URI_DROP), \
+    CNT_DEF(ACL_ADP_DROP_HEAD_GEN1), \
+    CNT_DEF(ACL_ADP_DROP_SEND_PACKET), \
+    CNT_DEF(ACL_ADP_TX_SUCCESS), \
+    CNT_DEF(ACL_UDPPUSH_PKTS), \
+    CNT_DEF(ACL_UDPPUSH_DROP_GET_OR_POST), \
+    CNT_DEF(ACL_UDPPUSH_FAIL), \
+    CNT_DEF(ACL_UDPPUSH_PAYLOAD_GEN),\
+    CNT_DEF(ACL_UDPPUSH_DROP_HEAD_GEN1),\
+    CNT_DEF(ACL_UDPPUSH_RAW_UDP_GEN),\
+    CNT_DEF(ACL_UDPPUSH_DROP_SEND_PACKET),\
+    CNT_DEF(ACL_UDPPUSH_TX_SUCCESS),\
+    \
+    /* Max of counter */ \
     CNT_DEF(NAGA_CNT_MAX)
 
 /* Custom spinlock */

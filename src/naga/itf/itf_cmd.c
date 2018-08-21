@@ -12,6 +12,7 @@
 #include "itf.h"
 #include "itf_cmd.h"
 #include "itf_stat.h"
+#include "itf_worker_thread.h"
 
 DEFUN(itf_rxtx, 
       itf_rxtx_cmd,
@@ -81,7 +82,7 @@ DEFUN(itf_rxtx,
         hytag.pbuf.ptr = (void *)buffer;
         hytag.pbuf.len =  sizeof(buffer);
         hytag.pbuf.ptr_offset = 0;
-        hytag.m = NULL;
+        //hytag.m = NULL;
 
 
 
@@ -93,8 +94,97 @@ DEFUN(itf_rxtx,
     return 0;
 }
 
+DEFUN(itf_injection, 
+      itf_injection_cmd,
+      "interface injection (add|remove) IFNAME", 
+      "interface setting\n"
+      "injection cmd\n"
+      "add or remove\n"
+      "interface name, such as:eth0\n")
+{
+    if( !strcmp (argv[0], "add"))
+    {
+        char * ifname = strdup(argv[1]);
+        berr rv = itf_raw_socket_add(ifname);
+        if(rv == E_SUCCESS)
+            vty_out(vty, "Success to add %s injection%s", ifname, VTY_NEWLINE);
+        else
+        if( rv = E_FAIL)
+        {
+            vty_out(vty, "Failed to add %s %s", ifname, VTY_NEWLINE);
+        }
+        else
+        if( rv = E_EXIST)
+        {
+            vty_out(vty, "Failed to add %s ,have existed%s", ifname, VTY_NEWLINE);
+        }
+        free(ifname);
+    }
+	else if(!strcmp (argv[0], "remove"))
+	{
+        char * ifname = strdup(argv[1]);
+        berr rv = itf_raw_socket_del(ifname);
+        if(rv == E_SUCCESS)
+            vty_out(vty, "Success to remove %s rx%s", ifname, VTY_NEWLINE);
+        else
+        if( rv = E_FAIL)
+        {
+            vty_out(vty, "Failed to remove %s%s", ifname, VTY_NEWLINE);
+        }
+        else
+        if( rv = E_MATCH)
+        {
+            vty_out(vty, "Failed to remove %s interface unmatch%s", ifname, VTY_NEWLINE);
+        }
+        else
+        if( rv = E_INIT)
+        {
+            vty_out(vty, "Failed to remove %s interface uninit%s", ifname, VTY_NEWLINE);
+        }
+        free(ifname);
+	}
+    return 0;
+}
 
-
+DEFUN(itf_work_thread, 
+      itf_work_thread_cmd,
+      "interface work-thread (add|remove) <2-20>", 
+      "interface setting\n"
+      "work thread cmd\n"
+      "add or remove\n"
+      "work thread nunber, don't exceed cores number\n")
+{
+    berr rv;
+    if( !strcmp (argv[0], "add"))
+    {
+        int nthreads = strtoul(argv[1], NULL, 0 );
+        rv = itf_worker_thread_setup(nthreads);
+        if(rv == E_SUCCESS)
+            vty_out(vty, "Success to add %d work-thread%s", nthreads, VTY_NEWLINE);
+        else
+        if( rv = E_FAIL)
+        {
+            vty_out(vty, "Failed to add %d work-thread%s", nthreads, VTY_NEWLINE);
+        }
+        else
+        if( rv = E_INIT)
+        {
+            vty_out(vty, "Failed to add %d work-thread%s", nthreads, VTY_NEWLINE);
+        }
+    }
+	else if(!strcmp (argv[0], "remove"))
+	{
+        rv = itf_worker_thread_close();
+        if(rv == E_SUCCESS)
+            vty_out(vty, "Success to remove work-thread%s", VTY_NEWLINE);
+        else
+        if( rv = E_FAIL)
+        {
+            vty_out(vty, "Failed to remove work-thread%s", VTY_NEWLINE);
+        }
+	}
+    return 0;
+}
 static int itf_cmd_show_status(struct vty *vty)
 {
     int rv;
@@ -120,6 +210,7 @@ static int itf_cmd_show_status(struct vty *vty)
     {
         vty_out(vty, "RX :%s%s", stat.enable == ITF_ENABLE ?"Enable":"Disable", VTY_NEWLINE);
     }
+
 
     return CMD_SUCCESS;
 }
@@ -232,61 +323,6 @@ DEFUN(interface_set,
     return interface_cmd_set(vty, argv[0], argv[1]);
 }
 
-static int interface_cmd_show_status(struct vty *vty)
-{
-    int rv;
-    int i;
-    port_stat stat;
-    struct rte_eth_stats stats;
-    uint8_t port_id; 
-    for ( i = 0; i < INTERFACE_NUM_MAX; i++ )
-    {
-        stat.port_id = i;
-        rv = interface_stat_get( &stat);
-        if (rv)
-        {
-            vty_out(vty, "get tx status fail rv(%d)%s", rv, VTY_NEWLINE);
-        }
-        else
-        {
-            vty_out(vty, "Port(%d) :%s%s", i, stat.enable == ITF_ENABLE ?"Enable":"Disable", VTY_NEWLINE);
-        }
-
-        port_id = (uint8_t)i;
-        rte_eth_stats_get(port_id, &stats);
-   
-    	vty_out(vty, "Rx Packet             :%-20ld %s", stats.ipackets, VTY_NEWLINE);  
-        vty_out(vty, "Rx bytes              :%-20ld %s", stats.ibytes, VTY_NEWLINE); 
- 
-  
-
-        vty_out(vty, "RX Drop               :%-20ld %s", stats.imissed, VTY_NEWLINE);   
-    	vty_out(vty, "Rx CRC                :%-20ld %s", stats.ibadcrc, VTY_NEWLINE);   
-    	vty_out(vty, "Rx Badlen             :%-20ld %s", stats.ibadlen, VTY_NEWLINE);   
-    	vty_out(vty, "RX ERR(Total)         :%-20ld %s", stats.ierrors, VTY_NEWLINE);   
-     	vty_out(vty, "Rx Mcasts             :%-20ld %s", stats.imcasts, VTY_NEWLINE); 
-  
-    	vty_out(vty, "Rx No mbuf            :%-20ld %s", stats.rx_nombuf, VTY_NEWLINE); 
-        
-    	vty_out(vty, "Rx Filter match       :%-20ld %s", stats.fdirmatch, VTY_NEWLINE); 
-    	vty_out(vty, "Rx Filter nomatch     :%-20ld %s", stats.fdirmiss, VTY_NEWLINE);  
-        vty_out(vty, "Rx Pause_xoff         :%-20ld %s", stats.rx_pause_xoff, VTY_NEWLINE);         
-    	vty_out(vty, "Rx Pause_xon          :%-20ld %s", stats.rx_pause_xon, VTY_NEWLINE);  
-             
-
-        vty_out(vty, "Tx Packet             :%-20ld %s", stats.opackets, VTY_NEWLINE);  
-    	vty_out(vty, "Tx Byte               :%-20ld %s", stats.obytes, VTY_NEWLINE);     
-        vty_out(vty, "TX ERR(Total)         :%-20ld %s", stats.oerrors, VTY_NEWLINE); 
-    	vty_out(vty, "Tx Pause_xon          :%-20ld %s", stats.tx_pause_xon, VTY_NEWLINE);  
-    	vty_out(vty, "Tx Pause_xoff         :%-20ld %s", stats.tx_pause_xoff, VTY_NEWLINE); 
-
-
-    }
-
-
-    return CMD_SUCCESS;
-}
-
 DEFUN(interface_show_stat, 
       interface_show_stat_cmd,
       "show interface status",
@@ -295,7 +331,55 @@ DEFUN(interface_show_stat,
       "Status information\n" 
       )
 {
-    return interface_cmd_show_status(vty);
+    int rv;
+    char ifname[16]={0};
+    rv = itf_raw_socket_get_if_name(ifname);
+    if (rv == E_SUCCESS)
+    {
+        vty_out(vty, "interface injection %s%s", ifname, VTY_NEWLINE);
+    }
+    #if USE_MULTI_RAW_SOCKET
+    int i;
+    int socket[MAX_WORKER_THREAD_NUM]={0};
+    itf_raw_socket_get_socket(socket);
+    for (i = 0; i < MAX_WORKER_THREAD_NUM; ++i)
+    {
+        vty_out(vty, "interface injection socket[%d] %d%s", i, socket[i], VTY_NEWLINE);
+    }
+    #else
+    int socket = 0;
+    socket = itf_raw_socket_get_socket();
+    vty_out(vty, "interface injection socket %d%s", socket, VTY_NEWLINE);
+    #endif
+    return CMD_SUCCESS;
+    //return interface_cmd_show_status(vty);
+}
+
+DEFUN(interface_show_work_thread, 
+      interface_show_work_thread_cmd,
+      "show interface work-thread",
+      SHOW_STR
+      INTERFACE_STR
+      "Work-thread information\n" 
+      )
+{
+    int rv;
+    char buff[2048]={0};
+    rv = itf_worker_thread_get(buff);
+    if (rv == E_SUCCESS)
+    {
+        vty_out(vty, "idx    thread_id      rx_id      tx_id%s",  VTY_NEWLINE);
+        vty_out(vty, "%s", buff);
+    }
+    else
+    {
+        vty_out(vty, "interface work-thread is NULL%s",  VTY_NEWLINE);
+    }
+    memset(buff, 0,2048);
+    itf_thread_stat_get(buff);
+    vty_out(vty, "Thread Statistics:%s", VTY_NEWLINE);
+    vty_out(vty, "%512s", buff);
+    return CMD_SUCCESS;
 }
 
 void itf_cmd_config_write(struct vty *vty)
@@ -330,6 +414,9 @@ void itf_cmd_config_write(struct vty *vty)
         }
     }
 
+    int worker_thread_num = itf_worker_thread_num_get();
+    vty_out(vty, "interface work-thread add %d%s", worker_thread_num, VTY_NEWLINE);
+
 extern struct list_head	handle_head;
 	struct list_head *pos = NULL, *next = NULL;
 	libpcap_handler_t *handle = NULL;
@@ -339,6 +426,12 @@ extern struct list_head	handle_head;
 		vty_out(vty, "interface bussiness add %s%s", handle->ifname, VTY_NEWLINE);			
 	}
 
+    char ifname[16]={0};
+    rv = itf_raw_socket_get_if_name(ifname);
+    if (rv == E_SUCCESS)
+    {
+        vty_out(vty, "interface injection add %s%s", ifname, VTY_NEWLINE);
+    }
 
 }
 
@@ -354,10 +447,13 @@ extern struct list_head	handle_head;
 void cmdline_itf_init(void)
 {
     install_element(CMD_NODE, &itf_rxtx_cmd);
+    install_element(CMD_NODE, &itf_injection_cmd);
+    install_element(CMD_NODE, &itf_work_thread_cmd);
     install_element(CMD_NODE, &itf_show_stat_cmd);
     install_element(CMD_NODE, &itf_set_cmd);
     install_element(CMD_NODE, &interface_set_cmd);
     install_element(CMD_NODE, &interface_show_stat_cmd);
+    install_element(CMD_NODE, &interface_show_work_thread_cmd);
 
     return ;
 }

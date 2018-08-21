@@ -93,7 +93,7 @@ quagga_timestamp(int timestamp_precision, char *buf, size_t buflen)
       cache.last = clock.tv_sec;
       tm = localtime(&cache.last);
       cache.len = strftime(cache.buf, sizeof(cache.buf),
-      			   "%Y/%m/%d %H:%M:%S", tm);
+      			   "%Y-%m-%d %H:%M:%S", tm);
     }
   /* note: it's not worth caching the subsecond part, because
      chances are that back-to-back calls are not sufficiently close together
@@ -143,7 +143,7 @@ time_print(FILE *fp, struct timestamp_control *ctl)
       ctl->len = quagga_timestamp(ctl->precision, ctl->buf, sizeof(ctl->buf));
       ctl->already_rendered = 1;
     }
-  fprintf(fp, "%s ", ctl->buf);
+  fprintf(fp, "%s|", ctl->buf);
 }
   
 

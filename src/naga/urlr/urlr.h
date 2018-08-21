@@ -27,9 +27,9 @@ berr urlr_add(urlr_t *entry);
 berr urlr_del(char *url);
 berr urlr_clear(void);
 
-berr urlr_default_act_set(uint32_t action);
+berr urlr_default_act_set(naga_acl_t *acl);
 
-berr urlr_default_act_get(uint32_t *action);
+berr urlr_default_act_get(naga_acl_t *acl);
 
 #define api_urlr_get urlr_get
 #define api_urlr_add urlr_add

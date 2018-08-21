@@ -41,6 +41,8 @@
 #include "netseg_cmd.h"
 #include "url_cmd.h"
 #include "hijack_cmd.h"
+#include "mask_cmd.h"
+#include "upush_cmd.h"
 
 /* Zebra instance */
 struct zebra_t zebrad =
@@ -183,16 +185,18 @@ int update_log_file_timer(struct thread * t)
 int bts_stat_log_file_timer(struct thread *t)
 {
 	bts_stat_log();
-	thread_add_timer(zebrad.master, bts_stat_log_file_timer, NULL, 10);
+	thread_add_timer(zebrad.master, bts_stat_log_file_timer, NULL, 60);
 }
 
+int vty_port = ZEBRA_VTY_PORT;
 /* cmdline  startup routine. */
 //int cmdline (int argc, char **argv)
 int cmdline (int argc, char **argv)
 {
     char *p;
-    char *vty_addr = "127.0.0.1";
-    int vty_port = ZEBRA_VTY_PORT;
+    //char *vty_addr = "127.0.0.1";
+    char *vty_addr = "0.0.0.0";
+    //int vty_port = ZEBRA_VTY_PORT;
     int batch_mode = 0;
     int daemon_mode = 0;
     char *config_file = "zebra.conf";
@@ -202,62 +206,8 @@ int cmdline (int argc, char **argv)
     /* Set umask before anything for security */
     umask (0027);
 
-    /* preserve my name */
-    //progname = ((p = strrchr (argv[0], '/')) ? ++p : argv[0]);
-
     zlog_default = openzlog (progname, ZLOG_ZEBRA,
             LOG_CONS|LOG_NDELAY|LOG_PID, LOG_DAEMON);
-
-#if 0
-
-    while (1) 
-    {
-        int opt;
-
-        opt = getopt_long (argc, argv, "bdf:hA:P:v", longopts, 0);
-
-        if (opt == EOF)
-            break;
-
-        switch (opt) 
-        {
-            case 0:
-                break;
-            case 'b':
-                batch_mode = 1;
-            case 'd':
-                daemon_mode = 1;
-                break;
-            case 'f':
-                config_file = optarg;
-                break;
-            case 'A':
-                vty_addr = optarg;
-                break;
-            case 'P':
-                /* Deal with atoi() returning 0 on failure, and zebra not
-                   listening on zebra port... */
-                if (strcmp(optarg, "0") == 0) 
-                {
-                    vty_port = 0;
-                    break;
-                } 
-                vty_port = atoi (optarg);
-                break;
-                break;
-            case 'v':
-                print_version (progname);
-                exit (0);
-                break;
-            case 'h':
-                usage (progname, 0);
-                break;
-            default:
-                usage (progname, 1);
-                break;
-        }
-    }
-#endif 
 
     /* port and conf file mandatory */
     if (!vty_port || !config_file)
@@ -275,19 +225,23 @@ int cmdline (int argc, char **argv)
     cmd_init (1);
     vty_init (zebrad.master);
     //memory_init ();
-    cmdline_vsr_init();
+    //cmdline_vsr_init();
     cmdline_bts_init();
-	cmdline_dmr_init();
-	cmdline_domain_init();
+	//cmdline_domain_init();
 	cmdline_acr_init();
     cmdline_adp_init();
     cmdline_itf_init();
     cmdline_adt_init();
 	cmdline_netseg_init();
-	cmdline_dnetseg_init();
-	cmdline_url_init();
+	//cmdline_dnetseg_init();
+	cmdline_dmr_init();
     cmdline_urlr_init();
-    cmdline_hijack_init();
+	cmdline_url_init();
+    //cmdline_hijack_init();
+    cmdline_ua_init();
+    cmdline_mask_init();
+    cmdline_upush_init();
+    cmdline_rpush_init();
     /* Zebra related initialize. */
     //access_list_init ();
 

@@ -37,9 +37,9 @@ include $(RTE_SDK)/mk/rte.vars.mk
 LIB = libcmdline.a
 
 CFLAGS +=  -I . -I ../boots -I ../include -I ../libzebra -I ../vsr -I ../dmr -I ../acr -I ../template -I ../netseg
-CFLAGS += -I ../itf -I ../url -I ../hijack 
+CFLAGS += -I ../itf -I ../url -I ../hijack -I ../mask  -I ../upush
 
-EXPORT_MAP := lib_cmdline_version.map
+#EXPORT_MAP := lib_cmdline_version.map
 
 LIBABIVER := 1
 

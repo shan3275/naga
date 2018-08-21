@@ -30,13 +30,9 @@
 #   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 include $(RTE_SDK)/mk/rte.vars.mk
-
-#
-# library name
-#
 LIB = libdmr.a
 
-CFLAGS +=   -I ../boots -I ../include -I ../pub -I ../libzebra -I ../pid 
+CFLAGS +=   -I ../boots -I ../include -I ../pub -I ../libzebra -I ../pid  -I ../rte
 #CFLAGS += $(WERROR_FLAGS)
 
 EXPORT_MAP := lib_dmr_version.map
@@ -44,16 +40,5 @@ EXPORT_MAP := lib_dmr_version.map
 LIBABIVER := 1
 
 SRCS-y := dmr.c dmr_dp.c dmr_cmd.c
-
-#
-# Export include files
-#
-#SYMLINK-y-include += rte_ether.h
-#SYMLINK-y-include += rte_ethdev.h
-#SYMLINK-y-include += rte_eth_ctrl.h
-
-# this lib depends upon:
-#DEPDIRS-y += lib/librte_eal lib/librte_mempool lib/librte_ring lib/librte_mbuf
-
 
 include $(RTE_SDK)/mk/rte.lib.mk

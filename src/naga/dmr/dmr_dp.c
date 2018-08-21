@@ -8,7 +8,7 @@
 
 #define MAX_HOST_RULE_NUM 100000
 
-extern uint32_t domin_default_action;
+extern naga_acl_t domin_default_acl;
 
 berr naga_dmr(hytag_t *tag)
 {
@@ -38,7 +38,8 @@ berr naga_dmr(hytag_t *tag)
     if (NULL == rule)
     {
         CNT_INC(DMR_RULE_UNMATCH);
-		HYTAG_ACL_SET(tag->acl, domin_default_action);
+		//HYTAG_ACL_SET(tag->acl, domin_default_action);
+        HYTAG_ACL_MERGE(tag->acl, domin_default_acl);
     }
     else
     {

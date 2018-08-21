@@ -6,7 +6,7 @@
 
 #include "dmr.h"
 
-uint32_t domin_default_action = 0;
+naga_acl_t domin_default_acl;
 
 bts_hashtable_t dmr_table;
 
@@ -44,6 +44,7 @@ dmr_cmp_func(void *d1, void *d2)
 berr
 dmr_init(uint32_t number)
 {
+    memset(&domin_default_acl, 0, sizeof(naga_acl_t));
     return bts_hashtable_init(&dmr_table, number, dmr_hash_func, dmr_cmp_func, NULL);
 }
 
@@ -186,15 +187,15 @@ dmr_iter(bts_iter_func func, void *param)
 }
 
 
-berr dmr_domain_default_act_set(uint32_t action)
+berr dmr_domain_default_act_set(naga_acl_t *acl)
 {
-	domin_default_action = action;
+	memcpy(&domin_default_acl, acl, sizeof(naga_acl_t));
 	return E_SUCCESS;
 }
 
-berr dmr_domain_default_act_get(uint32_t *action)
+berr dmr_domain_default_act_get(naga_acl_t *acl)
 {
-	*action = domin_default_action;
+	memcpy(acl, &domin_default_acl, sizeof(naga_acl_t));
 	return E_SUCCESS;
 }
 

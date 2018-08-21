@@ -36,7 +36,7 @@ include $(RTE_SDK)/mk/rte.vars.mk
 #
 LIB = liburlr.a
 
-CFLAGS +=   -I ../boots -I ../include -I ../pub -I ../libzebra -I ../pid 
+CFLAGS +=   -I ../boots -I ../include -I ../pub -I ../libzebra -I ../pid -I ../rte
 #CFLAGS += $(WERROR_FLAGS)
 
 EXPORT_MAP := lib_urlr_version.map

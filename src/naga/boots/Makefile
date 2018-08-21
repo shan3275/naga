@@ -36,11 +36,11 @@ include $(RTE_SDK)/mk/rte.vars.mk
 #
 LIB = libboots.a
 
-CFLAGS +=  -I .  -I ../include -I ../libzebra
+CFLAGS +=  -I .  -I ../include -I ../libzebra -I ../rte
 
 #CFLAGS += $(WERROR_FLAGS)
 
-EXPORT_MAP := lib_vsr_version.map
+#EXPORT_MAP := lib_vsr_version.map
 
 LIBABIVER := 1
 

@@ -42,10 +42,12 @@ Boston, MA 02111-1307, USA.  */
 #include "url_cmd.h"
 #include "hijack_cmd.h"
 #include "bts_cmd.h"
+#include "upush_cmd.h"
 
 /* Command vector which includes some level of command lists. Normally
    each daemon maintains each own cmdvec. */
 vector cmdvec = NULL;
+extern int vty_port;
 
 struct cmd_token token_cr;
 char *command_cr = NULL;
@@ -732,18 +734,26 @@ config_write_host (struct vty *vty)
     vty_out (vty, "banner motd file %s%s", host.motdfile, VTY_NEWLINE);
   else if (! host.motd)
     vty_out (vty, "no banner motd%s", VTY_NEWLINE);
+  if (vty_port >= 2606 &&  vty_port <= 2700 )
+  {
+      vty_out (vty, "telnet port %d%s", vty_port, VTY_NEWLINE);
+  }
 
-  vsr_cmd_config_write(vty);
-  itf_cmd_config_write(vty);
+  //vsr_cmd_config_write(vty);
   adt_cmd_config_write(vty);
-  dmr_cmd_config_write(vty);
-  acr_cmd_config_write(vty);
+  //dmr_cmd_config_write(vty);
+  //acr_cmd_config_write(vty);
   netseg_cmd_config_write(vty);
   adp_cmd_config_write(vty);
-  url_cmd_config_write(vty);
+  ori_url_cmd_config_write(vty);
+  ref_url_cmd_config_write(vty);
   urlr_cmd_config_write(vty);
-  hijack_cmd_config_write(vty);
+  //hijack_cmd_config_write(vty);
   bts_cmd_config_write(vty);
+  itf_cmd_config_write(vty);
+  upush_cmd_config_write(vty);
+  rpush_cmd_config_write(vty);
+
   return 1;
 }
 
@@ -4016,6 +4026,24 @@ DEFUN (no_banner_motd,
   return CMD_SUCCESS;
 }
 
+DEFUN (config_vty_port, config_vty_port_cmd,
+       "telnet port <2606-2700>",
+       "Set telnet parameters\n"
+       "Set telnet port\n"
+       "Number of port,default 2606\n")
+{
+  int port;
+
+  port = atoi(argv[0]);
+  if (port < 2606 || port > 2700 )
+  {
+      vty_out (vty, "port is malformed%s", VTY_NEWLINE);
+      return CMD_WARNING;
+  }
+  vty_port = port;
+  return CMD_SUCCESS;
+}
+
 /* Set config filename.  Called from vty.c */
 void
 host_config_set (char *filename)
@@ -4039,6 +4067,7 @@ install_default (enum node_type node)
   install_element (node, &config_write_memory_cmd);
   install_element (node, &config_write_cmd);
   install_element (node, &show_running_config_cmd);
+  install_element (node, &config_vty_port_cmd);
 }
 
 /* Initialize command interface. Install basic nodes and commands. */
