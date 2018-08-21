@@ -1,4 +1,4 @@
-VERSION  = 1
+VERSION  = 2
 REVISE   = 0
 BUILD    = $(shell git log | grep -cE 'Author:.*<.*@.*>')
 BUILDSHA = $(shell git rev-parse --short HEAD)
