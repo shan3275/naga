@@ -338,19 +338,10 @@ DEFUN(interface_show_stat,
     {
         vty_out(vty, "interface injection %s%s", ifname, VTY_NEWLINE);
     }
-    #if USE_MULTI_RAW_SOCKET
-    int i;
-    int socket[MAX_WORKER_THREAD_NUM]={0};
-    itf_raw_socket_get_socket(socket);
-    for (i = 0; i < MAX_WORKER_THREAD_NUM; ++i)
-    {
-        vty_out(vty, "interface injection socket[%d] %d%s", i, socket[i], VTY_NEWLINE);
-    }
-    #else
     int socket = 0;
     socket = itf_raw_socket_get_socket();
     vty_out(vty, "interface injection socket %d%s", socket, VTY_NEWLINE);
-    #endif
+   
     return CMD_SUCCESS;
     //return interface_cmd_show_status(vty);
 }

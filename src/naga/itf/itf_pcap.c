@@ -20,17 +20,10 @@
 #include "itf_mq_ring.h"
 
 pcap_t *gpcap_desc = NULL;
-#if USE_MULTI_RAW_SOCKET
-static int send_socket[MAX_WORKER_THREAD_NUM] = {0};
-#else
 static int send_socket = 0;
-#endif
 char if_name[16]={0};
-#if USE_MULTI_RAW_SOCKET
-static struct  sockaddr_ll  sll[MAX_WORKER_THREAD_NUM];
-#else
 static struct  sockaddr_ll  sll;
-#endif
+
 int pcap_if_num = 0;
 
 #define DEBUG
@@ -40,133 +33,6 @@ int pcap_if_num = 0;
 #define debug(fmt,args...)
 #endif  /* DEBUG */
 
-#if USE_MULTI_RAW_SOCKET
-/*
-* 参数说明：
-* idx：线程id；
-* buff： 发送的数据buffer
-* len：  发送的数据长度
-*/
-berr ift_raw_send_packet(int idx,uint8_t * buff, int len)
-{
-
-    //printf("%s.%d: idx:%d,buff = %p, len =%d\n", __func__, __LINE__, idx, buff, len);
-    if (itf_tx_is_enable())
-    {
-        if(send_socket[idx] > 0)
-        {
-            if(sendto(send_socket[idx], buff, len, 0, (const struct sockaddr *)&sll[idx], sizeof(struct  sockaddr_ll)) < 0)
-            {
-                perror("The Err is:");
-                return E_FAIL;      
-            }
-            else
-            {
-                return E_SUCCESS;   
-            }
-        }
-        else
-        {
-            printf("Socket is %d\n", send_socket[idx]);
-            return E_FAIL;
-        }
-    }
-    return E_SUCCESS; 
-}
-
-berr itf_raw_socket_add(char *ifname)
-{
-    int i;
-    int sockfd;
-    if(ifname== NULL)
-    {
-        return E_SUCCESS;
-    }
-
-    if (strlen(if_name) > 0)
-    {
-        return E_EXIST;
-    }
-    for (i = 0; i < MAX_WORKER_THREAD_NUM; ++i)
-    {
-        sockfd = socket(PF_PACKET, SOCK_RAW, 0);
-        if(sockfd < 0 )
-        {
-            printf("create socket Failed\n");
-            BRET(E_FAIL);
-        }
-        /*
-        int nSendBufLen = 30*1024*1024; //设置为10M
-        setsockopt( sockfd, SOL_SOCKET, SO_SNDBUF, ( const char* )&nSendBufLen, sizeof( int ) );
-        */
-        struct ifreq ifr;
-        socklen_t addrlen = sizeof(struct  sockaddr_ll);
-        strcpy(ifr.ifr_name, ifname);
-        ioctl(sockfd, SIOCGIFINDEX, &ifr);
-        memset(&sll[i],0,sizeof(struct  sockaddr_ll));
-        sll[i].sll_ifindex = ifr.ifr_ifindex; 
-        
-        sll[i].sll_family    = AF_PACKET;
-        sll[i].sll_protocol  = htons(ETH_P_ALL);
-        sll[i].sll_pkttype   = PACKET_HOST;
-        sll[i].sll_halen     = 6;
-        
-        if(bind(sockfd, (struct sockaddr*)&sll[i], addrlen) < 0)
-        {
-            printf("bind socket Failed\n");
-            BRET(E_FAIL);                   
-        }
-
-        send_socket[i] = sockfd;
-        int flag = fcntl(sockfd, F_GETFL,0);
-        printf("flag is %x, %x\n", flag, O_NONBLOCK);
-        fcntl(sockfd, F_SETFL, flag & ~O_NONBLOCK);         
-    }
-
-    //shutdown(send_socket, SHUT_RD);
-
-    strcpy(if_name, ifname);
-    return E_SUCCESS;
-}
-berr itf_raw_socket_del(char *ifname)
-{
-    int i;
-    if(ifname== NULL)
-    {
-        return E_SUCCESS;
-    }
-
-    if (strncmp(if_name,ifname, strlen(ifname)) )
-    {
-        return E_MATCH;
-    }
-    for (i = 0; i < MAX_WORKER_THREAD_NUM; ++i)
-    {
-        if (send_socket[i])
-        {
-            if (close(send_socket[i]))
-            {
-                perror("shutdown:");
-                //return E_FAIL;
-            }
-        }
-        send_socket[i] = 0;       
-    }
-
-    memset(if_name,0,sizeof(if_name));
-    return E_SUCCESS;
-}
-
-void itf_raw_socket_get_socket(int *socket)
-{
-    int i;
-    for (i = 0; i < MAX_WORKER_THREAD_NUM; ++i)
-    {
-        socket[i] = send_socket[i];
-    }
-}
-
-#else
 berr ift_raw_send_packet(uint8_t * buff, int len)
 {
 
@@ -278,7 +144,6 @@ int itf_raw_socket_get_socket(void)
 {
     return send_socket;
 }
-#endif
 
 berr itf_raw_socket_get_if_name(char *ifname)
 {

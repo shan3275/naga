@@ -171,20 +171,12 @@ berr  naga_url(url_t *url_r, hytag_t *hytag, char *url_str, int url_len)
 
 berr  naga_ori_url(hytag_t *hytag)
 {
-#if HTTP_URL_PARSE_ORI_MOD
-    return naga_url(&ori_url_r, hytag, hytag->ori_url.url, strlen(hytag->ori_url.url)); 
-#else
     return naga_url(&ori_url_r, hytag, hytag->url, hytag->url_len); 
-#endif
 }
 
 berr  naga_ref_url(hytag_t *hytag)
 {
-#if HTTP_URL_PARSE_ORI_MOD
-    return naga_url(&ref_url_r, hytag, hytag->ref_url.url, strlen(hytag->ref_url.url));
-#else
     return naga_url(&ref_url_r, hytag, hytag->referer, hytag->referer_len); 
-#endif
 }
 
 berr ori_url_rule_add(uint32_t id,  char *url,  char * cli_pattern, naga_acl_t *acl)

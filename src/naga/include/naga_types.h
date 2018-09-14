@@ -19,21 +19,6 @@ typedef uint32_t ipaddr_t;
 *
 */
 
-#define USE_MULTI_RAW_SOCKET 0
-/*
-* 1 表示打开使用多个raw socket发送；
-* 0 表示关闭，使用一个raw socket发送，全部业务线程共用一个socket；
-* 测试结果来看：使用多个socket和单个socket发送报文，性能基本一致
-* 而且在流量过大的情况下，使用多个socket发送，还会出现No buffer space available的返回
-* 故暂时关闭
-*/
-
-/***
- * 1 for save to hytag->ori_url->url  module 
- * 0 for save to hytag->url
- * */
-#define HTTP_URL_PARSE_ORI_MOD   0
-
 #define PACKET_MTU    1500
 
 #define ACT_LOG          1
@@ -266,14 +251,10 @@ typedef struct
     uint16_t data_len;       /* total packet length, used for template */
     uint8_t  pushed_second_assert;
 	uint8_t  snet_hit_id;
-	char * hijack_url;
+	//char * hijack_url;
 
     uint32_t rule_hits;
     uint32_t rule_idxs[NAGA_ACL_HITS_MAX];
-
-    #if USE_MULTI_RAW_SOCKET
-    int idx; /* pthread idx, core id number,used for send_packet */
-    #endif
 }hytag_t;
 
 typedef struct {

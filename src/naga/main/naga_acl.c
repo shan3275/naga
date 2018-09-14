@@ -90,11 +90,7 @@ berr naga_acl_redir(hytag_t *hytag)
     CYCLE_END();
 
     CYCLE_START();
-    #if USE_MULTI_RAW_SOCKET
-    rv = ift_raw_send_packet(hytag->idx, buffer, hytag->data_len);
-    #else
     rv = ift_raw_send_packet(buffer, hytag->data_len);
-    #endif
     if(rv != E_SUCCESS)
     {
         CNT_INC(ACL_REDIR_DROP_SEND_PACKET);
@@ -139,11 +135,7 @@ berr naga_acl_adp(hytag_t *hytag)
     }
 
     CYCLE_START();
-    #if USE_MULTI_RAW_SOCKET
-    rv = ift_raw_send_packet(hytag->idx, buffer, hytag->data_len);
-    #else
     rv = ift_raw_send_packet(buffer, hytag->data_len);
-    #endif
     if(rv != E_SUCCESS)
     {
         CNT_INC(ACL_ADP_DROP_SEND_PACKET);
@@ -195,11 +187,7 @@ berr naga_acl_udppush(hytag_t *hytag)
     CNT_INC(ACL_UDPPUSH_RAW_UDP_GEN);
 
     CYCLE_START();
-    #if USE_MULTI_RAW_SOCKET
-    rv = ift_raw_send_packet(hytag->idx, buffer, len);
-    #else
     rv = ift_raw_send_packet(buffer, len);
-    #endif
     if(rv != E_SUCCESS)
     {
         CNT_INC(ACL_UDPPUSH_DROP_SEND_PACKET);

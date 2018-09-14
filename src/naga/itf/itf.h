@@ -41,14 +41,8 @@ typedef struct
     uint64_t worker_thread_fail2_stat[MAX_WORKER_THREAD_NUM];
 }itf_thread_stat_t;
 
-#if USE_MULTI_RAW_SOCKET
-berr ift_raw_send_packet(int idx,uint8_t * buff, int len);
-void itf_raw_socket_get_socket(int *socket);
-#else
 berr ift_raw_send_packet(uint8_t * buff, int len);
 int itf_raw_socket_get_socket(void);
-#endif
-
 berr itf_raw_socket_add(char *ifname);
 berr itf_raw_socket_del(char *ifname);
 berr itf_raw_socket_get_if_name(char *ifname);

@@ -55,9 +55,6 @@ static void *worker_func(void *arg) {
         hytag.pbuf.ptr = (void *)enc->packet;
         hytag.pbuf.len = enc->len;
         hytag.pbuf.ptr_offset = 0;
-    #if USE_MULTI_RAW_SOCKET 
-        hytag.idx = me->idx;
-    #endif
         naga_data_process_module(&hytag);
         bool bret = enring(enc->r, enc);
         if (!bret)
@@ -163,9 +160,6 @@ static void thread_libevent_process(int fd, short which, void *arg)
     hytag.pbuf.ptr = (void *)pvalue->ptr;
     hytag.pbuf.len = pvalue->len;
     hytag.pbuf.ptr_offset = 0;
-#if USE_MULTI_RAW_SOCKET 
-    hytag.idx = me->idx;
-#endif
     naga_data_process_module(&hytag);
     if(NULL != pvalue->ptr) free(pvalue->ptr);
     if(NULL != pvalue) free(pvalue); 
@@ -194,9 +188,6 @@ static void thread_libevent_process(int fd, short which, void *arg)
     hytag.pbuf.ptr = (void *)pkt.packet;
     hytag.pbuf.len = pkt.len;
     hytag.pbuf.ptr_offset = 0;
-#if USE_MULTI_RAW_SOCKET 
-    hytag.idx = me->idx;
-#endif
     naga_data_process_module(&hytag);
 }
 #endif /* end of USE_M_QUEUE */
