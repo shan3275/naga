@@ -145,9 +145,9 @@ berr naga_mask(hytag_t *hytag)
             {
                 debug("DOPT: mask_url  ===================================================================");
                 debug("ORI_URL:");
-                naga_url_dump(&hytag->ori_url);
+                naga_url_dump(&hytag->acl);
                 debug("REF_URL:");
-                naga_url_dump(&hytag->ref_url);
+                //naga_url_dump(&hytag->ref_url);
                 debug("REDIR_URL:%s", hytag->acl.url); 
                 debug("--------------------------------------------------------------------------------------------------------\n");
             }

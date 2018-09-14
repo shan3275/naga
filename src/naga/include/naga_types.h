@@ -227,11 +227,7 @@ typedef struct
 	char referer[URL_MAX_LEN+1];
     uint16_t user_agent_len;
     char  user_agent[MAX_USER_AGENT_LEN+1];
-    naga_url_t ori_url;
-    naga_url_t ref_url;
-
     naga_acl_t acl;
-
 
     char     uri[URL_MAX_LEN+1];	
     uint16_t uri_len;
@@ -239,9 +235,7 @@ typedef struct
     uint32_t hijack_rule_id;
 
     struct pbuf pbuf;
-    //struct rte_mbuf *m;
     uint16_t match;   /* 0 for not match, 1 for vsr match, 2 for other match  */
-    enum ad_action_em ad_act;
 
     /* ad template select */
     ad_template_em template;    /* ad template id , ad_template_enum */
@@ -251,10 +245,6 @@ typedef struct
     uint16_t data_len;       /* total packet length, used for template */
     uint8_t  pushed_second_assert;
 	uint8_t  snet_hit_id;
-	//char * hijack_url;
-
-    uint32_t rule_hits;
-    uint32_t rule_idxs[NAGA_ACL_HITS_MAX];
 }hytag_t;
 
 typedef struct {
