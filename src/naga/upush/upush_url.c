@@ -43,12 +43,13 @@ berr upush_content_generator(hytag_t *hytag, char *ptr)
     else
     if (APP_URLPUSH_APPID == hytag->acl.push_type)
     {
-        sprintf( buffer, "{\"flag\":\"20\",\"srcIP\":\"%d.%d.%d.%d\",\"appid\":\"%s\"}",
+        sprintf( buffer, "{\"flag\":\"20\",\"srcIP\":\"%d.%d.%d.%d\",\"appid\":\"%s\",\"dsid\":\"%s\"}",
                 (hytag->outer_srcip4 >>24) &0xff,
                 (hytag->outer_srcip4 >>16) &0xff,
                 (hytag->outer_srcip4 >>8 ) &0xff,
                 (hytag->outer_srcip4     ) &0xff,
-                hytag->reg);
+                hytag->reg,
+                hytag->icloud_dsid);
         CNT_INC(ACL_URLPUSH_APPID);
     }
     else

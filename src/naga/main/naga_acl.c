@@ -288,6 +288,12 @@ berr naga_acl(hytag_t *hytag)
         }
     }
 
+    if(ACT_LOG == (hytag->acl.actions & ACT_LOG))
+    {
+        CNT_INC(ACL_PKTS);
+        hytag_log(hytag);
+    }
+
     return E_SUCCESS;
 }
 

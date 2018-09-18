@@ -53,7 +53,7 @@ void hytag_print(hytag_t *tag)
 #endif    
 }
 
-
+pthread_mutex_t naga_log_mutex = PTHREAD_MUTEX_INITIALIZER;
 void hytag_log(hytag_t *tag)
 {
     if((APP_TYPE_HTTP_GET_OR_POST == tag->app_type) &&
@@ -62,6 +62,7 @@ void hytag_log(hytag_t *tag)
             (tag->referer    != NULL) &&
             (tag->url        != NULL))
     {
+        pthread_mutex_lock(&naga_log_mutex);
         bts_zlog(LOG_ALERT, "|GET|%u.%u.%u.%u|%u.%u.%u.%u|%u|%u|%u|%u|%s|%s|%s",
                 (tag->outer_srcip4 >>24) &0xff,
                 (tag->outer_srcip4 >>16) &0xff,
@@ -78,6 +79,7 @@ void hytag_log(hytag_t *tag)
                 tag->url,
                 tag->user_agent,
                 tag->referer) ;
+        pthread_mutex_unlock(&naga_log_mutex);
     }
 }
 

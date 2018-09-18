@@ -56,9 +56,6 @@
     } \
 }
 
-
-pthread_mutex_t naga_mutex = PTHREAD_MUTEX_INITIALIZER;
-
 /*
  * data plane main process flow, not include rx & tx
 */
@@ -86,9 +83,6 @@ berr naga_data_process_module(hytag_t * hytag)
     DPF_NODE(MOD_FCT, hytag, naga_fct);
     DPF_NODE(MOD_ACL, hytag, naga_acl);
 
-    //pthread_mutex_lock(&naga_mutex);
-    //HYTAG_LOG(hytag);
-    //pthread_mutex_unlock(&naga_mutex);
 #if CHECK_PACK_TIME	
 	gettimeofday(&tv1, NULL); 
 

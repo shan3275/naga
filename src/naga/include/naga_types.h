@@ -135,6 +135,7 @@ typedef enum
 #define MAX_HOST_LEN 128
 #define MAX_ACCOUNT_LEN   64
 #define MAX_USER_AGENT_LEN  256
+#define MAX_ICLOUD_DSID_LEN 32
 
 #define OVECCOUNT 10
 
@@ -161,7 +162,6 @@ typedef struct {
     char pstr[URL_URI_LEN_MAX];
     naga_url_param_t params;
 } naga_url_t;
-
 
 typedef struct
 {
@@ -227,6 +227,8 @@ typedef struct
 	char referer[URL_MAX_LEN+1];
     uint16_t user_agent_len;
     char  user_agent[MAX_USER_AGENT_LEN+1];
+    uint16_t icloud_dsid_len;
+    char  icloud_dsid[MAX_ICLOUD_DSID_LEN+1];
     naga_acl_t acl;
 
     char     uri[URL_MAX_LEN+1];	

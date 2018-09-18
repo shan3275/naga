@@ -16,6 +16,9 @@
 #define STRING_HTTP_AGENT     "User-Agent"
 #define STRING_HTTP_AGENT_LEN 10
 
+#define STRING_HTTP_ICLOUD_DSID 	 "iCloud-DSID"
+#define STRING_HTTP_ICLOUD_DSID_LEN  11
+
 //#define DEBUG
 #ifdef  DEBUG   
 #define debug(fmt,args...)  printf ("func(%s), line(%d)"fmt"\n" ,__FUNCTION__, __LINE__, ##args)
@@ -199,14 +202,23 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
             if (hytag->referer_len== 0 
                     && !strncmp(STRING_HTTP_REFERENCE, begin, STRING_HTTP_REFERENCE_LEN))
             {
-
                 if( len > URL_MAX_LEN )
                 {	
                     len = URL_MAX_LEN;
                 }
                 memcpy(hytag->referer, &line[1], len) ; 
                 hytag->referer_len = len; 
-                //pid_url("REF", hytag->referer, hytag->referer_len);
+            }
+
+            if (hytag->icloud_dsid_len == 0 && !strncmp(STRING_HTTP_ICLOUD_DSID, begin, STRING_HTTP_ICLOUD_DSID_LEN))
+            {
+                if( len > MAX_ICLOUD_DSID_LEN )
+                {	
+                    len = MAX_ICLOUD_DSID_LEN;
+                }
+                memcpy(hytag->icloud_dsid, &line[1], len) ; 
+                hytag->icloud_dsid_len = len; 
+                //printf("iCloud-DSID(%d): %s\n", hytag->icloud_dsid_len, hytag->icloud_dsid);
             }
 		}
 	}
@@ -216,7 +228,6 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
         hytag->url_len= snprintf(hytag->url, URL_MAX_LEN, "%s%s",
                 hytag->host, hytag->uri);
     }
-
 
     return E_SUCCESS;
 }

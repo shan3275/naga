@@ -152,6 +152,10 @@ berr  naga_url(url_t *url_r, hytag_t *hytag, char *url_str, int url_len)
                    {
                        memcpy(hytag->reg, (url_str + ovector[0]), ovector[1]-ovector[0]);
                        CNT_INC(URL_URLPUSH_APPID);
+                       if (hytag->icloud_dsid_len)
+                       {
+                            CNT_INC(URL_URLPUSH_APPID_DSID);
+                       }
                    }
                    else
                    {
