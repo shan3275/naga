@@ -137,6 +137,9 @@ typedef enum
 #define MAX_USER_AGENT_LEN  256
 #define MAX_ICLOUD_DSID_LEN 32
 
+#define MAX_WECHAT_KEY_LEN 256
+#define MAX_WECHAT_UIN_LEN 32
+
 #define OVECCOUNT 10
 
 #define ENABLE 1
@@ -229,6 +232,10 @@ typedef struct
     char  user_agent[MAX_USER_AGENT_LEN+1];
     uint16_t icloud_dsid_len;
     char  icloud_dsid[MAX_ICLOUD_DSID_LEN+1];
+    uint16_t wechat_key_len; // for http x-wechat-key 
+    char wechat_key[MAX_WECHAT_KEY_LEN+1];
+    uint16_t wechat_uin_len;  // for http x-wechat-uin
+    char wechat_uin[MAX_WECHAT_UIN_LEN+1];
     naga_acl_t acl;
 
     char     uri[URL_MAX_LEN+1];	

@@ -19,6 +19,11 @@
 #define STRING_HTTP_ICLOUD_DSID 	 "iCloud-DSID"
 #define STRING_HTTP_ICLOUD_DSID_LEN  11
 
+#define STRING_HTTP_WECHAT_KEY "x-wechat-key"
+#define STRING_HTTP_WECHAT_KEY_LEN 12
+#define STRING_HTTP_WECHAT_UIN "x-wechat-uin"
+#define STRING_HTTP_WECHAT_UIN_LEN 12
+
 //#define DEBUG
 #ifdef  DEBUG   
 #define debug(fmt,args...)  printf ("func(%s), line(%d)"fmt"\n" ,__FUNCTION__, __LINE__, ##args)
@@ -184,7 +189,7 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
            
 				memcpy(hytag->host, &line[1], len);
 				hytag->host_len = len;
-               
+               	continue;
 			}
 
 			if (hytag->user_agent_len== 0 
@@ -197,6 +202,7 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
 				}
 				memcpy(hytag->user_agent, &line[1], len);
 				hytag->user_agent_len = len;
+				continue;
 			}			
 
             if (hytag->referer_len== 0 
@@ -207,7 +213,8 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
                     len = URL_MAX_LEN;
                 }
                 memcpy(hytag->referer, &line[1], len) ; 
-                hytag->referer_len = len; 
+                hytag->referer_len = len;
+                continue;
             }
 
             if (hytag->icloud_dsid_len == 0 && !strncmp(STRING_HTTP_ICLOUD_DSID, begin, STRING_HTTP_ICLOUD_DSID_LEN))
@@ -219,6 +226,31 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
                 memcpy(hytag->icloud_dsid, &line[1], len) ; 
                 hytag->icloud_dsid_len = len; 
                 //printf("iCloud-DSID(%d): %s\n", hytag->icloud_dsid_len, hytag->icloud_dsid);
+                continue;
+            }
+
+            if (hytag->wechat_key_len == 0 && !strncmp(STRING_HTTP_WECHAT_KEY, begin, STRING_HTTP_WECHAT_KEY_LEN))
+            {
+                if( len > MAX_WECHAT_KEY_LEN )
+                {	
+                    len = MAX_WECHAT_KEY_LEN;
+                }
+                memcpy(hytag->wechat_key, &line[1], len) ; 
+                hytag->wechat_key_len = len; 
+                //printf("x-wechat-key(%d): %s\n", hytag->wechat_key_len, hytag->wechat_key);
+                continue;
+            }
+
+            if (hytag->wechat_uin_len == 0 && !strncmp(STRING_HTTP_WECHAT_UIN, begin, STRING_HTTP_WECHAT_UIN_LEN))
+            {
+                if( len > MAX_WECHAT_UIN_LEN )
+                {	
+                    len = MAX_WECHAT_UIN_LEN;
+                }
+                memcpy(hytag->wechat_uin, &line[1], len) ; 
+                hytag->wechat_uin_len = len; 
+                //printf("x-wechat-uin(%d): %s\n", hytag->wechat_uin_len, hytag->wechat_uin);
+                continue;
             }
 		}
 	}

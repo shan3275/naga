@@ -72,7 +72,7 @@ berr naga_fct(hytag_t *hytag)
         return rv;
     }
 */
-/*
+
     if(ACT_IS_VAILD(hytag->acl.actions, ACT_DROP))
     {
         return E_SUCCESS;
@@ -82,7 +82,7 @@ berr naga_fct(hytag_t *hytag)
     {
         return rv;
     }
-*/
+
 /*
 
     if(ACT_IS_VAILD(hytag->acl.actions, ACT_DROP))

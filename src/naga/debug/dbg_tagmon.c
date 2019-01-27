@@ -63,7 +63,7 @@ void hytag_log(hytag_t *tag)
             (tag->url        != NULL))
     {
         pthread_mutex_lock(&naga_log_mutex);
-        bts_zlog(LOG_ALERT, "|GET|%u.%u.%u.%u|%u.%u.%u.%u|%u|%u|%u|%u|%s|%s|%s",
+        bts_zlog(LOG_ALERT, "|GET|%u.%u.%u.%u|%u.%u.%u.%u|%u|%u|%u|%u|%s|%s|%s|%s|%s",
                 (tag->outer_srcip4 >>24) &0xff,
                 (tag->outer_srcip4 >>16) &0xff,
                 (tag->outer_srcip4 >>8) &0xff,
@@ -78,7 +78,9 @@ void hytag_log(hytag_t *tag)
                 tag->outer_ack,
                 tag->url,
                 tag->user_agent,
-                tag->referer) ;
+                tag->referer,
+                tag->wechat_key,
+                tag->wechat_uin) ;
         pthread_mutex_unlock(&naga_log_mutex);
     }
 }
