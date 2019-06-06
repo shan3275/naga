@@ -115,9 +115,10 @@ unsigned short int udp_csum (struct raw_ipheader iphdr, struct raw_udpheader udp
 
     return ip_csum ((unsigned short int *) buf, chksumlen);
 }
-
-extern uint32_t rpush_ip;
-extern uint16_t rpush_port;
+extern uint8_t  rpush_sip_conf_enable;  // if 1,use configured sip; if 0, use packet sip;
+extern uint32_t rpush_sip; //sip ip 
+extern uint32_t rpush_ip; //dest ip
+extern uint16_t rpush_port; //dest port
 extern int      ads_mac_enable[2];
 extern uint8_t  ads_mac[2][6];
 
@@ -147,7 +148,14 @@ berr raw_udp_content_generator(void *buffer, char * payload, int *len, hytag_t *
     ip->iph_ttl = 64; // time to live
     ip->iph_protocol = 17; // UDP
     // Source IP address, can use spoofed address here!!!
-    ip->iph_sourceip = htonl(hytag->outer_srcip4);
+    if (rpush_sip_conf_enable == 1 && rpush_sip > 0)
+    {
+        ip->iph_sourceip = htonl(rpush_sip); 
+    }
+    else
+    {
+        ip->iph_sourceip = htonl(hytag->outer_srcip4);        
+    }
     // The destination IP address
     ip->iph_destip = htonl(rpush_ip);
 

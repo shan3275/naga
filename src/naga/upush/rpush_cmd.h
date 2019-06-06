@@ -9,6 +9,7 @@
 **************************************************************/
 #ifndef __UPUSH_CMD_H
 #define __UPUSH_CMD_H
+
 void rpush_cmd_config_write(struct vty *vty);
 void cmdline_rpush_init(void);
 #endif

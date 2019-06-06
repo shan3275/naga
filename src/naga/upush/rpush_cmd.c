@@ -69,19 +69,26 @@ DEFUN(show_rpush,
         RPUSH_EXPR)
 {
     berr rv;
-    uint32_t ip   = 0;
-    uint16_t port = 0;
-    rv = rpush_rule_get(&ip, &port);
+    uint32_t sip  = 0;
+    uint8_t  sip_eanble = 0;
+    uint32_t dip   = 0;
+    uint16_t dport = 0;
+    rv = rpush_rule_get(&sip, &sip_eanble, &dip, &dport);
     if(rv != E_SUCCESS)
     {
         vty_out(vty, "Failed To Get rpush rule %s", VTY_NEWLINE);
         return 0;
     }
-    vty_out(vty, "Raw Udp Push Server: %d.%d.%d.%d:%d%s", (ip >> 24) & 0xff,
-                                           (ip >> 16) & 0xff,
-                                           (ip >> 8 ) & 0xff,
-                                           (ip >> 0 ) & 0xff,
-                                           port,VTY_NEWLINE);
+    vty_out(vty, "Raw Udp Push Source: %d.%d.%d.%d(%s)%s", (sip >> 24) & 0xff,
+                                           (sip >> 16) & 0xff,
+                                           (sip >> 8 ) & 0xff,
+                                           (sip >> 0 ) & 0xff,
+                                           sip_eanble?"enable":"disable",VTY_NEWLINE);
+    vty_out(vty, "Raw Udp Push Server: %d.%d.%d.%d:%d%s", (dip >> 24) & 0xff,
+                                           (dip >> 16) & 0xff,
+                                           (dip >> 8 ) & 0xff,
+                                           (dip >> 0 ) & 0xff,
+                                           dport,VTY_NEWLINE);
     return 0;
 }
 
@@ -112,21 +119,57 @@ DEFUN(rpush_test,
 void rpush_cmd_config_write(struct vty *vty)
 {
     berr rv;
-    uint32_t ip   = 0;
-    uint16_t port = 0;
-    rv = rpush_rule_get(&ip, &port);
+    uint32_t sip  = 0;
+    uint8_t  sip_eanble = 0;
+    uint32_t dip   = 0;
+    uint16_t dport = 0;
+    rv = rpush_rule_get(&sip, &sip_eanble, &dip, &dport);
     if(rv != E_SUCCESS)
     {
         vty_out(vty, "Failed To Get rpush rule %s", VTY_NEWLINE);
-        return ;
+        return;
     }
-    vty_out(vty, "rpush add %d.%d.%d.%d %d%s", (ip >> 24) & 0xff,
-                                               (ip >> 16) & 0xff,
-                                               (ip >> 8 ) & 0xff,
-                                               (ip >> 0 ) & 0xff,
-                                               port,VTY_NEWLINE);
+    vty_out(vty, "rpush sip %s%s", sip_eanble?"enable":"disable",VTY_NEWLINE);
+    vty_out(vty, "rpush sip set %d.%d.%d.%d%s",    (sip >> 24) & 0xff,
+                                               (sip >> 16) & 0xff,
+                                               (sip >> 8 ) & 0xff,
+                                               (sip >> 0 ) & 0xff,
+                                                VTY_NEWLINE);
+    vty_out(vty, "rpush add %d.%d.%d.%d %d%s", (dip >> 24) & 0xff,
+                                               (dip >> 16) & 0xff,
+                                               (dip >> 8 ) & 0xff,
+                                               (dip >> 0 ) & 0xff,
+                                               dport,VTY_NEWLINE);
 }
 
+DEFUN(rpush_sip_enable,
+      rpush_sip_enable_cmd,
+      "rpush sip (enable|disable)",
+      RPUSH_EXPR
+      "source ip\n"
+      "En or Disable operation\n" 
+      )
+{
+    return rpush_sip_enable_set(argv[0]);
+}
+
+DEFUN(rpush_sip_add,
+      rpush_sip_add_cmd,
+      "rpush sip set A.B.C.D",
+      RPUSH_EXPR
+      "source ip\n"
+      "set\n"
+      RPUSH_SERVER_EXPR)
+{
+    berr rv;
+    rv =  rpush_rule_sip_add(argv[0]);
+    if(rv != E_SUCCESS)
+    {
+        vty_out(vty, "Failed To add rpush sip rule %s", VTY_NEWLINE);
+        return 0;
+    }
+    return 0;
+}
 
 void cmdline_rpush_init(void)
 {
@@ -134,5 +177,8 @@ void cmdline_rpush_init(void)
     install_element(CMD_NODE, &rpush_del_cmd);
     install_element(CMD_NODE, &rpush_test_cmd);
     install_element(CMD_NODE, &show_rpush_cmd);
+    install_element(CMD_NODE, &rpush_sip_enable_cmd);
+    install_element(CMD_NODE, &rpush_sip_add_cmd);
+
     return ;
 }
