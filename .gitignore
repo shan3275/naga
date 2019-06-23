@@ -5,3 +5,10 @@ _postbuild
 _postinstall
 _preinstall
 naga_version.h
+_postclean
+*.cmd
+*.d
+*.a
+build
+*.swp
+dpdk-stable-18.11.2
