@@ -1,0 +1,7 @@
+_install
+*.o
+*.map
+_postbuild
+_postinstall
+_preinstall
+naga_version.h
