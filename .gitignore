@@ -12,3 +12,4 @@ _postclean
 build
 *.swp
 dpdk-stable-18.11.2
+dpdk
