@@ -14,3 +14,11 @@ build
 dpdk-stable-18.11.2
 dpdk
 src/main/naga
+src/http_parser/http-parser
+src/http_parser/http-parser-2.7.1
+src/libevent/libevent
+src/libevent/libevent-2.1.8-stable
+src/libzmq/zeromq
+src/libzmq/zeromq-4.1.3
+src/pcre-m/pcre
+src/pcre-m/pcre-8.13
