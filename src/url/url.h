@@ -1,10 +1,7 @@
-#ifndef __URL_H_
-#define __URL_H_
+#ifndef __PCRE_S__
+#define __PCRE_S__
 
 #include "pcre.h"
-
-#define MAX_URL_RULE   256
-
 
 struct pcre_s
 {
@@ -16,7 +13,12 @@ struct pcre_s
     naga_acl_t acl;
 };
 
+#endif /* end of __PCRE_S__ */
 
+#ifndef __URL_H_
+#define __URL_H_
+
+#define MAX_URL_RULE   256
 typedef struct
 {
     uint32_t inuse;
@@ -34,6 +36,5 @@ berr ref_url_rule_del(uint32_t id);
 
 struct pcre_s * ori_url_rule_get(uint32_t id);
 struct pcre_s * ref_url_rule_get(uint32_t id);
-
 
 #endif

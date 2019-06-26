@@ -39,6 +39,8 @@ typedef enum {
     MOD_MAX
 } bmod;
 
+int mod_is_enable(bmod mod);
+
 typedef struct {
     bmod  mod;      /* Module ID*/
     bswt  enable;      /* Turn on/off this module */

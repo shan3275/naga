@@ -244,6 +244,7 @@ typedef struct
     uint32_t hijack_rule_id;
 
     struct pbuf pbuf;
+    struct rte_mbuf *m;
     uint16_t match;   /* 0 for not match, 1 for vsr match, 2 for other match  */
 
     /* ad template select */

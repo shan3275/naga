@@ -82,11 +82,11 @@ void urlr_dp_init(void)
 	rv = urlr_init(MAX_URL_RULE_NUM);
 	if (E_SUCCESS != rv)
 	{
-		printf("Domain rule init FAIL!\n");
+		printf("URLR rule init FAIL!\n");
 	}
 	else
 	{
-		printf("Domain rule init success!\n");
+		printf("URLR rule init success!\n");
 	}
 	return;
 }

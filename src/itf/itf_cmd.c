@@ -405,6 +405,7 @@ void itf_cmd_config_write(struct vty *vty)
         }
     }
 
+    /*
     int worker_thread_num = itf_worker_thread_num_get();
     vty_out(vty, "interface work-thread add %d%s", worker_thread_num, VTY_NEWLINE);
 
@@ -416,6 +417,7 @@ extern struct list_head	handle_head;
 		handle = (libpcap_handler_t *)list_entry(pos, libpcap_handler_t, node);
 		vty_out(vty, "interface bussiness add %s%s", handle->ifname, VTY_NEWLINE);			
 	}
+    */
 
     char ifname[16]={0};
     rv = itf_raw_socket_get_if_name(ifname);
@@ -437,14 +439,14 @@ extern struct list_head	handle_head;
  * */
 void cmdline_itf_init(void)
 {
-    install_element(CMD_NODE, &itf_rxtx_cmd);
+    //install_element(CMD_NODE, &itf_rxtx_cmd);
     install_element(CMD_NODE, &itf_injection_cmd);
-    install_element(CMD_NODE, &itf_work_thread_cmd);
+    //install_element(CMD_NODE, &itf_work_thread_cmd);
     install_element(CMD_NODE, &itf_show_stat_cmd);
     install_element(CMD_NODE, &itf_set_cmd);
     install_element(CMD_NODE, &interface_set_cmd);
     install_element(CMD_NODE, &interface_show_stat_cmd);
-    install_element(CMD_NODE, &interface_show_work_thread_cmd);
+    //install_element(CMD_NODE, &interface_show_work_thread_cmd);
 
     return ;
 }

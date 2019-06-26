@@ -40,7 +40,12 @@
 #include <rte_mbuf.h>
 
 #include "main_l2fwd.h"
-
+#include "main_init.h"
+#include "boots.h"
+#include "bts_debug.h"
+#include "bts_cnt.h"
+#include "naga_types.h"
+#include "main_data.h"
 
 static volatile bool force_quit;
 
@@ -98,6 +103,7 @@ struct l2fwd_port_statistics {
 	uint64_t tx;
 	uint64_t rx;
 	uint64_t dropped;
+	uint64_t fail;
 } __rte_cache_aligned;
 struct l2fwd_port_statistics port_statistics[RTE_MAX_ETHPORTS];
 
@@ -105,103 +111,31 @@ struct l2fwd_port_statistics port_statistics[RTE_MAX_ETHPORTS];
 /* A tsc-based timer responsible for triggering statistics printout */
 static uint64_t timer_period = 10; /* default period is 10 seconds */
 
-/* Print out statistics on packets dropped */
-static void
-print_stats(void)
+static berr naga_data_process_flow(struct rte_mbuf *m)
 {
-	uint64_t total_packets_dropped, total_packets_tx, total_packets_rx;
-	unsigned portid;
+    hytag_t hytag;
+    memset(&hytag, 0x0, sizeof(hytag));
+  
+    hytag.pbuf.ptr = rte_pktmbuf_mtod(m, void *);
+    hytag.pbuf.len = m->data_len;
+    hytag.pbuf.ptr_offset = 0;
+    hytag.m = m;
 
-	total_packets_dropped = 0;
-	total_packets_tx = 0;
-	total_packets_rx = 0;
-
-	const char clr[] = { 27, '[', '2', 'J', '\0' };
-	const char topLeft[] = { 27, '[', '1', ';', '1', 'H','\0' };
-
-		/* Clear screen and move to top left */
-	printf("%s%s", clr, topLeft);
-
-	printf("\nPort statistics ====================================");
-
-	for (portid = 0; portid < RTE_MAX_ETHPORTS; portid++) {
-		/* skip disabled ports */
-		if ((l2fwd_enabled_port_mask & (1 << portid)) == 0)
-			continue;
-		printf("\nStatistics for port %u ------------------------------"
-			   "\nPackets sent: %24"PRIu64
-			   "\nPackets received: %20"PRIu64
-			   "\nPackets dropped: %21"PRIu64,
-			   portid,
-			   port_statistics[portid].tx,
-			   port_statistics[portid].rx,
-			   port_statistics[portid].dropped);
-
-		total_packets_dropped += port_statistics[portid].dropped;
-		total_packets_tx += port_statistics[portid].tx;
-		total_packets_rx += port_statistics[portid].rx;
-	}
-	printf("\nAggregate statistics ==============================="
-		   "\nTotal packets sent: %18"PRIu64
-		   "\nTotal packets received: %14"PRIu64
-		   "\nTotal packets dropped: %15"PRIu64,
-		   total_packets_tx,
-		   total_packets_rx,
-		   total_packets_dropped);
-	printf("\n====================================================\n");
-}
-
-static void
-l2fwd_mac_updating(struct rte_mbuf *m, unsigned dest_portid)
-{
-	struct ether_hdr *eth;
-	void *tmp;
-
-	eth = rte_pktmbuf_mtod(m, struct ether_hdr *);
-
-	/* 02:00:00:00:00:xx */
-	tmp = &eth->d_addr.addr_bytes[0];
-	*((uint64_t *)tmp) = 0x000000000002 + ((uint64_t)dest_portid << 40);
-
-	/* src addr */
-	ether_addr_copy(&l2fwd_ports_eth_addr[dest_portid], &eth->s_addr);
-}
-
-static void
-l2fwd_simple_forward(struct rte_mbuf *m, unsigned portid)
-{
-	unsigned dst_port;
-	int sent;
-	struct rte_eth_dev_tx_buffer *buffer;
-
-	dst_port = l2fwd_dst_ports[portid];
-
-	if (mac_updating)
-		l2fwd_mac_updating(m, dst_port);
-
-	buffer = tx_buffer[dst_port];
-	sent = rte_eth_tx_buffer(dst_port, 0, buffer, m);
-	if (sent)
-		port_statistics[dst_port].tx += sent;
+    return naga_data_process_module(&hytag);
 }
 
 /* main processing loop */
+typedef berr (*rx_process_func)(struct rte_mbuf *m);
 static void
-l2fwd_main_loop(void)
+naga_data_main_loop(rx_process_func process_func)
 {
 	struct rte_mbuf *pkts_burst[MAX_PKT_BURST];
 	struct rte_mbuf *m;
-	int sent;
 	unsigned lcore_id;
-	uint64_t prev_tsc, diff_tsc, cur_tsc, timer_tsc;
 	unsigned i, j, portid, nb_rx;
 	struct lcore_queue_conf *qconf;
-	const uint64_t drain_tsc = (rte_get_tsc_hz() + US_PER_S - 1) / US_PER_S *
-			BURST_TX_DRAIN_US;
-	struct rte_eth_dev_tx_buffer *buffer;
 
-	prev_tsc = 0;
-	timer_tsc = 0;
+	berr ec = E_SUCCESS;
 
 	lcore_id = rte_lcore_id();
 	qconf = &lcore_queue_conf[lcore_id];
@@ -218,66 +152,39 @@ l2fwd_main_loop(void)
 		portid = qconf->rx_port_list[i];
 		RTE_LOG(INFO, L2FWD, " -- lcoreid=%u portid=%u\n", lcore_id,
 			portid);
-
 	}
 
-	while (!force_quit) {
-
-		cur_tsc = rte_rdtsc();
-
-		/*
-		 * TX burst queue drain
-		 */
-		diff_tsc = cur_tsc - prev_tsc;
-		if (unlikely(diff_tsc > drain_tsc)) {
-
-			for (i = 0; i < qconf->n_rx_port; i++) {
-
-				portid = l2fwd_dst_ports[qconf->rx_port_list[i]];
-				buffer = tx_buffer[portid];
-
-				sent = rte_eth_tx_buffer_flush(portid, 0, buffer);
-				if (sent)
-					port_statistics[portid].tx += sent;
-
-			}
-
-			/* if timer is enabled */
-			if (timer_period > 0) {
-
-				/* advance the timer */
-				timer_tsc += diff_tsc;
-
-				/* if timer has reached its timeout */
-				if (unlikely(timer_tsc >= timer_period)) {
-
-					/* do this only on master core */
-					if (lcore_id == rte_get_master_lcore()) {
-						print_stats();
-						/* reset the timer */
-						timer_tsc = 0;
-					}
-				}
-			}
-
-			prev_tsc = cur_tsc;
-		}
+	while (1) {
 
 		/*
 		 * Read packet from RX queues
 		 */
-		for (i = 0; i < qconf->n_rx_port; i++) {
-
+		for (i = 0; i < qconf->n_rx_port; i++) 
+		{
 			portid = qconf->rx_port_list[i];
 			nb_rx = rte_eth_rx_burst(portid, 0,
 						 pkts_burst, MAX_PKT_BURST);
 
 			port_statistics[portid].rx += nb_rx;
 
-			for (j = 0; j < nb_rx; j++) {
+			for (j = 0; j < nb_rx; j++) 
+			{
 				m = pkts_burst[j];
 				rte_prefetch0(rte_pktmbuf_mtod(m, void *));
-				l2fwd_simple_forward(m, portid);
+				printf("core(%d) received packet from port(%u)\n", lcore_id, portid);
+
+				cnt_inc(ITF_IPKTS);
+	            cnt_add(ITF_IBYTS, m->data_len);
+/*
+	            ec = process_func(m);
+	            if(ec != E_SUCCESS) {
+	                port_statistics[portid].fail += 1;
+	                DBG_WARN(MOD_ITF, "Packet process fail:%s!\n", berr_msg(ec));
+	            }
+	   */
+
+	            rte_pktmbuf_free(m);
+
 			}
 		}
 	}
@@ -286,7 +193,17 @@ l2fwd_main_loop(void)
 static int
 l2fwd_launch_one_lcore(__attribute__((unused)) void *dummy)
 {
-	l2fwd_main_loop();
+	printf("core(%d)\n", rte_lcore_id());
+    if (rte_lcore_id() == 0 )
+    {
+    	main_init();
+    }
+    else
+    {	
+    	sleep(5);
+        naga_data_main_loop(naga_data_process_flow);
+    }
+
 	return 0;
 }
 
@@ -453,7 +370,7 @@ check_all_ports_link_status(uint32_t port_mask)
 	uint8_t count, all_ports_up, print_flag = 0;
 	struct rte_eth_link link;
 
-	printf("\nChecking link status");
+	printf("\ncore(%d) Checking link status",rte_lcore_id());
 	fflush(stdout);
 	for (count = 0; count <= MAX_CHECK_TIME; count++) {
 		if (force_quit)
@@ -470,12 +387,12 @@ check_all_ports_link_status(uint32_t port_mask)
 			if (print_flag == 1) {
 				if (link.link_status)
 					printf(
-					"Port%d Link Up. Speed %u Mbps - %s\n",
-						portid, link.link_speed,
+					"core(%d) Port%d Link Up. Speed %u Mbps - %s\n",
+						rte_lcore_id(),portid, link.link_speed,
 				(link.link_duplex == ETH_LINK_FULL_DUPLEX) ?
 					("full-duplex") : ("half-duplex\n"));
 				else
-					printf("Port %d Link Down\n", portid);
+					printf("core(%d) Port %d Link Down\n", rte_lcore_id(), portid);
 				continue;
 			}
 			/* clear all_ports_up flag if any link down */
@@ -540,14 +457,20 @@ int main_l2fwd(int argc, char **argv)
 	if (ret < 0)
 		rte_exit(EXIT_FAILURE, "Invalid L2FWD arguments\n");
 
-	printf("MAC updating %s\n", mac_updating ? "enabled" : "disabled");
+	printf("core(%d) MAC updating %s\n",rte_lcore_id(), mac_updating ? "enabled" : "disabled");
 
 	/* convert to number of cycles */
 	timer_period *= rte_get_timer_hz();
 
 	nb_ports = rte_eth_dev_count_avail();
 	if (nb_ports == 0)
+	{
 		rte_exit(EXIT_FAILURE, "No Ethernet ports - bye\n");
+	}
+	else
+	{
+		printf("core(%d) nb_ports:%d\n", rte_lcore_id(), nb_ports);
+	}
 
 	/* check port mask to possible port mask */
 	if (l2fwd_enabled_port_mask & ~((1 << nb_ports) - 1))
@@ -562,7 +485,8 @@ int main_l2fwd(int argc, char **argv)
 	/*
 	 * Each logical core is assigned a dedicated TX queue on each port.
 	 */
-	RTE_ETH_FOREACH_DEV(portid) {
+	RTE_ETH_FOREACH_DEV(portid) 
+	{
 		/* skip ports that are not enabled */
 		if ((l2fwd_enabled_port_mask & (1 << portid)) == 0)
 			continue;
@@ -576,13 +500,15 @@ int main_l2fwd(int argc, char **argv)
 
 		nb_ports_in_mask++;
 	}
+
 	if (nb_ports_in_mask % 2) {
 		printf("Notice: odd number of ports in portmask.\n");
 		l2fwd_dst_ports[last_port] = last_port;
 	}
 
-	rx_lcore_id = 0;
+	rx_lcore_id = 1;
 	qconf = NULL;
+	int k ;
 
 	/* Initialize the port/queue configuration of each logical core */
 	RTE_ETH_FOREACH_DEV(portid) {
@@ -590,25 +516,33 @@ int main_l2fwd(int argc, char **argv)
 		if ((l2fwd_enabled_port_mask & (1 << portid)) == 0)
 			continue;
 
-		/* get the lcore_id for this port */
-		while (rte_lcore_is_enabled(rx_lcore_id) == 0 ||
-		       lcore_queue_conf[rx_lcore_id].n_rx_port ==
-		       l2fwd_rx_queue_per_lcore) {
-			rx_lcore_id++;
-			if (rx_lcore_id >= RTE_MAX_LCORE)
-				rte_exit(EXIT_FAILURE, "Not enough cores\n");
+		for(k = rx_lcore_id; k < RTE_MAX_LCORE; k++)
+		{
+			if (rte_lcore_is_enabled(k) == 0)
+			{
+				continue;
+			}
+			qconf = &lcore_queue_conf[k];
+			qconf->rx_port_list[qconf->n_rx_port] = portid;
+			qconf->n_rx_port++;
+			printf("core(%d) Lcore %u: RX port %u\n", rte_lcore_id(), k, portid);
 		}
-
-		if (qconf != &lcore_queue_conf[rx_lcore_id]) {
-			/* Assigned a new logical core in the loop above. */
-			qconf = &lcore_queue_conf[rx_lcore_id];
-			nb_lcores++;
-		}
-
-		qconf->rx_port_list[qconf->n_rx_port] = portid;
-		qconf->n_rx_port++;
-		printf("Lcore %u: RX port %u\n", rx_lcore_id, portid);
+		
 	}
+	#if 1
+	int i,j;
+	for(i = 0; i < RTE_MAX_LCORE; i++)
+	{
+		qconf = &lcore_queue_conf[i];
+		printf("core(%d) i(%03d) n_rx_port %u: RX port:", rte_lcore_id(), i, qconf->n_rx_port);
+
+		for (j = 0; j < MAX_RX_QUEUE_PER_LCORE; j++)
+		{
+			printf(" %u", qconf->rx_port_list[j]);
+		}
+		printf("\n");
+	}
+	#endif
 
 	nb_mbufs = RTE_MAX(nb_ports * (nb_rxd + nb_txd + MAX_PKT_BURST +
 		nb_lcores * MEMPOOL_CACHE_SIZE), 8192U);
@@ -621,7 +555,8 @@ int main_l2fwd(int argc, char **argv)
 		rte_exit(EXIT_FAILURE, "Cannot init mbuf pool\n");
 
 	/* Initialise each port */
-	RTE_ETH_FOREACH_DEV(portid) {
+	RTE_ETH_FOREACH_DEV(portid) 
+	{
 		struct rte_eth_rxconf rxq_conf;
 		struct rte_eth_txconf txq_conf;
 		struct rte_eth_conf local_port_conf = port_conf;
@@ -635,7 +570,7 @@ int main_l2fwd(int argc, char **argv)
 		nb_ports_available++;
 
 		/* init port */
-		printf("Initializing port %u... ", portid);
+		printf("core(%d) Initializing port %u... ", rte_lcore_id(),portid);
 		fflush(stdout);
 		rte_eth_dev_info_get(portid, &dev_info);
 		if (dev_info.tx_offload_capa & DEV_TX_OFFLOAD_MBUF_FAST_FREE)
@@ -706,8 +641,8 @@ int main_l2fwd(int argc, char **argv)
 
 		rte_eth_promiscuous_enable(portid);
 
-		printf("Port %u, MAC address: %02X:%02X:%02X:%02X:%02X:%02X\n\n",
-				portid,
+		printf("core(%d) Port %u, MAC address: %02X:%02X:%02X:%02X:%02X:%02X\n\n",
+				rte_lcore_id(),portid,
 				l2fwd_ports_eth_addr[portid].addr_bytes[0],
 				l2fwd_ports_eth_addr[portid].addr_bytes[1],
 				l2fwd_ports_eth_addr[portid].addr_bytes[2],
