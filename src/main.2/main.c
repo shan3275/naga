@@ -40,12 +40,12 @@
 #include <errno.h>
 #include <getopt.h>
 
-#include "main_l3fwd.h"
+#include "main_l2fwd.h"
 
 int
 main(int argc, char **argv)
 {
-    main_l3fwd(argc, argv);
+    main_l2fwd(argc, argv);
     return 0;
 }
 

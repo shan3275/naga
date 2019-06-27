@@ -5,7 +5,7 @@
 APP = naga
 
 # all source are stored in SRCS-y
-SRCS-y := naga_acl.c naga_fct.c main_data.c main_init.c main_l2fwd.c main.c
+SRCS-y := naga_acl.c naga_fct.c main_data.c main_init.c main_l3fwd.c l3fwd_lpm.c main.c
 
 
 ifeq ($(RTE_SDK),)
