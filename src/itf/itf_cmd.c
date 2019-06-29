@@ -84,8 +84,6 @@ DEFUN(itf_rxtx,
         hytag.pbuf.ptr_offset = 0;
         //hytag.m = NULL;
 
-
-
         naga_data_process_module(&hytag);
         vty_out(vty, "Success to test %s", VTY_NEWLINE);
         return;
@@ -427,11 +425,6 @@ extern struct list_head	handle_head;
     }
 
 }
-
-
-
-
-
 
 /*
  * vsr module cmdline register and init 

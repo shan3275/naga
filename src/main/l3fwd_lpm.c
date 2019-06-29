@@ -95,6 +95,8 @@ static berr naga_data_process_flow(struct rte_mbuf *m)
     return naga_data_process_module(&hytag);
 }
 
+extern struct l3fwd_core_statistics core_statistics[RTE_MAX_LCORE];
+
 /* main processing loop */
 typedef berr (*rx_process_func)(struct rte_mbuf *m);
 /* main processing loop */
@@ -141,20 +143,30 @@ naga_data_main_loop(rx_process_func process_func)
 				MAX_PKT_BURST);
 			if (nb_rx == 0)
 				continue;
-			RTE_LOG(INFO, L3FWD, "lcore %u recv %u packet, port_id %u queue_id %u\n", 
-				lcore_id, nb_rx, portid, queueid);
+			if (portid % 2)
+			{
+				cnt_add(ITF1_IPKTS, nb_rx);
+			}
+			else
+			{
+				cnt_add(ITF0_IPKTS, nb_rx);				
+			}
+			core_statistics[lcore_id].rx += nb_rx;
+			//RTE_LOG(INFO, L3FWD, "lcore %u recv %u packet, port_id %u queue_id %u\n", lcore_id, nb_rx, portid, queueid);
 
 			for (j = 0; j < nb_rx; j++) 
 			{
 				m = pkts_burst[j];
 				rte_prefetch0(rte_pktmbuf_mtod(m, void *));
-				#if 1
+
+				cnt_inc(ITF_IPKTS);
+	            cnt_add(ITF_IBYTS, m->data_len);
+				
 	            ec = process_func(m);
 	            if(ec != E_SUCCESS) {
-	                //port_statistics[portid].fail += 1;
+	                core_statistics[lcore_id].fail += 1;
 	                DBG_WARN(MOD_ITF, "Packet process fail:%s!\n", berr_msg(ec));
 	            }
-	            #endif
 	   
 	            rte_pktmbuf_free(m);
 			}
@@ -167,7 +179,6 @@ naga_data_main_loop(rx_process_func process_func)
 int
 l3fwd_launch_one_lcore(__attribute__((unused)) void *dummy)
 {
-	printf("core(%d)\n", rte_lcore_id());
     if (rte_lcore_id() == 0 )
     {
     	main_init();

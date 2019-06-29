@@ -86,7 +86,20 @@ extern xmm_t val_eth[RTE_MAX_ETHPORTS];
 
 extern struct lcore_conf lcore_conf[RTE_MAX_LCORE];
 
+/* Per-port statistics struct */
+struct l3fwd_port_statistics {
+	uint64_t tx;
+	uint64_t rx;
+	uint64_t dropped;
+	uint64_t fail;
+} __rte_cache_aligned;
 
+struct l3fwd_core_statistics {
+	uint64_t tx;
+	uint64_t rx;
+	uint64_t dropped;
+	uint64_t fail;
+} __rte_cache_aligned;
 
 /* Function pointers for LPM or EM functionality. */
 void

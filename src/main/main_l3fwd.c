@@ -64,7 +64,7 @@ static uint16_t nb_rxd = RTE_TEST_RX_DESC_DEFAULT;
 static uint16_t nb_txd = RTE_TEST_TX_DESC_DEFAULT;
 
 /**< Ports set in promiscuous mode off by default. */
-static int promiscuous_on;
+static int promiscuous_on = 1;
 
 /* Select Longest-Prefix or Exact match. */
 static int l3fwd_lpm_on;
@@ -73,6 +73,9 @@ static int l3fwd_em_on;
 static int numa_on = 1; /**< NUMA is enabled by default. */
 static int parse_ptype; /**< Parse packet type using rx callback, and */
 			/**< disabled by default */
+
+/* Per-port statistics struct */
+struct l3fwd_core_statistics core_statistics[RTE_MAX_LCORE];
 
 /* Global variables. */
 
@@ -947,6 +950,7 @@ main_l3fwd(int argc, char **argv)
 				"rte_eth_rx_queue_setup: err=%d, port=%d\n",
 				ret, portid);
 		}
+		memset(&core_statistics, 0, sizeof(core_statistics));
 	}
 
 	printf("\n");
