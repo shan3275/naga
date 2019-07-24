@@ -44,6 +44,7 @@
 #include "mask_cmd.h"
 #include "upush_cmd.h"
 #include "core_cmd.h"
+#include "bts_cnt.h"
 
 /* Zebra instance */
 struct zebra_t zebrad =
@@ -189,6 +190,13 @@ int bts_stat_log_file_timer(struct thread *t)
 	thread_add_timer(zebrad.master, bts_stat_log_file_timer, NULL, 60);
 }
 
+/* update naga pkt rate, refer bts_cnt.c */
+int bts_pkts_rate_timer(struct thread *t)
+{
+    pkt_rate_update();
+    thread_add_timer(zebrad.master, bts_pkts_rate_timer, NULL, 10);
+}
+
 int vty_port = ZEBRA_VTY_PORT;
 /* cmdline  startup routine. */
 //int cmdline (int argc, char **argv)
@@ -275,7 +283,8 @@ int cmdline (int argc, char **argv)
     fflush(0);
     /* add by Samliu*/
     //thread_add_timer(zebrad.master, update_log_file_timer, NULL, 5);
-    thread_add_timer(zebrad.master, bts_stat_log_file_timer, NULL, 8);
+    //thread_add_timer(zebrad.master, bts_stat_log_file_timer, NULL, 8);
+    thread_add_timer(zebrad.master, bts_pkts_rate_timer, NULL, 10);
 
     while (thread_fetch (zebrad.master, &thread))
         thread_call (&thread);

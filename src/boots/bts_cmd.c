@@ -107,6 +107,21 @@ DEFUN(show_stat,
 		return cmd_show_stat(vty, NULL);
 }
 
+DEFUN(show_rate,
+		show_rate_cmd,
+		"show rate",
+		SHOW_STR
+		"Rate\n"
+)
+{
+	rate_t *rate = NULL;
+	pkt_rate_get(&rate);
+	vty_out(vty, "IF : %lld KPkts/s%s", (ULL) rate->pkts_rate/1024, VTY_NEWLINE);
+	vty_out(vty, "IF : %lld MBits/s%s", (ULL) rate->bps_rate/1024/1024,  VTY_NEWLINE);
+
+	return CMD_SUCCESS;
+}
+
 static int cmd_config_stat_log_file(struct vty *vty, const char *str) {
 	memset(stat_log_file_name, 0, sizeof(stat_log_file_name));
 	sprintf(stat_log_file_name, "%s", str);
@@ -363,6 +378,8 @@ void cmdline_bts_init(void) {
 
 	install_element(CMD_NODE, &debug_option_cmd);
 	install_element(CMD_NODE, &show_debug_option_cmd);
+
+	install_element(CMD_NODE, &show_rate_cmd);
 
 	return;
 }

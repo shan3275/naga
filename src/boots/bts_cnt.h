@@ -71,6 +71,13 @@ typedef struct {
       bts_atomic64_t val;
 } cnt_t;
 
+typedef struct {
+	uint64_t pkts_before;
+	uint64_t bytes_before;
+	uint64_t pkts_rate;
+	uint64_t bps_rate;
+}rate_t;
+
 //extern cnt_t cnt_array[CNT_MAX];
 //extern dopt_t dopt_array[DOPT_MAX];
 extern cnt_t cnt_array[CNT_MAX];
@@ -91,8 +98,8 @@ berr cnt_dec(cnte idx);
 berr cnt_get(cnte idx, uint32_t number, cnt_t *vals, uint32_t *total);
 berr cnt_clear(cnte idx, uint32_t number, uint32_t *total);
 berr cnt_int(void);
-
-
+void pkt_rate_update(void);
+berr pkt_rate_get(rate_t **rate);
 
 
 #endif

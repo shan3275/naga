@@ -60,6 +60,8 @@ cnt_t cnt_array[CNT_MAX] =
 #endif
 };
 
+rate_t pkts_rate= {0};
+
 berr cnt_add(cnte idx, uint64_t value)
 {
     if (idx >= CNT_MAX) 
@@ -158,6 +160,39 @@ berr cnt_int()
         CNT_SET(i, 0);
     }
 
+    BRET(E_SUCCESS);
+}
+
+void pkt_rate_update(void)
+{
+    uint64_t pkts_now,  pkts_before;
+    uint64_t bytes_now, bytes_before;
+
+    pkts_now  = CNT_GET(ITF_IPKTS);
+    bytes_now = CNT_GET(ITF_IBYTS);
+
+    pkts_before  = pkts_rate.pkts_before;
+    bytes_before = pkts_rate.bytes_before;
+
+    if (pkts_now <= pkts_before || bytes_now <= bytes_before)
+    {
+
+        pkts_rate.pkts_rate    = 0;
+        pkts_rate.bps_rate     = 0; 
+    }
+    else
+    {
+        pkts_rate.pkts_rate    = (pkts_now - pkts_before)/10;
+        pkts_rate.bps_rate     = (bytes_now- bytes_before)*8/10; 
+    }
+
+    pkts_rate.pkts_before  = pkts_now;
+    pkts_rate.bytes_before = bytes_now;
+}
+
+berr pkt_rate_get(rate_t **rate)
+{
+    *rate = &pkts_rate;
     BRET(E_SUCCESS);
 }
 
