@@ -228,7 +228,7 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
                 //printf("iCloud-DSID(%d): %s\n", hytag->icloud_dsid_len, hytag->icloud_dsid);
                 continue;
             }
-
+#if 0
             if (hytag->wechat_key_len == 0 && !strncmp(STRING_HTTP_WECHAT_KEY, begin, STRING_HTTP_WECHAT_KEY_LEN))
             {
                 if( len > MAX_WECHAT_KEY_LEN )
@@ -252,6 +252,7 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
                 //printf("x-wechat-uin(%d): %s\n", hytag->wechat_uin_len, hytag->wechat_uin);
                 continue;
             }
+#endif
 		}
 	}
 

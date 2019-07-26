@@ -93,6 +93,158 @@ berr url_rule_del(url_t *url_r, uint32_t id)
     return E_SUCCESS;
 }
 
+#define STRING_HTTP_WB_I         "i="
+#define STRING_HTTP_WB_I_LEN     2
+#define STRING_HTTP_WB_S         "s="
+#define STRING_HTTP_WB_S_LEN     2
+#define STRING_HTTP_WB_UA        "ua="
+#define STRING_HTTP_WB_UA_LEN    3
+#define STRING_HTTP_WB_AID       "aid="
+#define STRING_HTTP_WB_AID_LEN   4
+#define STRING_HTTP_WB_GSID      "gsid="
+#define STRING_HTTP_WB_GSID_LEN  5
+#define STRING_HTTP_WB_UID       "uid="
+#define STRING_HTTP_WB_UID_LEN   4
+#define STRING_HTTP_WB_FROM      "from="
+#define STRING_HTTP_WB_FROM_LEN  5
+
+static berr pick_wb_info_from_url(hytag_t *hytag)
+{
+    char *token;
+    char *p; 
+    int len = 0;
+    uint8_t flag = 0;
+    if(hytag->uri[0] != '/'  || hytag->uri_len <= 0)
+    {
+        return E_MATCH;
+    }
+    token=hytag->uri;
+    strsep(&token, "?");
+    while(token!=NULL)
+    {
+        p = strsep(&token, "&");
+        len = strlen(p);
+        //printf("%s, len:%lu\n",p, strlen(p));
+        if (hytag->wb_i_len == 0 && !strncmp(STRING_HTTP_WB_I, p, STRING_HTTP_WB_I_LEN))
+        {
+            if (len <= STRING_HTTP_WB_I_LEN+1 )
+            {
+                continue;
+            }
+            flag = flag | 1;
+            if( len > MAX_WB_I_LEN )
+            {   
+                len = MAX_WB_I_LEN;
+            }
+            memcpy(hytag->wb_i, p, len) ; 
+            hytag->wb_i_len = len; 
+            continue;
+        }
+
+        if (hytag->wb_s_len == 0 && !strncmp(STRING_HTTP_WB_S, p, STRING_HTTP_WB_S_LEN))
+        {
+            if (len <= STRING_HTTP_WB_S_LEN+1 )
+            {
+                continue;
+            }
+            flag = flag | 2;
+            if( len > MAX_WB_S_LEN )
+            {   
+                len = MAX_WB_S_LEN;
+            }
+            memcpy(hytag->wb_s, p, len) ; 
+            hytag->wb_s_len = len; 
+            continue;
+        }
+
+        if (hytag->wb_ua_len == 0 && !strncmp(STRING_HTTP_WB_UA, p, STRING_HTTP_WB_UA_LEN))
+        {
+            if (len <= STRING_HTTP_WB_UA_LEN+1 )
+            {
+                continue;
+            }
+            flag = flag | 4;
+            if( len > MAX_WB_UA_LEN )
+            {   
+                len = MAX_WB_UA_LEN;
+            }
+            memcpy(hytag->wb_ua, p, len) ; 
+            hytag->wb_ua_len = len; 
+            continue;
+        }
+
+        if (hytag->wb_aid_len == 0 && !strncmp(STRING_HTTP_WB_AID, p, STRING_HTTP_WB_AID_LEN))
+        {
+            // aid content must larger 50 bytes
+            if (len < STRING_HTTP_WB_AID_LEN+50 )
+            {
+                continue;
+            }
+            flag = flag | 8;
+            if( len > MAX_WB_AID_LEN )
+            {   
+                len = MAX_WB_AID_LEN;
+            }
+            memcpy(hytag->wb_aid, p, len) ; 
+            hytag->wb_aid_len = len; 
+            continue;
+        }
+
+        if (hytag->wb_gsid_len == 0 && !strncmp(STRING_HTTP_WB_GSID, p, STRING_HTTP_WB_GSID_LEN))
+        {
+            if (len <= STRING_HTTP_WB_GSID_LEN+1 )
+            {
+                continue;
+            }
+            flag = flag | 16;
+            if( len > MAX_WB_GSID_LEN )
+            {   
+                len = MAX_WB_GSID_LEN;
+            }
+            memcpy(hytag->wb_gsid, p, len) ; 
+            hytag->wb_gsid_len = len; 
+            continue;
+        }
+
+        if (hytag->wb_uid_len == 0 && !strncmp(STRING_HTTP_WB_UID, p, STRING_HTTP_WB_UID_LEN))
+        {
+            //uid content must be 10 bytes
+            if (len != STRING_HTTP_WB_UID_LEN+10 )
+            {
+                continue;
+            }
+            flag = flag | 32;
+            if( len > MAX_WB_UID_LEN )
+            {   
+                len = MAX_WB_UID_LEN;
+            }
+            memcpy(hytag->wb_uid, p, len) ; 
+            hytag->wb_uid_len = len; 
+            continue;
+        }
+
+        if (hytag->wb_from_len == 0 && !strncmp(STRING_HTTP_WB_FROM, p, STRING_HTTP_WB_FROM_LEN))
+        {
+            if( len > MAX_WB_FROM_LEN )
+            {   
+                len = MAX_WB_FROM_LEN;
+            }
+            memcpy(hytag->wb_from, p, len) ; 
+            hytag->wb_from_len = len; 
+            continue;
+        }
+
+    }
+    if (flag == 0x3f)
+    {
+        return E_SUCCESS;
+    }
+    else
+    {
+        return E_MATCH;
+    }
+
+} 
 
 berr  naga_url(url_t *url_r, hytag_t *hytag, char *url_str, int url_len)
 {
@@ -161,6 +313,22 @@ berr  naga_url(url_t *url_r, hytag_t *hytag, char *url_str, int url_len)
                    {
                        CNT_INC(URL_URLPUSH_OTHER);
                    }
+                }
+
+                //weibo info pick up
+                if ( ACT_IS_VAILD(urlcre->acl.actions, ACT_WBPUSH) )
+                {
+                    if (pick_wb_info_from_url(hytag) == E_SUCCESS)
+                    {
+                         // push statistics
+                        ACL_PUSHED_ASSERT_HIT(urlcre->acl);
+                    }
+                    else
+                    {
+                        // drop statistics
+                        hytag->acl.actions &= 0xFFFFFBFF;
+                        ACL_PRE_NOT_DROP_HIT (urlcre->acl);
+                    }
                 }
 
                 return E_SUCCESS;

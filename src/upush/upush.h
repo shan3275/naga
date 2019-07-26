@@ -21,4 +21,5 @@ berr rpush_rule_sip_add(char *s_str);
 berr upush_send(char *string);
 berr upush_rule_test(void);
 berr upush_content_generator(hytag_t *hytag, char *ptr);
+berr wb_upush_content_generator(hytag_t *hytag, char *ptr);
 #endif /* !__UPUSH_H__ */

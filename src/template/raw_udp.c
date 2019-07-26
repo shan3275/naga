@@ -119,6 +119,8 @@ extern uint8_t  rpush_sip_conf_enable;  // if 1,use configured sip; if 0, use pa
 extern uint32_t rpush_sip; //sip ip 
 extern uint32_t rpush_ip; //dest ip
 extern uint16_t rpush_port; //dest port
+extern uint32_t wbpush_ip; //dest ip
+extern uint16_t wbpush_port; //dest port
 extern int      ads_mac_enable[2];
 extern uint8_t  ads_mac[2][6];
 
@@ -205,6 +207,91 @@ berr raw_udp_content_generator(void *buffer, char * payload, int *len, hytag_t *
     *len = sizeof(struct raw_ether) + sizeof(struct raw_ipheader) + sizeof(struct raw_udpheader) + strlen(payload);
     return E_SUCCESS;
 }
+
+berr wb_raw_udp_content_generator(void *buffer, char * payload, int *len, hytag_t *hytag)
+{
+    struct raw_ether ether;
+    struct raw_ipheader ipheader;
+    struct raw_udpheader udpheader;
+    struct raw_ether *eth = &ether;
+    struct raw_ipheader *ip = &ipheader;
+    struct raw_udpheader *udp = &udpheader;
+
+    if(wbpush_ip == 0 || wbpush_port == 0)
+    {
+        return E_NULL;
+    }
+
+
+    /********************fill ip header****************************/
+    //fill ip header (20 bytes)
+    ip->iplv = 1<<6 | 5;//version v4 or v6 and head_len 5 
+    //ip首部长度以32bit为单位计算
+    ip->iph_tos = 0; // Low delay
+    ip->iph_len = htons(sizeof(struct raw_ipheader) + sizeof(struct raw_udpheader) +strlen(payload));
+    ip->iph_ident = 0;//标示字段 唯一标示一个数据包
+    ip->iph_offset = 0x0040;//16bit include offset and flag
+    ip->iph_ttl = 64; // time to live
+    ip->iph_protocol = 17; // UDP
+    // Source IP address, can use spoofed address here!!!
+    if (rpush_sip_conf_enable == 1 && rpush_sip > 0)
+    {
+        ip->iph_sourceip = htonl(rpush_sip); 
+    }
+    else
+    {
+        ip->iph_sourceip = htonl(hytag->outer_srcip4);        
+    }
+    // The destination IP address
+    ip->iph_destip = htonl(wbpush_ip);
+
+    // Calculate the checksum for integrity
+    //ip->iph_chksum = ip_csum((unsigned short int *)ip, (int)sizeof(struct raw_ipheader));
+    ip->iph_chksum = 0;
+    //ip->iph_chksum = ip_csum((unsigned short int *)ip, (int)sizeof(struct raw_ipheader) + sizeof(struct raw_udpheader) +strlen(payload));
+    ip->iph_chksum = ip_csum((unsigned short int *)ip, (int)sizeof(struct raw_ipheader));
+    /******************end fill ip header**********************/
+    
+    /*****************fill udp header*********************************/
+    //udp header
+    udp->udph_srcport = htons(hytag->outer_srcport);
+    udp->udph_destport = htons(wbpush_port);
+    udp->udph_len = htons(sizeof(struct raw_udpheader)+strlen(payload));
+    udp->udph_chksum = 0;
+    udp->udph_chksum =udp_csum(*ip,*udp,payload,strlen(payload));//options
+    /*******************end fill udp header**************************/
+
+    /********************fill eth header*********************/
+    //  Fill the eth header (14bytes)
+    if(ads_mac_enable[0])
+    {
+        memcpy(eth->dmac, ads_mac[0], 6);
+    }
+    else
+    {
+        return E_NULL;
+    }
+
+    if(ads_mac_enable[1])
+    {
+        memcpy(eth->smac, ads_mac[1], 6);
+    }
+    else
+    {
+        return E_NULL;
+    }
+    eth->eth_typ_len[0] = 0x08;
+    eth->eth_typ_len[1] = 0x00;
+
+    /***********************end fill eth header*****************/
+    memcpy(buffer,eth,sizeof(struct raw_ether));
+    memcpy(buffer   + sizeof(struct raw_ether),ip,sizeof(struct raw_ipheader));
+    memcpy(buffer   + sizeof(struct raw_ether) +  sizeof(struct raw_ipheader),udp,sizeof(struct raw_udpheader) );
+    memcpy(buffer   + sizeof(struct raw_ether) +  sizeof(struct raw_ipheader) + sizeof(struct raw_udpheader),payload,strlen(payload));
+    *len = sizeof(struct raw_ether) + sizeof(struct raw_ipheader) + sizeof(struct raw_udpheader) + strlen(payload);
+    return E_SUCCESS;
+}
+
 void PrintBuffer(void* pBuff, unsigned int nLen)
 {
     int i;
@@ -256,6 +343,36 @@ berr raw_udp_test(void)
     hytag.outer_srcip4  = 0xc0a80105;
 
     rv = raw_udp_content_generator(buff, payload, &len, &hytag);
+    if(rv != E_SUCCESS)
+    {
+        debug("raw_udp_content_generator rv =%d", rv);
+        return rv;
+    }
+    debug("rwa_udp_content_generator success");
+    debug("len:%d\n", len);
+    //PrintBuffer(buff, len);
+    rv = ift_raw_send_packet(buff, len);
+    if(rv != E_SUCCESS)
+    {
+        debug("ift_raw_send_packet rv =%d", rv);
+        return rv;
+    }
+    debug("rv =%d", rv);
+    return E_SUCCESS;
+}
+
+berr wb_raw_udp_test(void)
+{
+    berr rv;
+    char *payload   = "hello,world";
+    char buff[2048] = {0};
+    int len = 0;
+    hytag_t hytag;
+    memset(&hytag,0,sizeof(hytag_t));
+    hytag.outer_srcport = 0x1234;
+    hytag.outer_srcip4  = 0xc0a80105;
+
+    rv = wb_raw_udp_content_generator(buff, payload, &len, &hytag);
     if(rv != E_SUCCESS)
     {
         debug("raw_udp_content_generator rv =%d", rv);

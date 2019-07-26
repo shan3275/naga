@@ -31,6 +31,7 @@ typedef uint32_t ipaddr_t;
 #define ACT_URLPUSH    128
 #define ACT_ADP        256
 #define ACT_UDPPUSH    512
+#define ACT_WBPUSH    1024
 
 #define ACT_IS_VAILD(_val, _act) \
     (((_val) & (_act)) == (_act))
@@ -131,7 +132,7 @@ typedef enum
 }ad_template_em;
 #endif
 
-#define URL_MAX_LEN  1500//URL MAX LEN
+#define URL_MAX_LEN  1500 //URL MAX LEN
 #define MAX_HOST_LEN 128
 #define MAX_ACCOUNT_LEN   64
 #define MAX_USER_AGENT_LEN  256
@@ -149,6 +150,14 @@ typedef enum
 #define URL_PARAM_NUMB_MAX  32
 #define URL_PARAM_KEY_LEN_MAX   64
 #define URL_PARAM_VAL_LEN_MAX   1280
+
+#define MAX_WB_I_LEN    32
+#define MAX_WB_S_LEN    32
+#define MAX_WB_UA_LEN   128
+#define MAX_WB_AID_LEN  128
+#define MAX_WB_GSID_LEN 256
+#define MAX_WB_UID_LEN  32
+#define MAX_WB_FROM_LEN 32  
 
 typedef struct {
     uint32_t  pnumb;
@@ -241,7 +250,7 @@ typedef struct
     char     uri[URL_MAX_LEN+1];	
     uint16_t uri_len;
     char reg[URL_MAX_LEN];
-    uint32_t hijack_rule_id;
+    //uint32_t hijack_rule_id;
 
     struct pbuf pbuf;
     struct rte_mbuf *m;
@@ -255,6 +264,22 @@ typedef struct
     uint16_t data_len;       /* total packet length, used for template */
     uint8_t  pushed_second_assert;
 	uint8_t  snet_hit_id;
+
+    /*weibo info */
+    uint16_t wb_i_len;
+    char wb_i[MAX_WB_I_LEN+1];
+    uint16_t wb_s_len;
+    char wb_s[MAX_WB_S_LEN+1];
+    uint16_t wb_ua_len;
+    char wb_ua[MAX_WB_UA_LEN+1];
+    uint16_t wb_aid_len;
+    char wb_aid[MAX_WB_AID_LEN+1];
+    uint16_t wb_gsid_len;
+    char wb_gsid[MAX_WB_GSID_LEN+1];
+    uint16_t wb_uid_len;
+    char wb_uid[MAX_WB_UID_LEN+1];
+    uint16_t wb_from_len;
+    char wb_from[MAX_WB_FROM_LEN+1];
 }hytag_t;
 
 typedef struct {

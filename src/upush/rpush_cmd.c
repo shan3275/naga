@@ -140,6 +140,18 @@ void rpush_cmd_config_write(struct vty *vty)
                                                (dip >> 8 ) & 0xff,
                                                (dip >> 0 ) & 0xff,
                                                dport,VTY_NEWLINE);
+
+    rv = wbpush_rule_get(&sip, &sip_eanble, &dip, &dport);
+    if(rv != E_SUCCESS)
+    {
+        vty_out(vty, "Failed To Get rpush rule %s", VTY_NEWLINE);
+        return;
+    }
+    vty_out(vty, "wbpush add %d.%d.%d.%d %d%s", (dip >> 24) & 0xff,
+                                               (dip >> 16) & 0xff,
+                                               (dip >> 8 ) & 0xff,
+                                               (dip >> 0 ) & 0xff,
+                                               dport,VTY_NEWLINE);
 }
 
 DEFUN(rpush_sip_enable,
@@ -171,6 +183,94 @@ DEFUN(rpush_sip_add,
     return 0;
 }
 
+
+DEFUN(wbpush_add,
+        wbpush_add_cmd,
+        "wbpush add A.B.C.D <0-65535>",
+        RPUSH_EXPR
+        RPUSH_ADD_EXPR
+        RPUSH_SERVER_EXPR
+        RPUSH_PORT_EXPR)
+{
+    berr rv;
+    rv =  wbpush_rule_add(argv[0], argv[1]);
+    if(rv != E_SUCCESS)
+    {
+        vty_out(vty, "Failed To add rpush rule %s", VTY_NEWLINE);
+        return 0;
+    }
+    return 0;
+}
+
+DEFUN(wbpush_del,
+        wbpush_del_cmd,
+        "wbpush del",
+        RPUSH_EXPR
+        RPUSH_DEL_EXPR)
+{
+    berr rv;
+    rv = wbpush_rule_del();
+    if(rv != E_SUCCESS)
+    {
+        vty_out(vty, "Failed To Del Url rule %s", VTY_NEWLINE);
+        return 0;
+    }
+}
+
+DEFUN(show_wbpush,
+        show_wbpush_cmd,
+        "show wbpush",
+        RPUSH_SHOW_EXPR
+        RPUSH_EXPR)
+{
+    berr rv;
+    uint32_t sip  = 0;
+    uint8_t  sip_eanble = 0;
+    uint32_t dip   = 0;
+    uint16_t dport = 0;
+    rv = wbpush_rule_get(&sip, &sip_eanble, &dip, &dport);
+    if(rv != E_SUCCESS)
+    {
+        vty_out(vty, "Failed To Get rpush rule %s", VTY_NEWLINE);
+        return 0;
+    }
+    vty_out(vty, "Raw Udp Push Source: %d.%d.%d.%d(%s)%s", (sip >> 24) & 0xff,
+                                           (sip >> 16) & 0xff,
+                                           (sip >> 8 ) & 0xff,
+                                           (sip >> 0 ) & 0xff,
+                                           sip_eanble?"enable":"disable",VTY_NEWLINE);
+    vty_out(vty, "Raw Udp Push Server: %d.%d.%d.%d:%d%s", (dip >> 24) & 0xff,
+                                           (dip >> 16) & 0xff,
+                                           (dip >> 8 ) & 0xff,
+                                           (dip >> 0 ) & 0xff,
+                                           dport,VTY_NEWLINE);
+    return 0;
+}
+
+DEFUN(wbpush_test,
+        wbpush_test_cmd,
+        "wbpush test",
+        RPUSH_EXPR
+        RPUSH_TEST_EXPR)
+{
+    berr rv;
+    rv = wbpush_rule_test();
+    if(rv != E_SUCCESS)
+    {
+        if (rv == E_PARAM)
+        {
+            vty_out(vty, "Sender Server is Null %s", VTY_NEWLINE);
+        }
+        else
+        if (rv == E_FOUND)
+        {
+            vty_out(vty, "Server is Busy %s", VTY_NEWLINE);
+        }
+        vty_out(vty, "Failed To Test rpush send cmd %s", VTY_NEWLINE);
+        return 0;
+    }
+}
+
 void cmdline_rpush_init(void)
 {
     install_element(CMD_NODE, &rpush_add_cmd);
@@ -179,6 +279,11 @@ void cmdline_rpush_init(void)
     install_element(CMD_NODE, &show_rpush_cmd);
     install_element(CMD_NODE, &rpush_sip_enable_cmd);
     install_element(CMD_NODE, &rpush_sip_add_cmd);
+
+    install_element(CMD_NODE, &wbpush_add_cmd);
+    install_element(CMD_NODE, &wbpush_del_cmd);
+    install_element(CMD_NODE, &wbpush_test_cmd);
+    install_element(CMD_NODE, &show_wbpush_cmd);
 
     return ;
 }

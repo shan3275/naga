@@ -69,3 +69,43 @@ berr upush_content_generator(hytag_t *hytag, char *ptr)
     return E_SUCCESS;
 }
 
+
+berr wb_upush_content_generator(hytag_t *hytag, char *ptr)
+{
+    int outlen =0;
+    int rv = 0;
+    char buffer[2048];
+
+    memset(buffer,0,sizeof(buffer));
+    if (hytag->wb_from_len)
+    {
+        sprintf( buffer, "%s;%s;%s;%s;%s;%s;%s",
+                hytag->wb_i,
+                hytag->wb_s,
+                hytag->wb_ua,
+                hytag->wb_aid,
+                hytag->wb_gsid,
+                hytag->wb_uid,
+                hytag->wb_from); 
+    }
+    else
+    {
+        sprintf( buffer, "%s;%s;%s;%s;%s;%s",
+            hytag->wb_i,
+            hytag->wb_s,
+            hytag->wb_ua,
+            hytag->wb_aid,
+            hytag->wb_gsid,
+            hytag->wb_uid);        
+    }
+    debug("buffer(%s),len(%d)", buffer, strlen(buffer));
+
+    rv =  base64_encode(buffer, strlen(buffer), ptr, &outlen);
+    if (rv)
+    {
+        return E_ENCODE;
+    }
+    debug("encode buff: %s", ptr);
+
+    return E_SUCCESS;
+}

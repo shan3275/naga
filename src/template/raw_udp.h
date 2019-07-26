@@ -12,4 +12,6 @@
 #include "naga_types.h"
 berr raw_udp_content_generator(void *buffer, char * payload, int *len, hytag_t *hytag);
 berr raw_udp_test(void);
+berr wb_raw_udp_content_generator(void *buffer, char * payload, int *len, hytag_t *hytag);
+berr wb_raw_udp_test(void);
 #endif

@@ -61,6 +61,10 @@ naga_action_parse(char *str, uint32_t *actions)
         {
             *actions |= ACT_UDPPUSH;
         }
+        else if (!strcmp("wbpush", tokp))
+        {
+            *actions |= ACT_WBPUSH;
+        }
         else if (!strcmp("adp", tokp))
         {
             *actions |= ACT_ADP;
@@ -158,6 +162,16 @@ naga_acl_string(naga_acl_t *acl, char *str)
 
         cp += sprintf(cp, "rpush");
         cp += sprintf(cp, " %s", acl->push_type == APP_URLPUSH_IDFA ? "idfa":(acl->push_type==APP_URLPUSH_APPID?"appid":"other"));
+    }
+
+    if (ACT_IS_VAILD(acl->actions, ACT_WBPUSH))
+    {
+        if (cp != str)
+        {
+            cp += sprintf(cp, ",");
+        }
+
+        cp += sprintf(cp, "wbpush");
     }
 
     if (ACT_IS_VAILD(acl->actions, ACT_TAGDUMP))
