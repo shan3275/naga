@@ -43,6 +43,7 @@ Boston, MA 02111-1307, USA.  */
 #include "hijack_cmd.h"
 #include "bts_cmd.h"
 #include "upush_cmd.h"
+#include "redispush_cmd.h"
 
 /* Command vector which includes some level of command lists. Normally
    each daemon maintains each own cmdvec. */
@@ -750,9 +751,10 @@ config_write_host (struct vty *vty)
   urlr_cmd_config_write(vty);
   //hijack_cmd_config_write(vty);
   bts_cmd_config_write(vty);
-  itf_cmd_config_write(vty);
   upush_cmd_config_write(vty);
   rpush_cmd_config_write(vty);
+  redispush_cmd_config_write(vty);
+  itf_cmd_config_write(vty);
 
   return 1;
 }

@@ -39,18 +39,14 @@ RTE_TARGET ?= x86_64-native-linuxapp-gcc
 include $(RTE_SDK)/mk/rte.vars.mk
 
 # binary name
-LIB  = libpid.a
+LIB  = libredispush.a
 
 # all source are stored in SRCS-y
-SRCS-y := pid.c  pid_ethernet.c  pid_gre.c  naga_stat.c\
-	pid_http.c  pid_innerIp4.c  pid_l4.c  pid_outerIp4.c  pid_tcp.c pid_radius.c pid_udp.c
-	
-		
-
+SRCS-y :=  redispush_cmd.c redispush.c 
 
 CFLAGS += -O3
-CFLAGS += $(WERROR_FLAGS)
-CFLAGS += -I ../boots -I ../include -I ../boots -I ../pub -I ../rte -I ../http_parser/http-parser
+#CFLAGS += $(WERROR_FLAGS) -Werror=cast-qual
+CFLAGS += -I ../boots -I ../include -I ../pid -I ../debug  -I ../libzebra -I ../rte -I ../libhiredis/hiredis/
 
 # workaround for a gcc bug with noreturn attribute
 # http://gcc.gnu.org/bugzilla/show_bug.cgi?id=12603

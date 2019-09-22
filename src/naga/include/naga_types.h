@@ -31,6 +31,7 @@ typedef uint32_t ipaddr_t;
 #define ACT_URLPUSH    128
 #define ACT_ADP        256
 #define ACT_UDPPUSH    512
+#define ACT_RADIUSPUSH 1024
 
 #define ACT_IS_VAILD(_val, _act) \
     (((_val) & (_act)) == (_act))
@@ -90,6 +91,7 @@ typedef struct {
 typedef enum
 {
     APP_TYPE_HTTP_GET_OR_POST = 1,
+    APP_TYPE_RADIUS           = 2,
     APP_TYPE_HTTP_OTHER,    
 }APP_TYPE_E;
 
@@ -149,6 +151,9 @@ typedef enum
 #define URL_PARAM_NUMB_MAX  32
 #define URL_PARAM_KEY_LEN_MAX   64
 #define URL_PARAM_VAL_LEN_MAX   1280
+
+#define RADIUS_USER_NAME_LEN_MAX 64
+#define RADIUS_FRAMED_IP_LEN_MAX 16
 
 typedef struct {
     uint32_t  pnumb;
@@ -236,6 +241,11 @@ typedef struct
     char wechat_key[MAX_WECHAT_KEY_LEN+1];
     uint16_t wechat_uin_len;  // for http x-wechat-uin
     char wechat_uin[MAX_WECHAT_UIN_LEN+1];
+    uint8_t radius_status;
+    uint8_t radius_user_name_len;
+    char radius_user_name[RADIUS_USER_NAME_LEN_MAX+1];
+    uint8_t radius_framed_ip_len;
+    char radius_framed_ip[RADIUS_FRAMED_IP_LEN_MAX+1];
     naga_acl_t acl;
 
     char     uri[URL_MAX_LEN+1];	

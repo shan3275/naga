@@ -11,6 +11,12 @@ berr naga_fct(hytag_t *hytag)
 {
     berr rv = E_MAX;
 
+    if (APP_TYPE_RADIUS == hytag->app_type)
+    {
+        hytag->acl.actions |= ACT_RADIUSPUSH;
+        return E_SUCCESS; 
+    }
+
     if( APP_TYPE_HTTP_GET_OR_POST != hytag->app_type)
     {
         return E_SUCCESS;

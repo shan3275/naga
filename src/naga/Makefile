@@ -52,6 +52,7 @@ DIRS-y += debug
 DIRS-y += ua
 DIRS-y += mask
 DIRS-y += upush
+DIRS-y += redispush
 DIRS-y += main
 
 include $(RTE_SDK)/mk/rte.extsubdir.mk

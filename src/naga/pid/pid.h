@@ -84,11 +84,9 @@ do{\
 
 //#define DEBUG_ENABLE
 #ifdef  DEBUG_ENABLE
-
 #define DEBUG_PRINTF(format, args...) printf(format, ##args) 
 #else
 #define DEBUG_PRINTF(format, ...)
-
 #endif
 
 #include "pid_ethernet.h"

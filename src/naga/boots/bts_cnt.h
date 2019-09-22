@@ -44,6 +44,12 @@ typedef enum {
 	  GTPC_HD,
 	  GTPV1_C,
 	  GTPV2_C,
+
+	  RADIUS_ERR,
+	  RADIUS_ACC,
+	  RADIUS_OTHER,
+	  RADIUS_USER_IP,
+	  RADIUS_DROP,
 	  
 	  APP_HTTP_UP,
 	  APP_HTTP_UP_OVER,

@@ -243,6 +243,36 @@ berr naga_acl_urlpush(hytag_t *hytag)
    return E_SUCCESS;
 }
 
+berr naga_acl_radiuspush(hytag_t *hytag)
+{
+    berr rv;
+    CNT_INC(ACL_RADIUSPUSH_PKTS);
+
+    if( APP_TYPE_RADIUS != hytag->app_type)
+    {
+        CNT_INC(ACL_RADIUSPUSH_DROP);
+        return E_SUCCESS;
+    }
+
+    if (hytag->radius_user_name_len <= 0 || hytag->radius_framed_ip_len <=0 || 
+        hytag->radius_status <=0)
+    {
+        CNT_INC(ACL_RADIUSPUSH_DROP);
+        return E_SUCCESS;
+    }
+
+
+    rv = RedisStore(hytag->radius_status, hytag->radius_framed_ip, hytag->radius_user_name);
+    if(rv == E_SUCCESS)
+    {
+        CNT_INC(ACL_RADIUSPUSH_TX_SUCCESS);
+    }
+
+   return E_SUCCESS;
+}
+
+
+
 berr naga_acl(hytag_t *hytag)
 {
     int rv = E_MAX;
@@ -283,6 +313,15 @@ berr naga_acl(hytag_t *hytag)
     {
         CNT_INC(ACL_PKTS);
         rv = naga_acl_udppush(hytag);
+        if (rv != E_SUCCESS) {
+            //printf("%s.%d: rv = %s\n", __func__, __LINE__, berr_msg(rv));
+        }
+    }
+    else
+    if(ACT_RADIUSPUSH == (hytag->acl.actions & ACT_RADIUSPUSH))
+    {
+        CNT_INC(ACL_PKTS);
+        rv = naga_acl_radiuspush(hytag);
         if (rv != E_SUCCESS) {
             //printf("%s.%d: rv = %s\n", __func__, __LINE__, berr_msg(rv));
         }

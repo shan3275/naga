@@ -1,4 +1,5 @@
 #include "pid.h"
+#include "pid_radius.h"
 
 
 berr pid_udp(struct pbuf *p, hytag_t *hytag, int inner_outer)
@@ -48,8 +49,10 @@ berr pid_udp(struct pbuf *p, hytag_t *hytag, int inner_outer)
 			return pid_gtpv2c(p, hytag);
         }
         else
+        if( hytag->outer_dstport == UDP_PORT_RADIUS)//radius packet
         {
-            
+        	UPDATE_PBUF_OFFSET(p, UDP_HLEN);
+        	return pid_radius(p, hytag);
         }
     }
 	

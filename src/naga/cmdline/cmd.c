@@ -43,6 +43,7 @@
 #include "hijack_cmd.h"
 #include "mask_cmd.h"
 #include "upush_cmd.h"
+#include "redispush_cmd.h"
 
 /* Zebra instance */
 struct zebra_t zebrad =
@@ -242,6 +243,7 @@ int cmdline (int argc, char **argv)
     cmdline_mask_init();
     cmdline_upush_init();
     cmdline_rpush_init();
+    cmdline_redispush_init();
     /* Zebra related initialize. */
     //access_list_init ();
 

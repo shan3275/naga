@@ -6,3 +6,4 @@ make -C naga/pcre-m/
 make -C naga/http_parser/
 make -C naga/libzmq/
 make -C naga/libevent/
+make -C naga/libhiredis/

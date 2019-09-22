@@ -51,12 +51,13 @@ CFLAGS += -O3 $(USER_FLAGS) -g
 
 CFLAGS  += -I ../cmdline  -I ../libzebra  -I ../boots -I ../include  -I ../pid -I ../debug -I ../pub -I ../libzmq/zeromq/include -I ../upush
 CFLAGS  += -I ../dmr -I ../acr -I ../adp -I ../netseg -I ../dnet -I ../urlr -I ../url -I ../hijack  -I ../rte -I ../pcre-m/pcre -I ../mask  -I ../template  -I ../itf
-CFLAGS  += -I ../ua
+CFLAGS  += -I ../ua -I ../libhiredis/hiredis -I ../redispush
 LDFLAGS += -lstdc++
 LDLIBS  +=  ../cmdline/libcmdline.a  ../libzebra/libzebra.a ../url/liburl.a
 LDLIBS  +=  ../pid/libpid.a ../http_parser/libhttp_parser.a ../itf/libitf.a   ../dmr/libdmr.a ../acr/libacr.a ../boots/libboots.a ../pub/libpub.a ../urlr/liburlr.a ../mask/libmask.a
-LDLIBS  +=   ../adp/libadp.a ../template/libtemp.a ../debug/libdebug.a  -lpthread ../itf/libitf.a ../netseg/libnetseg.a ../dnet/libdnetseg.a ../url/liburl.a ../pcre-m/libpcre.a ../hijack/libhijack.a  ../upush/libupush.a ../libzmq/libzmq.a
-LDLIBS  +=   -lcrypt -lreadline -lrt -lpcap -lpthread -lz ../ua/libua.a ../libevent/libevent.a
+LDLIBS  +=   ../adp/libadp.a ../template/libtemp.a ../debug/libdebug.a  -lpthread ../itf/libitf.a ../netseg/libnetseg.a ../dnet/libdnetseg.a ../url/liburl.a ../pcre-m/libpcre.a 
+LDLIBS  +=   ../hijack/libhijack.a  ../upush/libupush.a ../libzmq/libzmq.a ../redispush/libredispush.a
+LDLIBS  +=   -lcrypt -lreadline -lrt -lpcap -lpthread -lz ../ua/libua.a ../libevent/libevent.a ../libhiredis/libhiredis.a
 
 
 include $(RTE_SDK)/mk/rte.app.mk

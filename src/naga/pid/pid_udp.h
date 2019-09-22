@@ -18,6 +18,8 @@ struct udp_hdr {
 #define UDP_PORT_GTP_U	    2152
 #define UDP_PORT_GTPV2_C    2123
 
+#define UDP_PORT_RADIUS     1813
+
 berr pid_udp(struct pbuf *p, hytag_t *hytag, int inner_outer);
 
 #endif
